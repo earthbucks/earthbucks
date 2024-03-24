@@ -51,3 +51,9 @@ kind of app on any platform.
 - [ ] P2P transactions
 - [ ] P2P blocks
 - [ ] P2P block headers
+
+## Names
+
+- `credit` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `ninja` - 1 Ninja = 10^8 credits. (The analog of 1 bitcoin.)
+- `satoshi` - 10^6 ninjas = 10^14 credits. (The analog of 1 million bitcoin.)
