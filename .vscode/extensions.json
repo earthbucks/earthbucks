@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "github.copilot-chat",
+        "github.copilot",
+        "esbenp.prettier-vscode",
+        "prisma.prisma",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "stkb.rewrap"
+    ]
+}
