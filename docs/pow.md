@@ -1,0 +1,13 @@
+- [ ] PoW algo: BLAKE 3
+- [ ] [Flux | Decentralized Cloud Computing (runonflux.io)](https://runonflux.io/)
+- [ ] [CLORE.AI - Distributed GPU Supercomputer](https://clore.ai/)
+- [ ] [PYRIN - Next-Generation Decentralized Transaction Network](https://pyrin.network/)[Iron Fish | Private, anonymous, and easy to use cryptocurrency](https://ironfish.network/)
+- [ ] [The DAG KNIGHT Protocol — Elevating Kaspa | by N. R. Crowningshield | Kaspa Currency | Medium](https://medium.com/kaspa-currency/the-dag-knight-protocol-elevating-kaspa-13bf8b9cfeec)
+- [ ] zcash uses multiple hash functions
+- [ ] [Reasons to prefer blake3 over sha256 (peergos.org)](https://peergos.org/posts/blake3)
+- [ ] [zooko🛡🦓🦓🦓 ⓩ on X: "Reasons to prefer BLAKE3 over SHA256:" / X (twitter.com)](https://twitter.com/zooko/status/1652743779932045313?t=0EyK_5TMmZxO_IJh_xyfmg&s=19)
+- [ ] [BLAKE3 vs SHA-256 (youtube.com)](https://www.youtube.com/watch?v=41rPql9o41E)
+- [ ] [Home - Kaspa](https://kaspa.org/)
+- [ ] https://groups.csail.mit.edu/mac/classes/6.805/articles/money/nsamint/nsamint.htm
+- [ ] [Careem x Adyen: Boosting loyalty, trust and revenue (youtube.com)](https://www.youtube.com/watch?v=WfoqHvaU2kA)
+- [ ] I was looking up GPU mining and the top 3 blockchains on this site ([https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all](https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all "https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all")) are Hoosat, Pyrin, and Karselcoin. They all happen to be recent forks of Kaspa and all use BLAKE3 hash, which is supported by a few miner implementations such as lolminer.
