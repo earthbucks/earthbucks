@@ -18,13 +18,21 @@ export class Key {
     return this._publicKey
   }
 
-  singleHash(data: Uint8Array): Uint8Array {
+  static singleHash(data: Uint8Array): Uint8Array {
     const res = crypto.createHash('sha256').update(data).digest()
     const uintArray = new Uint8Array(res.buffer)
     return uintArray
   }
 
-  doubleHash(data: Uint8Array): Uint8Array {
+  static doubleHash(data: Uint8Array): Uint8Array {
     return this.singleHash(this.singleHash(data))
+  }
+
+  singleAddress(): Uint8Array {
+    return Key.singleHash(this._publicKey)
+  }
+
+  doubleAddress(): Uint8Array {
+    return Key.doubleHash(this._publicKey)
   }
 }
