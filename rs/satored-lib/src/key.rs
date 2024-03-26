@@ -29,24 +29,6 @@ impl Key {
         &self.public_key
     }
 
-    // pub fn single_hash(data: &[u8]) -> Vec<u8> {
-    //     let mut hasher = Sha256::new();
-    //     hasher.update(data);
-    //     hasher.finalize().to_vec()
-    // }
-
-    // pub fn double_hash(data: &[u8]) -> Vec<u8> {
-    //     Self::single_hash(&Self::single_hash(data))
-    // }
-
-    // pub fn single_address(&self) -> Vec<u8> {
-    //     Self::single_hash(&self.public_key.serialize())
-    // }
-
-    // pub fn double_address(&self) -> Vec<u8> {
-    //     Self::double_hash(&self.public_key.serialize())
-    // }
-
     pub fn from_random() -> Self {
         let mut rng = OsRng;
         let mut key_data = [0u8; 32];
@@ -59,6 +41,7 @@ impl Key {
     }
 }
 
+// standard test vectors: key.json
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -69,6 +69,8 @@ kind of app on any platform.
 - `teratoken` - 10^12 tokens.
 - `satoshi` - 10^14 tokens = 10^6 ninjatokens. (The analog of 1 million bitcoin.)
 
+Ticker symbol: NJA (one ninjatoken).
+
 ## Changes to Bitcoin
 
 SatoRed is based on the original Bitcoin, which inluded an unlimited block size.
