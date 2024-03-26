@@ -19,9 +19,7 @@
     "cpp": "true",
     "rust": "true"
   },
-  "css.customData": [
-    ".vscode/tailwind.json"
-  ],
+  "css.customData": [".vscode/tailwind.json"],
   "files.associations": {
     ".env": "dotenv",
     ".env.*": "dotenv"
@@ -29,5 +27,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  }
+  },
+  "rust-analyzer.linkedProjects": ["rs/satored-lib/Cargo.toml"]
 }
