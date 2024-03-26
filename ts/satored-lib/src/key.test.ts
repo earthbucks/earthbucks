@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+import { describe, expect, test } from '@jest/globals'
 import Key from './key'
 
 test('Key', () => {
