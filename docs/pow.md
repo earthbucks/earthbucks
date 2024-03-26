@@ -11,3 +11,6 @@
 - [ ] https://groups.csail.mit.edu/mac/classes/6.805/articles/money/nsamint/nsamint.htm
 - [ ] [Careem x Adyen: Boosting loyalty, trust and revenue (youtube.com)](https://www.youtube.com/watch?v=WfoqHvaU2kA)
 - [ ] I was looking up GPU mining and the top 3 blockchains on this site ([https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all](https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all "https://whattomine.com/gpus?cost=0.1&cost_currency=USD&sort=breakeven_asc&nvidia=true&amd=true&filter=all")) are Hoosat, Pyrin, and Karselcoin. They all happen to be recent forks of Kaspa and all use BLAKE3 hash, which is supported by a few miner implementations such as lolminer.
+- [ ] X16R algorithm
+- [ ] rumour has it asic may have been developed for x16r, but its a good starting point there has since been X16Rv2 - these were both used by Ravencoin, that now uses something called KAWPOW which I am out of loop on. This might be a little bleeding edge but there is something called Trie-Hashimoto (for real, even though it sounds silly!) https://www.researchgate.net/publication/377828028_Trie-Hashimoto_State_Trie-based_Proof-of-Work_Mining_for_Optimizing_Blockchain_Storage
+- [ ] https://radiantblockchain.org/radiant.pdf
