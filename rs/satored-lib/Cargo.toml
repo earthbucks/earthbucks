@@ -1,0 +1,7 @@
+[package]
+name = "satored-lib" # replace with your project name
+version = "0.1.0" # replace with your project version
+edition = "2018" # replace with your Rust edition
+
+[dependencies]
+secp256k1 = "0.20.2"
