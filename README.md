@@ -61,9 +61,13 @@ kind of app on any platform.
 
 ## Names
 
-- `credit` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `ninja` - 1 Ninja = 10^8 credits. (The analog of 1 bitcoin.)
-- `satoshi` - 10^6 ninjas = 10^14 credits. (The analog of 1 million bitcoin.)
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `kilotoken` - 10^3 tokens.
+- `megatoken` - 10^6 tokens.
+- `ninjatoken` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+- `gigatoken` - 10^9 tokens.
+- `teratoken` - 10^12 tokens.
+- `satoshi` - 10^14 tokens = 10^6 ninjatokens. (The analog of 1 million bitcoin.)
 
 ## Changes to Bitcoin
 

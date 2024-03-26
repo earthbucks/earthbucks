@@ -1,0 +1,24 @@
+{
+  "key_pair": [
+    {
+      "priv_key": "f70cb7ffa459f64017a30334af2620740c375dd5245b0d8a12069de15d9c9f1d",
+      "pub_key": "036a3b26694b0ee8c70a609f89caef2697dd6d97d1d6e982495b647a8138594b1e"
+    },
+    {
+      "priv_key": "4f498ae446ce039f0d2c3372529fe036aa497902ffe3c41c896cf49162d5bc7c",
+      "pub_key": "02d434d7467bbfb7c739885f51e79b7300fa3ef79f77853a7ecebcf419b23d7a90"
+    },
+    {
+      "priv_key": "0e2b5366c7b41174fc94cd885b1533dabaaaf2bffafacd8b412ea04fe6f59211",
+      "pub_key": "02bf74f6bd728cb0beca3c26488406b6ff0a41a71b3ec515bf2cb775ac5b1c7bcb"
+    },
+    {
+      "priv_key": "ef70a914f95211a38b678cc9c144ea4540cec66150aa2927fb78ace7d71dc30a",
+      "pub_key": "02d50c8da6ec35fa27a32cd58535fa90b9ea4c49cc87047172fcdc6c0daee70ee6"
+    },
+    {
+      "priv_key": "d3fe071243342859645704dfff154fcc7bad46b433228ecf4ddff7759d5cdcad",
+      "pub_key": "023632c3e01ccbcea52fca9a65470a23a812f4215180f705addab5bb95c8b1db5f"
+    }
+  ]
+}
