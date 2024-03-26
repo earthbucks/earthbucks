@@ -7,3 +7,4 @@ edition = "2018" # replace with your Rust edition
 secp256k1 = "0.20.2"
 sha2 = "0.9.8"
 rand = "0.8.4"
+hex = "0.4.3"
