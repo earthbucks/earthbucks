@@ -35,4 +35,12 @@ export class Key {
   doubleAddress(): Uint8Array {
     return Key.doubleHash(this._publicKey)
   }
+
+  static fromRandom(): Key {
+    let privateKey
+    do {
+      privateKey = crypto.randomBytes(32)
+    } while (!secp256k1.privateKeyVerify(privateKey))
+    return new Key(privateKey)
+  }
 }
