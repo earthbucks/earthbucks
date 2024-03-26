@@ -5,3 +5,5 @@ edition = "2018" # replace with your Rust edition
 
 [dependencies]
 secp256k1 = "0.20.2"
+sha2 = "0.9.8"
+rand = "0.8.4"
