@@ -1,11 +1,8 @@
 #![allow(dead_code)] // TODO: remove this after launch
 
-use crate::key::Key;
+use satored_lib::address;
+use satored_lib::key::Key;
 use std::env;
-mod address;
-mod blake3;
-mod buffer_reader;
-mod key;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
