@@ -146,4 +146,62 @@ describe('BufferReader', () => {
     expect(result).toBe(2000000000) // 2^30
     expect(bufferReader['pos']).toBe(5)
   })
+
+  test('readVarIntNum', () => {
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    expect(bufferReader.readVarIntNum()).toBe(1)
+
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    expect(bufferReader.readVarIntNum()).toBe(1)
+
+    bufferReader = new BufferReader(
+      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    )
+    expect(bufferReader.readVarIntNum()).toBe(1)
+
+    bufferReader = new BufferReader(Buffer.from([0x01]))
+    expect(bufferReader.readVarIntNum()).toBe(1)
+  })
+
+  test('readVarIntBuf', () => {
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    expect(bufferReader.readVarIntBuf()).toEqual(
+      new Uint8Array(Buffer.from([0xfd, 0x01, 0x00])),
+    )
+
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    expect(bufferReader.readVarIntBuf()).toEqual(
+      new Uint8Array(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00])),
+    )
+
+    bufferReader = new BufferReader(
+      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    )
+    expect(bufferReader.readVarIntBuf()).toEqual(
+      new Uint8Array(
+        Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      ),
+    )
+
+    bufferReader = new BufferReader(Buffer.from([0x01]))
+    expect(bufferReader.readVarIntBuf()).toEqual(
+      new Uint8Array(Buffer.from([0x01])),
+    )
+  })
+
+  test('readVarIntBigInt', () => {
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
+
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
+
+    bufferReader = new BufferReader(
+      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    )
+    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
+
+    bufferReader = new BufferReader(Buffer.from([0x01]))
+    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
+  })
 })
