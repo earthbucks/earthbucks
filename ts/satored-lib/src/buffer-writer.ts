@@ -1,18 +1,8 @@
-/**
- * Buffer Writer
- * =============
- *
- * This is the writing complement of the Br. You can easily write
- * VarInts and other basic number types. The way to use it is: buf =
- * new Bw().write(buf1).write(buf2).toBuffer()
- */
-'use strict'
-
-class Bw {
+export class BufferWriter {
   bufs: Buffer[]
 
-  constructor(bufs?: Buffer[]) {
-    this.bufs = bufs || []
+  constructor(arrs?: Uint8Array[]) {
+    this.bufs = arrs ? arrs.map((arr) => Buffer.from(arr)) : []
   }
 
   getLength(): number {
@@ -22,12 +12,23 @@ class Bw {
     }
     return len
   }
+
+  toUint8Array(): Uint8Array {
+    const buffer = Buffer.concat(this.bufs)
+    return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+  }
+
   toBuffer(): Buffer {
     return Buffer.concat(this.bufs)
   }
 
-  write(buf: Buffer): this {
+  writeBuffer(buf: Buffer): this {
     this.bufs.push(buf)
+    return this
+  }
+
+  writeUint8Array(arr: Uint8Array): this {
+    this.bufs.push(Buffer.from(arr))
     return this
   }
 
@@ -43,99 +44,99 @@ class Bw {
   writeUInt8(n: number): this {
     const buf = Buffer.alloc(1)
     buf.writeUInt8(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeInt8(n: number): this {
     const buf = Buffer.alloc(1)
     buf.writeInt8(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt16BE(n: number): this {
     const buf = Buffer.alloc(2)
     buf.writeUInt16BE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeInt16BE(n: number): this {
     const buf = Buffer.alloc(2)
     buf.writeInt16BE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt16LE(n: number): this {
     const buf = Buffer.alloc(2)
     buf.writeUInt16LE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
   writeInt16LE(n: number): this {
     const buf = Buffer.alloc(2)
     buf.writeInt16LE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt32BE(n: number): this {
     const buf = Buffer.alloc(4)
     buf.writeUInt32BE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeInt32BE(n: number): this {
     const buf = Buffer.alloc(4)
     buf.writeInt32BE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt32LE(n: number): this {
     const buf = Buffer.alloc(4)
     buf.writeUInt32LE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeInt32LE(n: number): this {
     const buf = Buffer.alloc(4)
     buf.writeInt32LE(n, 0)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt64BEBn(bn: bigint): this {
     const buf = Buffer.alloc(8)
     buf.writeBigInt64BE(bn)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeUInt64LEBn(bn: bigint): this {
     const buf = Buffer.alloc(8)
     buf.writeBigInt64LE(bn)
-    this.write(buf)
+    this.writeBuffer(buf)
     return this
   }
 
   writeVarIntNum(n: number): this {
-    const buf = Bw.varIntBufNum(n)
-    this.write(buf)
+    const buf = BufferWriter.varIntBufNum(n)
+    this.writeUint8Array(buf)
     return this
   }
 
   writeVarIntBn(bn: bigint): this {
-    const buf = Bw.varIntBufBn(bn)
-    this.write(buf)
+    const buf = BufferWriter.varIntBufBn(bn)
+    this.writeUint8Array(buf)
     return this
   }
 
-  static varIntBufNum(n: number): Buffer {
+  static varIntBufNum(n: number): Uint8Array {
     let buf: Buffer
     if (n < 253) {
       buf = Buffer.alloc(1)
@@ -154,10 +155,11 @@ class Bw {
       buf.writeInt32LE(n & -1, 1)
       buf.writeUInt32LE(Math.floor(n / 0x100000000), 5)
     }
-    return buf
+    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    return arr
   }
 
-  static varIntBufBn(bn: bigint): Buffer {
+  static varIntBufBn(bn: bigint): Uint8Array {
     let buf: Buffer
     const n = Number(bn)
     if (n < 253) {
@@ -172,13 +174,12 @@ class Bw {
       buf.writeUInt8(254, 0)
       buf.writeUInt32LE(n, 1)
     } else {
-      const bw = new Bw()
+      const bw = new BufferWriter()
       bw.writeUInt8(255)
       bw.writeUInt64LEBn(bn)
       buf = bw.toBuffer()
     }
-    return buf
+    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    return arr
   }
 }
-
-export { Bw }
