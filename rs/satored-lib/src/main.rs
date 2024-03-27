@@ -12,7 +12,6 @@ fn main() {
         2 => {
             match args[1].as_str() {
                 "--key" => {
-                    // Your code to print keys
                     let key = Key::from_random();
                     let private_key_hex = key.private_key().to_string();
                     let public_key_hex = key.public_key().to_string();
@@ -21,7 +20,6 @@ fn main() {
                     println!("Public key: {}", public_key_hex);
                 }
                 "--address" => {
-                    // Your code to print addresses
                     println!("Address functionality is not implemented yet.");
                 }
                 _ => {
