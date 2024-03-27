@@ -114,6 +114,7 @@ impl BufferReader {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
 
     #[test]
     fn test_read() {
@@ -152,8 +153,6 @@ mod tests {
 
     #[test]
     fn test_read_i16_be() {
-        use byteorder::{BigEndian, WriteBytesExt};
-
         let mut data = vec![];
         data.write_i16::<BigEndian>(12345).unwrap();
         data.write_i16::<BigEndian>(-12345).unwrap();
@@ -161,5 +160,131 @@ mod tests {
         let mut reader = BufferReader::new(data);
         assert_eq!(reader.read_i16_be(), 12345);
         assert_eq!(reader.read_i16_be(), -12345);
+    }
+
+    #[test]
+    fn test_read_u16_le() {
+        let mut data = vec![];
+        data.write_u16::<LittleEndian>(12345).unwrap();
+        data.write_u16::<LittleEndian>(54321).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_u16_le(), 12345);
+        assert_eq!(reader.read_u16_le(), 54321);
+    }
+
+    #[test]
+    fn test_read_i16_le() {
+        let mut data = vec![];
+        data.write_i16::<LittleEndian>(12345).unwrap();
+        data.write_i16::<LittleEndian>(-12345).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_i16_le(), 12345);
+        assert_eq!(reader.read_i16_le(), -12345);
+    }
+
+    #[test]
+    fn test_read_u32_be() {
+        let mut data = vec![];
+        data.write_u32::<BigEndian>(1234567890).unwrap();
+        data.write_u32::<BigEndian>(987654321).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_u32_be(), 1234567890);
+        assert_eq!(reader.read_u32_be(), 987654321);
+    }
+
+    #[test]
+    fn test_read_i32_be() {
+        let mut data = vec![];
+        data.write_i32::<BigEndian>(1234567890).unwrap();
+        data.write_i32::<BigEndian>(-1234567890).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_i32_be(), 1234567890);
+        assert_eq!(reader.read_i32_be(), -1234567890);
+    }
+
+    #[test]
+    fn test_read_u32_le() {
+        let mut data = vec![];
+        data.write_u32::<LittleEndian>(1234567890).unwrap();
+        data.write_u32::<LittleEndian>(987654321).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_u32_le(), 1234567890);
+        assert_eq!(reader.read_u32_le(), 987654321);
+    }
+
+    #[test]
+    fn test_read_i32_le() {
+        let mut data = vec![];
+        data.write_i32::<LittleEndian>(1234567890).unwrap();
+        data.write_i32::<LittleEndian>(-1234567890).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_i32_le(), 1234567890);
+        assert_eq!(reader.read_i32_le(), -1234567890);
+    }
+
+    #[test]
+    fn test_read_u64_be_big_int() {
+        let mut data = vec![];
+        data.write_u64::<BigEndian>(12345678901234567890).unwrap();
+        data.write_u64::<BigEndian>(9876543210987654321).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_u64_be_big_int(), 12345678901234567890);
+        assert_eq!(reader.read_u64_be_big_int(), 9876543210987654321);
+    }
+
+    #[test]
+    fn test_read_u64_le_big_int() {
+        let mut data = vec![];
+        data.write_u64::<LittleEndian>(12345678901234567890).unwrap();
+        data.write_u64::<LittleEndian>(9876543210987654321).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_u64_le_big_int(), 12345678901234567890);
+        assert_eq!(reader.read_u64_le_big_int(), 9876543210987654321);
+    }
+
+    #[test]
+    fn test_read_var_int_buf() {
+        let data = vec![0xfd, 0x01, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int_buf(), vec![0xfd, 0x01, 0x00]);
+
+        let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int_buf(), vec![0xfe, 0x01, 0x00, 0x00, 0x00]);
+
+        let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int_buf(), vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+
+        let data = vec![0x01];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int_buf(), vec![0x01]);
+    }
+
+    #[test]
+    fn test_read_var_int() {
+        let data = vec![0xfd, 0x01, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int(), 1);
+
+        let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int(), 1);
+
+        let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int(), 1);
+
+        let data = vec![0x01];
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_var_int(), 1);
     }
 }
