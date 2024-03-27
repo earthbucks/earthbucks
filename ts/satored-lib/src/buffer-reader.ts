@@ -108,11 +108,11 @@ export default class BufferReader {
     let bn: BigInt, n: number
     switch (first) {
       case 0xfd:
-        return this.readUInt16LE()
+        return this.readUInt16BE()
       case 0xfe:
-        return this.readUInt32LE()
+        return this.readUInt32BE()
       case 0xff:
-        bn = this.readUInt64LEBigInt()
+        bn = this.readUInt64BEBigInt()
         n = Number(bn)
         if (n <= Number.MAX_SAFE_INTEGER) {
           return n
@@ -144,11 +144,11 @@ export default class BufferReader {
     const first = this.readUInt8()
     switch (first) {
       case 0xfd:
-        return BigInt(this.readUInt16LE())
+        return BigInt(this.readUInt16BE())
       case 0xfe:
-        return BigInt(this.readUInt32LE())
+        return BigInt(this.readUInt32BE())
       case 0xff:
-        return this.readUInt64LEBigInt()
+        return this.readUInt64BEBigInt()
       default:
         return BigInt(first)
     }

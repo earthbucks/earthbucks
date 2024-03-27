@@ -131,7 +131,7 @@ describe('BufferReader', () => {
 
   test('readVarIntNum returns correct value and updates position for 16 bit numbers', () => {
     const buf = Buffer.from([0xfd, 0, 0, 0, 0])
-    buf.writeUInt16LE(500, 1)
+    buf.writeUInt16BE(500, 1)
     bufferReader = new BufferReader(buf) // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum()
     expect(result).toBe(500) // 2^30
@@ -140,7 +140,7 @@ describe('BufferReader', () => {
 
   test('readVarIntNum returns correct value and updates position for 32 bit numbers', () => {
     const buf = Buffer.from([254, 0, 0, 0, 0])
-    buf.writeUInt32LE(2000000000, 1)
+    buf.writeUInt32BE(2000000000, 1)
     bufferReader = new BufferReader(buf) // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum()
     expect(result).toBe(2000000000) // 2^30
@@ -148,14 +148,14 @@ describe('BufferReader', () => {
   })
 
   test('readVarIntNum', () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]))
     expect(bufferReader.readVarIntNum()).toBe(1)
 
-    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]))
     expect(bufferReader.readVarIntNum()).toBe(1)
 
     bufferReader = new BufferReader(
-      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     )
     expect(bufferReader.readVarIntNum()).toBe(1)
 
@@ -164,22 +164,22 @@ describe('BufferReader', () => {
   })
 
   test('readVarIntBuf', () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]))
     expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(Buffer.from([0xfd, 0x01, 0x00])),
+      new Uint8Array(Buffer.from([0xfd, 0x00, 0x01])),
     )
 
-    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]))
     expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00])),
+      new Uint8Array(Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01])),
     )
 
     bufferReader = new BufferReader(
-      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     )
     expect(bufferReader.readVarIntBuf()).toEqual(
       new Uint8Array(
-        Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+        Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
       ),
     )
 
@@ -190,14 +190,14 @@ describe('BufferReader', () => {
   })
 
   test('readVarIntBigInt', () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x01, 0x00]))
+    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]))
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
 
-    bufferReader = new BufferReader(Buffer.from([0xfe, 0x01, 0x00, 0x00, 0x00]))
+    bufferReader = new BufferReader(Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]))
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
 
     bufferReader = new BufferReader(
-      Buffer.from([0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     )
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1))
 

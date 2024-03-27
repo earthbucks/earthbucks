@@ -144,16 +144,16 @@ export class BufferWriter {
     } else if (n < 0x10000) {
       buf = Buffer.alloc(1 + 2)
       buf.writeUInt8(253, 0)
-      buf.writeUInt16LE(n, 1)
+      buf.writeUInt16BE(n, 1)
     } else if (n < 0x100000000) {
       buf = Buffer.alloc(1 + 4)
       buf.writeUInt8(254, 0)
-      buf.writeUInt32LE(n, 1)
+      buf.writeUInt32BE(n, 1)
     } else {
       buf = Buffer.alloc(1 + 8)
       buf.writeUInt8(255, 0)
-      buf.writeInt32LE(n & -1, 1)
-      buf.writeUInt32LE(Math.floor(n / 0x100000000), 5)
+      buf.writeInt32BE(n & -1, 1)
+      buf.writeUInt32BE(Math.floor(n / 0x100000000), 5)
     }
     const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
     return arr
@@ -168,15 +168,15 @@ export class BufferWriter {
     } else if (n < 0x10000) {
       buf = Buffer.alloc(1 + 2)
       buf.writeUInt8(253, 0)
-      buf.writeUInt16LE(n, 1)
+      buf.writeUInt16BE(n, 1)
     } else if (n < 0x100000000) {
       buf = Buffer.alloc(1 + 4)
       buf.writeUInt8(254, 0)
-      buf.writeUInt32LE(n, 1)
+      buf.writeUInt32BE(n, 1)
     } else {
       const bw = new BufferWriter()
       bw.writeUInt8(255)
-      bw.writeUInt64LEBn(bn)
+      bw.writeUInt64BEBn(bn)
       buf = bw.toBuffer()
     }
     const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
