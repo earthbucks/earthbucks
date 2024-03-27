@@ -1,6 +1,7 @@
 use crate::key::Key;
 use std::env;
 mod key;
+mod blake3;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
