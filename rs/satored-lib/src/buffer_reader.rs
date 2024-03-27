@@ -116,8 +116,50 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_read() {
+        let mut reader = BufferReader::new(vec![1, 2, 3, 4, 5]);
+        assert_eq!(reader.read(3), vec![1, 2, 3]);
+        assert_eq!(reader.read(2), vec![4, 5]);
+    }
+
+    #[test]
+    fn test_read_reverse() {
+        let mut reader = BufferReader::new(vec![1, 2, 3, 4, 5]);
+        assert_eq!(reader.read_reverse(3), vec![1, 2, 3]);
+        assert_eq!(reader.read_reverse(2), vec![4, 5]);
+    }
+
+    #[test]
+    fn test_read_u8() {
+        let mut reader = BufferReader::new(vec![1, 2, 3, 4, 5]);
+        assert_eq!(reader.read_u8(), 1);
+        assert_eq!(reader.read_u8(), 2);
+    }
+
+    #[test]
+    fn test_read_i8() {
+        let mut reader = BufferReader::new(vec![1, 2, 255, 4, 5]);
+        assert_eq!(reader.read_i8(), 1);
+        assert_eq!(reader.read_i8(), 2);
+        assert_eq!(reader.read_i8(), -1); // 255 is -1 in two's complement
+    }
+
+    #[test]
     fn test_read_u16_be() {
         let mut buffer_reader = BufferReader::new(vec![0x01, 0x23]);
         assert_eq!(buffer_reader.read_u16_be(), 0x0123);
+    }
+
+    #[test]
+    fn test_read_i16_be() {
+        use byteorder::{BigEndian, WriteBytesExt};
+
+        let mut data = vec![];
+        data.write_i16::<BigEndian>(12345).unwrap();
+        data.write_i16::<BigEndian>(-12345).unwrap();
+
+        let mut reader = BufferReader::new(data);
+        assert_eq!(reader.read_i16_be(), 12345);
+        assert_eq!(reader.read_i16_be(), -12345);
     }
 }
