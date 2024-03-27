@@ -103,9 +103,9 @@ impl BufferReader {
     pub fn read_var_int(&mut self) -> u64 {
         let first = self.read_u8();
         match first {
-            0xfd => self.read_u16_le() as u64,
-            0xfe => self.read_u32_le() as u64,
-            0xff => self.read_u64_le_big_int(),
+            0xfd => self.read_u16_be() as u64,
+            0xfe => self.read_u32_be() as u64,
+            0xff => self.read_u64_be_big_int(),
             _ => first as u64,
         }
     }
@@ -278,15 +278,15 @@ mod tests {
 
     #[test]
     fn test_read_var_int() {
-        let data = vec![0xfd, 0x01, 0x00];
+        let data = vec![0xfd, 0x00, 0x01];
         let mut reader = BufferReader::new(data);
         assert_eq!(reader.read_var_int(), 1);
 
-        let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
+        let data = vec![0xfe, 0x00, 0x00, 0x00, 0x01];
         let mut reader = BufferReader::new(data);
         assert_eq!(reader.read_var_int(), 1);
 
-        let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        let data = vec![0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01];
         let mut reader = BufferReader::new(data);
         assert_eq!(reader.read_var_int(), 1);
 
