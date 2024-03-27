@@ -14,7 +14,8 @@ export default class BufferReader {
 
   read(len: number = this.buf.length): Uint8Array {
     const buf = this.buf.subarray(this.pos, this.pos + len)
-    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
+    const arr = new Uint8Array(len)
+    arr.set(buf)
     this.pos += len
     return arr
   }

@@ -242,7 +242,8 @@ mod tests {
     #[test]
     fn test_read_u64_le_big_int() {
         let mut data = vec![];
-        data.write_u64::<LittleEndian>(12345678901234567890).unwrap();
+        data.write_u64::<LittleEndian>(12345678901234567890)
+            .unwrap();
         data.write_u64::<LittleEndian>(9876543210987654321).unwrap();
 
         let mut reader = BufferReader::new(data);
@@ -258,11 +259,17 @@ mod tests {
 
         let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
         let mut reader = BufferReader::new(data);
-        assert_eq!(reader.read_var_int_buf(), vec![0xfe, 0x01, 0x00, 0x00, 0x00]);
+        assert_eq!(
+            reader.read_var_int_buf(),
+            vec![0xfe, 0x01, 0x00, 0x00, 0x00]
+        );
 
         let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
         let mut reader = BufferReader::new(data);
-        assert_eq!(reader.read_var_int_buf(), vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+        assert_eq!(
+            reader.read_var_int_buf(),
+            vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+        );
 
         let data = vec![0x01];
         let mut reader = BufferReader::new(data);
