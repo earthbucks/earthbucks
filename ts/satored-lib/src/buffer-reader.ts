@@ -12,11 +12,10 @@ export default class BufferReader {
     return this.pos >= this.buf.length
   }
 
-  read(len: number = this.buf.length): Buffer {
-    // subarray is a view on the same memory
-    const buf = this.buf.subarray(this.pos, this.pos + len)
-    this.pos += len
-    return buf
+  read(len: number = this.buf.length): Uint8Array {
+    const buf = this.buf.subarray(this.pos, this.pos + len);
+    this.pos += len;
+    return buf;
   }
 
   readReverse(len: number = this.buf.length): Buffer {
@@ -125,7 +124,7 @@ export default class BufferReader {
     }
   }
 
-  readVarIntBuf(): Buffer {
+  readVarIntBuf(): Uint8Array {
     const first = this.buf.readUInt8(this.pos)
     switch (first) {
       case 0xfd:
