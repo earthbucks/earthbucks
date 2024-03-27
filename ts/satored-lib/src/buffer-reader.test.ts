@@ -39,16 +39,88 @@ describe('BufferReader', () => {
     expect(bufferReader['pos']).toBe(1)
   })
 
-  test('readUInt16 returns correct value and updates position', () => {
+  test('readInt8 returns correct value and updates position', () => {
+    const result = bufferReader.readInt8()
+    expect(result).toBe(1)
+    expect(bufferReader['pos']).toBe(1)
+  })
+
+  test('readUInt16BE returns correct value and updates position', () => {
     const result = bufferReader.readUInt16BE()
-    expect(result).toBe(Buffer.from([1, 2]).readUInt16BE()) // 513 is the decimal representation of the bytes [1, 2] in big endian order
+    expect(result).toBe(Buffer.from([1, 2]).readUInt16BE())
     expect(bufferReader['pos']).toBe(2)
   })
 
-  test('readUInt32 returns correct value and updates position', () => {
+  test('readUInt16LE returns correct value and updates position', () => {
+    const result = bufferReader.readUInt16LE()
+    expect(result).toBe(Buffer.from([1, 2]).readUInt16LE())
+    expect(bufferReader['pos']).toBe(2)
+  })
+
+  test('readUInt16LE returns correct value and updates position', () => {
+    const result = bufferReader.readUInt16LE()
+    expect(result).toBe(Buffer.from([1, 2]).readUInt16LE())
+    expect(bufferReader['pos']).toBe(2)
+  })
+
+  test('readInt16LE returns correct value and updates position', () => {
+    const result = bufferReader.readInt16LE()
+    expect(result).toBe(Buffer.from([1, 2]).readInt16LE())
+    expect(bufferReader['pos']).toBe(2)
+  })
+
+  test('readUInt32BE returns correct value and updates position', () => {
     const result = bufferReader.readUInt32BE()
-    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32BE()) // 16909060 is the decimal representation of the bytes [1, 2, 3, 4] in big endian order
+    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32BE())
     expect(bufferReader['pos']).toBe(4)
+  })
+
+  test('readInt32BE returns correct value and updates position', () => {
+    const result = bufferReader.readInt32BE()
+    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readInt32BE())
+    expect(bufferReader['pos']).toBe(4)
+  })
+
+  test('readUInt32LE returns correct value and updates position', () => {
+    const result = bufferReader.readUInt32LE()
+    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32LE())
+    expect(bufferReader['pos']).toBe(4)
+  })
+
+  test('readInt32LE returns correct value and updates position', () => {
+    const result = bufferReader.readInt32LE()
+    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readInt32LE())
+    expect(bufferReader['pos']).toBe(4)
+  })
+
+  test('readUInt64BEBigInt returns correct value and updates position', () => {
+    // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0x0123456789ABCDEF
+    bufferReader = new BufferReader(
+      new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+    )
+
+    const result = bufferReader.readUInt64BEBigInt()
+
+    // Check that the method returns the correct BigInt
+    expect(result).toEqual(BigInt('0x0123456789ABCDEF'))
+
+    // Check that the position has been updated correctly
+    expect(bufferReader['pos']).toBe(8)
+  })
+
+  test('readUInt64LEBigInt returns correct value and updates position', () => {
+    // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0xEFCDAB8967452301 in little-endian order
+    bufferReader = new BufferReader(
+      new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+    )
+
+    const result = bufferReader.readUInt64LEBigInt()
+
+    // Check that the method returns the correct BigInt
+    expect(result).toEqual(BigInt('0xEFCDAB8967452301'))
+
+    // Check that the position has been updated correctly
+    expect(bufferReader['pos']).toBe(8)
   })
 
   test('readVarIntNum returns correct value and updates position for small numbers', () => {

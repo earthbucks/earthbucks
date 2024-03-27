@@ -13,10 +13,10 @@ export default class BufferReader {
   }
 
   read(len: number = this.buf.length): Uint8Array {
-    const buf = this.buf.subarray(this.pos, this.pos + len);
+    const buf = this.buf.subarray(this.pos, this.pos + len)
     const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
-    this.pos += len;
-    return arr;
+    this.pos += len
+    return arr
   }
 
   readReverse(len: number = this.buf.length): Buffer {
@@ -90,7 +90,7 @@ export default class BufferReader {
   }
 
   readUInt64BEBigInt(): BigInt {
-    const buf = this.buf.subarray(this.pos, this.pos + 8);
+    const buf = this.buf.subarray(this.pos, this.pos + 8)
     const bn = BigInt('0x' + buf.toString('hex'))
     this.pos += 8
     return bn
