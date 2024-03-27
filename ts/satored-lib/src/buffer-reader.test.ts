@@ -129,12 +129,21 @@ describe('BufferReader', () => {
     expect(bufferReader['pos']).toBe(1)
   })
 
-  test('readVarIntNum returns correct value and updates position for large numbers', () => {
-    const buf = Buffer.from([254, 0, 0, 0, 0])
-    buf.writeUInt32LE(50000, 1)
+  test('readVarIntNum returns correct value and updates position for 16 bit numbers', () => {
+    const buf = Buffer.from([0xfd, 0, 0, 0, 0])
+    buf.writeUInt16LE(500, 1)
     bufferReader = new BufferReader(buf) // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum()
-    expect(result).toBe(50000) // 2^30
+    expect(result).toBe(500) // 2^30
+    expect(bufferReader['pos']).toBe(3)
+  })
+
+  test('readVarIntNum returns correct value and updates position for 32 bit numbers', () => {
+    const buf = Buffer.from([254, 0, 0, 0, 0])
+    buf.writeUInt32LE(2000000000, 1)
+    bufferReader = new BufferReader(buf) // A varint that represents the number 2^30
+    const result = bufferReader.readVarIntNum()
+    expect(result).toBe(2000000000) // 2^30
     expect(bufferReader['pos']).toBe(5)
   })
 })
