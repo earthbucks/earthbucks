@@ -1,14 +1,16 @@
-import blake3 from 'blake3'
+import { Blake2BHasher } from '@napi-rs/blake-hash'
 
-export class Address {
+export default class Address {
   private _publicKey: Uint8Array
   private _address: Uint8Array
 
   constructor(publicKey: Uint8Array) {
     this._publicKey = publicKey
-    const hash = blake3.createHash()
-    hash.update(publicKey)
-    this._address = hash.digest()
+    const hasher = new Blake2BHasher()
+    hasher.update(Buffer.from(publicKey))
+    const hex = hasher.digest('hex') // could also be `base64` or `url-safe-base64`
+    const arr = new Uint8Array(Buffer.from(hex, 'hex'))
+    this._address = new Uint8Array(arr)
   }
 
   get publicKey(): Uint8Array {
