@@ -1,4 +1,4 @@
-use byteorder::{ByteOrder, LittleEndian, BigEndian, ReadBytesExt};
+use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
 use std::io::Cursor;
 
 pub struct BufferReader {
@@ -6,14 +6,35 @@ pub struct BufferReader {
 }
 
 impl BufferReader {
-    pub fn new(data: Vec<u8>) -> BufferReader {
+    pub fn new(buf: Vec<u8>) -> BufferReader {
         BufferReader {
-            buf: Cursor::new(data),
+            buf: Cursor::new(buf),
         }
+    }
+
+    pub fn eof(&self) -> bool {
+        self.buf.position() as usize >= self.buf.get_ref().len()
+    }
+
+    pub fn read(&mut self, len: usize) -> Vec<u8> {
+        let pos = self.buf.position() as usize;
+        let buf = &self.buf.get_ref()[pos..pos + len];
+        self.buf.set_position((pos + len) as u64);
+        buf.to_vec()
+    }
+
+    pub fn read_reverse(&mut self, len: usize) -> Vec<u8> {
+        let mut buf = self.read(len);
+        buf.reverse();
+        buf
     }
 
     pub fn read_u8(&mut self) -> u8 {
         self.buf.read_u8().unwrap()
+    }
+
+    pub fn read_i8(&mut self) -> i8 {
+        self.buf.read_i8().unwrap()
     }
 
     pub fn read_u16_be(&mut self) -> u16 {
@@ -48,26 +69,30 @@ impl BufferReader {
         self.buf.read_i32::<LittleEndian>().unwrap()
     }
 
-    // For 64-bit integers, you might want to use BigInt library
-    // as Rust's native types only go up to 64 bits
-    // and JavaScript's Number can represent up to 2^53
-    // Here's a placeholder function
-    pub fn read_u64_be_bn(&mut self) -> u64 {
+    pub fn read_u64_be_big_int(&mut self) -> u64 {
         self.buf.read_u64::<BigEndian>().unwrap()
     }
 
-    pub fn read_u64_le_bn(&mut self) -> u64 {
+    pub fn read_u64_le_big_int(&mut self) -> u64 {
         self.buf.read_u64::<LittleEndian>().unwrap()
     }
 
-    // For variable length integers, you might need a custom function
-    // Here's a placeholder function
-    pub fn read_var_int_num(&mut self) -> u64 {
+    pub fn read_var_int_buf(&mut self) -> Vec<u8> {
+        let first = self.buf.get_ref()[self.buf.position() as usize];
+        match first {
+            0xfd => self.read(1 + 2),
+            0xfe => self.read(1 + 4),
+            0xff => self.read(1 + 8),
+            _ => self.read(1),
+        }
+    }
+
+    pub fn read_var_int(&mut self) -> u64 {
         let first = self.read_u8();
         match first {
             0xfd => self.read_u16_le() as u64,
             0xfe => self.read_u32_le() as u64,
-            0xff => self.read_u64_le_bn(),
+            0xff => self.read_u64_le_big_int(),
             _ => first as u64,
         }
     }
