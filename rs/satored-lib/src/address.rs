@@ -1,4 +1,4 @@
-use crate::blake3::hash;
+use crate::blake3::double_hash;
 
 pub struct Address {
     address: [u8; 32],
@@ -6,7 +6,7 @@ pub struct Address {
 
 impl Address {
     pub fn new(public_key: Vec<u8>) -> Self {
-        let address = hash(&public_key);
+        let address = double_hash(&public_key);
         Self { address }
     }
 
@@ -28,9 +28,9 @@ mod tests {
 
     #[test]
     fn test_address() {
-        let pub_key_hex = "03d03a42c710b7cf9085bd3115338f72b86f2d77859b6afe6d33b13ea8957a9722";
+        let pub_key_hex = "0317fab5ac778e983f2ccd9faadc1524e1e3a49623d28e1a73309bf9d0fb72b53d";
         let expected_address_hex =
-            "38a12c6cf034632042b3b9deb2aabfdc798fac879d2f833638d59cf58549bc2d";
+            "601c2893ab7febcf1b3b43e91d98360966f52c98d8f98f29be52ece37b1cff84";
 
         // Convert hex to bytes
         let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
