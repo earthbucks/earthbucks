@@ -75,6 +75,7 @@ export class BufferWriter {
     this.writeBuffer(buf)
     return this
   }
+
   writeInt16LE(n: number): this {
     const buf = Buffer.alloc(2)
     buf.writeInt16LE(n, 0)
@@ -131,7 +132,7 @@ export class BufferWriter {
   }
 
   writeVarIntBn(bn: bigint): this {
-    const buf = BufferWriter.varIntBufBn(bn)
+    const buf = BufferWriter.varIntBufBigInt(bn)
     this.writeUint8Array(buf)
     return this
   }
@@ -155,11 +156,11 @@ export class BufferWriter {
       buf.writeInt32BE(n & -1, 1)
       buf.writeUInt32BE(Math.floor(n / 0x100000000), 5)
     }
-    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
     return arr
   }
 
-  static varIntBufBn(bn: bigint): Uint8Array {
+  static varIntBufBigInt(bn: bigint): Uint8Array {
     let buf: Buffer
     const n = Number(bn)
     if (n < 253) {
@@ -179,7 +180,7 @@ export class BufferWriter {
       bw.writeUInt64BEBn(bn)
       buf = bw.toBuffer()
     }
-    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
     return arr
   }
 }
