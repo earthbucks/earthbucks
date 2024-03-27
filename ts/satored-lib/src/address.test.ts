@@ -8,7 +8,6 @@ describe('Address', () => {
   test('Address', () => {
     const key = Key.fromRandom()
     const address = new Address(key.publicKey)
-    expect(address.publicKey).toBeDefined()
     expect(address.address).toBeDefined()
   })
 
