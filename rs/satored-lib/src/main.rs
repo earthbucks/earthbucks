@@ -1,7 +1,10 @@
+#![allow(dead_code)] // TODO: remove this after launch
+
 use crate::key::Key;
 use std::env;
 mod address;
 mod blake3;
+mod buffer_reader;
 mod key;
 
 fn main() {

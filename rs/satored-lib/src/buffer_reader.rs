@@ -18,14 +18,15 @@ impl BufferReader {
 
     pub fn read(&mut self, len: usize) -> Vec<u8> {
         let pos = self.buf.position() as usize;
-        let buf = &self.buf.get_ref()[pos..pos + len];
+        let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
-        buf.to_vec()
+        buf
     }
 
     pub fn read_reverse(&mut self, len: usize) -> Vec<u8> {
-        let mut buf = self.read(len);
-        buf.reverse();
+        let pos = self.buf.position() as usize;
+        let buf = self.buf.get_ref()[pos..pos + len].to_vec();
+        self.buf.set_position((pos + len) as u64);
         buf
     }
 
@@ -78,12 +79,24 @@ impl BufferReader {
     }
 
     pub fn read_var_int_buf(&mut self) -> Vec<u8> {
-        let first = self.buf.get_ref()[self.buf.position() as usize];
+        let first = self.read_u8();
         match first {
-            0xfd => self.read(1 + 2),
-            0xfe => self.read(1 + 4),
-            0xff => self.read(1 + 8),
-            _ => self.read(1),
+            0xfd => {
+                let mut buf = vec![first];
+                buf.extend_from_slice(&self.read(2));
+                buf
+            }
+            0xfe => {
+                let mut buf = vec![first];
+                buf.extend_from_slice(&self.read(4));
+                buf
+            }
+            0xff => {
+                let mut buf = vec![first];
+                buf.extend_from_slice(&self.read(8));
+                buf
+            }
+            _ => vec![first],
         }
     }
 
@@ -95,5 +108,16 @@ impl BufferReader {
             0xff => self.read_u64_le_big_int(),
             _ => first as u64,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_read_u16_be() {
+        let mut buffer_reader = BufferReader::new(vec![0x01, 0x23]);
+        assert_eq!(buffer_reader.read_u16_be(), 0x0123);
     }
 }
