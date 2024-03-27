@@ -28,5 +28,5 @@
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
-  "rust-analyzer.linkedProjects": ["rs/satored-lib/Cargo.toml"]
+  "rust-analyzer.linkedProjects": ["rs/Cargo.toml"]
 }
