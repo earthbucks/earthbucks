@@ -21,7 +21,7 @@ describe('VarInt', () => {
     })
   })
 
-  describe('fromBn', () => {
+  describe('fromBigInt', () => {
     it('should create a VarInt from a bigint', () => {
       // Arrange
       const bn: bigint = BigInt(123)
@@ -31,6 +31,97 @@ describe('VarInt', () => {
 
       // Assert
       expect(varInt.toBigInt()).toBe(bn)
+    })
+  })
+
+  describe('static fromBigInt', () => {
+    it('should create a VarInt from a bigint', () => {
+      // Arrange
+      const bn: bigint = BigInt(123)
+
+      // Act
+      varInt = VarInt.fromBigInt(bn)
+
+      // Assert
+      expect(varInt.toBigInt()).toBe(bn)
+    })
+  })
+
+  describe('fromNumber', () => {
+    it('should create a VarInt from a number', () => {
+      // Arrange
+      const n: number = 123
+
+      // Act
+      varInt.fromNumber(n)
+
+      // Assert
+      expect(varInt.toNumber()).toBe(n)
+    })
+  })
+
+  describe('static fromNumber', () => {
+    it('should create a VarInt from a number', () => {
+      // Arrange
+      const n: number = 123
+
+      // Act
+      varInt = VarInt.fromNumber(n)
+
+      // Assert
+      expect(varInt.toNumber()).toBe(n)
+    })
+  })
+
+  describe('toUint8Array', () => {
+    it('should return a Uint8Array', () => {
+      // Arrange
+      const n: number = 123
+
+      // Act
+      varInt.fromNumber(n)
+
+      // Assert
+      expect(varInt.toUint8Array()).toBeInstanceOf(Uint8Array)
+    })
+  })
+
+  describe('toBuffer', () => {
+    it('should return a Buffer', () => {
+      // Arrange
+      const n: number = 123
+
+      // Act
+      varInt.fromNumber(n)
+
+      // Assert
+      expect(varInt.toBuffer()).toBeInstanceOf(Buffer)
+    })
+  })
+
+  describe('toBigInt', () => {
+    it('should return a bigint', () => {
+      // Arrange
+      const bn: bigint = BigInt(123)
+
+      // Act
+      varInt.fromBigInt(bn)
+
+      // Assert
+      expect(varInt.toBigInt()).toBe(BigInt(123))
+    })
+  })
+
+  describe('toNumber', () => {
+    it('should return a number', () => {
+      // Arrange
+      const n: number = 123
+
+      // Act
+      varInt.fromNumber(n)
+
+      // Assert
+      expect(varInt.toNumber()).toBe(123)
     })
   })
 
