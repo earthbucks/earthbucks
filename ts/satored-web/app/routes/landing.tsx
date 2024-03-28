@@ -341,12 +341,22 @@ function Slider() {
 }
 
 function Button({ gender }: { gender?: 'male' | 'female' | 'ninja' }) {
-  gender = gender || 'ninja'
+  gender = gender || 'male'
   const maleSrc = '/shirt-white-male-cropped.png'
   const femaleSrc = '/shirt-white-female-cropped.png'
   const ninjaSrc = '/shirt-ninja-cropped.png'
-  const shirtSrc =
-    gender === 'ninja' ? ninjaSrc : gender === 'male' ? maleSrc : femaleSrc
+
+  let shirtSrc
+  switch (gender) {
+    case 'ninja':
+      shirtSrc = ninjaSrc
+      break
+    case 'male':
+      shirtSrc = maleSrc
+      break
+    default:
+      shirtSrc = femaleSrc
+  }
 
   return (
     <div className="flex h-[60px] w-[320px]">
