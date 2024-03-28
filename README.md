@@ -17,25 +17,8 @@ enthusiasts can mine the coin at the start.
 
 What if Bitcoin launched in 2024? 🤔
 
-The architecture here is a high-level first-pass. We are not just building a C++
-node software. We will implement some code in Rust, and if possible and
-practical, all of it in Rust. Some code is actually best written in TypeScript
-so that we can build full-stack developer tools to build apps. This is not just
-a node. It is all the libraries and APIs that app builders need to build any
-kind of app on any platform.
-
-### C++
-
-- [ ] Script interpreter
-- [ ] Transaction builder
-- [ ] Transaction verifier
-- [ ] Block builder
-- [ ] Block verifier
-- [ ] Block miner
-- [ ] Merkle proof builder
-- [ ] P2P blocks
-- [ ] P2P block headers
-- [ ] P2P transactions
+This is not just a node. It is also all of the libraries and APIs necessary to
+build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ### Rust
 
@@ -61,6 +44,8 @@ kind of app on any platform.
 
 ## Names
 
+### "Ninja" theme
+
 - `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
 - `kilotoken` - 10^3 tokens.
 - `megatoken` - 10^6 tokens.
@@ -70,6 +55,18 @@ kind of app on any platform.
 - `satoshi` - 10^14 tokens = 10^6 ninjatokens. (One million ninjatokens.)
 
 Ticker symbol: NJA (one ninjatoken).
+
+### "Button" theme
+
+- `button` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `kilobutton` - 10^3 buttons.
+- `megabutton` - 10^6 buttons.
+- `ninjabutton` - 10^8 buttons. (The analog of a bitcoin on Bitcoin.)
+- `gigabutton` - 10^9 buttons.
+- `terabutton` - 10^12 buttons.
+- `satoshi` - 10^14 buttons = 10^6 ninjabuttons. (One million ninjabuttons.)
+
+Ticker symbol: NJA (one ninjabutton).
 
 Total quantity: Slightly more than 42 million ninjatokens, following the same
 distribution scheme as Bitcoin, fairly mined on day one, with an initial block
