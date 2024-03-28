@@ -34,7 +34,7 @@ export default class VarInt {
     return this.buf
   }
 
-  toBn (): bigint {
+  toBigInt (): bigint {
     return new BufferReader(this.buf).readVarIntBigInt()
   }
 
@@ -43,7 +43,7 @@ export default class VarInt {
   }
 
   isMinimal () {
-    const bn = this.toBn()
+    const bn = this.toBigInt()
     const varint = new VarInt().fromBigInt(bn)
     return Buffer.compare(this.buf, varint.toBuffer()) === 0
   }

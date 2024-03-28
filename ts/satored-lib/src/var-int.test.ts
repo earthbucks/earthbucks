@@ -30,7 +30,7 @@ describe('VarInt', () => {
       varInt.fromBigInt(bn)
 
       // Assert
-      expect(varInt.toBn()).toBe(bn)
+      expect(varInt.toBigInt()).toBe(bn)
     })
   })
 
