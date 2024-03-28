@@ -107,14 +107,6 @@ lazy_static! {
         map.insert("CHECKMULTISIGVERIFY", 0xaf);
         map.insert("BLAKE3", 0xb0);
         map.insert("DOUBLEBLAKE3", 0xb1);
-        map.insert("NOP3", 0xb2);
-        map.insert("NOP4", 0xb3);
-        map.insert("NOP5", 0xb4);
-        map.insert("NOP6", 0xb5);
-        map.insert("NOP7", 0xb6);
-        map.insert("NOP8", 0xb7);
-        map.insert("NOP9", 0xb8);
-        map.insert("NOP10", 0xb9);
         map.insert("INVALIDOPCODE", 0xff);
         map
     };
@@ -223,14 +215,6 @@ lazy_static! {
         map.insert(0xaf, "CHECKMULTISIGVERIFY");
         map.insert(0xb0, "BLAKE3");
         map.insert(0xb1, "DOUBLEBLAKE3");
-        map.insert(0xb2, "NOP3");
-        map.insert(0xb3, "NOP4");
-        map.insert(0xb4, "NOP5");
-        map.insert(0xb5, "NOP6");
-        map.insert(0xb6, "NOP7");
-        map.insert(0xb7, "NOP8");
-        map.insert(0xb8, "NOP9");
-        map.insert(0xb9, "NOP10");
         map.insert(0xff, "INVALIDOPCODE");
         map
     };

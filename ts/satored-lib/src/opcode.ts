@@ -1,4 +1,4 @@
-export const nameToOpcode: { [key: string]: number } = {
+export const NAME_TO_OPCODE: { [key: string]: number } = {
   "0": 0x00,
   "PUSHDATA1": 0x4c,
   "PUSHDATA2": 0x4d,
@@ -102,18 +102,10 @@ export const nameToOpcode: { [key: string]: number } = {
   "CHECKMULTISIGVERIFY": 0xaf,
   "BLAKE3": 0xb0,
   "DOUBLEBLAKE3": 0xb1,
-  "NOP3": 0xb2,
-  "NOP4": 0xb3,
-  "NOP5": 0xb4,
-  "NOP6": 0xb5,
-  "NOP7": 0xb6,
-  "NOP8": 0xb7,
-  "NOP9": 0xb8,
-  "NOP10": 0xb9,
   "INVALIDOPCODE": 0xff,
 };
 
-export const opcodeToName: { [key: number]: string } = {
+export const OPCODE_TO_NAME: { [key: number]: string } = {
   0x00: "0",
   0x4c: "PUSHDATA1",
   0x4d: "PUSHDATA2",
@@ -217,13 +209,5 @@ export const opcodeToName: { [key: number]: string } = {
   0xaf: "CHECKMULTISIGVERIFY",
   0xb0: "BLAKE3",
   0xb1: "DOUBLEBLAKE3",
-  0xb2: "NOP3",
-  0xb3: "NOP4",
-  0xb4: "NOP5",
-  0xb5: "NOP6",
-  0xb6: "NOP7",
-  0xb7: "NOP8",
-  0xb8: "NOP9",
-  0xb9: "NOP10",
   0xff: "INVALIDOPCODE",
 };
