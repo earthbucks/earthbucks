@@ -44,29 +44,29 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Names
 
+## "SatoRed" theme
+
+- `satounit` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `satored` - 10^8 satos. (The analog of a bitcoin on Bitcoin.)
+- `full satoshi` - 10^14 satounits = 10^6 satoreds. (One million satoreds.)
+
+Ticker symbol: SRED (one satored).
+
 ### "Ninja" theme
 
 - `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `kilotoken` - 10^3 tokens.
-- `megatoken` - 10^6 tokens.
 - `ninjatoken` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
-- `gigatoken` - 10^9 tokens.
-- `teratoken` - 10^12 tokens.
 - `satoshi` - 10^14 tokens = 10^6 ninjatokens. (One million ninjatokens.)
 
-Ticker symbol: NJA (one ninjatoken).
+Ticker symbol: NJTN (one ninjatoken).
 
 ### "Button" theme
 
 - `button` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `kilobutton` - 10^3 buttons.
-- `megabutton` - 10^6 buttons.
 - `ninjabutton` - 10^8 buttons. (The analog of a bitcoin on Bitcoin.)
-- `gigabutton` - 10^9 buttons.
-- `terabutton` - 10^12 buttons.
 - `satoshi` - 10^14 buttons = 10^6 ninjabuttons. (One million ninjabuttons.)
 
-Ticker symbol: NJA (one ninjabutton).
+Ticker symbol: NJBN (one ninjabutton).
 
 Total quantity: Slightly more than 42 million ninjatokens, following the same
 distribution scheme as Bitcoin, fairly mined on day one, with an initial block
