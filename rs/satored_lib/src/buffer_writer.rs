@@ -5,18 +5,19 @@ pub struct BufferWriter {
 }
 
 impl BufferWriter {
-    pub fn new(buffers: Option<Vec<Vec<u8>>>) -> BufferWriter {
-        match buffers {
-            Some(b) => BufferWriter { bufs: b },
-            None => BufferWriter { bufs: Vec::new() },
-        }
+    pub fn new() -> BufferWriter {
+        BufferWriter { bufs: Vec::new() }
+    }
+
+    pub fn with_buffers(buffers: Vec<Vec<u8>>) -> BufferWriter {
+        BufferWriter { bufs: buffers }
     }
 
     pub fn get_length(&self) -> usize {
-        self.bufs.len()
+        self.bufs.iter().map(|buf| buf.len()).sum()
     }
-
-    pub fn to_buffer(&self) -> Vec<u8> {
+    
+    pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut result = Vec::new();
         for buf in &self.bufs {
             result.extend(buf);
@@ -24,7 +25,7 @@ impl BufferWriter {
         result
     }
 
-    pub fn write_buffer(&mut self, buf: Vec<u8>) {
+    pub fn write_u8_vec(&mut self, buf: Vec<u8>) {
         self.bufs.push(buf);
     }
 
@@ -123,7 +124,24 @@ impl BufferWriter {
 
     pub fn write_var_int(&mut self, n: u64) -> &mut Self {
         let buf = BufferWriter::var_int_buf(n);
-        self.write_buffer(buf);
+        self.write_u8_vec(buf);
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_length() {
+        let mut writer = BufferWriter::new();
+        assert_eq!(writer.get_length(), 0);
+
+        writer.write_u8(1);
+        assert_eq!(writer.get_length(), 1);
+
+        writer.write_u8_vec(vec![2, 3, 4]);
+        assert_eq!(writer.get_length(), 4);
     }
 }
