@@ -1,5 +1,6 @@
 {
   "name": "satored",
+  "license": "UNLICENSED",
   "private": true,
   "sideEffects": false,
   "type": "module",
