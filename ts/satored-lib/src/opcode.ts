@@ -6,7 +6,6 @@ export const nameToOpcode: { [key: string]: number } = {
   "1NEGATE": 0x4f,
   "RESERVED": 0x50,
   "1": 0x51,
-  "TRUE": 0x51,
   "2": 0x52,
   "3": 0x53,
   "4": 0x54,
