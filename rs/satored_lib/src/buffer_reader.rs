@@ -70,11 +70,11 @@ impl BufferReader {
         self.buf.read_i32::<LittleEndian>().unwrap()
     }
 
-    pub fn read_u64_be_big_int(&mut self) -> u64 {
+    pub fn read_u64_be(&mut self) -> u64 {
         self.buf.read_u64::<BigEndian>().unwrap()
     }
 
-    pub fn read_u64_le_big_int(&mut self) -> u64 {
+    pub fn read_u64_le(&mut self) -> u64 {
         self.buf.read_u64::<LittleEndian>().unwrap()
     }
 
@@ -105,7 +105,7 @@ impl BufferReader {
         match first {
             0xfd => self.read_u16_be() as u64,
             0xfe => self.read_u32_be() as u64,
-            0xff => self.read_u64_be_big_int(),
+            0xff => self.read_u64_be(),
             _ => first as u64,
         }
     }
@@ -235,8 +235,8 @@ mod tests {
         data.write_u64::<BigEndian>(9876543210987654321).unwrap();
 
         let mut reader = BufferReader::new(data);
-        assert_eq!(reader.read_u64_be_big_int(), 12345678901234567890);
-        assert_eq!(reader.read_u64_be_big_int(), 9876543210987654321);
+        assert_eq!(reader.read_u64_be(), 12345678901234567890);
+        assert_eq!(reader.read_u64_be(), 9876543210987654321);
     }
 
     #[test]
@@ -247,8 +247,8 @@ mod tests {
         data.write_u64::<LittleEndian>(9876543210987654321).unwrap();
 
         let mut reader = BufferReader::new(data);
-        assert_eq!(reader.read_u64_le_big_int(), 12345678901234567890);
-        assert_eq!(reader.read_u64_le_big_int(), 9876543210987654321);
+        assert_eq!(reader.read_u64_le(), 12345678901234567890);
+        assert_eq!(reader.read_u64_le(), 9876543210987654321);
     }
 
     #[test]
