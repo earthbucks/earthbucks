@@ -1,4 +1,4 @@
-export class BufferWriter {
+export default class BufferWriter {
   bufs: Buffer[]
 
   constructor(arrs?: Uint8Array[]) {
@@ -131,7 +131,7 @@ export class BufferWriter {
     return this
   }
 
-  writeVarIntBn(bn: bigint): this {
+  writeVarIntBigInt(bn: bigint): this {
     const buf = BufferWriter.varIntBufBigInt(bn)
     this.writeUint8Array(buf)
     return this

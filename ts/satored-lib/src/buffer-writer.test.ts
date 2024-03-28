@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import { BufferWriter } from './buffer-writer'
+import BufferWriter from './buffer-writer'
 
 describe('BufferWriter', () => {
   let bufferWriter: BufferWriter
@@ -196,7 +196,7 @@ describe('BufferWriter', () => {
       const bn: bigint = BigInt('1234567890123456789')
 
       // Act
-      bufferWriter.writeVarIntBn(bn)
+      bufferWriter.writeVarIntBigInt(bn)
 
       // Assert
       const result = bufferWriter.toBuffer()

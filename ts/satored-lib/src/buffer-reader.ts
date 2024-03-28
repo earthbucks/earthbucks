@@ -90,14 +90,14 @@ export default class BufferReader {
     return val
   }
 
-  readUInt64BEBigInt(): BigInt {
+  readUInt64BEBigInt(): bigint {
     const buf = this.buf.subarray(this.pos, this.pos + 8)
     const bn = BigInt('0x' + buf.toString('hex'))
     this.pos += 8
     return bn
   }
 
-  readUInt64LEBigInt(): BigInt {
+  readUInt64LEBigInt(): bigint {
     const buf = this.readReverse(8)
     const bn = BigInt('0x' + buf.toString('hex'))
     return bn
@@ -105,7 +105,7 @@ export default class BufferReader {
 
   readVarIntNum(): number {
     const first = this.readUInt8()
-    let bn: BigInt, n: number
+    let bn: bigint, n: number
     switch (first) {
       case 0xfd:
         return this.readUInt16BE()
@@ -140,7 +140,7 @@ export default class BufferReader {
     }
   }
 
-  readVarIntBigInt(): BigInt {
+  readVarIntBigInt(): bigint {
     const first = this.readUInt8()
     switch (first) {
       case 0xfd:
