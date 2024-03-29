@@ -53,7 +53,7 @@ impl Script {
                     opcode if opcode == NAME_TO_OPCODE["PUSHDATA1"] => reader.read_u8() as u32,
                     opcode if opcode == NAME_TO_OPCODE["PUSHDATA2"] => reader.read_u16_be() as u32,
                     opcode if opcode == NAME_TO_OPCODE["PUSHDATA4"] => reader.read_u32_be() as u32,
-                    _ => return Err(From::from("invalid opcode")),
+                    _ => unreachable!(),
                 };
 
                 chunk.buffer = Some(reader.read(len as usize).to_vec());
