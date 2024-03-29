@@ -2,3 +2,4 @@
 members = [
     "satored_lib",
 ]
+resolver = "2"
