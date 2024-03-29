@@ -2,6 +2,7 @@ use crate::buffer_writer::BufferWriter;
 use crate::opcode::{NAME_TO_OPCODE, OPCODE_TO_NAME};
 use std::error::Error;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {
     opcode: u8,
     buffer: Option<Vec<u8>>,
