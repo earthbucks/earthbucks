@@ -37,11 +37,11 @@ impl ScriptChunk {
             let len = buffer.len();
             self.buffer = Some(buffer);
             if len <= 0xff {
-                self.opcode = *NAME_TO_OPCODE.get("OP_PUSHDATA1").unwrap();
+                self.opcode = *NAME_TO_OPCODE.get("PUSHDATA1").unwrap();
             } else if len <= 0xffff {
-                self.opcode = *NAME_TO_OPCODE.get("OP_PUSHDATA2").unwrap();
+                self.opcode = *NAME_TO_OPCODE.get("PUSHDATA2").unwrap();
             } else if len <= 0xffffffff {
-                self.opcode = *NAME_TO_OPCODE.get("OP_PUSHDATA4").unwrap();
+                self.opcode = *NAME_TO_OPCODE.get("PUSHDATA4").unwrap();
             } else {
                 return Err("too much data".into());
             }
@@ -68,17 +68,17 @@ impl ScriptChunk {
         match &self.buffer {
             Some(buffer) => {
                 let len = buffer.len();
-                if self.opcode == *NAME_TO_OPCODE.get("OP_PUSHDATA1").unwrap() {
+                if self.opcode == *NAME_TO_OPCODE.get("PUSHDATA1").unwrap() {
                     let mut writer = BufferWriter::new();
                     writer.write_u8(len as u8);
                     result.extend_from_slice(&writer.to_u8_vec());
                     result.extend_from_slice(buffer);
-                } else if self.opcode == *NAME_TO_OPCODE.get("OP_PUSHDATA2").unwrap() {
+                } else if self.opcode == *NAME_TO_OPCODE.get("PUSHDATA2").unwrap() {
                     let mut writer = BufferWriter::new();
                     writer.write_u16_be(len as u16);
                     result.extend_from_slice(&writer.to_u8_vec());
                     result.extend_from_slice(buffer);
-                } else if self.opcode == *NAME_TO_OPCODE.get("OP_PUSHDATA4").unwrap() {
+                } else if self.opcode == *NAME_TO_OPCODE.get("PUSHDATA4").unwrap() {
                     let mut writer = BufferWriter::new();
                     writer.write_u32_be(len as u32);
                     result.extend_from_slice(&writer.to_u8_vec());
@@ -163,5 +163,136 @@ mod tests {
             Some(vec![7, 8, 9]),
         );
         assert_eq!(chunk.to_string().unwrap(), "0x070809");
+    }
+
+    #[test]
+    fn test_from_string_if() {
+        let mut chunk = ScriptChunk::new(0, None);
+        chunk.from_string("IF".to_string()).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("IF").unwrap());
+        assert_eq!(chunk.buffer, None);
+    }
+
+    #[test]
+    fn test_from_string_pushdata1() {
+        let mut chunk = ScriptChunk::new(0, None);
+        chunk.from_string("0x010203".to_string()).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_from_string_pushdata2() {
+        let mut chunk = ScriptChunk::new(0, None);
+        chunk
+            .from_string("0x".to_string() + &"01".repeat(256))
+            .unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1; 256]));
+    }
+
+    #[test]
+    fn test_from_string_pushdata4() {
+        let mut chunk = ScriptChunk::new(0, None);
+        chunk
+            .from_string("0x".to_string() + &"01".repeat(70000))
+            .unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1; 70000]));
+    }
+
+    #[test]
+    fn test_from_string_new() {
+        let chunk = ScriptChunk::from_string_new("0x010203".to_string()).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_to_u8_vec_if() {
+        let chunk = ScriptChunk::new(*NAME_TO_OPCODE.get("IF").unwrap(), None);
+        assert_eq!(chunk.to_u8_vec(), vec![*NAME_TO_OPCODE.get("IF").unwrap()]);
+    }
+
+    #[test]
+    fn test_to_u8_vec_pushdata1() {
+        let chunk = ScriptChunk::new(
+            *NAME_TO_OPCODE.get("PUSHDATA1").unwrap(),
+            Some(vec![1, 2, 3]),
+        );
+        assert_eq!(
+            chunk.to_u8_vec(),
+            vec![*NAME_TO_OPCODE.get("PUSHDATA1").unwrap(), 3, 1, 2, 3]
+        );
+    }
+
+    #[test]
+    fn test_to_u8_vec_pushdata2() {
+        let chunk = ScriptChunk::new(
+            *NAME_TO_OPCODE.get("PUSHDATA2").unwrap(),
+            Some(vec![1; 256]),
+        );
+        let mut expected = vec![*NAME_TO_OPCODE.get("PUSHDATA2").unwrap(), 1, 0];
+        expected.extend(vec![1; 256]);
+        assert_eq!(chunk.to_u8_vec(), expected);
+    }
+
+    #[test]
+    fn test_to_u8_vec_pushdata4() {
+        let chunk = ScriptChunk::new(
+            *NAME_TO_OPCODE.get("PUSHDATA4").unwrap(),
+            Some(vec![1; 65536]),
+        );
+        let mut expected = vec![*NAME_TO_OPCODE.get("PUSHDATA4").unwrap(), 0, 1, 0, 0];
+        expected.extend(vec![1; 65536]);
+        assert_eq!(chunk.to_u8_vec(), expected);
+    }
+
+    #[test]
+    fn test_from_u8_vec_if() {
+        let mut chunk = ScriptChunk::new(0, None);
+        let arr = vec![*NAME_TO_OPCODE.get("IF").unwrap()];
+        chunk.from_u8_vec(arr).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("IF").unwrap());
+        assert_eq!(chunk.buffer, None);
+    }
+
+    #[test]
+    fn test_from_u8_vec_pushdata1() {
+        let mut chunk = ScriptChunk::new(0, None);
+        let mut arr = vec![*NAME_TO_OPCODE.get("PUSHDATA1").unwrap(), 2];
+        arr.extend(vec![1, 2]);
+        chunk.from_u8_vec(arr).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2]));
+    }
+
+    #[test]
+    fn test_from_u8_vec_pushdata2() {
+        let mut chunk = ScriptChunk::new(0, None);
+        let mut arr = vec![*NAME_TO_OPCODE.get("PUSHDATA2").unwrap(), 0, 2];
+        arr.extend(vec![1, 2]);
+        chunk.from_u8_vec(arr).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2]));
+    }
+
+    #[test]
+    fn test_from_u8_vec_pushdata4() {
+        let mut chunk = ScriptChunk::new(0, None);
+        let mut arr = vec![*NAME_TO_OPCODE.get("PUSHDATA4").unwrap(), 0, 0, 0, 2];
+        arr.extend(vec![1, 2]);
+        chunk.from_u8_vec(arr).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2]));
+    }
+
+    #[test]
+    fn test_from_u8_vec_new_pushdata1() {
+        let mut arr = vec![*NAME_TO_OPCODE.get("PUSHDATA1").unwrap(), 2];
+        arr.extend(vec![1, 2]);
+        let chunk = ScriptChunk::from_u8_vec_new(arr).unwrap();
+        assert_eq!(chunk.opcode, *NAME_TO_OPCODE.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.buffer, Some(vec![1, 2]));
     }
 }
