@@ -98,4 +98,37 @@ describe('ScriptChunk', () => {
       expect(scriptChunk.toUint8Array()).toEqual(expected)
     })
   })
+
+  describe('fromUint8Array', () => {
+    test('should create a ScriptChunk from Uint8Array with opcode IF', () => {
+      const arr = new Uint8Array([NAME_TO_OPCODE.IF])
+      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.IF)
+      expect(scriptChunk.buffer).toBeUndefined()
+    })
+  
+    test('should create a ScriptChunk from Uint8Array with opcode OP_PUSHDATA1 and a buffer', () => {
+      const buffer = new Uint8Array(255).fill(0)
+      const arr = new Uint8Array([NAME_TO_OPCODE.PUSHDATA1, buffer.length, ...buffer])
+      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA1)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+  
+    test('should create a ScriptChunk from Uint8Array with opcode OP_PUSHDATA2 and a buffer', () => {
+      const buffer = new Uint8Array(256).fill(0)
+      const arr = new BufferWriter().writeUInt8(NAME_TO_OPCODE.PUSHDATA2).writeUInt16BE(buffer.length).writeUint8Array(buffer).toUint8Array()
+      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA2)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+  
+    test('should create a ScriptChunk from Uint8Array with opcode OP_PUSHDATA4 and a buffer', () => {
+      const buffer = new Uint8Array(65536).fill(0)
+      const arr = new BufferWriter().writeUInt8(NAME_TO_OPCODE.PUSHDATA4).writeUInt32BE(buffer.length).writeUint8Array(buffer).toUint8Array()
+      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA4)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+  })
 })
