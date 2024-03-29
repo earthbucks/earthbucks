@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import BufferWriter from './buffer-writer'
+import BufferWriter from '../src/buffer-writer'
 
 describe('BufferWriter', () => {
   let bufferWriter: BufferWriter

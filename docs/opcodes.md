@@ -1,0 +1,1 @@
+- mike heard on inability to use CODESEPARATOR https://bitcointalk.org/index.php?topic=52949.0

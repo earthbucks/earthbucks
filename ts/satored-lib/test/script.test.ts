@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import Script from './script'
+import Script from '../src/script'
 
 describe('Script', () => {
   test('constructor', () => {
@@ -45,20 +45,20 @@ describe('Script', () => {
 
   it('should correctly convert between string and Uint8Array for two PUSHDATA2 operations', () => {
     // Create a new Script from a string
-    const initialScript = new Script();
-    initialScript.fromString('0xffff 0xffff');
+    const initialScript = new Script()
+    initialScript.fromString('0xffff 0xffff')
 
     // Convert the Script to a Uint8Array
-    const arr = initialScript.toUint8Array();
+    const arr = initialScript.toUint8Array()
 
     // Create a new Script from the Uint8Array
-    const finalScript = new Script();
-    finalScript.fromUint8Array(arr);
+    const finalScript = new Script()
+    finalScript.fromUint8Array(arr)
 
     // Convert the final Script back to a string
-    const finalString = finalScript.toString();
+    const finalString = finalScript.toString()
 
     // Check that the final string matches the initial string
-    expect(finalString).toEqual('0xffff 0xffff');
-  });
+    expect(finalString).toEqual('0xffff 0xffff')
+  })
 })

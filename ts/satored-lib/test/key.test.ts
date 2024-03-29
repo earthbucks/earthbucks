@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import Key from './key'
+import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
 

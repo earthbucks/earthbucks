@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from '@jest/globals'
-import BufferReader from './buffer-reader'
+import BufferReader from '../src/buffer-reader'
 
 describe('BufferReader', () => {
   let bufferReader: BufferReader
