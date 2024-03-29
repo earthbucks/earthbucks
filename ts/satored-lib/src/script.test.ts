@@ -1,6 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import Script from './script'
-import ScriptChunk from './script-chunk'
 
 describe('Script', () => {
   test('constructor', () => {
