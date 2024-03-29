@@ -4,8 +4,8 @@ use std::error::Error;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {
-    opcode: u8,
-    buffer: Option<Vec<u8>>,
+    pub opcode: u8,
+    pub buffer: Option<Vec<u8>>,
 }
 
 impl ScriptChunk {

@@ -50,7 +50,7 @@ export default class Script {
       this.chunks.push(chunk)
     }
     return this
-}
+  }
 
   static fromUint8Array(arr: Uint8Array): Script {
     return new Script().fromUint8Array(arr)
