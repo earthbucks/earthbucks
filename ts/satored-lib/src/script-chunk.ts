@@ -1,4 +1,5 @@
 import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
+import BufferWriter from './buffer-writer'
 
 export class ScriptChunk {
   opcode: number
@@ -40,7 +41,6 @@ export class ScriptChunk {
       }
     } else {
       const opcode = NAME_TO_OPCODE[str]
-      console.log(opcode)
       if (opcode !== undefined) {
         this.opcode = opcode
       } else {
@@ -53,5 +53,54 @@ export class ScriptChunk {
 
   static fromString(str: string): ScriptChunk {
     return new ScriptChunk().fromString(str)
+  }
+
+  toUint8Array(): Uint8Array {
+    const opcode = this.opcode
+    if (opcode === NAME_TO_OPCODE.PUSHDATA1 && this.buffer) {
+      const buffer = Buffer.concat([
+        Buffer.from([opcode]),
+        new BufferWriter().writeUInt8(this.buffer.length).toBuffer(),
+        this.buffer,
+      ])
+      return new Uint8Array(buffer)
+    } else if (opcode === NAME_TO_OPCODE.PUSHDATA2 && this.buffer) {
+      const buffer = Buffer.concat([
+        Buffer.from([opcode]),
+        new BufferWriter().writeUInt16BE(this.buffer.length).toBuffer(),
+        this.buffer,
+      ])
+      return new Uint8Array(buffer)
+    } else if (opcode === NAME_TO_OPCODE.PUSHDATA4 && this.buffer) {
+      const buffer = Buffer.concat([
+        Buffer.from([opcode]),
+        new BufferWriter().writeUInt32BE(this.buffer.length).toBuffer(),
+        this.buffer,
+      ])
+      return new Uint8Array(buffer)
+    }
+    return new Uint8Array([opcode])
+  }
+
+  fromUint8Array(arr: Uint8Array): this {
+    const buf = Buffer.from(arr.buffer, arr.byteOffset, arr.byteLength)
+    const opcode = arr[0]
+    if (opcode === NAME_TO_OPCODE.PUSHDATA1) {
+      const len = arr[1]
+      this.opcode = opcode
+      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 2, len)
+    } else if (opcode === NAME_TO_OPCODE.PUSHDATA2) {
+      const len = buf.readUInt16BE(1)
+      this.opcode = opcode
+      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 3, len)
+    } else if (opcode === NAME_TO_OPCODE.PUSHDATA4) {
+      const len = buf.readUInt32BE(1)
+      this.opcode = opcode
+      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 5, len)
+    } else {
+      this.opcode = opcode
+      this.buffer = undefined
+    }
+    return this
   }
 }

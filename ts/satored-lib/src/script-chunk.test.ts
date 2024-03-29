@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import { ScriptChunk } from './script-chunk'
 import { NAME_TO_OPCODE } from './opcode'
+import BufferWriter from './buffer-writer'
 
 describe('ScriptChunk', () => {
   let scriptChunk: ScriptChunk
@@ -67,6 +68,34 @@ describe('ScriptChunk', () => {
   
     test('should throw an error for invalid opcode', () => {
       expect(() => ScriptChunk.fromString('INVALID_OPCODE')).toThrow('invalid opcode')
+    })
+  })
+
+  describe('toUint8Array', () => {
+    test('should convert a ScriptChunk with opcode IF to Uint8Array', () => {
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.IF)
+      expect(scriptChunk.toUint8Array()).toEqual(new Uint8Array([NAME_TO_OPCODE.IF]))
+    })
+  
+    test('should convert a ScriptChunk with opcode OP_PUSHDATA1 and a buffer to Uint8Array', () => {
+      const buffer = new Uint8Array(255).fill(0)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA1, buffer)
+      const expected = new Uint8Array([NAME_TO_OPCODE.PUSHDATA1, buffer.length, ...buffer])
+      expect(scriptChunk.toUint8Array()).toEqual(expected)
+    })
+  
+    test('should convert a ScriptChunk with opcode OP_PUSHDATA2 and a buffer to Uint8Array', () => {
+      const buffer = new Uint8Array(256).fill(0)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA2, buffer)
+      const expected = new BufferWriter().writeUInt8(NAME_TO_OPCODE.PUSHDATA2).writeUInt16BE(buffer.length).writeUint8Array(buffer).toUint8Array()
+      expect(scriptChunk.toUint8Array()).toEqual(expected)
+    })
+  
+    test('should convert a ScriptChunk with opcode OP_PUSHDATA4 and a buffer to Uint8Array', () => {
+      const buffer = new Uint8Array(65536).fill(0)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA4, buffer)
+      const expected = new BufferWriter().writeUInt8(NAME_TO_OPCODE.PUSHDATA4).writeUInt32BE(buffer.length).writeUint8Array(buffer).toUint8Array()
+      expect(scriptChunk.toUint8Array()).toEqual(expected)
     })
   })
 })
