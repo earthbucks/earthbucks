@@ -1,7 +1,7 @@
 import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
 import BufferWriter from './buffer-writer'
 
-export class ScriptChunk {
+export default class ScriptChunk {
   opcode: number
   buffer?: Buffer
 

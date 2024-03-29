@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import { ScriptChunk } from './script-chunk'
+import ScriptChunk from './script-chunk'
 import { NAME_TO_OPCODE } from './opcode'
 import BufferWriter from './buffer-writer'
 
