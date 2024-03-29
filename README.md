@@ -44,6 +44,12 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Names
 
+## "Satoshi" theme
+
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `satoshi` - 10^8 units. (The analog of a bitcoin on Bitcoin.)
+- `megasatoshi` - 10^14 units = 10^6 satoshis. (One million satoshis.)
+
 ## "SatoRed" theme
 
 - `satounit` - The smallest value. (The analog of a satoshi on Bitcoin.)
