@@ -17,3 +17,4 @@
 - rumour has it asic may have been developed for x16r, but its a good starting point there has since been X16Rv2 - these were both used by Ravencoin, that now uses something called KAWPOW which I am out of loop on. This might be a little bleeding edge but there is something called Trie-Hashimoto (for real, even though it sounds silly!) https://www.researchgate.net/publication/377828028_Trie-Hashimoto_State_Trie-based_Proof-of-Work_Mining_for_Optimizing_Blockchain_Storage
 - https://radiantblockchain.org/radiant.pdf
 - https://twitter.com/RadiantLayer1
+- Amaury Sechet on scaling to big blocks. https://www.youtube.com/watch?v=9PygO-B1o6w
