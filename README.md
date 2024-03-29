@@ -44,19 +44,17 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Names
 
-## "Satoshi" theme
-
-- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `satoshi` - 10^8 units. (The analog of a bitcoin on Bitcoin.)
-- `megasatoshi` - 10^14 units = 10^6 satoshis. (One million satoshis.)
-
 ## "SatoRed" theme
 
-- `satounit` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `satored` - 10^8 satos. (The analog of a bitcoin on Bitcoin.)
-- `full satoshi` - 10^14 satounits = 10^6 satoreds. (One million satoreds.)
+- `satoshi` - The smallest value.
+- `satored` - 10^8 satoshis. (The analog of a bitcoin on Bitcoin.)
 
 Ticker symbol: SRED (one satored).
+
+## "Satoshi" theme
+
+- `satored` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `satoshi` - 10^8 satoreds. (The analog of a bitcoin on Bitcoin.)
 
 ### "Ninja" theme
 
