@@ -31,11 +31,11 @@ export default class ScriptChunk {
       const twobytelen = len <= 0xffff
       const fourbytelen = len <= 0xffffffff
       if (onebytelen) {
-        this.opcode = NAME_TO_OPCODE.OP_PUSHDATA1
+        this.opcode = NAME_TO_OPCODE.PUSHDATA1
       } else if (twobytelen) {
-        this.opcode = NAME_TO_OPCODE.OP_PUSHDATA2
+        this.opcode = NAME_TO_OPCODE.PUSHDATA2
       } else if (fourbytelen) {
-        this.opcode = NAME_TO_OPCODE.OP_PUSHDATA4
+        this.opcode = NAME_TO_OPCODE.PUSHDATA4
       } else {
         throw new Error('too much data')
       }

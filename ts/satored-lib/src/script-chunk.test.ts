@@ -24,19 +24,19 @@ describe('ScriptChunk', () => {
 
     test('should create a ScriptChunk with opcode OP_PUSHDATA1 and a buffer', () => {
       const buffer = new Uint8Array(255).fill(0)
-      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.OP_PUSHDATA1, buffer)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA1, buffer)
       expect(scriptChunk.toString()).toBe('0x' + '00'.repeat(255))
     })
 
     test('should create a ScriptChunk with opcode OP_PUSHDATA2 and a buffer', () => {
       const buffer = new Uint8Array(256).fill(0)
-      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.OP_PUSHDATA2, buffer)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA2, buffer)
       expect(scriptChunk.toString()).toBe('0x' + '00'.repeat(256))
     })
 
     test('should create a ScriptChunk with opcode OP_PUSHDATA4 and a buffer', () => {
       const buffer = new Uint8Array(65536).fill(0)
-      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.OP_PUSHDATA4, buffer)
+      const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.PUSHDATA4, buffer)
       expect(scriptChunk.toString()).toBe('0x' + '00'.repeat(65536))
     })
   })
@@ -50,7 +50,7 @@ describe('ScriptChunk', () => {
 
     test('should create a ScriptChunk from opcode OP_PUSHDATA1 and a buffer', () => {
       const scriptChunk = ScriptChunk.fromString('0x' + '00'.repeat(255))
-      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.OP_PUSHDATA1)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA1)
       expect(scriptChunk.buffer).toEqual(
         Buffer.from(new Uint8Array(255).fill(0)),
       )
@@ -58,7 +58,7 @@ describe('ScriptChunk', () => {
 
     test('should create a ScriptChunk from opcode OP_PUSHDATA2 and a buffer', () => {
       const scriptChunk = ScriptChunk.fromString('0x' + '00'.repeat(256))
-      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.OP_PUSHDATA2)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA2)
       expect(scriptChunk.buffer).toEqual(
         Buffer.from(new Uint8Array(256).fill(0)),
       )
@@ -66,7 +66,7 @@ describe('ScriptChunk', () => {
 
     test('should create a ScriptChunk from opcode OP_PUSHDATA4 and a buffer', () => {
       const scriptChunk = ScriptChunk.fromString('0x' + '00'.repeat(65536))
-      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.OP_PUSHDATA4)
+      expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA4)
       expect(scriptChunk.buffer).toEqual(
         Buffer.from(new Uint8Array(65536).fill(0)),
       )
@@ -118,6 +118,12 @@ describe('ScriptChunk', () => {
         .writeUint8Array(buffer)
         .toUint8Array()
       expect(scriptChunk.toUint8Array()).toEqual(expected)
+    })
+
+    test('pushdata1', () => {
+      const scriptChunk = new ScriptChunk().fromString('0xff')
+      const arr = scriptChunk.toUint8Array()
+      expect(arr).toEqual(new Uint8Array([0x4c, 0x01, 0xff]))
     })
   })
 

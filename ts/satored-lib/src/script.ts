@@ -1,4 +1,6 @@
+import { NAME_TO_OPCODE } from './opcode'
 import ScriptChunk from './script-chunk'
+import BufferReader from './buffer-reader'
 
 export default class Script {
   chunks: ScriptChunk[] = []
@@ -7,9 +9,13 @@ export default class Script {
     this.chunks = chunks
   }
 
+  fromString(str: string): this {
+    this.chunks = str.split(' ').map(ScriptChunk.fromString)
+    return this
+  }
+
   static fromString(str: string): Script {
-    const chunks = str.split(' ').map(ScriptChunk.fromString)
-    return new Script(chunks)
+    return new Script().fromString(str)
   }
 
   toString(): string {
@@ -23,14 +29,28 @@ export default class Script {
   }
 
   fromUint8Array(arr: Uint8Array): this {
-    let offset = 0
-    while (offset < arr.length) {
-      const chunk = new ScriptChunk().fromUint8Array(arr.slice(offset))
+    const reader = new BufferReader(arr)
+    while (!reader.eof()) {
+      const chunk = new ScriptChunk()
+      chunk.opcode = reader.readUInt8()
+      if (chunk.opcode <= NAME_TO_OPCODE.PUSHDATA4) {
+        let len = chunk.opcode
+        if (len === NAME_TO_OPCODE.PUSHDATA1) {
+          len = reader.readUInt8()
+        } else if (len === NAME_TO_OPCODE.PUSHDATA2) {
+          len = reader.readUInt16LE()
+        } else if (len === NAME_TO_OPCODE.PUSHDATA4) {
+          len = reader.readUInt32LE()
+        }
+        chunk.buffer = Buffer.from(reader.read(len))
+        if (chunk.buffer.length !== len) {
+          throw new Error('invalid buffer length')
+        }
+      }
       this.chunks.push(chunk)
-      offset += chunk.toUint8Array().length
     }
     return this
-  }
+}
 
   static fromUint8Array(arr: Uint8Array): Script {
     return new Script().fromUint8Array(arr)
