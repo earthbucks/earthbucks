@@ -59,7 +59,7 @@ impl ScriptChunk {
         Ok(chunk)
     }
 
-    pub fn to_uint8_array(&self) -> Vec<u8> {
+    pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut result = Vec::new();
         result.push(self.opcode);
         match &self.buffer {
@@ -86,4 +86,31 @@ impl ScriptChunk {
         }
         result
     }
+
+    pub fn from_u8_vec(&mut self, arr: Vec<u8>) -> Result<(), Box<dyn Error>> {
+      let opcode = arr[0];
+      if opcode == *NAME_TO_OPCODE.get("PUSHDATA1").unwrap() {
+          let len = arr[1] as usize;
+          self.opcode = opcode;
+          self.buffer = Some(arr[2..2+len].to_vec());
+      } else if opcode == *NAME_TO_OPCODE.get("PUSHDATA2").unwrap() {
+          let len = u16::from_be_bytes([arr[1], arr[2]]) as usize;
+          self.opcode = opcode;
+          self.buffer = Some(arr[3..3+len].to_vec());
+      } else if opcode == *NAME_TO_OPCODE.get("PUSHDATA4").unwrap() {
+          let len = u32::from_be_bytes([arr[1], arr[2], arr[3], arr[4]]) as usize;
+          self.opcode = opcode;
+          self.buffer = Some(arr[5..5+len].to_vec());
+      } else {
+          self.opcode = opcode;
+          self.buffer = None;
+      }
+      Ok(())
+  }
+
+  pub fn from_u8_vec_new(arr: Vec<u8>) -> Result<ScriptChunk, Box<dyn Error>> {
+    let mut chunk = ScriptChunk::new(0, None);
+    chunk.from_u8_vec(arr)?;
+    Ok(chunk)
+}
 }

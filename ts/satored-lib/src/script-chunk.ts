@@ -103,4 +103,8 @@ export class ScriptChunk {
     }
     return this
   }
+
+  static fromUint8Array(arr: Uint8Array): ScriptChunk {
+    return new ScriptChunk().fromUint8Array(arr)
+  }
 }

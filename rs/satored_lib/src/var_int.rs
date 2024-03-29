@@ -15,7 +15,7 @@ impl VarInt {
         self
     }
 
-    pub fn from_u64_static(bn: u64) -> Self {
+    pub fn from_u64_new(bn: u64) -> Self {
         let mut varint = Self::new();
         varint.from_u64(bn);
         varint
@@ -26,7 +26,7 @@ impl VarInt {
         self
     }
 
-    pub fn from_u32_static(num: u32) -> Self {
+    pub fn from_u32_new(num: u32) -> Self {
         let mut varint = Self::new();
         varint.from_u32(num);
         varint
@@ -42,7 +42,7 @@ impl VarInt {
 
     pub fn is_minimal(&self) -> bool {
         let bn = self.to_u64();
-        let varint = VarInt::from_u64_static(bn);
+        let varint = VarInt::from_u64_new(bn);
         self.buf == varint.to_u8_vec()
     }
 }
@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn test_from_u64_static() {
-        let varint = VarInt::from_u64_static(1234567890);
+        let varint = VarInt::from_u64_new(1234567890);
 
         assert_eq!(varint.to_u64(), 1234567890);
     }
@@ -76,7 +76,7 @@ mod tests {
 
     #[test]
     fn test_from_u32_static() {
-        let varint = VarInt::from_u32_static(123456789);
+        let varint = VarInt::from_u32_new(123456789);
 
         assert_eq!(varint.to_u64(), 123456789);
     }
