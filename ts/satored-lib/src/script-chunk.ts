@@ -5,9 +5,9 @@ export class ScriptChunk {
   opcode: number
   buffer?: Buffer
 
-  constructor(opcode: number = 0, buffer?: Uint8Array) {
+  constructor(opcode: number = 0, arr?: Uint8Array) {
     this.opcode = opcode
-    this.buffer = buffer ? Buffer.from(buffer.buffer) : undefined
+    this.buffer = arr ? Buffer.from(arr.buffer) : undefined
   }
 
   toString(): string {
