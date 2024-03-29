@@ -110,7 +110,7 @@ lazy_static! {
         map.insert("INVALIDOPCODE", 0xff);
         map
     };
-    static ref OPCODE_TO_NAME: HashMap<u8, &'static str> = {
+    pub static ref OPCODE_TO_NAME: HashMap<u8, &'static str> = {
         let mut map = HashMap::new();
         map.insert(0x00, "0");
         map.insert(0x4c, "PUSHDATA1");
