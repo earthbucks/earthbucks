@@ -35,7 +35,7 @@ export default class Transaction {
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TransactionOutput.fromBufferReader(reader))
     }
-    const locktime = reader.readUInt32BE()
+    const locktime = reader.readUInt64BEBigInt()
     return new Transaction(version, inputs, outputs, BigInt(locktime))
   }
 
@@ -51,7 +51,7 @@ export default class Transaction {
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TransactionOutput.fromBufferReader(reader))
     }
-    const locktime = reader.readUInt32BE()
+    const locktime = reader.readUInt64BEBigInt()
     return new Transaction(version, inputs, outputs, BigInt(locktime))
   }
 
@@ -66,7 +66,7 @@ export default class Transaction {
     for (const output of this.outputs) {
       writer.writeU8Vec(output.toU8Vec())
     }
-    writer.writeUInt32BE(Number(this.locktime))
+    writer.writeUInt64BEBigInt(this.locktime)
     return writer.toU8Vec()
   }
 }
