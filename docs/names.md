@@ -27,6 +27,9 @@ Advantages:
 - "impulse" is an unused token name
 - impulse.com is not used and may be available for sale
 
+Disadvantages:
+- Slightly longer than satored.com
+
 - `impulse token` - The smallest value. (The analog of a satoshi on Bitcoin.)
 - `impulse coin` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
 
