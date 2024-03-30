@@ -25,7 +25,17 @@ export default class TransactionInput {
     const reader = new BufferReader(buf)
     const inputTxHash = reader.read(32)
     const inputTxIndex = reader.readUInt32LE()
-    const script = Script.fromU8Vec(reader.read(reader.readUInt8()))
+    const scriptLen = reader.readVarIntNum()
+    const script = Script.fromU8Vec(reader.read(scriptLen))
+    const sequence = reader.readUInt32LE()
+    return new TransactionInput(inputTxHash, inputTxIndex, script, sequence)
+  }
+
+  static fromBufferReader(reader: BufferReader): TransactionInput {
+    const inputTxHash = reader.read(32)
+    const inputTxIndex = reader.readUInt32LE()
+    const scriptLen = reader.readVarIntNum()
+    const script = Script.fromU8Vec(reader.read(scriptLen))
     const sequence = reader.readUInt32LE()
     return new TransactionInput(inputTxHash, inputTxIndex, script, sequence)
   }
