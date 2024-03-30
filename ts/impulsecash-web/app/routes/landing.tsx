@@ -5,8 +5,8 @@ import { classNames } from '~/util'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "SatoRed (Satoshi's Redemption)" },
-    { name: 'description', content: 'Welcome to SatoRed!' },
+    { title: "ImpulseCash" },
+    { name: 'description', content: 'Welcome to ImpulseCash!' },
   ]
 }
 
@@ -15,7 +15,7 @@ function Spinner() {
     <div role="status" className={'h-[36px] w-[36px]'}>
       <svg
         aria-hidden="true"
-        className={`mr-2 h-[36px] w-[36px] animate-spin fill-black/50 text-[#f95874]`}
+        className={`mr-2 h-[36px] w-[36px] animate-spin fill-black/50 text-[#fef8d6]`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -168,14 +168,14 @@ function Slider() {
 
   return (
     <div className="h-full w-full p-[8px]">
-      <div className="h-full w-full rounded-full bg-black/60 ring-2 ring-[#f95874]/70">
+      <div className="h-full w-full rounded-full bg-black/60 ring-2 ring-[#f09825]/70">
         <div className="flex h-full">
           <div className="relative h-full flex-shrink">
             <div
               className={classNames(
                 'absolute z-40 m-[-8px] h-[52px] w-[52px] p-[8px]',
                 sliderState === 'dragging'
-                  ? 'rounded-full outline outline-4 outline-[#f95874]'
+                  ? 'rounded-full outline outline-4 outline-[#fef8d6]'
                   : '',
               )}
               ref={buttonRef}
@@ -253,11 +253,11 @@ function Slider() {
                   : 'hidden',
               )}
             >
-              <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f95874]" />
+              <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
               <span className="align-middle text-sm font-semibold text-white">
-                Button up!
+                Begin
               </span>
-              <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f95874]" />
+              <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f09825]" />
             </div>
 
             <div
@@ -268,7 +268,7 @@ function Slider() {
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                Buttoning up...
+                Processing...
               </span>
             </div>
             <div
@@ -279,7 +279,7 @@ function Slider() {
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                Buttoned up!
+                Success!
               </span>
             </div>
             <div
@@ -299,9 +299,9 @@ function Slider() {
               className={classNames(
                 'aspect-square h-full rounded-full',
                 sliderState === 'initial'
-                  ? 'outline-dotted outline-2 outline-[#f95874]'
+                  ? 'outline-dotted outline-2 outline-[#f09825]'
                   : sliderState === 'dragging'
-                    ? 'outline-dashed outline-4 outline-[#f95874]'
+                    ? 'outline-dashed outline-4 outline-[#fef8d6]'
                     : 'hidden',
               )}
               style={{
@@ -366,7 +366,7 @@ function Button({ gender }: { gender?: 'male' | 'female' | 'ninja' | 'treasurech
     <div className="flex h-[60px] w-[320px]">
       <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#556489] p-[1px] shadow-lg shadow-[#556489]">
         <div className="h-full w-full rounded-full bg-[#fef8d6] p-[3px]">
-          <div className="relative h-full w-full rounded-full bg-[#f95874] shadow-[inset_5px_5px_10px_#556489]">
+          <div className="relative h-full w-full rounded-full bg-[#f09825] shadow-[inset_5px_5px_10px_#556489]">
             <img
               src={shirtSrc}
               alt=""
@@ -379,9 +379,9 @@ function Button({ gender }: { gender?: 'male' | 'female' | 'ninja' | 'treasurech
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
-                    src="/satoshi-avatar-bw.jpg"
+                    src="/imp-avatar-bw.png"
                     alt=""
-                    className="h-[52px] w-[52px] rounded-full"
+                    className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#fef8d6]"
                   />
                 </div>
               </div>
