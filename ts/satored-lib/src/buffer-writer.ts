@@ -27,7 +27,7 @@ export default class BufferWriter {
     return this
   }
 
-  writeUint8Array(arr: Uint8Array): this {
+  writeUInt8Array(arr: Uint8Array): this {
     this.bufs.push(Buffer.from(arr))
     return this
   }
@@ -111,14 +111,14 @@ export default class BufferWriter {
     return this
   }
 
-  writeUInt64BEBn(bn: bigint): this {
+  writeUInt64BEBigInt(bn: bigint): this {
     const buf = Buffer.alloc(8)
     buf.writeBigInt64BE(bn)
     this.writeBuffer(buf)
     return this
   }
 
-  writeUInt64LEBn(bn: bigint): this {
+  writeUInt64LEBigInt(bn: bigint): this {
     const buf = Buffer.alloc(8)
     buf.writeBigInt64LE(bn)
     this.writeBuffer(buf)
@@ -127,13 +127,13 @@ export default class BufferWriter {
 
   writeVarIntNum(n: number): this {
     const buf = BufferWriter.varIntBufNum(n)
-    this.writeUint8Array(buf)
+    this.writeUInt8Array(buf)
     return this
   }
 
   writeVarIntBigInt(bn: bigint): this {
     const buf = BufferWriter.varIntBufBigInt(bn)
-    this.writeUint8Array(buf)
+    this.writeUInt8Array(buf)
     return this
   }
 
@@ -177,7 +177,7 @@ export default class BufferWriter {
     } else {
       const bw = new BufferWriter()
       bw.writeUInt8(255)
-      bw.writeUInt64BEBn(bn)
+      bw.writeUInt64BEBigInt(bn)
       buf = bw.toBuffer()
     }
     const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)

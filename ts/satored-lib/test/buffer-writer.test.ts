@@ -154,7 +154,7 @@ describe('BufferWriter', () => {
       const bn: bigint = BigInt('1234567890123456789')
 
       // Act
-      bufferWriter.writeUInt64BEBn(bn)
+      bufferWriter.writeUInt64BEBigInt(bn)
 
       // Assert
       const result = bufferWriter.toBuffer()
@@ -168,7 +168,7 @@ describe('BufferWriter', () => {
       const bn: bigint = BigInt('1234567890123456789')
 
       // Act
-      bufferWriter.writeUInt64LEBn(bn)
+      bufferWriter.writeUInt64LEBigInt(bn)
 
       // Assert
       const result = bufferWriter.toBuffer()

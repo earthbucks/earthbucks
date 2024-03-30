@@ -32,11 +32,11 @@ export default class TransactionInput {
 
   toUint8Array(): Uint8Array {
     const writer = new BufferWriter()
-    writer.writeUint8Array(this.inputTxHash)
+    writer.writeUInt8Array(this.inputTxHash)
     writer.writeUInt32LE(this.inputTxIndex)
     const scriptBuf = this.script.toUint8Array()
-    writer.writeUint8Array(VarInt.fromNumber(scriptBuf.length).toUint8Array())
-    writer.writeUint8Array(scriptBuf)
+    writer.writeUInt8Array(VarInt.fromNumber(scriptBuf.length).toUint8Array())
+    writer.writeUInt8Array(scriptBuf)
     writer.writeUInt32LE(this.sequence)
     return writer.toUint8Array()
   }
