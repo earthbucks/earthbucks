@@ -5,6 +5,7 @@ import TransactionOutput from '../src/transaction-output'
 import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
 import BufferWriter from '../src/buffer-writer'
+import { hash } from '../src/blake3'
 
 describe('Transaction', () => {
   describe('constructor', () => {
@@ -82,6 +83,40 @@ describe('Transaction', () => {
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
       expect(result.locktime).toEqual(locktime)
+    })
+  })
+
+  describe('hashonce', () => {
+    it('should return the hash of the transaction', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const expectedHash = hash(transaction.toU8Vec())
+      expect(transaction.hashonce()).toEqual(expectedHash)
+    })
+  })
+
+  describe('hash', () => {
+    it('should return the hash of the hash of the transaction', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const expectedHash = hash(hash(transaction.toU8Vec()))
+      expect(transaction.hash()).toEqual(expectedHash)
     })
   })
 })

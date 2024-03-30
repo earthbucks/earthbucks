@@ -1,3 +1,5 @@
+use crate::blake3::double_hash;
+use crate::blake3::hash;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 use crate::transaction_input::TransactionInput;
@@ -75,6 +77,14 @@ impl Transaction {
         writer.write_u64_be(self.lock_time);
         writer.to_u8_vec()
     }
+
+    pub fn hash_once(&self) -> Vec<u8> {
+        hash(&self.to_u8_vec()).to_vec()
+    }
+
+    pub fn hash(&self) -> Vec<u8> {
+        double_hash(&self.to_u8_vec()).to_vec()
+    }
 }
 
 #[cfg(test)]
@@ -137,5 +147,49 @@ mod tests {
         assert_eq!(transaction.outputs.len(), transaction2.outputs.len());
         assert_eq!(transaction.lock_time, transaction2.lock_time);
         Ok(())
+    }
+
+    #[test]
+    fn test_hash_once() {
+        let input_tx_hash = vec![0; 32];
+        let input_tx_index = 0;
+        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let sequence = 0;
+        let transaction_input =
+            TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
+
+        let value = 100;
+        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let transaction_output = TransactionOutput::new(value, script);
+
+        let version = 1;
+        let inputs = vec![transaction_input];
+        let outputs = vec![transaction_output];
+        let lock_time = 0;
+        let transaction = Transaction::new(version, inputs, outputs, lock_time);
+        let expected_hash = hash(&transaction.to_u8_vec()).to_vec();
+        assert_eq!(transaction.hash_once(), expected_hash);
+    }
+
+    #[test]
+    fn test_hash() {
+        let input_tx_hash = vec![0; 32];
+        let input_tx_index = 0;
+        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let sequence = 0;
+        let transaction_input =
+            TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
+
+        let value = 100;
+        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let transaction_output = TransactionOutput::new(value, script);
+
+        let version = 1;
+        let inputs = vec![transaction_input];
+        let outputs = vec![transaction_output];
+        let lock_time = 0;
+        let transaction = Transaction::new(version, inputs, outputs, lock_time);
+        let expected_hash = double_hash(&transaction.to_u8_vec()).to_vec();
+        assert_eq!(transaction.hash(), expected_hash);
     }
 }
