@@ -44,6 +44,43 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Names
 
+Domains:
+- impmine.com
+- impstack.com
+- satomine.com
+- ninjabutton.com
+- compubutton.com
+- satored.com
+
+## "ImpStack" theme
+
+- `imp token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `imp coin` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- IMPT (one imp).
+- IMPC (one stack).
+
+## "SatoMine" theme
+
+- `minisato` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `sato` - 10^8 minisatos. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- MSTO (one minisato).
+- STO (one sato).
+
+## "NinjaButton" theme
+
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `ninja` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- NJTN (one token).
+- NJCN (one ninja).
+
+Domain: ninjabutton.com
+
 ## "CompuButton" theme
 
 - `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
@@ -53,6 +90,14 @@ Ticker symbol:
 - CBTN (one token).
 - CBCN (one coin).
 
+## "Sato" theme
+
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `sato` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- STTN (one token).
+- STCN (one sato).
 
 ## "SatoRed" theme
 
