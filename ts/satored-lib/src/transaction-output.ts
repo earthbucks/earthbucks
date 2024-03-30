@@ -21,6 +21,14 @@ export default class TransactionOutput {
     return new TransactionOutput(value, script)
   }
 
+  static fromBufferReader(reader: BufferReader): TransactionOutput {
+    const value = reader.readUInt64BEBigInt()
+    const scriptLen = reader.readVarIntNum()
+    const scriptArr = reader.read(scriptLen)
+    const script = Script.fromU8Vec(scriptArr)
+    return new TransactionOutput(value, script)
+  }
+
   toU8Vec(): Uint8Array {
     const writer = new BufferWriter()
     writer.writeUInt64BEBigInt(this.value)

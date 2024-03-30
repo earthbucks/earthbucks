@@ -2,6 +2,7 @@ import TransactionInput from './transaction-input'
 import TransactionOutput from './transaction-output'
 import VarInt from './var-int'
 import BufferReader from './buffer-reader'
+import BufferWriter from './buffer-writer'
 
 export default class Transaction {
   public version: number
@@ -23,18 +24,49 @@ export default class Transaction {
 
   static fromU8Vec(buf: Uint8Array): Transaction {
     const reader = new BufferReader(buf)
-    const version = reader.readUInt32LE()
+    const version = reader.readUInt8()
     const numInputs = reader.readVarIntNum()
     const inputs = []
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TransactionInput.fromU8Vec(reader))
+      inputs.push(TransactionInput.fromBufferReader(reader))
     }
     const numOutputs = reader.readVarIntNum()
     const outputs = []
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TransactionOutput.fromU8Vec(reader))
+      outputs.push(TransactionOutput.fromBufferReader(reader))
     }
-    const locktime = reader.readUInt32LE()
+    const locktime = reader.readUInt32BE()
     return new Transaction(version, inputs, outputs, BigInt(locktime))
+  }
+
+  static fromBufferReader(reader: BufferReader): Transaction {
+    const version = reader.readUInt8()
+    const numInputs = reader.readVarIntNum()
+    const inputs = []
+    for (let i = 0; i < numInputs; i++) {
+      inputs.push(TransactionInput.fromBufferReader(reader))
+    }
+    const numOutputs = reader.readVarIntNum()
+    const outputs = []
+    for (let i = 0; i < numOutputs; i++) {
+      outputs.push(TransactionOutput.fromBufferReader(reader))
+    }
+    const locktime = reader.readUInt32BE()
+    return new Transaction(version, inputs, outputs, BigInt(locktime))
+  }
+
+  toU8Vec(): Uint8Array {
+    const writer = new BufferWriter()
+    writer.writeUInt8(this.version)
+    writer.writeU8Vec(VarInt.fromNumber(this.inputs.length).toU8Vec())
+    for (const input of this.inputs) {
+      writer.writeU8Vec(input.toU8Vec())
+    }
+    writer.writeU8Vec(VarInt.fromNumber(this.outputs.length).toU8Vec())
+    for (const output of this.outputs) {
+      writer.writeU8Vec(output.toU8Vec())
+    }
+    writer.writeUInt32BE(Number(this.locktime))
+    return writer.toU8Vec()
   }
 }

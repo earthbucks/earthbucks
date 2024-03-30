@@ -341,7 +341,7 @@ function Slider() {
 }
 
 function Button({ gender }: { gender?: 'male' | 'female' | 'ninja' }) {
-  gender = gender || 'male'
+  gender = gender || 'ninja'
   const maleSrc = '/shirt-white-male-cropped.png'
   const femaleSrc = '/shirt-white-female-cropped.png'
   const ninjaSrc = '/shirt-ninja-cropped.png'
