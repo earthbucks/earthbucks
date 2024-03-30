@@ -44,7 +44,26 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Names
 
+## "CompuButton" theme
+
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `coin` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- CBTN (one token).
+- CBCN (one coin).
+
+
 ## "SatoRed" theme
+
+- `token` - The smallest value. (The analog of a satoshi on Bitcoin.)
+- `coin` - 10^8 tokens. (The analog of a bitcoin on Bitcoin.)
+
+Ticker symbol:
+- SRTN (one token).
+- STCN (one coin).
+
+## "SatoRed" theme 2
 
 - `satoshi` - The smallest value.
 - `satored` - 10^8 satoshis. (The analog of a bitcoin on Bitcoin.)
@@ -72,10 +91,6 @@ Ticker symbol: NJTN (one ninjatoken).
 
 Ticker symbol: NJBN (one ninjabutton).
 
-Total quantity: Slightly more than 42 million ninjatokens, following the same
-distribution scheme as Bitcoin, fairly mined on day one, with an initial block
-reward of 100 ninjatokens.
-
 ## Changes to Bitcoin
 
 SatoRed is based on the original Bitcoin, which inluded an unlimited block size.
@@ -95,6 +110,10 @@ Some changes created by Bitcoin Core and other are also not included.
 
 - [ ] No P2SH.
 - [ ] No SegWit.
+
+Total quantity: Slightly more than 42 million ninjatokens, following the same
+distribution scheme as Bitcoin, fairly mined on day one, with an initial block
+reward of 100 ninjatokens.
 
 ## Governance
 
