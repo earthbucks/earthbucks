@@ -56,7 +56,7 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://x.com/satored_com"
+                href="https://x.com/impstack_com"
                 target="_blank"
                 className="underline"
               >
@@ -64,19 +64,11 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://github.com/satored/satored"
+                href="https://github.com/impstack-com"
                 target="_blank"
                 className="underline"
               >
                 GitHub
-              </a>{' '}
-              &middot;{' '}
-              <a
-                href="https://reddit.com/r/satored"
-                target="_blank"
-                className="underline"
-              >
-                reddit
               </a>
             </div>
           </div>
