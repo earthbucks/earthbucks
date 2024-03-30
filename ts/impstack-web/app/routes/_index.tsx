@@ -2,8 +2,8 @@ import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "ImpulseCash" },
-    { name: 'description', content: 'Welcome to ImpulseCash!' },
+    { title: 'ImpStack' },
+    { name: 'description', content: 'Welcome to ImpStack!' },
   ]
 }
 
@@ -13,22 +13,22 @@ export default function Index() {
       <div className="mb-4 mt-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
-          <img
+            <img
               src="/imp-logo.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/impulsecash-text-white.png"
-                alt="ImpulseCash"
+                src="/impstack-text-white.png"
+                alt="ImpStack"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/impulsecash-text-black.png"
-                alt="ImpulseCash"
+                src="/impstack-text-black.png"
+                alt="ImpStack"
                 className="mx-auto block h-[50px]"
               />
             </div>

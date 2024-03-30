@@ -5,7 +5,7 @@ import { classNames } from '~/util'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "ImpStack" },
+    { title: 'ImpStack' },
     { name: 'description', content: 'Welcome to ImpStack!' },
   ]
 }
@@ -193,11 +193,7 @@ function Slider() {
                       : undefined,
               }}
             >
-              <img
-                src="/imp-logo.png"
-                alt=""
-                className="h-[36px] w-[36px]"
-              />
+              <img src="/imp-logo.png" alt="" className="h-[36px] w-[36px]" />
             </div>
             <div
               className={classNames(
@@ -216,9 +212,13 @@ function Slider() {
               )}
             >
               <div className="relative h-[36px] w-[36px]">
-                <img src="/heart-96.png" alt="" className="h-[36px] w-[36px]" />
                 <img
-                  src="/heart-96.png"
+                  src="/heart-gold-128.png"
+                  alt=""
+                  className="h-[36px] w-[36px]"
+                />
+                <img
+                  src="/heart-gold-128.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                 />
@@ -340,7 +340,11 @@ function Slider() {
   )
 }
 
-function Button({ gender }: { gender?: 'male' | 'female' | 'ninja' | 'treasurechest' }) {
+function Button({
+  gender,
+}: {
+  gender?: 'male' | 'female' | 'ninja' | 'treasurechest'
+}) {
   gender = gender || 'treasurechest'
   const maleSrc = '/shirt-white-male-cropped.png'
   const femaleSrc = '/shirt-white-female-cropped.png'
