@@ -13,5 +13,16 @@ describe('TransactionOutput', () => {
         result.toBuffer().toString('hex'),
       )
     })
+
+    test('big push data', () => {
+      const data = '0x' + '00'.repeat(0xffff)
+      const value = BigInt(100)
+      const script = Script.fromString(`${data} HASH160`)
+      const transactionOutput = new TransactionOutput(value, script)
+      const result = TransactionOutput.fromU8Vec(transactionOutput.toU8Vec())
+      expect(transactionOutput.toBuffer().toString('hex')).toEqual(
+        result.toBuffer().toString('hex'),
+      )
+    })
   })
 })
