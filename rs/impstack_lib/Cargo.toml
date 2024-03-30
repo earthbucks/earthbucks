@@ -1,5 +1,5 @@
 [package]
-name = "satored_lib"
+name = "impstack_lib"
 version = "0.1.0"
 edition = "2021"
 

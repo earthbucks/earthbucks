@@ -1,7 +1,7 @@
 #![allow(dead_code)] // TODO: remove this after launch
 
-use satored_lib::address;
-use satored_lib::key::Key;
+use impstack_lib::address;
+use impstack_lib::key::Key;
 use std::env;
 
 fn main() {

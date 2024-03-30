@@ -1,10 +1,10 @@
-# SatoRed (Satoshi's Redemption)
+# ImpStack
 
-42 million ninjas. No pre-mine. GPUs. Big blocks. Script.
+42 million coins. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in 2024.
 
-[satored.com](https://satored.com)
+[impstack.com](https://impstack.com)
 
 ## Architectural Overview
 
@@ -44,7 +44,7 @@ build apps. It is being written in both Rust and TypeScript simultaneously.
 
 ## Changes to Bitcoin
 
-SatoRed is based on the original Bitcoin, which inluded an unlimited block size.
+ImpStack is based on the original Bitcoin, which inluded an unlimited block size.
 However, we are making some changes that make sense in light of all of the
 information in from 2009 until now.
 
@@ -68,7 +68,7 @@ reward of 100 ninjatokens.
 
 ## Governance
 
-At this time, SatoRed is a company owned 100% by Ryan X. Charles, who has the
+At this time, ImpStack is a company owned 100% by Ryan X. Charles, who has the
 final say about all technology, all branding, all marketing, all product, and
 all other decisions. Anyone who disagrees is free to fork the code and create
 their own version.
