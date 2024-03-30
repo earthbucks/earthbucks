@@ -69,4 +69,8 @@ export default class Transaction {
     writer.writeUInt64BEBigInt(this.locktime)
     return writer.toU8Vec()
   }
+
+  toBuffer(): Buffer {
+    return Buffer.from(this.toU8Vec())
+  }
 }
