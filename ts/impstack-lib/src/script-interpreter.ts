@@ -61,4 +61,23 @@ export default class ScriptInterpreter {
       BigInt(0),
     )
   }
+
+  evalScript(): boolean {
+    while (this.pc < this.script.chunks.length) {
+      const chunk = this.script.chunks[this.pc]
+      const opcode = chunk.opcode
+      if (opcode === NAME_TO_OPCODE.OP_0 || opcode === NAME_TO_OPCODE.OP_PUSHDATA1 || opcode === NAME_TO_OPCODE.OP_PUSHDATA2 || opcode === NAME_TO_OPCODE.OP_PUSHDATA4) {
+        if (chunk.buffer) {
+          this.stack.push(chunk.buffer)
+        } else {
+          this.errStr = 'invalid opcode'
+          return false
+        }
+      } else if (opcode === NAME_TO_OPCODE.OP_1NEGATE) {
+        this.stack.push(Buffer.from([0x81]))
+      }
+      this.pc++
+    }
+    return true
+  }
 }
