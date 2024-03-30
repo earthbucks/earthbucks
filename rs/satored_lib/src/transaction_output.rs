@@ -87,7 +87,10 @@ mod tests {
         let value = 100;
         let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
-        let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(transaction_output.to_u8_vec())).unwrap();
+        let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(
+            transaction_output.to_u8_vec(),
+        ))
+        .unwrap();
         assert_eq!(
             hex::encode(transaction_output.to_u8_vec()),
             hex::encode(result.to_u8_vec())

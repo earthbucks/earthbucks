@@ -6,7 +6,7 @@ pub mod key;
 pub mod opcode;
 pub mod script;
 pub mod script_chunk;
+pub mod transaction;
 pub mod transaction_input;
 pub mod transaction_output;
 pub mod var_int;
-pub mod transaction;
