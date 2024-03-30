@@ -9,3 +9,4 @@ pub mod script_chunk;
 pub mod transaction_input;
 pub mod transaction_output;
 pub mod var_int;
+pub mod transaction;
