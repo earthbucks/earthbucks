@@ -407,14 +407,14 @@ export default function Landing() {
             <div className="hidden dark:block">
               <img
                 src="/impulsecash-text-white.png"
-                alt="SatoRed"
+                alt="ImpulseCash"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/impulsecash-text-black.png"
-                alt="SatoRed"
+                alt="ImpulseCash"
                 className="mx-auto block h-[50px]"
               />
             </div>

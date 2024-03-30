@@ -2,8 +2,8 @@ import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "SatoRed (Satoshi's Redemption)" },
-    { name: 'description', content: 'Welcome to SatoRed!' },
+    { title: "ImpulseCash" },
+    { name: 'description', content: 'Welcome to ImpulseCash!' },
   ]
 }
 
@@ -13,27 +13,27 @@ export default function Index() {
       <div className="mb-4 mt-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
-            <img
-              src="/satored-logo.png"
+          <img
+              src="/imp-logo.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/satored-text-white.png"
-                alt="SatoRed"
+                src="/impulsecash-text-white.png"
+                alt="ImpulseCash"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/satored-text-black.png"
-                alt="SatoRed"
+                src="/impulsecash-text-black.png"
+                alt="ImpulseCash"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              42 million ninjas. No pre-mine. GPUs. Big blocks. Script.
+              42 million coins. No pre-mine. GPUs. Big blocks. Script.
               <br />
               <br />
               Genesis block in 2024.
