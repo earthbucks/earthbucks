@@ -27,7 +27,7 @@ export default class BufferWriter {
     return this
   }
 
-  writeUInt8Array(arr: Uint8Array): this {
+  writeU8Vec(arr: Uint8Array): this {
     this.bufs.push(Buffer.from(arr))
     return this
   }
@@ -127,13 +127,13 @@ export default class BufferWriter {
 
   writeVarIntNum(n: number): this {
     const buf = BufferWriter.varIntBufNum(n)
-    this.writeUInt8Array(buf)
+    this.writeU8Vec(buf)
     return this
   }
 
   writeVarIntBigInt(bn: bigint): this {
     const buf = BufferWriter.varIntBufBigInt(bn)
-    this.writeUInt8Array(buf)
+    this.writeU8Vec(buf)
     return this
   }
 

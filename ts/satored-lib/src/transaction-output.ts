@@ -3,7 +3,6 @@ import BufferWriter from './buffer-writer'
 import VarInt from './var-int'
 import Script from './script'
 
-//valueBn, scriptVi, script
 export default class TransactionOutput {
   public value: bigint
   public script: Script
@@ -16,7 +15,8 @@ export default class TransactionOutput {
   static fromU8Vec(buf: Uint8Array): TransactionOutput {
     const reader = new BufferReader(buf)
     const value = reader.readUInt64BEBigInt()
-    const scriptArr = reader.read(reader.readUInt8())
+    const scriptLen = reader.readVarIntNum()
+    const scriptArr = reader.read(scriptLen)
     const script = Script.fromU8Vec(scriptArr)
     return new TransactionOutput(value, script)
   }
@@ -25,8 +25,8 @@ export default class TransactionOutput {
     const writer = new BufferWriter()
     writer.writeUInt64BEBigInt(this.value)
     const scriptBuf = this.script.toU8Vec()
-    writer.writeUInt8Array(VarInt.fromNumber(scriptBuf.length).toU8Vec())
-    writer.writeUInt8Array(scriptBuf)
+    writer.writeU8Vec(VarInt.fromNumber(scriptBuf.length).toU8Vec())
+    writer.writeU8Vec(scriptBuf)
     return writer.toU8Vec()
   }
 
