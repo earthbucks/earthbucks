@@ -25,6 +25,19 @@ impl TransactionOutput {
         Ok(Self::new(value, script))
     }
 
+    pub fn from_buffer_reader(
+        reader: &mut BufferReader,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        let value = reader.read_u64_be();
+        let script_len = reader.read_var_int() as usize;
+        let script_arr = reader.read(script_len);
+        let script = match Script::from_u8_vec_new(&script_arr[..]) {
+            Ok(script) => script,
+            Err(e) => return Err(e),
+        };
+        Ok(Self::new(value, script))
+    }
+
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut writer = BufferWriter::new();
         writer.write_u64_be(self.value);
@@ -63,6 +76,18 @@ mod tests {
         let script = Script::from_string_new(&format!("0x{} HASH160", hex::encode(data))).unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec()).unwrap();
+        assert_eq!(
+            hex::encode(transaction_output.to_u8_vec()),
+            hex::encode(result.to_u8_vec())
+        );
+    }
+
+    #[test]
+    fn test_buffer_reader() {
+        let value = 100;
+        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let transaction_output = TransactionOutput::new(value, script);
+        let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(transaction_output.to_u8_vec())).unwrap();
         assert_eq!(
             hex::encode(transaction_output.to_u8_vec()),
             hex::encode(result.to_u8_vec())
