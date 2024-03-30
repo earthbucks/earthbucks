@@ -13,7 +13,7 @@ export default class BufferWriter {
     return len
   }
 
-  toUint8Array(): Uint8Array {
+  toU8Vec(): Uint8Array {
     const buffer = Buffer.concat(this.bufs)
     return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
   }

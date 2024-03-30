@@ -26,7 +26,7 @@ export default class VarInt {
     return new this().fromNumber(num)
   }
 
-  toUint8Array() {
+  toU8Vec() {
     return new Uint8Array(this.buf)
   }
 

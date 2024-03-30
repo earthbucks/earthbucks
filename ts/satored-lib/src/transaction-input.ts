@@ -21,27 +21,27 @@ export default class TransactionInput {
     this.sequence = sequence
   }
 
-  static fromUint8Array(buf: Uint8Array): TransactionInput {
+  static fromU8Vec(buf: Uint8Array): TransactionInput {
     const reader = new BufferReader(buf)
     const inputTxHash = reader.read(32)
     const inputTxIndex = reader.readUInt32LE()
-    const script = Script.fromUint8Array(reader.read(reader.readUInt8()))
+    const script = Script.fromU8Vec(reader.read(reader.readUInt8()))
     const sequence = reader.readUInt32LE()
     return new TransactionInput(inputTxHash, inputTxIndex, script, sequence)
   }
 
-  toUint8Array(): Uint8Array {
+  toU8Vec(): Uint8Array {
     const writer = new BufferWriter()
     writer.writeUInt8Array(this.inputTxHash)
     writer.writeUInt32LE(this.inputTxIndex)
-    const scriptBuf = this.script.toUint8Array()
-    writer.writeUInt8Array(VarInt.fromNumber(scriptBuf.length).toUint8Array())
+    const scriptBuf = this.script.toU8Vec()
+    writer.writeUInt8Array(VarInt.fromNumber(scriptBuf.length).toU8Vec())
     writer.writeUInt8Array(scriptBuf)
     writer.writeUInt32LE(this.sequence)
-    return writer.toUint8Array()
+    return writer.toU8Vec()
   }
 
   toBuffer(): Buffer {
-    return Buffer.from(this.toUint8Array())
+    return Buffer.from(this.toU8Vec())
   }
 }

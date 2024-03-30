@@ -29,17 +29,17 @@ describe('Script', () => {
     expect(script.toString()).toBe('DUP HASH160')
   })
 
-  test('toUint8Array and fromUint8Array', () => {
+  test('toU8Vec and fromU8Vec', () => {
     const originalScript = Script.fromString('DUP HASH160')
-    const arr = originalScript.toUint8Array()
-    const script = Script.fromUint8Array(arr)
+    const arr = originalScript.toU8Vec()
+    const script = Script.fromU8Vec(arr)
     expect(script.toString()).toBe('DUP HASH160')
   })
 
-  test('toUint8Array and fromUint8Array with PUSHDATA1', () => {
+  test('toU8Vec and fromU8Vec with PUSHDATA1', () => {
     const originalScript = Script.fromString('0xff 0xff')
-    const arr = originalScript.toUint8Array()
-    const script = Script.fromUint8Array(arr)
+    const arr = originalScript.toU8Vec()
+    const script = Script.fromU8Vec(arr)
     expect(script.toString()).toBe('0xff 0xff')
   })
 
@@ -49,11 +49,11 @@ describe('Script', () => {
     initialScript.fromString('0xffff 0xffff')
 
     // Convert the Script to a Uint8Array
-    const arr = initialScript.toUint8Array()
+    const arr = initialScript.toU8Vec()
 
     // Create a new Script from the Uint8Array
     const finalScript = new Script()
-    finalScript.fromUint8Array(arr)
+    finalScript.fromU8Vec(arr)
 
     // Convert the final Script back to a string
     const finalString = finalScript.toString()

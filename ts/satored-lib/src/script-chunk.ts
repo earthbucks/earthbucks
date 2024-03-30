@@ -55,7 +55,7 @@ export default class ScriptChunk {
     return new ScriptChunk().fromString(str)
   }
 
-  toUint8Array(): Uint8Array {
+  toU8Vec(): Uint8Array {
     const opcode = this.opcode
     if (opcode === NAME_TO_OPCODE.PUSHDATA1 && this.buffer) {
       const buffer = Buffer.concat([
@@ -82,7 +82,7 @@ export default class ScriptChunk {
     return new Uint8Array([opcode])
   }
 
-  fromUint8Array(arr: Uint8Array): this {
+  fromU8Vec(arr: Uint8Array): this {
     const buf = Buffer.from(arr.buffer, arr.byteOffset, arr.byteLength)
     const opcode = arr[0]
     if (opcode === NAME_TO_OPCODE.PUSHDATA1) {
@@ -104,7 +104,7 @@ export default class ScriptChunk {
     return this
   }
 
-  static fromUint8Array(arr: Uint8Array): ScriptChunk {
-    return new ScriptChunk().fromUint8Array(arr)
+  static fromU8Vec(arr: Uint8Array): ScriptChunk {
+    return new ScriptChunk().fromU8Vec(arr)
   }
 }

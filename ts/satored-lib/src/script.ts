@@ -22,13 +22,13 @@ export default class Script {
     return this.chunks.map((chunk) => chunk.toString()).join(' ')
   }
 
-  toUint8Array(): Uint8Array {
-    const bufArray = this.chunks.map((chunk) => chunk.toUint8Array())
+  toU8Vec(): Uint8Array {
+    const bufArray = this.chunks.map((chunk) => chunk.toU8Vec())
     const buf = Buffer.concat(bufArray)
     return new Uint8Array(buf)
   }
 
-  fromUint8Array(arr: Uint8Array): this {
+  fromU8Vec(arr: Uint8Array): this {
     const reader = new BufferReader(arr)
     while (!reader.eof()) {
       const chunk = new ScriptChunk()
@@ -52,7 +52,7 @@ export default class Script {
     return this
   }
 
-  static fromUint8Array(arr: Uint8Array): Script {
-    return new Script().fromUint8Array(arr)
+  static fromU8Vec(arr: Uint8Array): Script {
+    return new Script().fromU8Vec(arr)
   }
 }

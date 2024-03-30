@@ -79,12 +79,10 @@ describe('ScriptChunk', () => {
     })
   })
 
-  describe('toUint8Array', () => {
+  describe('toU8Vec', () => {
     test('should convert a ScriptChunk with opcode IF to Uint8Array', () => {
       const scriptChunk = new ScriptChunk(NAME_TO_OPCODE.IF)
-      expect(scriptChunk.toUint8Array()).toEqual(
-        new Uint8Array([NAME_TO_OPCODE.IF]),
-      )
+      expect(scriptChunk.toU8Vec()).toEqual(new Uint8Array([NAME_TO_OPCODE.IF]))
     })
 
     test('should convert a ScriptChunk with opcode OP_PUSHDATA1 and a buffer to Uint8Array', () => {
@@ -95,7 +93,7 @@ describe('ScriptChunk', () => {
         buffer.length,
         ...buffer,
       ])
-      expect(scriptChunk.toUint8Array()).toEqual(expected)
+      expect(scriptChunk.toU8Vec()).toEqual(expected)
     })
 
     test('should convert a ScriptChunk with opcode OP_PUSHDATA2 and a buffer to Uint8Array', () => {
@@ -105,8 +103,8 @@ describe('ScriptChunk', () => {
         .writeUInt8(NAME_TO_OPCODE.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeUInt8Array(buffer)
-        .toUint8Array()
-      expect(scriptChunk.toUint8Array()).toEqual(expected)
+        .toU8Vec()
+      expect(scriptChunk.toU8Vec()).toEqual(expected)
     })
 
     test('should convert a ScriptChunk with opcode OP_PUSHDATA4 and a buffer to Uint8Array', () => {
@@ -116,21 +114,21 @@ describe('ScriptChunk', () => {
         .writeUInt8(NAME_TO_OPCODE.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeUInt8Array(buffer)
-        .toUint8Array()
-      expect(scriptChunk.toUint8Array()).toEqual(expected)
+        .toU8Vec()
+      expect(scriptChunk.toU8Vec()).toEqual(expected)
     })
 
     test('pushdata1', () => {
       const scriptChunk = new ScriptChunk().fromString('0xff')
-      const arr = scriptChunk.toUint8Array()
+      const arr = scriptChunk.toU8Vec()
       expect(arr).toEqual(new Uint8Array([0x4c, 0x01, 0xff]))
     })
   })
 
-  describe('fromUint8Array', () => {
+  describe('fromU8Vec', () => {
     test('should create a ScriptChunk from Uint8Array with opcode IF', () => {
       const arr = new Uint8Array([NAME_TO_OPCODE.IF])
-      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      const scriptChunk = new ScriptChunk().fromU8Vec(arr)
       expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.IF)
       expect(scriptChunk.buffer).toBeUndefined()
     })
@@ -142,7 +140,7 @@ describe('ScriptChunk', () => {
         buffer.length,
         ...buffer,
       ])
-      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+      const scriptChunk = new ScriptChunk().fromU8Vec(arr)
       expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA1)
       expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
     })
@@ -153,8 +151,8 @@ describe('ScriptChunk', () => {
         .writeUInt8(NAME_TO_OPCODE.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeUInt8Array(buffer)
-        .toUint8Array()
-      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+        .toU8Vec()
+      const scriptChunk = new ScriptChunk().fromU8Vec(arr)
       expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA2)
       expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
     })
@@ -165,8 +163,8 @@ describe('ScriptChunk', () => {
         .writeUInt8(NAME_TO_OPCODE.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeUInt8Array(buffer)
-        .toUint8Array()
-      const scriptChunk = new ScriptChunk().fromUint8Array(arr)
+        .toU8Vec()
+      const scriptChunk = new ScriptChunk().fromU8Vec(arr)
       expect(scriptChunk.opcode).toBe(NAME_TO_OPCODE.PUSHDATA4)
       expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
     })

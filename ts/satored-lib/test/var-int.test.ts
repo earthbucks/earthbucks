@@ -73,7 +73,7 @@ describe('VarInt', () => {
     })
   })
 
-  describe('toUint8Array', () => {
+  describe('toU8Vec', () => {
     it('should return a Uint8Array', () => {
       // Arrange
       const n: number = 123
@@ -82,7 +82,7 @@ describe('VarInt', () => {
       varInt.fromNumber(n)
 
       // Assert
-      expect(varInt.toUint8Array()).toBeInstanceOf(Uint8Array)
+      expect(varInt.toU8Vec()).toBeInstanceOf(Uint8Array)
     })
   })
 
