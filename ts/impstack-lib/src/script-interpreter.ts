@@ -40,11 +40,7 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  fromScript(
-    script: Script,
-    transaction: Transaction,
-    inputIndex: number,
-  ): ScriptInterpreter {
+  fromScript(script: Script, transaction: Transaction): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       transaction,

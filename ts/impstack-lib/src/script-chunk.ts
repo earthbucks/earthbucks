@@ -1,4 +1,4 @@
-import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
+import { OPCODE_TO_NAME, NAME_TO_OPCODE, OpcodeName } from './opcode'
 import BufferWriter from './buffer-writer'
 
 export default class ScriptChunk {
@@ -40,12 +40,16 @@ export default class ScriptChunk {
         throw new Error('too much data')
       }
     } else {
-      const opcode = NAME_TO_OPCODE[str]
-      if (opcode !== undefined) {
+      function isOpcodeName(str: string): str is OpcodeName {
+        return NAME_TO_OPCODE.hasOwnProperty(str)
+      }
+      if (isOpcodeName(str)) {
+        const opcode = NAME_TO_OPCODE[str]
         this.opcode = opcode
       } else {
         throw new Error('invalid opcode')
       }
+
       this.buffer = undefined
     }
     return this
