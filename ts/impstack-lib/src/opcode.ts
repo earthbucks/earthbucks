@@ -22,8 +22,6 @@ export type OpcodeName =
   | '16'
   | 'IF'
   | 'NOTIF'
-  | 'VERIF'
-  | 'VERNOTIF'
   | 'ELSE'
   | 'ENDIF'
   | 'VERIFY'
@@ -122,8 +120,6 @@ export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
   '16': 0x60,
   IF: 0x63,
   NOTIF: 0x64,
-  VERIF: 0x65,
-  VERNOTIF: 0x66,
   ELSE: 0x67,
   ENDIF: 0x68,
   VERIFY: 0x69,
@@ -223,8 +219,6 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0x60: '16',
   0x63: 'IF',
   0x64: 'NOTIF',
-  0x65: 'VERIF',
-  0x66: 'VERNOTIF',
   0x67: 'ELSE',
   0x68: 'ENDIF',
   0x69: 'VERIFY',
