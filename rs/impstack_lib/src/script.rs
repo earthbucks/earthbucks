@@ -4,7 +4,7 @@ use crate::script_chunk::ScriptChunk;
 
 #[derive(Clone)]
 pub struct Script {
-    chunks: Vec<ScriptChunk>,
+    pub chunks: Vec<ScriptChunk>,
 }
 
 impl Script {

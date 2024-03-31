@@ -1,7 +1,6 @@
 import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
 import Script from './script'
 import Transaction from './transaction'
-import TransactionInput from './transaction-input'
 import ScriptNum from './script-num'
 
 export default class ScriptInterpreter {
