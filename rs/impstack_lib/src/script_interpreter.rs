@@ -1,8 +1,8 @@
-use num_bigint::ToBigInt;
 use crate::opcode::NAME_TO_OPCODE;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
 use crate::transaction::Transaction;
+use num_bigint::ToBigInt;
 
 pub struct ScriptInterpreter {
     pub script: Script,
@@ -89,6 +89,54 @@ impl ScriptInterpreter {
                 }
             } else if opcode == NAME_TO_OPCODE["1NEGATE"] {
                 let script_num = ScriptNum::new(-1.to_bigint().unwrap());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["1"] {
+                let script_num = ScriptNum::new(1.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["2"] {
+                let script_num = ScriptNum::new(2.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["3"] {
+                let script_num = ScriptNum::new(3.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["4"] {
+                let script_num = ScriptNum::new(4.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["5"] {
+                let script_num = ScriptNum::new(5.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["6"] {
+                let script_num = ScriptNum::new(6.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["7"] {
+                let script_num = ScriptNum::new(7.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["8"] {
+                let script_num = ScriptNum::new(8.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["9"] {
+                let script_num = ScriptNum::new(9.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["10"] {
+                let script_num = ScriptNum::new(10.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["11"] {
+                let script_num = ScriptNum::new(11.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["12"] {
+                let script_num = ScriptNum::new(12.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["13"] {
+                let script_num = ScriptNum::new(13.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["14"] {
+                let script_num = ScriptNum::new(14.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["15"] {
+                let script_num = ScriptNum::new(15.into());
+                self.stack.push(script_num.to_u8_vec());
+            } else if opcode == NAME_TO_OPCODE["16"] {
+                let script_num = ScriptNum::new(16.into());
                 self.stack.push(script_num.to_u8_vec());
             }
 

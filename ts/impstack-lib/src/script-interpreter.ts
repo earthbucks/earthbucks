@@ -89,6 +89,54 @@ export default class ScriptInterpreter {
       } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
         const scriptNum = new ScriptNum(BigInt(-1))
         this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['1']) {
+        const scriptNum = new ScriptNum(BigInt(1))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['2']) {
+        const scriptNum = new ScriptNum(BigInt(2))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['3']) {
+        const scriptNum = new ScriptNum(BigInt(3))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['4']) {
+        const scriptNum = new ScriptNum(BigInt(4))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['5']) {
+        const scriptNum = new ScriptNum(BigInt(5))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['6']) {
+        const scriptNum = new ScriptNum(BigInt(6))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['7']) {
+        const scriptNum = new ScriptNum(BigInt(7))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['8']) {
+        const scriptNum = new ScriptNum(BigInt(8))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['9']) {
+        const scriptNum = new ScriptNum(BigInt(9))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['10']) {
+        const scriptNum = new ScriptNum(BigInt(10))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['11']) {
+        const scriptNum = new ScriptNum(BigInt(11))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['12']) {
+        const scriptNum = new ScriptNum(BigInt(12))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['13']) {
+        const scriptNum = new ScriptNum(BigInt(13))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['14']) {
+        const scriptNum = new ScriptNum(BigInt(14))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['15']) {
+        const scriptNum = new ScriptNum(BigInt(15))
+        this.stack.push(scriptNum.toU8Vec())
+      } else if (opcode === NAME_TO_OPCODE['16']) {
+        const scriptNum = new ScriptNum(BigInt(16))
+        this.stack.push(scriptNum.toU8Vec())
       }
 
       this.pc++
