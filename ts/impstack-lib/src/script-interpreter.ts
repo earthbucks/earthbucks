@@ -71,29 +71,32 @@ export default class ScriptInterpreter {
     while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
-      if (opcode === NAME_TO_OPCODE['0']) {
-        this.stack.push(new Uint8Array([0]))
-      } else if (
-        opcode === NAME_TO_OPCODE.PUSHDATA1 ||
-        opcode === NAME_TO_OPCODE.PUSHDATA2 ||
-        opcode === NAME_TO_OPCODE.PUSHDATA4
-      ) {
-        if (chunk.buffer) {
-          this.stack.push(chunk.buffer)
-        } else {
-          this.errStr = 'invalid pushdata'
+
+      switch (opcode) {
+        case NAME_TO_OPCODE['0']:
+          this.stack.push(new Uint8Array([0]))
           break
-        }
-      } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
-        const n = BigInt(-1)
-        this.stack.push(Buffer.from(n.toString(16), 'hex'))
+        case NAME_TO_OPCODE.PUSHDATA1:
+        case NAME_TO_OPCODE.PUSHDATA2:
+        case NAME_TO_OPCODE.PUSHDATA4:
+          if (chunk.buffer) {
+            this.stack.push(chunk.buffer)
+          } else {
+            this.errStr = 'invalid pushdata'
+          }
+          break
+        case NAME_TO_OPCODE['1NEGATE']:
+          const scriptNum = new ScriptNum(BigInt(-1))
+          this.stack.push(scriptNum.toU8Vec())
+          break
       }
+
       this.pc++
-    }
-    if (this.errStr) {
-      this.returnValue = undefined
-      this.returnSuccess = false
-      return this.returnSuccess
+      if (this.errStr) {
+        this.returnValue = undefined
+        this.returnSuccess = false
+        return this.returnSuccess
+      }
     }
     this.returnValue = this.stack[this.stack.length - 1]
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue)
