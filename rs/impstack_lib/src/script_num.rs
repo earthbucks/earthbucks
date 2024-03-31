@@ -52,3 +52,47 @@ impl ScriptNum {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_script_num() {
+        let original_num = ScriptNum::from_string("123456789");
+        let bytes = original_num.to_u8_vec();
+        let new_num = ScriptNum::from_u8_vec(&bytes);
+        assert_eq!(original_num.num, new_num.num);
+    }
+
+    #[test]
+    fn test_script_num_vectors() {
+        let test_cases = vec![
+            ("01", "1"),
+            ("ff", "-1"),
+            ("0100", "256"),
+            ("ff00", "-256"),
+            ("01000000", "16777216"),
+            ("ff000000", "-16777216"),
+            ("0100000000000000", "72057594037927936"),
+            ("ff00000000000000", "-72057594037927936"),
+            (
+                "0100000000000000000000000000000000000000000000000000000000000000",
+                "452312848583266388373324160190187140051835877600158453279131187530910662656",
+            ),
+            (
+                "ff00000000000000000000000000000000000000000000000000000000000000",
+                "-452312848583266388373324160190187140051835877600158453279131187530910662656",
+            ),
+        ];
+
+        for (hex, dec) in test_cases {
+            let num_from_hex = ScriptNum::from_u8_vec(&hex::decode(hex).unwrap());
+            let num_from_dec = ScriptNum::from_string(dec);
+            assert_eq!(num_from_hex.num, num_from_dec.num);
+
+            let hex_from_num = hex::encode(num_from_hex.to_u8_vec());
+            assert_eq!(hex, &hex_from_num);
+        }
+    }
+}
