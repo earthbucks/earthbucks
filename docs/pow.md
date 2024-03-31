@@ -19,3 +19,10 @@
 - https://twitter.com/RadiantLayer1
 - I was reading up on whether Blake3 is ASIC resistant and turns out it isn’t. Already FPGAs for BLAKE3 (https://mineshop.eu/colengine-p2-fpga-miner/). Kaspa doesn’t use BLAKE3, instead it sandwiches some matrix multiplications between two SHA-3s, which makes it ASIC resistant. I presume it’s the matrix multiplications that make it ASIC resistant. However I believe you could sandwich them between BLAKE3 as well as proposed here (https://discourse.ironfish.network/t/in-search-of-an-algo-that-is-asic-resistant/39/10).
 - bittensor (AI blockchain) https://bittensor.com/
+- kasper asic miner https://www.iceriver.io/product/iceriver-ks0-pro/
+- Ergo’s Autolykos PoW has been around since 2020 and is still ASIC resistant: https://www.docdroid.net/mcoitvK/ergopow-pdf
+- Ironfish’s proposed PoW which is inspired by Ethash, requires 5GB to run: https://fips.ironfish.network/fips/fip-3-memory-hard-mining-algorithm
+- The problem with matrix multiplication is it turns out it’s pretty easy to put into an ASIC (e.g. https://www.iceriver.io/product/iceriver-ks0-pro/)
+- radiant blockchain usees GPUs https://radiantblockchain.org/
+- study: novo
+- study: mvc
