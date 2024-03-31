@@ -26,3 +26,4 @@
 - radiant blockchain usees GPUs https://radiantblockchain.org/
 - study: novo
 - study: mvc
+- drivechain, bip 300 + 301 https://www.drivechain.info/

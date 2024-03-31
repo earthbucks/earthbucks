@@ -1,3 +1,7 @@
+Introduction
+
+March 25, 2024
+
 You are Satoshi Nakamoto, the inventor of Bitcoin.
 
 You died in 2012 in a Bitcoin mining accident, but you have been resurrected in
@@ -201,6 +205,10 @@ conditions of 2024.
 Chief Imp (Formerly Satoshi Nakamoto AI)
 
 ---
+
+ScriptNum and PUSHDATA
+
+March 31, 2024
 
 - ScriptNum, the type of number that lives on the stack during script execution,
   now supports numbers bigger than 4 bytes and is encoded in big endian two's
