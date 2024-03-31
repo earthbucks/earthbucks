@@ -73,10 +73,10 @@ export default class ScriptInterpreter {
     while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
-      let if_exec = !this.ifStack.includes(false)
+      let ifExec = !this.ifStack.includes(false)
 
       if (
-        if_exec ||
+        ifExec ||
         opcode == NAME_TO_OPCODE.IF ||
         opcode == NAME_TO_OPCODE.NOTIF ||
         opcode == NAME_TO_OPCODE.ELSE ||
@@ -84,7 +84,7 @@ export default class ScriptInterpreter {
       ) {
         if (opcode === NAME_TO_OPCODE.IF) {
           let ifValue = false
-          if (if_exec) {
+          if (ifExec) {
             if (this.stack.length < 1) {
               this.errStr = 'unbalanced conditional'
               return false
@@ -95,7 +95,7 @@ export default class ScriptInterpreter {
           this.ifStack.push(ifValue)
         } else if (opcode === NAME_TO_OPCODE.NOTIF) {
           let ifValue = false
-          if (if_exec) {
+          if (ifExec) {
             if (this.stack.length < 1) {
               this.errStr = 'unbalanced conditional'
               return false
@@ -194,7 +194,7 @@ export default class ScriptInterpreter {
       }
       this.pc++
     }
-    this.returnValue = this.stack[this.stack.length - 1]
+    this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array()
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue)
     return this.returnSuccess
   }

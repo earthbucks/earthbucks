@@ -125,6 +125,24 @@
       "script": "16",
       "expected_return_value": "10",
       "expected_success": true
+    },
+    {
+      "name": "if 1",
+      "script": "1 IF 1 ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true
+    },
+    {
+      "name": "if 0",
+      "script": "0 IF 1 ENDIF",
+      "expected_return_value": "",
+      "expected_success": false
+    },
+    {
+      "name": "if 1 with a push 0",
+      "script": "1 IF 0 ENDIF",
+      "expected_return_value": "00",
+      "expected_success": false
     }
   ]
 }

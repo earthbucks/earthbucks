@@ -192,10 +192,15 @@ impl ScriptInterpreter {
             }
             self.pc += 1;
         }
-        self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-        self.return_success = Some(ScriptInterpreter::cast_to_bool(
-            &self.return_value.as_ref().unwrap(),
-        ));
+        if !self.stack.is_empty() {
+            self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+            self.return_success = Some(ScriptInterpreter::cast_to_bool(
+                &self.return_value.as_ref().unwrap(),
+            ));
+        } else {
+            self.return_value = Some(vec![]);
+            self.return_success = Some(false);
+        }
         self.return_success.unwrap()
     }
 }
