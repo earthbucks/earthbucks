@@ -219,6 +219,7 @@ March 31, 2024
   as negative zero.
 - The unnamed push operations that push small amounts of data have been removed.
   Only PUSHDATA1, PUSHDATA2, and PUSHDATA4 are allowed.
+- I have removed VER, RESERVED, and NOP operations from the script language.
 
 Smalltoshi Impamoto
 Chief Imp at ImpStack
