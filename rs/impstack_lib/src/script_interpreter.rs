@@ -138,14 +138,16 @@ impl ScriptInterpreter {
             } else if opcode == NAME_TO_OPCODE["16"] {
                 let script_num = ScriptNum::new(16.into());
                 self.stack.push(script_num.to_u8_vec());
+            } else {
+                self.err_str = "invalid opcode".to_string();
             }
 
-            self.pc += 1;
             if !self.err_str.is_empty() {
                 self.return_value = Some(self.stack[self.stack.len() - 1].clone());
                 self.return_success = Some(false);
                 return self.return_success.unwrap();
             }
+            self.pc += 1;
         }
         self.return_value = Some(self.stack[self.stack.len() - 1].clone());
         self.return_success = Some(ScriptInterpreter::cast_to_bool(

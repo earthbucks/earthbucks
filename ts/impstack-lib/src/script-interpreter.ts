@@ -82,7 +82,7 @@ export default class ScriptInterpreter {
         opcode === NAME_TO_OPCODE.PUSHDATA4
       ) {
         if (chunk.buffer) {
-          this.stack.push(chunk.buffer)
+          this.stack.push(new Uint8Array(chunk.buffer))
         } else {
           this.errStr = 'invalid pushdata'
         }
@@ -137,14 +137,16 @@ export default class ScriptInterpreter {
       } else if (opcode === NAME_TO_OPCODE['16']) {
         const scriptNum = new ScriptNum(BigInt(16))
         this.stack.push(scriptNum.toU8Vec())
+      } else {
+        this.errStr = 'invalid opcode'
       }
 
-      this.pc++
       if (this.errStr) {
         this.returnValue = this.stack[this.stack.length - 1]
         this.returnSuccess = false
         return this.returnSuccess
       }
+      this.pc++
     }
     this.returnValue = this.stack[this.stack.length - 1]
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue)
