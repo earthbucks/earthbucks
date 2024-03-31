@@ -46,7 +46,10 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  fromScript(script: Script, transaction: Transaction): ScriptInterpreter {
+  static fromScript(
+    script: Script,
+    transaction: Transaction,
+  ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       transaction,
@@ -93,7 +96,7 @@ export default class ScriptInterpreter {
 
       this.pc++
       if (this.errStr) {
-        this.returnValue = undefined
+        this.returnValue = this.stack[this.stack.length - 1]
         this.returnSuccess = false
         return this.returnSuccess
       }

@@ -18,21 +18,85 @@ describe('ScriptInterpreter', () => {
   })
 
   describe('sanity tests', () => {
-    test('pushdata1', () => {
-      const script = new Script().fromString('0xff')
-      const scriptInterpreter = new ScriptInterpreter(
+    test('0', () => {
+      const script = new Script().fromString('0')
+      const scriptInterpreter = ScriptInterpreter.fromScript(
         script,
         transaction,
-        [],
-        [],
-        0,
-        0,
-        0,
-        [],
-        undefined,
-        undefined,
-        '',
-        BigInt(0),
+      )
+      scriptInterpreter.evalScript()
+      expect(scriptInterpreter.returnSuccess).toBe(false)
+      expect(
+        scriptInterpreter.returnValue &&
+          Buffer.from(scriptInterpreter.returnValue).toString('hex'),
+      ).toEqual('00')
+    })
+
+    test('pushdata1', () => {
+      const script = new Script().fromString('0xff')
+      const scriptInterpreter = ScriptInterpreter.fromScript(
+        script,
+        transaction,
+      )
+      scriptInterpreter.evalScript()
+      expect(scriptInterpreter.returnSuccess).toBe(true)
+      expect(scriptInterpreter.returnValue).toBeDefined()
+      expect(
+        scriptInterpreter.returnValue &&
+          Buffer.from(scriptInterpreter.returnValue).toString('hex'),
+      ).toEqual('ff')
+    })
+
+    test('PUSHDATA1', () => {
+      const script = new Script().fromString('0xffff')
+      const scriptInterpreter = ScriptInterpreter.fromScript(
+        script,
+        transaction,
+      )
+      scriptInterpreter.evalScript()
+      expect(scriptInterpreter.returnSuccess).toBe(true)
+      expect(scriptInterpreter.returnValue).toBeDefined()
+      expect(
+        scriptInterpreter.returnValue &&
+          Buffer.from(scriptInterpreter.returnValue).toString('hex'),
+      ).toEqual('ffff')
+    })
+
+    test('PUSHDATA2', () => {
+      const script = new Script().fromString('0x' + 'ff'.repeat(256))
+      const scriptInterpreter = ScriptInterpreter.fromScript(
+        script,
+        transaction,
+      )
+      scriptInterpreter.evalScript()
+      expect(scriptInterpreter.returnSuccess).toBe(true)
+      expect(scriptInterpreter.returnValue).toBeDefined()
+      expect(
+        scriptInterpreter.returnValue &&
+          Buffer.from(scriptInterpreter.returnValue).toString('hex'),
+      ).toEqual('ff'.repeat(256))
+    })
+
+    test('PUSHDATA4', () => {
+      const script = new Script().fromString('0x' + 'ff'.repeat(65536))
+      const scriptInterpreter = ScriptInterpreter.fromScript(
+        script,
+        transaction,
+      )
+      scriptInterpreter.evalScript()
+      expect(scriptInterpreter.returnSuccess).toBe(true)
+      expect(scriptInterpreter.returnValue).toBeDefined()
+      expect(
+        scriptInterpreter.returnValue &&
+          Buffer.from(scriptInterpreter.returnValue).toString('hex'),
+      ).toEqual('ff'.repeat(65536))
+    })
+
+    test('1NEGATE', () => {
+      const script = new Script().fromString('1NEGATE')
+      const scriptInterpreter = ScriptInterpreter.fromScript(
+        script,
+        transaction,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)

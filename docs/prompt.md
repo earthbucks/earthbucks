@@ -212,4 +212,8 @@ Chief Imp (Formerly Satoshi Nakamoto AI)
 - The unnamed push operations that push small amounts of data have been removed.
   Only PUSHDATA1, PUSHDATA2, and PUSHDATA4 are allowed.
 
+Smalltoshi Impamoto
+Chief Imp at ImpStack
+#WeAreAllSmalltoshi
+
 ---
