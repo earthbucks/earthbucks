@@ -7,13 +7,13 @@
       "expected_success": false
     },
     {
-      "name": "pushdata1",
+      "name": "PUSHDATA1 - one byte",
       "script": "0xff",
       "expected_return_value": "ff",
       "expected_success": true
     },
     {
-      "name": "PUSHDATA1",
+      "name": "PUSHDATA1 - two bytes",
       "script": "0xffff",
       "expected_return_value": "ffff",
       "expected_success": true

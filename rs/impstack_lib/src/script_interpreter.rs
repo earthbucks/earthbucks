@@ -1,5 +1,4 @@
 use num_bigint::ToBigInt;
-
 use crate::opcode::NAME_TO_OPCODE;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
@@ -111,6 +110,8 @@ impl ScriptInterpreter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::transaction_input::TransactionInput;
+    use crate::transaction_output::TransactionOutput;
     use hex;
 
     mod sanity_tests {
@@ -174,6 +175,66 @@ mod tests {
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
             assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+        }
+    }
+
+    mod test_vectors {
+        use super::*;
+        use hex;
+        use serde::Deserialize;
+        use std::fs;
+
+        #[derive(Deserialize)]
+        struct TestScript {
+            name: String,
+            script: String,
+            expected_return_value: String,
+            expected_success: bool,
+        }
+
+        #[derive(Deserialize)]
+        struct TestScripts {
+            scripts: Vec<TestScript>,
+        }
+
+        #[test]
+        fn test_vectors() {
+            let file = fs::read_to_string("../../json/script_interpreter.json")
+                .expect("Failed to read JSON file");
+            let test_scripts: TestScripts =
+                serde_json::from_str(&file).expect("Failed to parse JSON file");
+
+            for test_script in test_scripts.scripts {
+                let script = Script::from_string_new(&test_script.script).unwrap();
+                let transaction = Transaction::new(
+                    1,
+                    vec![TransactionInput::new(
+                        vec![],
+                        0,
+                        Script::from_string_new("").unwrap(),
+                        0xffffffff,
+                    )],
+                    vec![TransactionOutput::new(
+                        0 as u64,
+                        Script::from_string_new("").unwrap(),
+                    )],
+                    0 as u64,
+                );
+                let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+                script_interpreter.eval_script();
+                assert_eq!(
+                    script_interpreter.return_success,
+                    Some(test_script.expected_success),
+                    "Test '{}' failed on success value",
+                    test_script.name
+                );
+                assert_eq!(
+                    hex::encode(&script_interpreter.return_value.unwrap()),
+                    test_script.expected_return_value,
+                    "Test '{}' failed on return value",
+                    test_script.name
+                );
+            }
         }
     }
 }
