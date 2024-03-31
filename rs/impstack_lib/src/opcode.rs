@@ -27,8 +27,6 @@ lazy_static! {
         map.insert("16", 0x60);
         map.insert("IF", 0x63);
         map.insert("NOTIF", 0x64);
-        map.insert("VERIF", 0x65);
-        map.insert("VERNOTIF", 0x66);
         map.insert("ELSE", 0x67);
         map.insert("ENDIF", 0x68);
         map.insert("VERIFY", 0x69);
@@ -129,8 +127,6 @@ lazy_static! {
         map.insert(0x60, "16");
         map.insert(0x63, "IF");
         map.insert(0x64, "NOTIF");
-        map.insert(0x65, "VERIF");
-        map.insert(0x66, "VERNOTIF");
         map.insert(0x67, "ELSE");
         map.insert(0x68, "ENDIF");
         map.insert(0x69, "VERIFY");
