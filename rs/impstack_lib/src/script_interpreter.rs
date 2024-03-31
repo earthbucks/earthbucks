@@ -303,6 +303,10 @@ mod tests {
                 serde_json::from_str(&file).expect("Failed to parse JSON file");
 
             for test_script in test_scripts.scripts {
+              println!("Running test: {}", test_script.name);
+              // to confirm tests are running:
+              // cargo test script_interpreter -- --nocapture
+
                 let script = Script::from_string_new(&test_script.script).unwrap();
                 let transaction = Transaction::new(
                     1,

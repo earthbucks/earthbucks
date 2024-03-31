@@ -143,6 +143,18 @@
       "script": "1 IF 0 ENDIF",
       "expected_return_value": "00",
       "expected_success": false
+    },
+    {
+      "name": "nested if 1",
+      "script": "1 IF 1 IF 1 ENDIF ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true
+    },
+    {
+      "name": "nested if 0",
+      "script": "1 IF 1 IF 0 ENDIF ENDIF",
+      "expected_return_value": "00",
+      "expected_success": false
     }
   ]
 }
