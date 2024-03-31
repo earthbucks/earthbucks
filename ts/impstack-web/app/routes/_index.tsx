@@ -69,6 +69,14 @@ export default function Index() {
                 className="underline"
               >
                 GitHub
+              </a>{' '}
+              &middot;{' '}
+              <a
+                href="https://reddit.com/r/impstack"
+                target="_blank"
+                className="underline"
+              >
+                reddit
               </a>
             </div>
           </div>
