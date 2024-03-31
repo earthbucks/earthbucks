@@ -4,7 +4,6 @@ export type OpcodeName =
   | 'PUSHDATA2'
   | 'PUSHDATA4'
   | '1NEGATE'
-  | 'RESERVED'
   | '1'
   | '2'
   | '3'
@@ -60,8 +59,6 @@ export type OpcodeName =
   | 'XOR'
   | 'EQUAL'
   | 'EQUALVERIFY'
-  | 'RESERVED1'
-  | 'RESERVED2'
   | '1ADD'
   | '1SUB'
   | '2MUL'
@@ -109,7 +106,6 @@ export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
   PUSHDATA2: 0x4d,
   PUSHDATA4: 0x4e,
   '1NEGATE': 0x4f,
-  RESERVED: 0x50,
   '1': 0x51,
   '2': 0x52,
   '3': 0x53,
@@ -165,8 +161,6 @@ export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
   XOR: 0x86,
   EQUAL: 0x87,
   EQUALVERIFY: 0x88,
-  RESERVED1: 0x89,
-  RESERVED2: 0x8a,
   '1ADD': 0x8b,
   '1SUB': 0x8c,
   '2MUL': 0x8d,
@@ -215,7 +209,6 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0x4d: 'PUSHDATA2',
   0x4e: 'PUSHDATA4',
   0x4f: '1NEGATE',
-  0x50: 'RESERVED',
   0x51: '1',
   0x52: '2',
   0x53: '3',
@@ -271,8 +264,6 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0x86: 'XOR',
   0x87: 'EQUAL',
   0x88: 'EQUALVERIFY',
-  0x89: 'RESERVED1',
-  0x8a: 'RESERVED2',
   0x8b: '1ADD',
   0x8c: '1SUB',
   0x8d: '2MUL',

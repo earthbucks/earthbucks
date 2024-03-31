@@ -9,7 +9,6 @@ lazy_static! {
         map.insert("PUSHDATA2", 0x4d);
         map.insert("PUSHDATA4", 0x4e);
         map.insert("1NEGATE", 0x4f);
-        map.insert("RESERVED", 0x50);
         map.insert("1", 0x51);
         map.insert("2", 0x52);
         map.insert("3", 0x53);
@@ -65,8 +64,6 @@ lazy_static! {
         map.insert("XOR", 0x86);
         map.insert("EQUAL", 0x87);
         map.insert("EQUALVERIFY", 0x88);
-        map.insert("RESERVED1", 0x89);
-        map.insert("RESERVED2", 0x8a);
         map.insert("1ADD", 0x8b);
         map.insert("1SUB", 0x8c);
         map.insert("2MUL", 0x8d);
@@ -116,7 +113,6 @@ lazy_static! {
         map.insert(0x4d, "PUSHDATA2");
         map.insert(0x4e, "PUSHDATA4");
         map.insert(0x4f, "1NEGATE");
-        map.insert(0x50, "RESERVED");
         map.insert(0x51, "1");
         map.insert(0x52, "2");
         map.insert(0x53, "3");
@@ -172,8 +168,6 @@ lazy_static! {
         map.insert(0x86, "XOR");
         map.insert(0x87, "EQUAL");
         map.insert(0x88, "EQUALVERIFY");
-        map.insert(0x89, "RESERVED1");
-        map.insert(0x8a, "RESERVED2");
         map.insert(0x8b, "1ADD");
         map.insert(0x8c, "1SUB");
         map.insert(0x8d, "2MUL");
