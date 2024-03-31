@@ -7,11 +7,6 @@ export default class ScriptNum {
     this.num = num
   }
 
-  fromNumber(num: number): this {
-    this.num = BigInt(num)
-    return this
-  }
-
   fromBuffer(buffer: Buffer): this {
     const isNegative = buffer[0] & 0x80 // Check if the sign bit is set
     if (isNegative) {
@@ -59,10 +54,6 @@ export default class ScriptNum {
 
   toU8Vec(): Uint8Array {
     return new Uint8Array(this.toBuffer())
-  }
-
-  toNumber(): number {
-    return Number(this.num)
   }
 
   toString(): string {
