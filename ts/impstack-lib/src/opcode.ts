@@ -97,7 +97,6 @@ export type OpcodeName =
   | 'CHECKMULTISIGVERIFY'
   | 'BLAKE3'
   | 'DOUBLEBLAKE3'
-  | 'INVALIDOPCODE'
 
 export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
   '0': 0x00,
@@ -198,7 +197,6 @@ export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
   CHECKMULTISIGVERIFY: 0xaf,
   BLAKE3: 0xb0,
   DOUBLEBLAKE3: 0xb1,
-  INVALIDOPCODE: 0xff,
 }
 
 export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
@@ -300,5 +298,4 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0xaf: 'CHECKMULTISIGVERIFY',
   0xb0: 'BLAKE3',
   0xb1: 'DOUBLEBLAKE3',
-  0xff: 'INVALIDOPCODE',
 }
