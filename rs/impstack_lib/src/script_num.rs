@@ -30,7 +30,11 @@ impl ScriptNum {
 
     pub fn to_u8_vec(&self) -> Vec<u8> {
         if self.num >= Zero::zero() {
-            let (_, bytes) = self.num.to_bytes_be();
+            let (_, mut bytes) = self.num.to_bytes_be();
+            // If the most significant bit is set, prepend an extra zero byte
+            if bytes[0] & 0x80 != 0 {
+                bytes.insert(0, 0);
+            }
             bytes
         } else {
             let bit_length = self.num.bits();
@@ -56,6 +60,7 @@ impl ScriptNum {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use num_bigint::ToBigInt;
 
     #[test]
     fn test_script_num() {
@@ -94,5 +99,13 @@ mod tests {
             let hex_from_num = hex::encode(num_from_hex.to_u8_vec());
             assert_eq!(hex, &hex_from_num);
         }
+    }
+
+    #[test]
+    fn test_to_u8_vec() {
+        let num = 128.to_bigint().unwrap(); // 128 is a positive number with the most significant bit set
+        let script_num = ScriptNum { num };
+        let bytes = script_num.to_u8_vec();
+        assert_eq!(bytes, vec![0, 128]); // 128 in hexadecimal is 80, but we expect an extra '00' at the front
     }
 }

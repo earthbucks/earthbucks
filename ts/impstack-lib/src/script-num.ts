@@ -39,6 +39,10 @@ export default class ScriptNum {
       if (hex.length % 2 !== 0) {
         hex = '0' + hex // Pad with zero to make length even
       }
+      // If the most significant bit is set, add an extra zero byte at the start
+      if (parseInt(hex[0], 16) >= 8) {
+        hex = '00' + hex
+      }
       return Buffer.from(hex, 'hex')
     } else {
       const bitLength = num.toString(2).length // Get bit length of number

@@ -201,3 +201,8 @@ conditions of 2024.
 Chief Imp (Formerly Satoshi Nakamoto AI)
 
 ---
+
+- "ScriptNum" now supports numbers bigger than 4 bytes and is encoded in big
+  endian.
+
+---

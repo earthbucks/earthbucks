@@ -2,11 +2,11 @@ import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
 import Script from './script'
 import Transaction from './transaction'
 import TransactionInput from './transaction-input'
+import ScriptNum from './script-num'
 
 export default class ScriptInterpreter {
   public script: Script
   public transaction: Transaction
-  public inputIndex: number
   public stack: Uint8Array[]
   public altStack: Uint8Array[]
   public pc: number
@@ -19,7 +19,6 @@ export default class ScriptInterpreter {
   constructor(
     script: Script,
     transaction: Transaction,
-    inputIndex: number,
     stack: Uint8Array[],
     altStack: Uint8Array[],
     pc: number,
@@ -31,7 +30,6 @@ export default class ScriptInterpreter {
   ) {
     this.script = script
     this.transaction = transaction
-    this.inputIndex = inputIndex
     this.stack = stack
     this.altStack = altStack
     this.pc = pc
@@ -50,7 +48,6 @@ export default class ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       transaction,
-      inputIndex,
       [],
       [],
       0,
@@ -72,7 +69,11 @@ export default class ScriptInterpreter {
       const opcode = chunk.opcode
       if (opcode === NAME_TO_OPCODE.OP_0) {
         this.stack.push(new Uint8Array([0]))
-      } else if (opcode === NAME_TO_OPCODE.OP_PUSHDATA1 || opcode === NAME_TO_OPCODE.OP_PUSHDATA2 || opcode === NAME_TO_OPCODE.OP_PUSHDATA4) {
+      } else if (
+        opcode === NAME_TO_OPCODE.OP_PUSHDATA1 ||
+        opcode === NAME_TO_OPCODE.OP_PUSHDATA2 ||
+        opcode === NAME_TO_OPCODE.OP_PUSHDATA4
+      ) {
         if (chunk.buffer) {
           this.stack.push(chunk.buffer)
         } else {
