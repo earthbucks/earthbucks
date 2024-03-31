@@ -1,0 +1,34 @@
+{
+  "scripts": [
+    {
+      "name": "0",
+      "script": "0",
+      "expected_return_value": "00",
+      "expected_success": false
+    },
+    {
+      "name": "pushdata1",
+      "script": "0xff",
+      "expected_return_value": "ff",
+      "expected_success": true
+    },
+    {
+      "name": "PUSHDATA1",
+      "script": "0xffff",
+      "expected_return_value": "ffff",
+      "expected_success": true
+    },
+    {
+      "name": "PUSHDATA2",
+      "script": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_return_value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_success": true
+    },
+    {
+      "name": "1NEGATE",
+      "script": "1NEGATE",
+      "expected_return_value": "ff",
+      "expected_success": true
+    }
+  ]
+}
