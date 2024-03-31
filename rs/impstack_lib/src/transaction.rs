@@ -7,7 +7,7 @@ use crate::transaction_output::TransactionOutput;
 use crate::var_int::VarInt;
 
 pub struct Transaction {
-    pub version: u32,
+    pub version: u8,
     pub inputs: Vec<TransactionInput>,
     pub outputs: Vec<TransactionOutput>,
     pub lock_time: u64,
@@ -15,7 +15,7 @@ pub struct Transaction {
 
 impl Transaction {
     pub fn new(
-        version: u32,
+        version: u8,
         inputs: Vec<TransactionInput>,
         outputs: Vec<TransactionOutput>,
         lock_time: u64,
@@ -30,7 +30,7 @@ impl Transaction {
 
     pub fn from_u8_vec(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
         let mut reader = BufferReader::new(buf);
-        let version = reader.read_u32_be();
+        let version = reader.read_u8();
         let input_count = reader.read_var_int() as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
@@ -48,7 +48,7 @@ impl Transaction {
     pub fn from_buffer_reader(
         reader: &mut BufferReader,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let version = reader.read_u32_be();
+        let version = reader.read_u8();
         let input_count = reader.read_var_int() as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
@@ -65,7 +65,7 @@ impl Transaction {
 
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut writer = BufferWriter::new();
-        writer.write_u32_be(self.version);
+        writer.write_u8(self.version);
         writer.write_u8_vec(VarInt::from_u64_new(self.inputs.len() as u64).to_u8_vec());
         for input in &self.inputs {
             writer.write_u8_vec(input.to_u8_vec());

@@ -107,3 +107,73 @@ impl ScriptInterpreter {
         self.return_success.unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use hex;
+
+    mod sanity_tests {
+        use super::*;
+
+        #[test]
+        fn test_zero() {
+            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let script = Script::from_string_new("0").unwrap();
+            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            script_interpreter.eval_script();
+            assert_eq!(script_interpreter.return_success, Some(false));
+            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "00");
+        }
+
+        #[test]
+        fn test_pushdata1() {
+            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let script = Script::from_string_new("0xff").unwrap();
+            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            script_interpreter.eval_script();
+            assert_eq!(script_interpreter.return_success, Some(true));
+            assert!(script_interpreter.return_value.is_some());
+            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+        }
+
+        #[test]
+        fn test_pushdata2() {
+            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let script = Script::from_string_new(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
+            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            script_interpreter.eval_script();
+            assert_eq!(script_interpreter.return_success, Some(true));
+            assert!(script_interpreter.return_value.is_some());
+            assert_eq!(
+                hex::encode(&script_interpreter.return_value.unwrap()),
+                "ff".repeat(256)
+            );
+        }
+
+        #[test]
+        fn test_pushdata4() {
+            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let script = Script::from_string_new(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
+            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            script_interpreter.eval_script();
+            assert_eq!(script_interpreter.return_success, Some(true));
+            assert!(script_interpreter.return_value.is_some());
+            assert_eq!(
+                hex::encode(&script_interpreter.return_value.unwrap()),
+                "ff".repeat(65536)
+            );
+        }
+
+        #[test]
+        fn test_1negate() {
+            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let script = Script::from_string_new("1NEGATE").unwrap();
+            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            script_interpreter.eval_script();
+            assert_eq!(script_interpreter.return_success, Some(true));
+            assert!(script_interpreter.return_value.is_some());
+            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+        }
+    }
+}
