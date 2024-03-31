@@ -26,7 +26,6 @@ lazy_static! {
         map.insert("14", 0x5e);
         map.insert("15", 0x5f);
         map.insert("16", 0x60);
-        map.insert("NOP", 0x61);
         map.insert("VER", 0x62);
         map.insert("IF", 0x63);
         map.insert("NOTIF", 0x64);
@@ -134,7 +133,6 @@ lazy_static! {
         map.insert(0x5e, "14");
         map.insert(0x5f, "15");
         map.insert(0x60, "16");
-        map.insert(0x61, "NOP");
         map.insert(0x62, "VER");
         map.insert(0x63, "IF");
         map.insert(0x64, "NOTIF");
