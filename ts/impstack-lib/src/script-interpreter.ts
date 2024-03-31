@@ -74,23 +74,21 @@ export default class ScriptInterpreter {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
 
-      switch (opcode) {
-        case NAME_TO_OPCODE['0']:
-          this.stack.push(new Uint8Array([0]))
-          break
-        case NAME_TO_OPCODE.PUSHDATA1:
-        case NAME_TO_OPCODE.PUSHDATA2:
-        case NAME_TO_OPCODE.PUSHDATA4:
-          if (chunk.buffer) {
-            this.stack.push(chunk.buffer)
-          } else {
-            this.errStr = 'invalid pushdata'
-          }
-          break
-        case NAME_TO_OPCODE['1NEGATE']:
-          const scriptNum = new ScriptNum(BigInt(-1))
-          this.stack.push(scriptNum.toU8Vec())
-          break
+      if (opcode === NAME_TO_OPCODE['0']) {
+        this.stack.push(new Uint8Array([0]))
+      } else if (
+        opcode === NAME_TO_OPCODE.PUSHDATA1 ||
+        opcode === NAME_TO_OPCODE.PUSHDATA2 ||
+        opcode === NAME_TO_OPCODE.PUSHDATA4
+      ) {
+        if (chunk.buffer) {
+          this.stack.push(chunk.buffer)
+        } else {
+          this.errStr = 'invalid pushdata'
+        }
+      } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
+        const scriptNum = new ScriptNum(BigInt(-1))
+        this.stack.push(scriptNum.toU8Vec())
       }
 
       this.pc++
