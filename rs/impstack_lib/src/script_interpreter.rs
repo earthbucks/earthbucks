@@ -75,10 +75,50 @@ impl ScriptInterpreter {
         while self.pc < self.script.chunks.len() {
             let chunk = &self.script.chunks[self.pc];
             let opcode = chunk.opcode;
-            let f_exec = !self.if_stack.contains(&false);
+            let if_exec = !self.if_stack.contains(&false);
 
-            if f_exec || (opcode >= NAME_TO_OPCODE["IF"] && opcode <= NAME_TO_OPCODE["ENDIF"]) {
-                if opcode == NAME_TO_OPCODE["0"] {
+            if if_exec
+                || (opcode == NAME_TO_OPCODE["IF"]
+                    || opcode == NAME_TO_OPCODE["NOTIF"]
+                    || opcode == NAME_TO_OPCODE["ELSE"]
+                    || opcode == NAME_TO_OPCODE["ENDIF"])
+            {
+                if opcode == NAME_TO_OPCODE["IF"] {
+                    let mut if_value = false;
+                    if if_exec {
+                        if self.stack.len() < 1 {
+                            self.err_str = "unbalanced conditional".to_string();
+                            return false;
+                        }
+                        let buf = self.stack.pop().unwrap();
+                        if_value = ScriptInterpreter::cast_to_bool(&buf);
+                    }
+                    self.if_stack.push(if_value);
+                } else if opcode == NAME_TO_OPCODE["NOTIF"] {
+                    let mut if_value = false;
+                    if if_exec {
+                        if self.stack.len() < 1 {
+                            self.err_str = "unbalanced conditional".to_string();
+                            return false;
+                        }
+                        let buf = self.stack.pop().unwrap();
+                        if_value = !ScriptInterpreter::cast_to_bool(&buf);
+                    }
+                    self.if_stack.push(if_value);
+                } else if opcode == NAME_TO_OPCODE["ELSE"] {
+                    if self.if_stack.is_empty() {
+                        self.err_str = "unbalanced conditional".to_string();
+                        return false;
+                    }
+                    let if_stack_len = self.if_stack.len();
+                    self.if_stack[if_stack_len - 1] = !self.if_stack[self.if_stack.len() - 1];
+                } else if opcode == NAME_TO_OPCODE["ENDIF"] {
+                    if self.if_stack.is_empty() {
+                        self.err_str = "unbalanced conditional".to_string();
+                        return false;
+                    }
+                    self.if_stack.pop();
+                } else if opcode == NAME_TO_OPCODE["0"] {
                     self.stack.push(vec![0]);
                 } else if opcode == NAME_TO_OPCODE["PUSHDATA1"]
                     || opcode == NAME_TO_OPCODE["PUSHDATA2"]

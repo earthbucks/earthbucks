@@ -73,13 +73,52 @@ export default class ScriptInterpreter {
     while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
-      let fExec = !this.ifStack.includes(false)
+      let if_exec = !this.ifStack.includes(false)
 
       if (
-        fExec ||
-        (opcode >= NAME_TO_OPCODE.IF && opcode <= NAME_TO_OPCODE.ELSE)
+        if_exec ||
+        opcode == NAME_TO_OPCODE.IF ||
+        opcode == NAME_TO_OPCODE.NOTIF ||
+        opcode == NAME_TO_OPCODE.ELSE ||
+        opcode == NAME_TO_OPCODE.ENDIF
       ) {
-        if (opcode === NAME_TO_OPCODE['0']) {
+        if (opcode === NAME_TO_OPCODE.IF) {
+          let ifValue = false
+          if (if_exec) {
+            if (this.stack.length < 1) {
+              this.errStr = 'unbalanced conditional'
+              return false
+            }
+            let buf = this.stack.pop() || new Uint8Array()
+            ifValue = ScriptInterpreter.castToBool(buf)
+          }
+          this.ifStack.push(ifValue)
+        } else if (opcode === NAME_TO_OPCODE.NOTIF) {
+          let ifValue = false
+          if (if_exec) {
+            if (this.stack.length < 1) {
+              this.errStr = 'unbalanced conditional'
+              return false
+            }
+            let buf = this.stack.pop() || new Uint8Array()
+            ifValue = ScriptInterpreter.castToBool(buf)
+            ifValue = !ifValue
+          }
+          this.ifStack.push(ifValue)
+        } else if (opcode === NAME_TO_OPCODE.ELSE) {
+          if (this.ifStack.length === 0) {
+            this.errStr = 'unbalanced conditional'
+            return false
+          }
+          this.ifStack[this.ifStack.length - 1] =
+            !this.ifStack[this.ifStack.length - 1]
+        } else if (opcode === NAME_TO_OPCODE.ENDIF) {
+          if (this.ifStack.length === 0) {
+            this.errStr = 'unbalanced conditional'
+            return false
+          }
+          this.ifStack.pop()
+        } else if (opcode === NAME_TO_OPCODE['0']) {
           this.stack.push(new Uint8Array([0]))
         } else if (
           opcode === NAME_TO_OPCODE.PUSHDATA1 ||
