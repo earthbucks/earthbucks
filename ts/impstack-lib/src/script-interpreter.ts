@@ -13,6 +13,8 @@ export default class ScriptInterpreter {
   public pBeginCodeHash: number
   public nOpCount: number
   public ifStack: boolean[]
+  public returnValue?: Uint8Array
+  public returnSuccess?: boolean
   public errStr: string
   public value: bigint
 
@@ -25,6 +27,8 @@ export default class ScriptInterpreter {
     pBeginCodeHash: number,
     nOpCount: number,
     ifStack: boolean[],
+    returnValue: Uint8Array | undefined,
+    returnSuccess: boolean | undefined,
     errStr: string,
     value: bigint,
   ) {
@@ -36,6 +40,8 @@ export default class ScriptInterpreter {
     this.pBeginCodeHash = pBeginCodeHash
     this.nOpCount = nOpCount
     this.ifStack = ifStack
+    this.returnValue = returnValue
+    this.returnSuccess = returnSuccess
     this.errStr = errStr
     this.value = value
   }
@@ -50,6 +56,8 @@ export default class ScriptInterpreter {
       0,
       0,
       [],
+      undefined,
+      undefined,
       '',
       BigInt(0),
     )
@@ -63,25 +71,32 @@ export default class ScriptInterpreter {
     while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
-      if (opcode === NAME_TO_OPCODE.OP_0) {
+      if (opcode === NAME_TO_OPCODE['0']) {
         this.stack.push(new Uint8Array([0]))
       } else if (
-        opcode === NAME_TO_OPCODE.OP_PUSHDATA1 ||
-        opcode === NAME_TO_OPCODE.OP_PUSHDATA2 ||
-        opcode === NAME_TO_OPCODE.OP_PUSHDATA4
+        opcode === NAME_TO_OPCODE.PUSHDATA1 ||
+        opcode === NAME_TO_OPCODE.PUSHDATA2 ||
+        opcode === NAME_TO_OPCODE.PUSHDATA4
       ) {
         if (chunk.buffer) {
           this.stack.push(chunk.buffer)
         } else {
           this.errStr = 'invalid pushdata'
-          return false
+          break
         }
-      } else if (opcode === NAME_TO_OPCODE.OP_1NEGATE) {
+      } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
         const n = BigInt(-1)
         this.stack.push(Buffer.from(n.toString(16), 'hex'))
       }
       this.pc++
     }
-    return true
+    if (this.errStr) {
+      this.returnValue = undefined
+      this.returnSuccess = false
+      return this.returnSuccess
+    }
+    this.returnValue = this.stack[this.stack.length - 1]
+    this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue)
+    return this.returnSuccess
   }
 }
