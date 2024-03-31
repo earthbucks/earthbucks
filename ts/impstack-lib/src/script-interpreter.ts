@@ -62,19 +62,26 @@ export default class ScriptInterpreter {
     )
   }
 
+  static castToBool(buf: Uint8Array): boolean {
+    return Buffer.compare(buf, Buffer.alloc(buf.length)) !== 0
+  }
+
   evalScript(): boolean {
     while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc]
       const opcode = chunk.opcode
-      if (opcode === NAME_TO_OPCODE.OP_0 || opcode === NAME_TO_OPCODE.OP_PUSHDATA1 || opcode === NAME_TO_OPCODE.OP_PUSHDATA2 || opcode === NAME_TO_OPCODE.OP_PUSHDATA4) {
+      if (opcode === NAME_TO_OPCODE.OP_0) {
+        this.stack.push(new Uint8Array([0]))
+      } else if (opcode === NAME_TO_OPCODE.OP_PUSHDATA1 || opcode === NAME_TO_OPCODE.OP_PUSHDATA2 || opcode === NAME_TO_OPCODE.OP_PUSHDATA4) {
         if (chunk.buffer) {
           this.stack.push(chunk.buffer)
         } else {
-          this.errStr = 'invalid opcode'
+          this.errStr = 'invalid pushdata'
           return false
         }
       } else if (opcode === NAME_TO_OPCODE.OP_1NEGATE) {
-        this.stack.push(Buffer.from([0x81]))
+        const n = BigInt(-1)
+        this.stack.push(Buffer.from(n.toString(16), 'hex'))
       }
       this.pc++
     }
