@@ -116,6 +116,7 @@ describe('ScriptInterpreter', () => {
       script: string
       expected_return_value: string
       expected_success: boolean
+      expected_error: string
     }
 
     describe('script interpreter scripts', () => {
@@ -144,6 +145,8 @@ describe('ScriptInterpreter', () => {
             transaction,
           )
           scriptInterpreter.evalScript()
+
+          expect(scriptInterpreter.errStr).toEqual(testScript.expected_error)
           expect(scriptInterpreter.returnSuccess).toBe(
             testScript.expected_success,
           )

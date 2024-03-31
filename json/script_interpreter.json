@@ -4,157 +4,190 @@
       "name": "0",
       "script": "0",
       "expected_return_value": "00",
-      "expected_success": false
+      "expected_success": false,
+      "expected_error": ""
     },
     {
       "name": "PUSHDATA1 - one byte",
       "script": "0xff",
       "expected_return_value": "ff",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "PUSHDATA1 - two bytes",
       "script": "0xffff",
       "expected_return_value": "ffff",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "PUSHDATA2",
       "script": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       "expected_return_value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "1NEGATE",
       "script": "1NEGATE",
       "expected_return_value": "ff",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 1",
       "script": "1",
       "expected_return_value": "01",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 2",
       "script": "2",
       "expected_return_value": "02",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 3",
       "script": "3",
       "expected_return_value": "03",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 4",
       "script": "4",
       "expected_return_value": "04",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 5",
       "script": "5",
       "expected_return_value": "05",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 6",
       "script": "6",
       "expected_return_value": "06",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 7",
       "script": "7",
       "expected_return_value": "07",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 8",
       "script": "8",
       "expected_return_value": "08",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 9",
       "script": "9",
       "expected_return_value": "09",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 10",
       "script": "10",
       "expected_return_value": "0a",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 11",
       "script": "11",
       "expected_return_value": "0b",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 12",
       "script": "12",
       "expected_return_value": "0c",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 13",
       "script": "13",
       "expected_return_value": "0d",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 14",
       "script": "14",
       "expected_return_value": "0e",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 15",
       "script": "15",
       "expected_return_value": "0f",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "push 16",
       "script": "16",
       "expected_return_value": "10",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "if 1",
       "script": "1 IF 1 ENDIF",
       "expected_return_value": "01",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "if 0",
       "script": "0 IF 1 ENDIF",
       "expected_return_value": "",
-      "expected_success": false
+      "expected_success": false,
+      "expected_error": ""
     },
     {
       "name": "if 1 with a push 0",
       "script": "1 IF 0 ENDIF",
       "expected_return_value": "00",
-      "expected_success": false
+      "expected_success": false,
+      "expected_error": ""
     },
     {
       "name": "nested if 1",
       "script": "1 IF 1 IF 1 ENDIF ENDIF",
       "expected_return_value": "01",
-      "expected_success": true
+      "expected_success": true,
+      "expected_error": ""
     },
     {
       "name": "nested if 0",
       "script": "1 IF 1 IF 0 ENDIF ENDIF",
       "expected_return_value": "00",
-      "expected_success": false
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "unbalanced conditional 1",
+      "script": "IF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
     }
   ]
 }

@@ -87,6 +87,9 @@ export default class ScriptInterpreter {
           if (ifExec) {
             if (this.stack.length < 1) {
               this.errStr = 'unbalanced conditional'
+              this.returnSuccess = false
+              this.returnValue =
+                this.stack[this.stack.length - 1] || new Uint8Array()
               return false
             }
             let buf = this.stack.pop() || new Uint8Array()
@@ -98,6 +101,9 @@ export default class ScriptInterpreter {
           if (ifExec) {
             if (this.stack.length < 1) {
               this.errStr = 'unbalanced conditional'
+              this.returnSuccess = false
+              this.returnValue =
+                this.stack[this.stack.length - 1] || new Uint8Array()
               return false
             }
             let buf = this.stack.pop() || new Uint8Array()
@@ -108,6 +114,9 @@ export default class ScriptInterpreter {
         } else if (opcode === NAME_TO_OPCODE.ELSE) {
           if (this.ifStack.length === 0) {
             this.errStr = 'unbalanced conditional'
+            this.returnSuccess = false
+            this.returnValue =
+              this.stack[this.stack.length - 1] || new Uint8Array()
             return false
           }
           this.ifStack[this.ifStack.length - 1] =
@@ -115,6 +124,9 @@ export default class ScriptInterpreter {
         } else if (opcode === NAME_TO_OPCODE.ENDIF) {
           if (this.ifStack.length === 0) {
             this.errStr = 'unbalanced conditional'
+            this.returnSuccess = false
+            this.returnValue =
+              this.stack[this.stack.length - 1] || new Uint8Array()
             return false
           }
           this.ifStack.pop()
@@ -128,7 +140,11 @@ export default class ScriptInterpreter {
           if (chunk.buffer) {
             this.stack.push(new Uint8Array(chunk.buffer))
           } else {
-            this.errStr = 'invalid pushdata'
+            this.errStr = 'unbalanced conditional'
+            this.returnSuccess = false
+            this.returnValue =
+              this.stack[this.stack.length - 1] || new Uint8Array()
+            return false
           }
         } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
           const scriptNum = new ScriptNum(BigInt(-1))
@@ -188,7 +204,7 @@ export default class ScriptInterpreter {
       }
 
       if (this.errStr) {
-        this.returnValue = this.stack[this.stack.length - 1]
+        this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array()
         this.returnSuccess = false
         return this.returnSuccess
       }

@@ -88,6 +88,12 @@ impl ScriptInterpreter {
                     if if_exec {
                         if self.stack.len() < 1 {
                             self.err_str = "unbalanced conditional".to_string();
+                            if !self.stack.is_empty() {
+                                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+                            } else {
+                                self.return_value = Some(vec![]);
+                            }
+                            self.return_success = Some(false);
                             return false;
                         }
                         let buf = self.stack.pop().unwrap();
@@ -99,6 +105,12 @@ impl ScriptInterpreter {
                     if if_exec {
                         if self.stack.len() < 1 {
                             self.err_str = "unbalanced conditional".to_string();
+                            if !self.stack.is_empty() {
+                                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+                            } else {
+                                self.return_value = Some(vec![]);
+                            }
+                            self.return_success = Some(false);
                             return false;
                         }
                         let buf = self.stack.pop().unwrap();
@@ -108,6 +120,12 @@ impl ScriptInterpreter {
                 } else if opcode == NAME_TO_OPCODE["ELSE"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
+                        if !self.stack.is_empty() {
+                            self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+                        } else {
+                            self.return_value = Some(vec![]);
+                        }
+                        self.return_success = Some(false);
                         return false;
                     }
                     let if_stack_len = self.if_stack.len();
@@ -115,6 +133,12 @@ impl ScriptInterpreter {
                 } else if opcode == NAME_TO_OPCODE["ENDIF"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
+                        if !self.stack.is_empty() {
+                            self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+                        } else {
+                            self.return_value = Some(vec![]);
+                        }
+                        self.return_success = Some(false);
                         return false;
                     }
                     self.if_stack.pop();
@@ -288,6 +312,7 @@ mod tests {
             script: String,
             expected_return_value: String,
             expected_success: bool,
+            expected_error: String,
         }
 
         #[derive(Deserialize)]
@@ -303,9 +328,9 @@ mod tests {
                 serde_json::from_str(&file).expect("Failed to parse JSON file");
 
             for test_script in test_scripts.scripts {
-              println!("Running test: {}", test_script.name);
-              // to confirm tests are running:
-              // cargo test script_interpreter -- --nocapture
+                println!("Running test: {}", test_script.name);
+                // to confirm tests are running:
+                // cargo test script_interpreter -- --nocapture
 
                 let script = Script::from_string_new(&test_script.script).unwrap();
                 let transaction = Transaction::new(
@@ -324,6 +349,11 @@ mod tests {
                 );
                 let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
                 script_interpreter.eval_script();
+                assert_eq!(
+                    script_interpreter.err_str, test_script.expected_error,
+                    "Test '{}' failed on error value",
+                    test_script.name
+                );
                 assert_eq!(
                     script_interpreter.return_success,
                     Some(test_script.expected_success),
