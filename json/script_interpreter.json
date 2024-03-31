@@ -188,6 +188,48 @@
       "expected_return_value": "",
       "expected_success": false,
       "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 2",
+      "script": "ELSE",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 3",
+      "script": "ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 4",
+      "script": "NOTIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "not if",
+      "script": "0 NOTIF 1 ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "else",
+      "script": "0 IF 1 ELSE 2 ENDIF",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nested else",
+      "script": "0 IF 0 IF 1 ELSE 2 ENDIF ELSE 3 ENDIF",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
     }
   ]
 }

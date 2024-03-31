@@ -147,13 +147,13 @@ describe('ScriptInterpreter', () => {
           scriptInterpreter.evalScript()
 
           expect(scriptInterpreter.errStr).toEqual(testScript.expected_error)
-          expect(scriptInterpreter.returnSuccess).toBe(
-            testScript.expected_success,
-          )
           expect(
             scriptInterpreter.returnValue &&
               Buffer.from(scriptInterpreter.returnValue).toString('hex'),
           ).toBe(testScript.expected_return_value)
+          expect(scriptInterpreter.returnSuccess).toBe(
+            testScript.expected_success,
+          )
         })
       })
     })
