@@ -8,10 +8,10 @@ describe('Script', () => {
   })
 
   test('fromString', () => {
-    const script = Script.fromString('DUP HASH160')
+    const script = Script.fromString('DUP DOUBLEBLAKE3')
     expect(script.chunks.length).toBe(2)
     expect(script.chunks[0].toString()).toBe('DUP')
-    expect(script.chunks[1].toString()).toBe('HASH160')
+    expect(script.chunks[1].toString()).toBe('DOUBLEBLAKE3')
   })
 
   test('fromString toString with PUSHDATA1', () => {
@@ -25,15 +25,15 @@ describe('Script', () => {
   })
 
   test('toString', () => {
-    const script = Script.fromString('DUP HASH160')
-    expect(script.toString()).toBe('DUP HASH160')
+    const script = Script.fromString('DUP DOUBLEBLAKE3')
+    expect(script.toString()).toBe('DUP DOUBLEBLAKE3')
   })
 
   test('toU8Vec and fromU8Vec', () => {
-    const originalScript = Script.fromString('DUP HASH160')
+    const originalScript = Script.fromString('DUP DOUBLEBLAKE3')
     const arr = originalScript.toU8Vec()
     const script = Script.fromU8Vec(arr)
-    expect(script.toString()).toBe('DUP HASH160')
+    expect(script.toString()).toBe('DUP DOUBLEBLAKE3')
   })
 
   test('toU8Vec and fromU8Vec with PUSHDATA1', () => {

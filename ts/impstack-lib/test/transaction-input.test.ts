@@ -71,7 +71,7 @@ describe('TransactionInput', () => {
     test('toBuffer with script', () => {
       const inputTxHash = Buffer.alloc(32)
       const inputTxIndex = 0
-      const script = new Script().fromString('HASH160')
+      const script = new Script().fromString('DOUBLEBLAKE3')
       const sequence = 0xffffffff
 
       const transactionInput = new TransactionInput(
@@ -82,7 +82,7 @@ describe('TransactionInput', () => {
       )
       const result = transactionInput.toBuffer()
       expect(result.toString('hex')).toEqual(
-        '00000000000000000000000000000000000000000000000000000000000000000000000001a9ffffffff',
+        '00000000000000000000000000000000000000000000000000000000000000000000000001a7ffffffff',
       )
     })
   })

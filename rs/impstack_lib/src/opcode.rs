@@ -88,18 +88,13 @@ lazy_static! {
         map.insert("MIN", 0xa3);
         map.insert("MAX", 0xa4);
         map.insert("WITHIN", 0xa5);
-        map.insert("RIPEMD160", 0xa6);
-        map.insert("SHA1", 0xa7);
-        map.insert("SHA256", 0xa8);
-        map.insert("HASH160", 0xa9);
-        map.insert("HASH256", 0xaa);
+        map.insert("BLAKE3", 0xa6);
+        map.insert("DOUBLEBLAKE3", 0xa7);
         map.insert("CODESEPARATOR", 0xab);
         map.insert("CHECKSIG", 0xac);
         map.insert("CHECKSIGVERIFY", 0xad);
         map.insert("CHECKMULTISIG", 0xae);
         map.insert("CHECKMULTISIGVERIFY", 0xaf);
-        map.insert("BLAKE3", 0xb0);
-        map.insert("DOUBLEBLAKE3", 0xb1);
         map
     };
     pub static ref OPCODE_TO_NAME: HashMap<u8, &'static str> = {
@@ -188,18 +183,13 @@ lazy_static! {
         map.insert(0xa3, "MIN");
         map.insert(0xa4, "MAX");
         map.insert(0xa5, "WITHIN");
-        map.insert(0xa6, "RIPEMD160");
-        map.insert(0xa7, "SHA1");
-        map.insert(0xa8, "SHA256");
-        map.insert(0xa9, "HASH160");
-        map.insert(0xaa, "HASH256");
+        map.insert(0xa6, "BLAKE3");
+        map.insert(0xa7, "DOUBLEBLAKE3");
         map.insert(0xab, "CODESEPARATOR");
         map.insert(0xac, "CHECKSIG");
         map.insert(0xad, "CHECKSIGVERIFY");
         map.insert(0xae, "CHECKMULTISIG");
         map.insert(0xaf, "CHECKMULTISIGVERIFY");
-        map.insert(0xb0, "BLAKE3");
-        map.insert(0xb1, "DOUBLEBLAKE3");
         map
     };
 }

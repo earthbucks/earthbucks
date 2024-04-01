@@ -96,13 +96,13 @@ mod tests {
     fn test_transaction() -> Result<(), String> {
         let input_tx_hash = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -124,13 +124,13 @@ mod tests {
     fn test_from_buffer_reader() -> Result<(), String> {
         let input_tx_hash = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -153,13 +153,13 @@ mod tests {
     fn test_hash_once() {
         let input_tx_hash = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -175,13 +175,13 @@ mod tests {
     fn test_hash() {
         let input_tx_hash = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_hash, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;

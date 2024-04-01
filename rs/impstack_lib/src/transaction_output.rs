@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn test_transaction_output_from_u8_vec_and_to_u8_vec() {
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec());
         let result = match result {
@@ -73,7 +73,8 @@ mod tests {
     fn test_big_push_data() {
         let data = vec![0u8; 0xffff];
         let value = 100;
-        let script = Script::from_string_new(&format!("0x{} HASH160", hex::encode(data))).unwrap();
+        let script =
+            Script::from_string_new(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec()).unwrap();
         assert_eq!(
@@ -85,7 +86,7 @@ mod tests {
     #[test]
     fn test_buffer_reader() {
         let value = 100;
-        let script = Script::from_string_new("HASH160 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(
             transaction_output.to_u8_vec(),

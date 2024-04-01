@@ -83,18 +83,13 @@ export type OpcodeName =
   | 'MIN'
   | 'MAX'
   | 'WITHIN'
-  | 'RIPEMD160'
-  | 'SHA1'
-  | 'SHA256'
-  | 'HASH160'
-  | 'HASH256'
+  | 'BLAKE3'
+  | 'DOUBLEBLAKE3'
   | 'CODESEPARATOR'
   | 'CHECKSIG'
   | 'CHECKSIGVERIFY'
   | 'CHECKMULTISIG'
   | 'CHECKMULTISIGVERIFY'
-  | 'BLAKE3'
-  | 'DOUBLEBLAKE3'
 
 export const OP: { [key in OpcodeName]: number } = {
   '0': 0x00,
@@ -181,18 +176,13 @@ export const OP: { [key in OpcodeName]: number } = {
   MIN: 0xa3,
   MAX: 0xa4,
   WITHIN: 0xa5,
-  RIPEMD160: 0xa6,
-  SHA1: 0xa7,
-  SHA256: 0xa8,
-  HASH160: 0xa9,
-  HASH256: 0xaa,
+  BLAKE3: 0xa6,
+  DOUBLEBLAKE3: 0xa7,
   CODESEPARATOR: 0xab,
   CHECKSIG: 0xac,
   CHECKSIGVERIFY: 0xad,
   CHECKMULTISIG: 0xae,
   CHECKMULTISIGVERIFY: 0xaf,
-  BLAKE3: 0xb0,
-  DOUBLEBLAKE3: 0xb1,
 }
 
 export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
@@ -280,16 +270,11 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0xa3: 'MIN',
   0xa4: 'MAX',
   0xa5: 'WITHIN',
-  0xa6: 'RIPEMD160',
-  0xa7: 'SHA1',
-  0xa8: 'SHA256',
-  0xa9: 'HASH160',
-  0xaa: 'HASH256',
+  0xa6: 'BLAKE3',
+  0xa7: 'DOUBLEBLAKE3',
   0xab: 'CODESEPARATOR',
   0xac: 'CHECKSIG',
   0xad: 'CHECKSIGVERIFY',
   0xae: 'CHECKMULTISIG',
   0xaf: 'CHECKMULTISIGVERIFY',
-  0xb0: 'BLAKE3',
-  0xb1: 'DOUBLEBLAKE3',
 }
