@@ -180,6 +180,16 @@ impl ScriptInterpreter {
                 } else if opcode == NAME_TO_OPCODE["16"] {
                     let script_num = ScriptNum::new(16.into());
                     self.stack.push(script_num.to_u8_vec());
+                } else if opcode == NAME_TO_OPCODE["VERIFY"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf = self.stack.pop().unwrap();
+                    if !ScriptInterpreter::cast_to_bool(&buf) {
+                        self.err_str = "VERIFY failed".to_string();
+                        break;
+                    }
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

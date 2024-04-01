@@ -185,7 +185,16 @@ export default class ScriptInterpreter {
         } else if (opcode === NAME_TO_OPCODE['16']) {
           const scriptNum = new ScriptNum(BigInt(16))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['IF']) {
+        } else if (opcode === NAME_TO_OPCODE.VERIFY) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = this.stack.pop() || new Uint8Array()
+          if (!ScriptInterpreter.castToBool(buf)) {
+            this.errStr = 'VERIFY failed'
+            break
+          }
         } else {
           this.errStr = 'invalid opcode'
           break
@@ -194,11 +203,11 @@ export default class ScriptInterpreter {
 
       this.pc++
     }
-      if (this.errStr) {
-        this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array()
-        this.returnSuccess = false
-        return this.returnSuccess
-      }
+    if (this.errStr) {
+      this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array()
+      this.returnSuccess = false
+      return this.returnSuccess
+    }
     this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array()
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue)
     return this.returnSuccess

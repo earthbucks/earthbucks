@@ -230,6 +230,20 @@
       "expected_return_value": "03",
       "expected_success": true,
       "expected_error": ""
+    },
+    {
+      "name": "verify",
+      "script": "1 VERIFY 2",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "verify",
+      "script": "0 VERIFY 2",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "VERIFY failed"
     }
   ]
 }
