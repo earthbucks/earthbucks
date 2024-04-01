@@ -88,13 +88,7 @@ impl ScriptInterpreter {
                     if if_exec {
                         if self.stack.len() < 1 {
                             self.err_str = "unbalanced conditional".to_string();
-                            if !self.stack.is_empty() {
-                                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-                            } else {
-                                self.return_value = Some(vec![]);
-                            }
-                            self.return_success = Some(false);
-                            return false;
+                            break;
                         }
                         let buf = self.stack.pop().unwrap();
                         if_value = ScriptInterpreter::cast_to_bool(&buf);
@@ -105,13 +99,7 @@ impl ScriptInterpreter {
                     if if_exec {
                         if self.stack.len() < 1 {
                             self.err_str = "unbalanced conditional".to_string();
-                            if !self.stack.is_empty() {
-                                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-                            } else {
-                                self.return_value = Some(vec![]);
-                            }
-                            self.return_success = Some(false);
-                            return false;
+                            break;
                         }
                         let buf = self.stack.pop().unwrap();
                         if_value = !ScriptInterpreter::cast_to_bool(&buf);
@@ -120,26 +108,14 @@ impl ScriptInterpreter {
                 } else if opcode == NAME_TO_OPCODE["ELSE"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
-                        if !self.stack.is_empty() {
-                            self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-                        } else {
-                            self.return_value = Some(vec![]);
-                        }
-                        self.return_success = Some(false);
-                        return false;
+                        break;
                     }
                     let if_stack_len = self.if_stack.len();
                     self.if_stack[if_stack_len - 1] = !self.if_stack[self.if_stack.len() - 1];
                 } else if opcode == NAME_TO_OPCODE["ENDIF"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
-                        if !self.stack.is_empty() {
-                            self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-                        } else {
-                            self.return_value = Some(vec![]);
-                        }
-                        self.return_success = Some(false);
-                        return false;
+                        break;
                     }
                     self.if_stack.pop();
                 } else if opcode == NAME_TO_OPCODE["0"] {
@@ -206,15 +182,20 @@ impl ScriptInterpreter {
                     self.stack.push(script_num.to_u8_vec());
                 } else {
                     self.err_str = "invalid opcode".to_string();
+                    break;
                 }
             }
 
-            if !self.err_str.is_empty() {
-                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
-                self.return_success = Some(false);
-                return self.return_success.unwrap();
-            }
             self.pc += 1;
+        }
+        if !self.err_str.is_empty() {
+            if !self.stack.is_empty() {
+                self.return_value = Some(self.stack[self.stack.len() - 1].clone());
+            } else {
+                self.return_value = Some(vec![]);
+            }
+            self.return_success = Some(false);
+            return self.return_success.unwrap();
         }
         if !self.stack.is_empty() {
             self.return_value = Some(self.stack[self.stack.len() - 1].clone());
