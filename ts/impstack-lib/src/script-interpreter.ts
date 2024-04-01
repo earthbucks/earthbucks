@@ -429,6 +429,319 @@ export default class ScriptInterpreter {
             buf[i] = buf1[i] & buf2[i]
           }
           this.stack.push(buf)
+        } else if (opcode === OP.OR) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          if (buf1.length !== buf2.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = new Uint8Array(buf1.length)
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = buf1[i] | buf2[i]
+          }
+          this.stack.push(buf)
+        } else if (opcode === OP.XOR) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          if (buf1.length !== buf2.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = new Uint8Array(buf1.length)
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = buf1[i] ^ buf2[i]
+          }
+          this.stack.push(buf)
+        } else if (opcode === OP.EQUAL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          let equal = Buffer.compare(buf1, buf2) === 0
+          this.stack.push(new Uint8Array([equal ? 1 : 0]))
+        } else if (opcode === OP.EQUALVERIFY) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          if (Buffer.compare(buf1, buf2) !== 0) {
+            this.errStr = 'EQUALVERIFY failed'
+            break
+          }
+        } else if (opcode === OP['1ADD']) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num++
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP['1SUB']) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num--
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP['2MUL']) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num *= BigInt(2)
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP['2DIV']) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num /= BigInt(2)
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.NEGATE) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num = -scriptNum.num
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.ABS) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num = scriptNum.num < 0 ? -scriptNum.num : scriptNum.num
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.NOT) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num = scriptNum.num === 0n ? 1n : 0n
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP['0NOTEQUAL']) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum.num = scriptNum.num === 0n ? 0n : 1n
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.ADD) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num += scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.SUB) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num -= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.MUL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num *= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.DIV) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          if (scriptNum2.num === 0n) {
+            this.errStr = 'division by zero'
+            break
+          }
+          scriptNum1.num /= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.MOD) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          if (scriptNum2.num === 0n) {
+            this.errStr = 'division by zero'
+            break
+          }
+          scriptNum1.num %= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.LSHIFT) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          if (scriptNum2.num < 0n) {
+            this.errStr = 'invalid shift'
+            break
+          }
+          scriptNum1.num <<= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.RSHIFT) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          if (scriptNum2.num < 0n) {
+            this.errStr = 'invalid shift'
+            break
+          }
+          scriptNum1.num >>= scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.BOOLAND) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num =
+            scriptNum1.num !== 0n && scriptNum2.num !== 0n ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.BOOLOR) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num =
+            scriptNum1.num !== 0n || scriptNum2.num !== 0n ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.NUMEQUAL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num === scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.NUMEQUALVERIFY) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          if (scriptNum1.num !== scriptNum2.num) {
+            this.errStr = 'NUMEQUALVERIFY failed'
+            break
+          }
+        } else if (opcode === OP.NUMNOTEQUAL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num !== scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.LESSTHAN) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num < scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.GREATERTHAN) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num > scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.LESSTHANOREQUAL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num <= scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.GREATERTHANOREQUAL) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num = scriptNum1.num >= scriptNum2.num ? 1n : 0n
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.MIN) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num =
+            scriptNum1.num < scriptNum2.num ? scriptNum1.num : scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.MAX) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum2 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNum1 = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          scriptNum1.num =
+            scriptNum1.num > scriptNum2.num ? scriptNum1.num : scriptNum2.num
+          this.stack.push(scriptNum1.toU8Vec())
+        } else if (opcode === OP.WITHIN) {
+          // (x min max -- out)
+          if (this.stack.length < 3) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNumMax = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNumMin = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let scriptNumX = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array)
+          let within =
+            scriptNumX.num >= scriptNumMin.num &&
+            scriptNumX.num < scriptNumMax.num
+          this.stack.push(new Uint8Array([within ? 1 : 0]))
         } else {
           this.errStr = 'invalid opcode'
           break

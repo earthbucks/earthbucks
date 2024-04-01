@@ -461,6 +461,363 @@ impl ScriptInterpreter {
                         new_buf.push(buf1[i] & buf2[i]);
                     }
                     self.stack.push(new_buf);
+                } else if opcode == OP["OR"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    let len1 = buf1.len();
+                    let len2 = buf2.len();
+                    if len1 != len2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let len = len1;
+                    let mut new_buf = Vec::new();
+                    for i in 0..len {
+                        new_buf.push(buf1[i] | buf2[i]);
+                    }
+                    self.stack.push(new_buf);
+                } else if opcode == OP["XOR"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    let len1 = buf1.len();
+                    let len2 = buf2.len();
+                    if len1 != len2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let len = len1;
+                    let mut new_buf = Vec::new();
+                    for i in 0..len {
+                        new_buf.push(buf1[i] ^ buf2[i]);
+                    }
+                    self.stack.push(new_buf);
+                } else if opcode == OP["EQUAL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    let equal = buf1 == buf2;
+                    self.stack.push(if equal { vec![1] } else { vec![0] });
+                } else if opcode == OP["EQUALVERIFY"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    if buf1 != buf2 {
+                        self.err_str = "EQUALVERIFY failed".to_string();
+                        break;
+                    }
+                } else if opcode == OP["1ADD"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num.num + 1.to_bigint().unwrap();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["1SUB"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num.num - 1.to_bigint().unwrap();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["2MUL"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num.num * 2.to_bigint().unwrap();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["2DIV"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num.num / 2.to_bigint().unwrap();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["NEGATE"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = -script_num.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["ABS"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let mut script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num.num < 0.to_bigint().unwrap() {
+                        script_num.num = -script_num.num;
+                    }
+                    self.stack.push(ScriptNum::new(script_num.num).to_u8_vec());
+                } else if opcode == OP["NOT"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = if script_num.num == 0.to_bigint().unwrap() {
+                        1.to_bigint().unwrap()
+                    } else {
+                        0.to_bigint().unwrap()
+                    };
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["0NOTEQUAL"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = if script_num.num == 0.to_bigint().unwrap() {
+                        0.to_bigint().unwrap()
+                    } else {
+                        1.to_bigint().unwrap()
+                    };
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["ADD"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num1.num + script_num2.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["SUB"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num2.num - script_num1.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["MUL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let new_num = script_num1.num * script_num2.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["DIV"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num1.num == 0.to_bigint().unwrap() {
+                        self.err_str = "division by zero".to_string();
+                        break;
+                    }
+                    let new_num = script_num2.num / script_num1.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["MOD"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num1.num == 0.to_bigint().unwrap() {
+                        self.err_str = "division by zero".to_string();
+                        break;
+                    }
+                    let new_num = script_num2.num % script_num1.num;
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["LSHIFT"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num1.num < 0.to_bigint().unwrap() {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let new_num = script_num2.num << script_num1.to_u32();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["RSHIFT"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num1.num < 0.to_bigint().unwrap() {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let new_num = script_num2.num >> script_num1.to_u32();
+                    self.stack.push(ScriptNum::new(new_num).to_u8_vec());
+                } else if opcode == OP["BOOLAND"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    let bool1 = ScriptInterpreter::cast_to_bool(&buf1);
+                    let bool2 = ScriptInterpreter::cast_to_bool(&buf2);
+                    self.stack
+                        .push(if bool1 && bool2 { vec![1] } else { vec![0] });
+                } else if opcode == OP["BOOLOR"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack.pop().unwrap();
+                    let buf2 = self.stack.pop().unwrap();
+                    let bool1 = ScriptInterpreter::cast_to_bool(&buf1);
+                    let bool2 = ScriptInterpreter::cast_to_bool(&buf2);
+                    self.stack
+                        .push(if bool1 || bool2 { vec![1] } else { vec![0] });
+                } else if opcode == OP["NUMEQUAL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num1.num == script_num2.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["NUMEQUALVERIFY"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    if script_num1.num != script_num2.num {
+                        self.err_str = "NUMEQUALVERIFY failed".to_string();
+                        break;
+                    }
+                } else if opcode == OP["NUMNOTEQUAL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num1.num != script_num2.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["LESSTHAN"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num < script_num1.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["GREATERTHAN"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num > script_num1.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["LESSTHANOREQUAL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num <= script_num1.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["GREATERTHANOREQUAL"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num >= script_num1.num {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
+                } else if opcode == OP["MIN"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num < script_num1.num {
+                        script_num2.to_u8_vec()
+                    } else {
+                        script_num1.to_u8_vec()
+                    });
+                } else if opcode == OP["MAX"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num1 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    self.stack.push(if script_num2.num > script_num1.num {
+                        script_num2.to_u8_vec()
+                    } else {
+                        script_num1.to_u8_vec()
+                    });
+                } else if opcode == OP["WITHIN"] {
+                    // (x min max -- out)
+                    if self.stack.len() < 3 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_max = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_min = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let script_x = ScriptNum::from_u8_vec(&self.stack.pop().unwrap());
+                    let min = script_min.num;
+                    let max = script_max.num;
+                    let x = script_x.num;
+                    self.stack.push(if x >= min && x < max {
+                        vec![1]
+                    } else {
+                        vec![0]
+                    });
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

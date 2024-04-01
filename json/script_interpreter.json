@@ -580,6 +580,461 @@
       "expected_return_value": "ffffff",
       "expected_success": true,
       "expected_error": ""
+    },
+    {
+      "name": "or 1",
+      "script": "0xf0f0f0 0xf0f0f0 OR",
+      "expected_return_value": "f0f0f0",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "or 2",
+      "script": "0xf0f0f0 0x0f0f0f OR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "or 3",
+      "script": "0xffffff 0xffffff OR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 1",
+      "script": "0xf0f0f0 0xf0f0f0 XOR",
+      "expected_return_value": "000000",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 2",
+      "script": "0xf0f0f0 0x0f0f0f XOR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 3",
+      "script": "0xffffff 0xffffff XOR",
+      "expected_return_value": "000000",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 1",
+      "script": "0xf0f0f0 0xf0f0f0 EQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 2",
+      "script": "0xf0f0f0 0x0f0f0f EQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 3",
+      "script": "0xffffff 0xffffff EQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "equalverify 1",
+      "script": "0xf0f0f0 0xf0f0f0 EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equalverify 2",
+      "script": "0xf0f0f0 0x0f0f0f EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "EQUALVERIFY failed"
+    },
+    {
+      "name": "equalverify 3",
+      "script": "0xffffff 0xffffff EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "1add",
+      "script": "0x01 1ADD",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "1sub",
+      "script": "0x01 1SUB",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "1sub 2",
+      "script": "0x05 1SUB",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2mul",
+      "script": "0x02 2MUL",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2div",
+      "script": "0x04 2DIV",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate",
+      "script": "0x04 NEGATE",
+      "expected_return_value": "fc",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate 2",
+      "script": "0xfc NEGATE",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate 3",
+      "script": "0x00 NEGATE",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "abs",
+      "script": "0x04 ABS",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "abs 2",
+      "script": "0xf0 ABS",
+      "expected_return_value": "10",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "abs 3",
+      "script": "0xf088 ABS",
+      "expected_return_value": "0f78",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "not",
+      "script": "0x00 NOT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "not 2",
+      "script": "0x01 NOT",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "0notequal",
+      "script": "0x00 0NOTEQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "0notequal 2",
+      "script": "0x01 0NOTEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "add",
+      "script": "0x01 0x02 ADD",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "sub",
+      "script": "0x03 0x02 SUB",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "sub 2",
+      "script": "0x02 0x03 SUB",
+      "expected_return_value": "ff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "mul",
+      "script": "0x02 0x03 MUL",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "mul 2",
+      "script": "0x02 0xff MUL",
+      "expected_return_value": "fe",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "div",
+      "script": "0x06 0x03 DIV",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "div by zero",
+      "script": "0x06 0x00 DIV",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "division by zero"
+    },
+    {
+      "name": "mod",
+      "script": "0x06 0x03 MOD",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "mod by zero",
+      "script": "0x06 0x00 MOD",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "division by zero"
+    },
+    {
+      "name": "lshift",
+      "script": "0x01 0x02 LSHIFT",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lshift 2",
+      "script": "0x01 0x08 LSHIFT",
+      "expected_return_value": "0100",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rshift",
+      "script": "0x04 0x02 RSHIFT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rshift 2",
+      "script": "0x0100 0x08 RSHIFT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "booland",
+      "script": "0x01 0x01 BOOLAND",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "booland 2",
+      "script": "0x01 0x00 BOOLAND",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "boolor",
+      "script": "0x01 0x01 BOOLOR",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "boolor 2",
+      "script": "0x01 0x00 BOOLOR",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "numequal",
+      "script": "0x01 0x01 NUMEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "numequal 2",
+      "script": "0x01 0x00 NUMEQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numequalverify",
+      "script": "0x01 0x01 NUMEQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numequalverify 2",
+      "script": "0x01 0x00 NUMEQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "NUMEQUALVERIFY failed"
+    },
+    {
+      "name": "numnotequal",
+      "script": "0x01 0x01 NUMNOTEQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numnotequal 2",
+      "script": "0x01 0x00 NUMNOTEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthan",
+      "script": "0x01 0x02 LESSTHAN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthan 2",
+      "script": "0x02 0x01 LESSTHAN",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthan",
+      "script": "0x02 0x01 GREATERTHAN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthan 2",
+      "script": "0x01 0x02 GREATERTHAN",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthanorequal",
+      "script": "0x01 0x02 LESSTHANOREQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthanorequal 2",
+      "script": "0x02 0x01 LESSTHANOREQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthanorequal",
+      "script": "0x02 0x01 GREATERTHANOREQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthanorequal 2",
+      "script": "0x01 0x02 GREATERTHANOREQUAL",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "min",
+      "script": "0x01 0x02 MIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "min 2",
+      "script": "0x02 0x01 MIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "max",
+      "script": "0x01 0x02 MAX",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "max 2",
+      "script": "0x02 0x01 MAX",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "within",
+      "script": "0x01 0x02 0x03 WITHIN",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "within 2",
+      "script": "0x02 0x01 0x03 WITHIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "within 3",
+      "script": "0x03 0x01 0x02 WITHIN",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
     }
   ]
 }
