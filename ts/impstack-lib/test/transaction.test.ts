@@ -187,7 +187,12 @@ describe('Transaction', () => {
     test('sighash', () => {
       const version = 1
       const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
+        new TransactionInput(
+          Buffer.alloc(32),
+          0,
+          Script.fromString(''),
+          0xffffffff,
+        ),
       ]
       const outputs: TransactionOutput[] = [
         new TransactionOutput(BigInt(100), Script.fromString('')),

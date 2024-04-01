@@ -136,15 +136,27 @@ impl Transaction {
         let mut outputs_hash = vec![0; 32];
 
         if hash_type & SIGHASH_ANYONECANPAY == 0 {
-            prevouts_hash = self.prevouts_hash.clone().unwrap_or_else(|| self.hash_prevouts());
+            prevouts_hash = self
+                .prevouts_hash
+                .clone()
+                .unwrap_or_else(|| self.hash_prevouts());
         }
 
-        if hash_type & SIGHASH_ANYONECANPAY == 0 && hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
-            sequence_hash = self.sequence_hash.clone().unwrap_or_else(|| self.hash_sequence());
+        if hash_type & SIGHASH_ANYONECANPAY == 0
+            && hash_type & 0x1f != SIGHASH_SINGLE
+            && hash_type & 0x1f != SIGHASH_NONE
+        {
+            sequence_hash = self
+                .sequence_hash
+                .clone()
+                .unwrap_or_else(|| self.hash_sequence());
         }
 
         if hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
-            outputs_hash = self.outputs_hash.clone().unwrap_or_else(|| self.hash_outputs());
+            outputs_hash = self
+                .outputs_hash
+                .clone()
+                .unwrap_or_else(|| self.hash_outputs());
         } else if hash_type & 0x1f == SIGHASH_SINGLE && input_index < self.outputs.len() {
             outputs_hash = double_blake3_hash(&self.outputs[input_index].to_u8_vec()).to_vec();
         }
@@ -163,8 +175,17 @@ impl Transaction {
         bw.write_u64_be(self.lock_time);
         bw.write_u32_be(hash_type);
         bw.to_u8_vec()
+    }
 
-
+    pub fn sighash(
+        &mut self,
+        input_index: usize,
+        script_u8_vec: Vec<u8>,
+        amount: u64,
+        hash_type: u32,
+    ) -> Vec<u8> {
+        let preimage = self.sighash_preimage(input_index, script_u8_vec, amount, hash_type);
+        double_blake3_hash(&preimage).to_vec()
     }
 }
 
@@ -272,5 +293,110 @@ mod tests {
         let transaction = Transaction::new(version, inputs, outputs, lock_time);
         let expected_hash = double_blake3_hash(&transaction.to_u8_vec()).to_vec();
         assert_eq!(transaction.id(), expected_hash);
+    }
+
+    #[test]
+    fn hash_prevouts() {
+        let version = 1;
+        let inputs = vec![TransactionInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string_new("").unwrap(),
+            0xffffffff,
+        )];
+        let outputs = vec![TransactionOutput::new(
+            100 as u64,
+            Script::from_string_new("").unwrap(),
+        )];
+
+        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+
+        let result = transaction.hash_prevouts();
+
+        assert_eq!(result.len(), 32);
+
+        let expected =
+            hex::decode("2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba")
+                .unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn hash_sequence() {
+        let version = 1;
+        let inputs = vec![TransactionInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string_new("").unwrap(),
+            0xffffffff,
+        )];
+        let outputs = vec![TransactionOutput::new(
+            100 as u64,
+            Script::from_string_new("").unwrap(),
+        )];
+
+        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+
+        let result = transaction.hash_sequence();
+
+        assert_eq!(result.len(), 32);
+
+        let expected =
+            hex::decode("5c9bc5bfc9fe60992fb5432ba6d5da1b5e232127b6a5678f93063b2d766cfbf5")
+                .unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn hash_outputs() {
+        let version = 1;
+        let inputs = vec![TransactionInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string_new("").unwrap(),
+            0xffffffff,
+        )];
+        let outputs = vec![TransactionOutput::new(
+            100 as u64,
+            Script::from_string_new("").unwrap(),
+        )];
+
+        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+
+        let result = transaction.hash_outputs();
+
+        assert_eq!(result.len(), 32);
+
+        let expected =
+            hex::decode("8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5")
+                .unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sighash() {
+        let version = 1;
+        let inputs = vec![TransactionInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string_new("").unwrap(),
+            0xffffffff,
+        )];
+        let outputs = vec![TransactionOutput::new(
+            100 as u64,
+            Script::from_string_new("").unwrap(),
+        )];
+
+        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+
+        let script = Script::from_string_new("").unwrap();
+        let amount = 1;
+        let hash_type = 1;
+        let preimage = transaction.sighash(0, script.to_u8_vec(), amount, hash_type);
+
+        let expected =
+            hex::decode("ff69befa9a79812747d1270a0cba212e4f6eaefa8a69054e6a48627c6b8cd5c7")
+                .unwrap();
+        assert_eq!(preimage, expected);
     }
 }

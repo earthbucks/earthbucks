@@ -13,6 +13,9 @@ impl Script {
     }
 
     pub fn from_string(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        if s == "" {
+            return Ok(Self::new(Vec::new()));
+        }
         let chunks: Result<Vec<ScriptChunk>, _> = s
             .split_whitespace()
             .map(|s| ScriptChunk::from_string_new(s.to_string()))
