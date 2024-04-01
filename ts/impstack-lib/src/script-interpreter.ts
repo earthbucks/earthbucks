@@ -196,7 +196,19 @@ export default class ScriptInterpreter {
             break
           }
         } else if (opcode === NAME_TO_OPCODE['RETURN']) {
-          break;
+          break
+        } else if (opcode === NAME_TO_OPCODE.TOALTSTACK) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.altStack.push(this.stack.pop() || new Uint8Array())
+        } else if (opcode === NAME_TO_OPCODE.FROMALTSTACK) {
+          if (this.altStack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.altStack.pop() || new Uint8Array())
         } else {
           this.errStr = 'invalid opcode'
           break

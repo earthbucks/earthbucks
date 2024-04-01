@@ -190,8 +190,20 @@ impl ScriptInterpreter {
                         self.err_str = "VERIFY failed".to_string();
                         break;
                     }
-                  } else if opcode == NAME_TO_OPCODE["RETURN"] {
+                } else if opcode == NAME_TO_OPCODE["RETURN"] {
                     break;
+                } else if opcode == NAME_TO_OPCODE["TOALTSTACK"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    self.alt_stack.push(self.stack.pop().unwrap());
+                } else if opcode == NAME_TO_OPCODE["FROMALTSTACK"] {
+                    if self.alt_stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    self.stack.push(self.alt_stack.pop().unwrap());
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

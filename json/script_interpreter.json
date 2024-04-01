@@ -272,6 +272,41 @@
       "expected_return_value": "00",
       "expected_success": false,
       "expected_error": ""
+    },
+    {
+      "name": "to/from altstack",
+      "script": "1 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 2",
+      "script": "0 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 3",
+      "script": "1 TOALTSTACK FROMALTSTACK TOALTSTACK",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 4",
+      "script": "1 0 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 5",
+      "script": "1 1 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
     }
   ]
 }
