@@ -10,6 +10,9 @@ export default class Script {
   }
 
   fromString(str: string): this {
+    if (str === '') {
+      return this
+    }
     this.chunks = str.split(' ').map(ScriptChunk.fromString)
     return this
   }

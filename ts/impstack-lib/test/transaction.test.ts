@@ -187,23 +187,23 @@ describe('Transaction', () => {
     test('sighash', () => {
       const version = 1
       const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TransactionInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
       ]
       const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+        new TransactionOutput(BigInt(100), Script.fromString('')),
       ]
       const locktime = BigInt(0)
 
       const transaction = new Transaction(version, inputs, outputs, locktime)
 
-      const script = new Script()
+      const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()
       const result = transaction.sighash(0, scriptU8Vec, BigInt(1), 1)
 
       expect(result).toBeInstanceOf(Uint8Array)
 
       expect(Buffer.from(result).toString('hex')).toEqual(
-        'db33be558fd82e72fb6bda7ec14ccf8f690c888607e191c1b83a2bf3be8609be',
+        'ff69befa9a79812747d1270a0cba212e4f6eaefa8a69054e6a48627c6b8cd5c7',
       )
     })
   })

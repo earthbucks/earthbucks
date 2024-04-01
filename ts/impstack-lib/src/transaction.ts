@@ -153,7 +153,7 @@ export default class Transaction {
     }
 
     const writer = new BufferWriter()
-    writer.writeUInt32BE(this.version)
+    writer.writeUInt8(this.version)
     writer.writeU8Vec(prevoutsHash)
     writer.writeU8Vec(sequenceHash)
     writer.writeU8Vec(this.inputs[inputIndex].inputTxId)
