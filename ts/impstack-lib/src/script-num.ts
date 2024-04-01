@@ -72,4 +72,8 @@ export default class ScriptNum {
   static fromString(str: string): ScriptNum {
     return new ScriptNum().fromString(str)
   }
+
+  toU32(): number {
+    return Number(this.num)
+  }
 }

@@ -268,6 +268,167 @@ export default class ScriptInterpreter {
         } else if (opcode === OP.DEPTH) {
           let scriptNum = new ScriptNum(BigInt(this.stack.length))
           this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.DROP) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.pop()
+        } else if (opcode === OP.DUP) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.stack[this.stack.length - 1])
+        } else if (opcode === OP.NIP) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = this.stack.pop()
+          this.stack.pop()
+          this.stack.push(buf as Uint8Array)
+        } else if (opcode === OP.OVER) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.stack[this.stack.length - 2])
+        } else if (opcode === OP.PICK) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(
+            this.stack.pop() as Uint8Array,
+          ).num
+          if (scriptNum < 0 || scriptNum >= this.stack.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          const num = Number(scriptNum)
+          this.stack.push(this.stack[this.stack.length - num - 1])
+        } else if (opcode === OP.ROLL) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let scriptNum = ScriptNum.fromU8Vec(
+            this.stack.pop() as Uint8Array,
+          ).num
+          if (scriptNum < 0 || scriptNum >= this.stack.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          const num = Number(scriptNum)
+          let spliced = this.stack.splice(this.stack.length - num - 1, 1)
+          this.stack.push(spliced[0])
+        } else if (opcode === OP.ROT) {
+          // (x1 x2 x3 -- x2 x3 x1)
+          if (this.stack.length < 3) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let spliced = this.stack.splice(this.stack.length - 3, 1)
+          this.stack.push(spliced[0])
+        } else if (opcode === OP.SWAP) {
+          // (x1 x2 -- x2 x1)
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let spliced = this.stack.splice(this.stack.length - 2, 1)
+          this.stack.push(spliced[0])
+        } else if (opcode === OP.TUCK) {
+          // (x1 x2 -- x2 x1 x2)
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.splice(
+            this.stack.length - 2,
+            0,
+            this.stack[this.stack.length - 1],
+          )
+        } else if (opcode === OP.CAT) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          this.stack.push(Buffer.concat([buf2, buf1]))
+        } else if (opcode === OP.SUBSTR) {
+          if (this.stack.length < 3) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let len = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          let offset = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          let buf = this.stack.pop() as Uint8Array
+          if (offset < 0 || len < 0 || offset + len > buf.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(buf.slice(Number(offset), Number(offset + len)))
+        } else if (opcode === OP.LEFT) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let len = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          let buf = this.stack.pop() as Uint8Array
+          if (len < 0 || len > buf.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(buf.slice(0, Number(len)))
+        } else if (opcode === OP.RIGHT) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let len = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          let buf = this.stack.pop() as Uint8Array
+          if (len < 0 || len > buf.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(buf.slice(buf.length - Number(len)))
+        } else if (opcode === OP.SIZE) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = this.stack[this.stack.length - 1]
+          let scriptNum = new ScriptNum(BigInt(buf.length))
+          this.stack.push(scriptNum.toU8Vec())
+        } else if (opcode === OP.INVERT) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = this.stack.pop() as Uint8Array
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = ~buf[i]
+          }
+          this.stack.push(buf)
+        } else if (opcode === OP.AND) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf1 = this.stack.pop() as Uint8Array
+          let buf2 = this.stack.pop() as Uint8Array
+          if (buf1.length !== buf2.length) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = new Uint8Array(buf1.length)
+          for (let i = 0; i < buf.length; i++) {
+            buf[i] = buf1[i] & buf2[i]
+          }
+          this.stack.push(buf)
         } else {
           this.errStr = 'invalid opcode'
           break

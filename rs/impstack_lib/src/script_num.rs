@@ -2,13 +2,13 @@
 
 extern crate num_bigint;
 extern crate num_traits;
-
 use num_bigint::BigInt;
+use num_traits::ToPrimitive;
 use num_traits::Zero;
 
 #[derive(Debug, Clone)]
 pub struct ScriptNum {
-    num: BigInt,
+    pub num: BigInt,
 }
 
 impl ScriptNum {
@@ -54,6 +54,10 @@ impl ScriptNum {
         ScriptNum {
             num: BigInt::parse_bytes(str.as_bytes(), 10).unwrap(),
         }
+    }
+
+    pub fn to_u32(&self) -> u32 {
+        self.num.to_u32().unwrap()
     }
 }
 
