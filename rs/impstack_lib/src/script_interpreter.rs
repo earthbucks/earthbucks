@@ -190,6 +190,8 @@ impl ScriptInterpreter {
                         self.err_str = "VERIFY failed".to_string();
                         break;
                     }
+                  } else if opcode == NAME_TO_OPCODE["RETURN"] {
+                    break;
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

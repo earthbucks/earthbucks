@@ -244,6 +244,34 @@
       "expected_return_value": "",
       "expected_success": false,
       "expected_error": "VERIFY failed"
+    },
+    {
+      "name": "return true",
+      "script": "1 RETURN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "return false",
+      "script": "0 RETURN",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "nested return true",
+      "script": "1 IF 1 RETURN ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nested return false",
+      "script": "1 IF 0 RETURN ENDIF",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
     }
   ]
 }

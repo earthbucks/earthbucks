@@ -195,6 +195,8 @@ export default class ScriptInterpreter {
             this.errStr = 'VERIFY failed'
             break
           }
+        } else if (opcode === NAME_TO_OPCODE['RETURN']) {
+          break;
         } else {
           this.errStr = 'invalid opcode'
           break
