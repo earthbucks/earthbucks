@@ -96,7 +96,7 @@ export type OpcodeName =
   | 'BLAKE3'
   | 'DOUBLEBLAKE3'
 
-export const NAME_TO_OPCODE: { [key in OpcodeName]: number } = {
+export const OP: { [key in OpcodeName]: number } = {
   '0': 0x00,
   PUSHDATA1: 0x4c,
   PUSHDATA2: 0x4d,

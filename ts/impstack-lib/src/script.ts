@@ -1,4 +1,4 @@
-import { NAME_TO_OPCODE } from './opcode'
+import { OP } from './opcode'
 import ScriptChunk from './script-chunk'
 import BufferReader from './buffer-reader'
 
@@ -33,13 +33,13 @@ export default class Script {
     while (!reader.eof()) {
       const chunk = new ScriptChunk()
       chunk.opcode = reader.readUInt8()
-      if (chunk.opcode <= NAME_TO_OPCODE.PUSHDATA4) {
+      if (chunk.opcode <= OP.PUSHDATA4) {
         let len = chunk.opcode
-        if (len === NAME_TO_OPCODE.PUSHDATA1) {
+        if (len === OP.PUSHDATA1) {
           len = reader.readUInt8()
-        } else if (len === NAME_TO_OPCODE.PUSHDATA2) {
+        } else if (len === OP.PUSHDATA2) {
           len = reader.readUInt16LE()
-        } else if (len === NAME_TO_OPCODE.PUSHDATA4) {
+        } else if (len === OP.PUSHDATA4) {
           len = reader.readUInt32LE()
         }
         chunk.buffer = Buffer.from(reader.read(len))

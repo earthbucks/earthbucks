@@ -1,5 +1,5 @@
 use crate::buffer_reader::BufferReader;
-use crate::opcode::NAME_TO_OPCODE;
+use crate::opcode::OP;
 use crate::script_chunk::ScriptChunk;
 
 #[derive(Clone)]
@@ -46,14 +46,14 @@ impl Script {
         while !reader.eof() {
             let mut chunk = ScriptChunk::new(reader.read_u8(), None);
 
-            if chunk.opcode == NAME_TO_OPCODE["PUSHDATA1"]
-                || chunk.opcode == NAME_TO_OPCODE["PUSHDATA2"]
-                || chunk.opcode == NAME_TO_OPCODE["PUSHDATA4"]
+            if chunk.opcode == OP["PUSHDATA1"]
+                || chunk.opcode == OP["PUSHDATA2"]
+                || chunk.opcode == OP["PUSHDATA4"]
             {
                 let len = match chunk.opcode {
-                    opcode if opcode == NAME_TO_OPCODE["PUSHDATA1"] => reader.read_u8() as u32,
-                    opcode if opcode == NAME_TO_OPCODE["PUSHDATA2"] => reader.read_u16_be() as u32,
-                    opcode if opcode == NAME_TO_OPCODE["PUSHDATA4"] => reader.read_u32_be() as u32,
+                    opcode if opcode == OP["PUSHDATA1"] => reader.read_u8() as u32,
+                    opcode if opcode == OP["PUSHDATA2"] => reader.read_u16_be() as u32,
+                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be() as u32,
                     _ => unreachable!(),
                 };
 

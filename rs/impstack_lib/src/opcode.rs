@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 lazy_static! {
-    pub static ref NAME_TO_OPCODE: HashMap<&'static str, u8> = {
+    pub static ref OP: HashMap<&'static str, u8> = {
         let mut map = HashMap::new();
         map.insert("0", 0x00);
         map.insert("PUSHDATA1", 0x4c);
@@ -210,12 +210,12 @@ mod tests {
 
     #[test]
     fn test_maps() {
-        for (name, opcode) in NAME_TO_OPCODE.iter() {
+        for (name, opcode) in OP.iter() {
             assert_eq!(Some(*name), OPCODE_TO_NAME.get(opcode).map(|s| *s));
         }
 
         for (opcode, name) in OPCODE_TO_NAME.iter() {
-            assert_eq!(Some(opcode), NAME_TO_OPCODE.get(*name));
+            assert_eq!(Some(opcode), OP.get(*name));
         }
     }
 }

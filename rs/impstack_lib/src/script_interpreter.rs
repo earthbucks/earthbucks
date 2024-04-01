@@ -1,4 +1,4 @@
-use crate::opcode::NAME_TO_OPCODE;
+use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
 use crate::transaction::Transaction;
@@ -78,12 +78,12 @@ impl ScriptInterpreter {
             let if_exec = !self.if_stack.contains(&false);
 
             if if_exec
-                || (opcode == NAME_TO_OPCODE["IF"]
-                    || opcode == NAME_TO_OPCODE["NOTIF"]
-                    || opcode == NAME_TO_OPCODE["ELSE"]
-                    || opcode == NAME_TO_OPCODE["ENDIF"])
+                || (opcode == OP["IF"]
+                    || opcode == OP["NOTIF"]
+                    || opcode == OP["ELSE"]
+                    || opcode == OP["ENDIF"])
             {
-                if opcode == NAME_TO_OPCODE["IF"] {
+                if opcode == OP["IF"] {
                     let mut if_value = false;
                     if if_exec {
                         if self.stack.len() < 1 {
@@ -94,7 +94,7 @@ impl ScriptInterpreter {
                         if_value = ScriptInterpreter::cast_to_bool(&buf);
                     }
                     self.if_stack.push(if_value);
-                } else if opcode == NAME_TO_OPCODE["NOTIF"] {
+                } else if opcode == OP["NOTIF"] {
                     let mut if_value = false;
                     if if_exec {
                         if self.stack.len() < 1 {
@@ -105,82 +105,82 @@ impl ScriptInterpreter {
                         if_value = !ScriptInterpreter::cast_to_bool(&buf);
                     }
                     self.if_stack.push(if_value);
-                } else if opcode == NAME_TO_OPCODE["ELSE"] {
+                } else if opcode == OP["ELSE"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
                         break;
                     }
                     let if_stack_len = self.if_stack.len();
                     self.if_stack[if_stack_len - 1] = !self.if_stack[self.if_stack.len() - 1];
-                } else if opcode == NAME_TO_OPCODE["ENDIF"] {
+                } else if opcode == OP["ENDIF"] {
                     if self.if_stack.is_empty() {
                         self.err_str = "unbalanced conditional".to_string();
                         break;
                     }
                     self.if_stack.pop();
-                } else if opcode == NAME_TO_OPCODE["0"] {
+                } else if opcode == OP["0"] {
                     self.stack.push(vec![0]);
-                } else if opcode == NAME_TO_OPCODE["PUSHDATA1"]
-                    || opcode == NAME_TO_OPCODE["PUSHDATA2"]
-                    || opcode == NAME_TO_OPCODE["PUSHDATA4"]
+                } else if opcode == OP["PUSHDATA1"]
+                    || opcode == OP["PUSHDATA2"]
+                    || opcode == OP["PUSHDATA4"]
                 {
                     if let Some(buffer) = &chunk.buffer {
                         self.stack.push(buffer.clone());
                     } else {
                         self.err_str = "invalid pushdata".to_string();
                     }
-                } else if opcode == NAME_TO_OPCODE["1NEGATE"] {
+                } else if opcode == OP["1NEGATE"] {
                     let script_num = ScriptNum::new(-1.to_bigint().unwrap());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["1"] {
+                } else if opcode == OP["1"] {
                     let script_num = ScriptNum::new(1.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["2"] {
+                } else if opcode == OP["2"] {
                     let script_num = ScriptNum::new(2.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["3"] {
+                } else if opcode == OP["3"] {
                     let script_num = ScriptNum::new(3.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["4"] {
+                } else if opcode == OP["4"] {
                     let script_num = ScriptNum::new(4.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["5"] {
+                } else if opcode == OP["5"] {
                     let script_num = ScriptNum::new(5.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["6"] {
+                } else if opcode == OP["6"] {
                     let script_num = ScriptNum::new(6.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["7"] {
+                } else if opcode == OP["7"] {
                     let script_num = ScriptNum::new(7.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["8"] {
+                } else if opcode == OP["8"] {
                     let script_num = ScriptNum::new(8.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["9"] {
+                } else if opcode == OP["9"] {
                     let script_num = ScriptNum::new(9.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["10"] {
+                } else if opcode == OP["10"] {
                     let script_num = ScriptNum::new(10.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["11"] {
+                } else if opcode == OP["11"] {
                     let script_num = ScriptNum::new(11.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["12"] {
+                } else if opcode == OP["12"] {
                     let script_num = ScriptNum::new(12.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["13"] {
+                } else if opcode == OP["13"] {
                     let script_num = ScriptNum::new(13.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["14"] {
+                } else if opcode == OP["14"] {
                     let script_num = ScriptNum::new(14.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["15"] {
+                } else if opcode == OP["15"] {
                     let script_num = ScriptNum::new(15.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["16"] {
+                } else if opcode == OP["16"] {
                     let script_num = ScriptNum::new(16.into());
                     self.stack.push(script_num.to_u8_vec());
-                } else if opcode == NAME_TO_OPCODE["VERIFY"] {
+                } else if opcode == OP["VERIFY"] {
                     if self.stack.len() < 1 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
@@ -190,15 +190,15 @@ impl ScriptInterpreter {
                         self.err_str = "VERIFY failed".to_string();
                         break;
                     }
-                } else if opcode == NAME_TO_OPCODE["RETURN"] {
+                } else if opcode == OP["RETURN"] {
                     break;
-                } else if opcode == NAME_TO_OPCODE["TOALTSTACK"] {
+                } else if opcode == OP["TOALTSTACK"] {
                     if self.stack.len() < 1 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     self.alt_stack.push(self.stack.pop().unwrap());
-                } else if opcode == NAME_TO_OPCODE["FROMALTSTACK"] {
+                } else if opcode == OP["FROMALTSTACK"] {
                     if self.alt_stack.len() < 1 {
                         self.err_str = "invalid stack operation".to_string();
                         break;

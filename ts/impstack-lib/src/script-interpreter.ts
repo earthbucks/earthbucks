@@ -1,4 +1,4 @@
-import { OPCODE_TO_NAME, NAME_TO_OPCODE } from './opcode'
+import { OPCODE_TO_NAME, OP } from './opcode'
 import Script from './script'
 import Transaction from './transaction'
 import ScriptNum from './script-num'
@@ -77,12 +77,12 @@ export default class ScriptInterpreter {
 
       if (
         ifExec ||
-        opcode == NAME_TO_OPCODE.IF ||
-        opcode == NAME_TO_OPCODE.NOTIF ||
-        opcode == NAME_TO_OPCODE.ELSE ||
-        opcode == NAME_TO_OPCODE.ENDIF
+        opcode == OP.IF ||
+        opcode == OP.NOTIF ||
+        opcode == OP.ELSE ||
+        opcode == OP.ENDIF
       ) {
-        if (opcode === NAME_TO_OPCODE.IF) {
+        if (opcode === OP.IF) {
           let ifValue = false
           if (ifExec) {
             if (this.stack.length < 1) {
@@ -93,7 +93,7 @@ export default class ScriptInterpreter {
             ifValue = ScriptInterpreter.castToBool(buf)
           }
           this.ifStack.push(ifValue)
-        } else if (opcode === NAME_TO_OPCODE.NOTIF) {
+        } else if (opcode === OP.NOTIF) {
           let ifValue = false
           if (ifExec) {
             if (this.stack.length < 1) {
@@ -105,7 +105,7 @@ export default class ScriptInterpreter {
             ifValue = !ifValue
           }
           this.ifStack.push(ifValue)
-        } else if (opcode === NAME_TO_OPCODE.ELSE) {
+        } else if (opcode === OP.ELSE) {
           if (this.ifStack.length === 0) {
             this.errStr = 'unbalanced conditional'
             this.returnSuccess = false
@@ -115,18 +115,18 @@ export default class ScriptInterpreter {
           }
           this.ifStack[this.ifStack.length - 1] =
             !this.ifStack[this.ifStack.length - 1]
-        } else if (opcode === NAME_TO_OPCODE.ENDIF) {
+        } else if (opcode === OP.ENDIF) {
           if (this.ifStack.length === 0) {
             this.errStr = 'unbalanced conditional'
             break
           }
           this.ifStack.pop()
-        } else if (opcode === NAME_TO_OPCODE['0']) {
+        } else if (opcode === OP['0']) {
           this.stack.push(new Uint8Array([0]))
         } else if (
-          opcode === NAME_TO_OPCODE.PUSHDATA1 ||
-          opcode === NAME_TO_OPCODE.PUSHDATA2 ||
-          opcode === NAME_TO_OPCODE.PUSHDATA4
+          opcode === OP.PUSHDATA1 ||
+          opcode === OP.PUSHDATA2 ||
+          opcode === OP.PUSHDATA4
         ) {
           if (chunk.buffer) {
             this.stack.push(new Uint8Array(chunk.buffer))
@@ -134,58 +134,58 @@ export default class ScriptInterpreter {
             this.errStr = 'unbalanced conditional'
             break
           }
-        } else if (opcode === NAME_TO_OPCODE['1NEGATE']) {
+        } else if (opcode === OP['1NEGATE']) {
           const scriptNum = new ScriptNum(BigInt(-1))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['1']) {
+        } else if (opcode === OP['1']) {
           const scriptNum = new ScriptNum(BigInt(1))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['2']) {
+        } else if (opcode === OP['2']) {
           const scriptNum = new ScriptNum(BigInt(2))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['3']) {
+        } else if (opcode === OP['3']) {
           const scriptNum = new ScriptNum(BigInt(3))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['4']) {
+        } else if (opcode === OP['4']) {
           const scriptNum = new ScriptNum(BigInt(4))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['5']) {
+        } else if (opcode === OP['5']) {
           const scriptNum = new ScriptNum(BigInt(5))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['6']) {
+        } else if (opcode === OP['6']) {
           const scriptNum = new ScriptNum(BigInt(6))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['7']) {
+        } else if (opcode === OP['7']) {
           const scriptNum = new ScriptNum(BigInt(7))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['8']) {
+        } else if (opcode === OP['8']) {
           const scriptNum = new ScriptNum(BigInt(8))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['9']) {
+        } else if (opcode === OP['9']) {
           const scriptNum = new ScriptNum(BigInt(9))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['10']) {
+        } else if (opcode === OP['10']) {
           const scriptNum = new ScriptNum(BigInt(10))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['11']) {
+        } else if (opcode === OP['11']) {
           const scriptNum = new ScriptNum(BigInt(11))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['12']) {
+        } else if (opcode === OP['12']) {
           const scriptNum = new ScriptNum(BigInt(12))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['13']) {
+        } else if (opcode === OP['13']) {
           const scriptNum = new ScriptNum(BigInt(13))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['14']) {
+        } else if (opcode === OP['14']) {
           const scriptNum = new ScriptNum(BigInt(14))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['15']) {
+        } else if (opcode === OP['15']) {
           const scriptNum = new ScriptNum(BigInt(15))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE['16']) {
+        } else if (opcode === OP['16']) {
           const scriptNum = new ScriptNum(BigInt(16))
           this.stack.push(scriptNum.toU8Vec())
-        } else if (opcode === NAME_TO_OPCODE.VERIFY) {
+        } else if (opcode === OP.VERIFY) {
           if (this.stack.length < 1) {
             this.errStr = 'invalid stack operation'
             break
@@ -195,15 +195,15 @@ export default class ScriptInterpreter {
             this.errStr = 'VERIFY failed'
             break
           }
-        } else if (opcode === NAME_TO_OPCODE['RETURN']) {
+        } else if (opcode === OP['RETURN']) {
           break
-        } else if (opcode === NAME_TO_OPCODE.TOALTSTACK) {
+        } else if (opcode === OP.TOALTSTACK) {
           if (this.stack.length < 1) {
             this.errStr = 'invalid stack operation'
             break
           }
           this.altStack.push(this.stack.pop() || new Uint8Array())
-        } else if (opcode === NAME_TO_OPCODE.FROMALTSTACK) {
+        } else if (opcode === OP.FROMALTSTACK) {
           if (this.altStack.length < 1) {
             this.errStr = 'invalid stack operation'
             break
