@@ -1,4 +1,4 @@
-use crate::blake3::double_hash;
+use crate::blake3::double_blake3_hash;
 
 pub struct Address {
     address: [u8; 32],
@@ -6,7 +6,7 @@ pub struct Address {
 
 impl Address {
     pub fn new(public_key: Vec<u8>) -> Self {
-        let address = double_hash(&public_key);
+        let address = double_blake3_hash(&public_key);
         Self { address }
     }
 

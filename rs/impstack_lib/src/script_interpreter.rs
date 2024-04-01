@@ -1,4 +1,4 @@
-use crate::blake3::{double_hash, hash};
+use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
@@ -825,7 +825,7 @@ impl ScriptInterpreter {
                         break;
                     }
                     let buf = self.stack.pop().unwrap();
-                    let hash = hash(&buf);
+                    let hash = blake3_hash(&buf);
                     self.stack.push(hash.to_vec());
                 } else if opcode == OP["DOUBLEBLAKE3"] {
                     if self.stack.len() < 1 {
@@ -833,7 +833,7 @@ impl ScriptInterpreter {
                         break;
                     }
                     let buf = self.stack.pop().unwrap();
-                    let hash = double_hash(&buf);
+                    let hash = double_blake3_hash(&buf);
                     self.stack.push(hash.to_vec());
                 } else {
                     self.err_str = "invalid opcode".to_string();

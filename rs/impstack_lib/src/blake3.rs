@@ -1,13 +1,13 @@
 use blake3::Hasher;
 
-pub fn hash(data: &[u8]) -> [u8; 32] {
+pub fn blake3_hash(data: &[u8]) -> [u8; 32] {
     let mut hasher = Hasher::new();
     hasher.update(data);
     hasher.finalize().into()
 }
 
-pub fn double_hash(data: &[u8]) -> [u8; 32] {
-    hash(&hash(data))
+pub fn double_blake3_hash(data: &[u8]) -> [u8; 32] {
+    blake3_hash(&blake3_hash(data))
 }
 
 #[cfg(test)]
@@ -30,7 +30,7 @@ mod tests {
         expected_address.copy_from_slice(&expected_address_vec[..]);
 
         // Compute the hash of the public key
-        let address = hash(&pub_key);
+        let address = blake3_hash(&pub_key);
 
         // Convert the address to hex
         let address_hex = hex::encode(address);
@@ -57,7 +57,7 @@ mod tests {
         expected_address.copy_from_slice(&expected_address_vec[..]);
 
         // Compute the hash of the public key
-        let address = double_hash(&pub_key);
+        let address = double_blake3_hash(&pub_key);
 
         // Convert the address to hex
         let address_hex = hex::encode(address);

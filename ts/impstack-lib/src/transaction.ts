@@ -3,7 +3,7 @@ import TransactionOutput from './transaction-output'
 import VarInt from './var-int'
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
-import { hash, doubleHash } from './blake3'
+import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class Transaction {
   public version: number
@@ -75,11 +75,11 @@ export default class Transaction {
     return Buffer.from(this.toU8Vec())
   }
 
-  hashonce(): Uint8Array {
-    return hash(this.toU8Vec())
+  blake3Hash(): Uint8Array {
+    return blake3Hash(this.toU8Vec())
   }
 
-  hash(): Uint8Array {
-    return doubleHash(this.toU8Vec())
+  id(): Uint8Array {
+    return doubleBlake3Hash(this.toU8Vec())
   }
 }

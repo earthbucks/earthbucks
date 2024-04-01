@@ -5,7 +5,7 @@ import TransactionOutput from '../src/transaction-output'
 import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
 import BufferWriter from '../src/buffer-writer'
-import { hash } from '../src/blake3'
+import { blake3Hash } from '../src/blake3'
 
 describe('Transaction', () => {
   describe('constructor', () => {
@@ -98,8 +98,8 @@ describe('Transaction', () => {
       const locktime = BigInt(0)
 
       const transaction = new Transaction(version, inputs, outputs, locktime)
-      const expectedHash = hash(transaction.toU8Vec())
-      expect(transaction.hashonce()).toEqual(expectedHash)
+      const expectedHash = blake3Hash(transaction.toU8Vec())
+      expect(transaction.blake3Hash()).toEqual(expectedHash)
     })
   })
 
@@ -115,8 +115,8 @@ describe('Transaction', () => {
       const locktime = BigInt(0)
 
       const transaction = new Transaction(version, inputs, outputs, locktime)
-      const expectedHash = hash(hash(transaction.toU8Vec()))
-      expect(transaction.hash()).toEqual(expectedHash)
+      const expectedHash = blake3Hash(blake3Hash(transaction.toU8Vec()))
+      expect(transaction.id()).toEqual(expectedHash)
     })
   })
 })

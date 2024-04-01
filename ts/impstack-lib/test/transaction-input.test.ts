@@ -17,7 +17,7 @@ describe('TransactionInput', () => {
       sequence,
     )
     expect(transactionInput).toBeInstanceOf(TransactionInput)
-    expect(transactionInput.inputTxHash).toBe(inputTxHash)
+    expect(transactionInput.inputTxId).toBe(inputTxHash)
     expect(transactionInput.inputTxIndex).toBe(inputTxIndex)
     expect(transactionInput.script).toBe(script)
     expect(transactionInput.sequence).toBe(sequence)
@@ -40,7 +40,7 @@ describe('TransactionInput', () => {
       const reader = new BufferReader(transactionInput.toBuffer())
       const result = TransactionInput.fromBufferReader(reader)
       expect(result).toBeInstanceOf(TransactionInput)
-      expect(Buffer.from(result.inputTxHash).toString('hex')).toEqual(
+      expect(Buffer.from(result.inputTxId).toString('hex')).toEqual(
         Buffer.from(inputTxHash).toString('hex'),
       )
       expect(result.inputTxIndex).toEqual(inputTxIndex)

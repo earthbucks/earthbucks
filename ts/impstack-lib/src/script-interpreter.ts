@@ -2,7 +2,7 @@ import { OPCODE_TO_NAME, OP } from './opcode'
 import Script from './script'
 import Transaction from './transaction'
 import ScriptNum from './script-num'
-import { hash, doubleHash } from './blake3'
+import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class ScriptInterpreter {
   public script: Script
@@ -749,14 +749,14 @@ export default class ScriptInterpreter {
             break
           }
           let buf = this.stack.pop() as Uint8Array
-          this.stack.push(hash(buf))
+          this.stack.push(blake3Hash(buf))
         } else if (opcode === OP.DOUBLEBLAKE3) {
           if (this.stack.length < 1) {
             this.errStr = 'invalid stack operation'
             break
           }
           let buf = this.stack.pop() as Uint8Array
-          this.stack.push(doubleHash(buf))
+          this.stack.push(doubleBlake3Hash(buf))
         } else {
           this.errStr = 'invalid opcode'
           break
