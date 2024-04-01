@@ -141,28 +141,19 @@ mod tests {
 
     #[test]
     fn test_to_string_pushdata1() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA1").unwrap(),
-            Some(vec![1, 2, 3]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(vec![1, 2, 3]));
         assert_eq!(chunk.to_string().unwrap(), "0x010203");
     }
 
     #[test]
     fn test_to_string_pushdata2() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA2").unwrap(),
-            Some(vec![4, 5, 6]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(vec![4, 5, 6]));
         assert_eq!(chunk.to_string().unwrap(), "0x040506");
     }
 
     #[test]
     fn test_to_string_pushdata4() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA4").unwrap(),
-            Some(vec![7, 8, 9]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(vec![7, 8, 9]));
         assert_eq!(chunk.to_string().unwrap(), "0x070809");
     }
 
@@ -217,10 +208,7 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_pushdata1() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA1").unwrap(),
-            Some(vec![1, 2, 3]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(vec![1, 2, 3]));
         assert_eq!(
             chunk.to_u8_vec(),
             vec![*OP.get("PUSHDATA1").unwrap(), 3, 1, 2, 3]
@@ -229,10 +217,7 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_pushdata2() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA2").unwrap(),
-            Some(vec![1; 256]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(vec![1; 256]));
         let mut expected = vec![*OP.get("PUSHDATA2").unwrap(), 1, 0];
         expected.extend(vec![1; 256]);
         assert_eq!(chunk.to_u8_vec(), expected);
@@ -240,10 +225,7 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_pushdata4() {
-        let chunk = ScriptChunk::new(
-            *OP.get("PUSHDATA4").unwrap(),
-            Some(vec![1; 65536]),
-        );
+        let chunk = ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(vec![1; 65536]));
         let mut expected = vec![*OP.get("PUSHDATA4").unwrap(), 0, 1, 0, 0];
         expected.extend(vec![1; 65536]);
         assert_eq!(chunk.to_u8_vec(), expected);

@@ -204,6 +204,82 @@ impl ScriptInterpreter {
                         break;
                     }
                     self.stack.push(self.alt_stack.pop().unwrap());
+                } else if opcode == OP["2DROP"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    self.stack.pop();
+                    self.stack.pop();
+                } else if opcode == OP["2DUP"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack[self.stack.len() - 2].clone();
+                    let buf2 = self.stack[self.stack.len() - 1].clone();
+                    self.stack.push(buf1);
+                    self.stack.push(buf2);
+                } else if opcode == OP["3DUP"] {
+                    if self.stack.len() < 3 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack[self.stack.len() - 3].clone();
+                    let buf2 = self.stack[self.stack.len() - 2].clone();
+                    let buf3 = self.stack[self.stack.len() - 1].clone();
+                    self.stack.push(buf1);
+                    self.stack.push(buf2);
+                    self.stack.push(buf3);
+                } else if opcode == OP["2OVER"] {
+                    if self.stack.len() < 4 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack[self.stack.len() - 4].clone();
+                    let buf2 = self.stack[self.stack.len() - 3].clone();
+                    self.stack.push(buf1);
+                    self.stack.push(buf2);
+                } else if opcode == OP["2ROT"] {
+                    if self.stack.len() < 6 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack[self.stack.len() - 6].clone();
+                    let buf2 = self.stack[self.stack.len() - 5].clone();
+                    self.stack.remove(self.stack.len() - 6);
+                    self.stack.remove(self.stack.len() - 5);
+                    self.stack.push(buf1);
+                    self.stack.push(buf2);
+                } else if opcode == OP["2SWAP"] {
+                    if self.stack.len() < 4 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf1 = self.stack[self.stack.len() - 4].clone();
+                    let buf2 = self.stack[self.stack.len() - 3].clone();
+                    self.stack.remove(self.stack.len() - 4);
+                    self.stack.remove(self.stack.len() - 3);
+                    self.stack.push(buf1);
+                    self.stack.push(buf2);
+                } else if opcode == OP["IFDUP"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf = self.stack[self.stack.len() - 1].clone();
+                    if ScriptInterpreter::cast_to_bool(&buf) {
+                        self.stack.push(buf);
+                    }
+                } else if opcode == OP["DEPTH"] {
+                    let script_num = ScriptNum::new(self.stack.len().to_bigint().unwrap());
+                    self.stack.push(script_num.to_u8_vec());
+                } else if opcode == OP["DROP"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    self.stack.pop();
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

@@ -89,7 +89,7 @@ export default class ScriptInterpreter {
               this.errStr = 'unbalanced conditional'
               break
             }
-            let buf = this.stack.pop() || new Uint8Array()
+            let buf = this.stack.pop() as Uint8Array
             ifValue = ScriptInterpreter.castToBool(buf)
           }
           this.ifStack.push(ifValue)
@@ -100,7 +100,7 @@ export default class ScriptInterpreter {
               this.errStr = 'unbalanced conditional'
               break
             }
-            let buf = this.stack.pop() || new Uint8Array()
+            let buf = this.stack.pop() as Uint8Array
             ifValue = ScriptInterpreter.castToBool(buf)
             ifValue = !ifValue
           }
@@ -190,7 +190,7 @@ export default class ScriptInterpreter {
             this.errStr = 'invalid stack operation'
             break
           }
-          let buf = this.stack.pop() || new Uint8Array()
+          let buf = this.stack.pop() as Uint8Array
           if (!ScriptInterpreter.castToBool(buf)) {
             this.errStr = 'VERIFY failed'
             break
@@ -202,13 +202,72 @@ export default class ScriptInterpreter {
             this.errStr = 'invalid stack operation'
             break
           }
-          this.altStack.push(this.stack.pop() || new Uint8Array())
+          this.altStack.push(this.stack.pop() as Uint8Array)
         } else if (opcode === OP.FROMALTSTACK) {
           if (this.altStack.length < 1) {
             this.errStr = 'invalid stack operation'
             break
           }
-          this.stack.push(this.altStack.pop() || new Uint8Array())
+          this.stack.push(this.altStack.pop() as Uint8Array)
+        } else if (opcode === OP['2DROP']) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.pop()
+          this.stack.pop()
+        } else if (opcode === OP['2DUP']) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.stack[this.stack.length - 2] as Uint8Array)
+          this.stack.push(this.stack[this.stack.length - 2] as Uint8Array)
+        } else if (opcode === OP['3DUP']) {
+          if (this.stack.length < 3) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.stack[this.stack.length - 3] as Uint8Array)
+          this.stack.push(this.stack[this.stack.length - 3] as Uint8Array)
+          this.stack.push(this.stack[this.stack.length - 3] as Uint8Array)
+        } else if (opcode === OP['2OVER']) {
+          if (this.stack.length < 4) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          this.stack.push(this.stack[this.stack.length - 4] as Uint8Array)
+          this.stack.push(this.stack[this.stack.length - 4] as Uint8Array)
+        } else if (opcode === OP['2ROT']) {
+          // (x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2)
+          if (this.stack.length < 6) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let spliced = this.stack.splice(this.stack.length - 6, 2)
+          this.stack.push(spliced[0])
+          this.stack.push(spliced[1])
+        } else if (opcode === OP['2SWAP']) {
+          // (x1 x2 x3 x4 -- x3 x4 x1 x2)
+          if (this.stack.length < 4) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let spliced = this.stack.splice(this.stack.length - 4, 2)
+          this.stack.push(spliced[0])
+          this.stack.push(spliced[1])
+        } else if (opcode === OP.IFDUP) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let buf = this.stack[this.stack.length - 1]
+          if (ScriptInterpreter.castToBool(buf)) {
+            this.stack.push(buf)
+          }
+        } else if (opcode === OP.DEPTH) {
+          let scriptNum = new ScriptNum(BigInt(this.stack.length))
+          this.stack.push(scriptNum.toU8Vec())
         } else {
           this.errStr = 'invalid opcode'
           break

@@ -307,6 +307,90 @@
       "expected_return_value": "01",
       "expected_success": true,
       "expected_error": ""
+    },
+    {
+      "name": "drop 2",
+      "script": "1 1 2DROP",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 2",
+      "script": "0 1 2DUP",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 3",
+      "script": "0 0 3 3DUP",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 3 and drop",
+      "script": "0 0 3 3DUP 2DROP",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "2 over",
+      "script": "1 2 3 4 2OVER",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 rot",
+      "script": "1 2 3 4 5 6 2ROT",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 rot",
+      "script": "1 2 3 4 5 6 2ROT",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 swap",
+      "script": "1 2 3 4 2SWAP",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "ifdup 1",
+      "script": "1 IFDUP",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "ifdup 2",
+      "script": "0 IFDUP",
+      "expected_return_value": "00",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "depth 1",
+      "script": "1 2 3 4 5 6 7 8 9 DEPTH",
+      "expected_return_value": "09",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "depth 2",
+      "script": "1 2 3 3 2 1 DEPTH",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
     }
   ]
 }
