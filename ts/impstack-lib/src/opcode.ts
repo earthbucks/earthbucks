@@ -85,7 +85,6 @@ export type OpcodeName =
   | 'WITHIN'
   | 'BLAKE3'
   | 'DOUBLEBLAKE3'
-  | 'CODESEPARATOR'
   | 'CHECKSIG'
   | 'CHECKSIGVERIFY'
   | 'CHECKMULTISIG'
@@ -178,7 +177,6 @@ export const OP: { [key in OpcodeName]: number } = {
   WITHIN: 0xa5,
   BLAKE3: 0xa6,
   DOUBLEBLAKE3: 0xa7,
-  CODESEPARATOR: 0xab,
   CHECKSIG: 0xac,
   CHECKSIGVERIFY: 0xad,
   CHECKMULTISIG: 0xae,
@@ -272,7 +270,6 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0xa5: 'WITHIN',
   0xa6: 'BLAKE3',
   0xa7: 'DOUBLEBLAKE3',
-  0xab: 'CODESEPARATOR',
   0xac: 'CHECKSIG',
   0xad: 'CHECKSIGVERIFY',
   0xae: 'CHECKMULTISIG',

@@ -90,7 +90,6 @@ lazy_static! {
         map.insert("WITHIN", 0xa5);
         map.insert("BLAKE3", 0xa6);
         map.insert("DOUBLEBLAKE3", 0xa7);
-        map.insert("CODESEPARATOR", 0xab);
         map.insert("CHECKSIG", 0xac);
         map.insert("CHECKSIGVERIFY", 0xad);
         map.insert("CHECKMULTISIG", 0xae);
@@ -185,7 +184,6 @@ lazy_static! {
         map.insert(0xa5, "WITHIN");
         map.insert(0xa6, "BLAKE3");
         map.insert(0xa7, "DOUBLEBLAKE3");
-        map.insert(0xab, "CODESEPARATOR");
         map.insert(0xac, "CHECKSIG");
         map.insert(0xad, "CHECKSIGVERIFY");
         map.insert(0xae, "CHECKMULTISIG");
