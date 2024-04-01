@@ -1035,6 +1035,27 @@
       "expected_return_value": "00",
       "expected_success": false,
       "expected_error": ""
+    },
+    {
+      "name": "blake3",
+      "script": "0x00 BLAKE3",
+      "expected_return_value": "2d3adedff11b61f14c886e35afa036736dcd87a74d27b5c1510225d0f592e213",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "double blake3",
+      "script": "0x00 DOUBLEBLAKE3",
+      "expected_return_value": "2bf4d007e0cefcaf167e4641bb0f343b402775122dbff17b11514e9cbd21eefa",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "blake3 blake3",
+      "script": "0x00 BLAKE3 BLAKE3",
+      "expected_return_value": "2bf4d007e0cefcaf167e4641bb0f343b402775122dbff17b11514e9cbd21eefa",
+      "expected_success": true,
+      "expected_error": ""
     }
   ]
 }

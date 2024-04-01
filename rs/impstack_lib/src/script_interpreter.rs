@@ -1,3 +1,4 @@
+use crate::blake3::{double_hash, hash};
 use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
@@ -818,6 +819,22 @@ impl ScriptInterpreter {
                     } else {
                         vec![0]
                     });
+                } else if opcode == OP["BLAKE3"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf = self.stack.pop().unwrap();
+                    let hash = hash(&buf);
+                    self.stack.push(hash.to_vec());
+                } else if opcode == OP["DOUBLEBLAKE3"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let buf = self.stack.pop().unwrap();
+                    let hash = double_hash(&buf);
+                    self.stack.push(hash.to_vec());
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;
