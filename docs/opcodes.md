@@ -1,1 +1,2 @@
 - mike heard on inability to use CODESEPARATOR https://bitcointalk.org/index.php?topic=52949.0
+- more information on OP_CODESEPARATOR https://bitcoinops.org/en/topics/op_codeseparator/

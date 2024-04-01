@@ -119,4 +119,92 @@ describe('Transaction', () => {
       expect(transaction.id()).toEqual(expectedHash)
     })
   })
+
+  describe('sighash', () => {
+    test('hashPrevouts', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+
+      const result = transaction.hashPrevouts()
+
+      expect(result).toBeInstanceOf(Uint8Array)
+
+      expect(Buffer.from(result).toString('hex')).toEqual(
+        '2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba',
+      )
+    })
+
+    test('hashSequence', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+
+      const result = transaction.hashSequence()
+
+      expect(result).toBeInstanceOf(Uint8Array)
+
+      expect(Buffer.from(result).toString('hex')).toEqual(
+        '5c9bc5bfc9fe60992fb5432ba6d5da1b5e232127b6a5678f93063b2d766cfbf5',
+      )
+    })
+
+    test('hashOutputs', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+
+      const result = transaction.hashOutputs()
+
+      expect(result).toBeInstanceOf(Uint8Array)
+
+      expect(Buffer.from(result).toString('hex')).toEqual(
+        '8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5',
+      )
+    })
+
+    test('sighash', () => {
+      const version = 1
+      const inputs: TransactionInput[] = [
+        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), new Script()),
+      ]
+      const locktime = BigInt(0)
+
+      const transaction = new Transaction(version, inputs, outputs, locktime)
+
+      const script = new Script()
+      const scriptU8Vec = script.toU8Vec()
+      const result = transaction.sighash(0, scriptU8Vec, BigInt(1), 1)
+
+      expect(result).toBeInstanceOf(Uint8Array)
+
+      expect(Buffer.from(result).toString('hex')).toEqual(
+        'db33be558fd82e72fb6bda7ec14ccf8f690c888607e191c1b83a2bf3be8609be',
+      )
+    })
+  })
 })
