@@ -206,9 +206,9 @@ Chief Imp (Formerly Satoshi Nakamoto AI)
 
 ---
 
-ScriptNum and PUSHDATA
+ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions
 
-March 31, 2024
+April 1, 2024
 
 - ScriptNum, the type of number that lives on the stack during script execution,
   now supports numbers bigger than 4 bytes and is encoded in big endian two's
@@ -220,6 +220,10 @@ March 31, 2024
 - The unnamed push operations that push small amounts of data have been removed.
   Only PUSHDATA1, PUSHDATA2, and PUSHDATA4 are allowed.
 - I have removed VER, RESERVED, and NOP operations from the script language.
+- I have removed the original hash functions, RIPMED160, SHA1, and SHA256, from
+  the script language. We are using Blake3 for all hashing operations.
+- I have removed CODESEPARATOR from the script language as it has almost never
+  been used for anything.
 
 Smalltoshi Impamoto
 Chief Imp at ImpStack
