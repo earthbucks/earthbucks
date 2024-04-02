@@ -814,6 +814,76 @@ export default class ScriptInterpreter {
             this.errStr = 'CHECKSIGVERIFY failed'
             break
           }
+        } else if (
+          opcode === OP.CHECKMULTISIG ||
+          opcode === OP.CHECKMULTISIGVERIFY
+        ) {
+          if (this.stack.length < 1) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let nKeys = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          if (nKeys < 0 || nKeys > 20) {
+            this.errStr = 'invalid number of keys'
+            break
+          }
+          if (this.stack.length < nKeys + 1n) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let pubKeys: Uint8Array[] = []
+          for (let i = 0; i < nKeys; i++) {
+            let pubKeyBuf = this.stack.pop() as Uint8Array
+            if (pubKeyBuf.length !== 33) {
+              this.errStr = 'invalid public key length'
+              break
+            }
+            pubKeys.push(pubKeyBuf)
+          }
+          let nSigs = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
+          if (nSigs < 0 || nSigs > nKeys) {
+            this.errStr = 'invalid number of signatures'
+            break
+          }
+          if (this.stack.length < nSigs + 1n) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let sigs: Uint8Array[] = []
+          for (let i = 0; i < nSigs; i++) {
+            let sigBuf = this.stack.pop() as Uint8Array
+            if (sigBuf.length !== 65) {
+              this.errStr = 'invalid signature length'
+              break
+            }
+            sigs.push(sigBuf)
+          }
+          let execScriptBuf = new Uint8Array(this.script.toU8Vec())
+
+          let matchedSigs = 0n
+          for (let i = 0; i < nSigs; i++) {
+            for (let j = 0; j < pubKeys.length; j++) {
+              const success = this.transaction.verify(
+                this.nIn,
+                pubKeys[j],
+                TransactionSignature.fromU8Vec(sigs[i]),
+                execScriptBuf,
+                this.value,
+              )
+              if (success) {
+                matchedSigs += 1n
+                pubKeys.splice(j, 1) // Remove the matched public key
+                break
+              }
+            }
+          }
+          const success = matchedSigs === nSigs
+
+          this.stack.push(new Uint8Array([success ? 1 : 0]))
+          if (opcode === OP.CHECKMULTISIGVERIFY && !success) {
+            this.errStr = 'CHECKMULTISIGVERIFY failed'
+            break
+          }
         } else {
           this.errStr = 'invalid opcode'
           break
