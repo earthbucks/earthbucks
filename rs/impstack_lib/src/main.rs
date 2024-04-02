@@ -14,19 +14,19 @@ fn main() {
         2 => match args[1].as_str() {
             "--key" => {
                 let key = Key::from_random();
-                let private_key_hex = key.private_key().to_string();
-                let public_key_hex = key.public_key().to_string();
+                let private_key_hex = hex::encode(key.private_key());
+                let public_key_hex = hex::encode(key.public_key());
 
                 println!("Private key: {}", private_key_hex);
                 println!("Public key: {}", public_key_hex);
             }
             "--address" => {
                 let key = Key::from_random();
-                let public_key = key.public_key().serialize().to_vec();
-                let address = address::Address::from_public_key(public_key);
+                let public_key = key.public_key();
+                let address = address::Address::from_public_key(public_key.to_vec());
 
-                let private_key_hex = key.private_key().to_string();
-                let public_key_hex = key.public_key().to_string();
+                let private_key_hex = hex::encode(key.private_key());
+                let public_key_hex = hex::encode(key.public_key());
                 let address_hex = hex::encode(address.address());
 
                 println!("Private key: {}", private_key_hex);

@@ -199,9 +199,9 @@ export default class Transaction {
     sig: TransactionSignature,
     script: Uint8Array,
     amount: bigint,
-    hashType: number,
   ): boolean {
+    const hashType = sig.hashType
     const hash = this.sighash(inputIndex, script, amount, hashType)
-    return ecdsaVerify(hash, sig.sigBuf, publicKey)
+    return ecdsaVerify(sig.sigBuf, hash, publicKey)
   }
 }

@@ -1,6 +1,6 @@
 pub struct TransactionSignature {
-    hash_type: u8,
-    sig_buf: Vec<u8>,
+    pub hash_type: u8,
+    pub sig_buf: Vec<u8>,
 }
 
 impl TransactionSignature {

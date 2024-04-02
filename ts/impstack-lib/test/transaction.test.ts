@@ -7,6 +7,7 @@ import BufferReader from '../src/buffer-reader'
 import BufferWriter from '../src/buffer-writer'
 import { blake3Hash } from '../src/blake3'
 import TransactionSignature from '../src/transaction-signature'
+import Key from '../src/key'
 
 describe('Transaction', () => {
   describe('constructor', () => {
@@ -216,6 +217,111 @@ describe('Transaction', () => {
       expect(Buffer.from(result).toString('hex')).toEqual(
         '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
       )
+    })
+
+    describe('sign and verify', () => {
+      it('should generate a deterministic signature', () => {
+        // Arrange
+        const inputIndex = 0
+        const privateKey = new Uint8Array(
+          Buffer.from(
+            '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
+            'hex',
+          ),
+        )
+        const script = new Uint8Array([])
+        const amount = BigInt(100)
+        const hashType = TransactionSignature.SIGHASH_ALL
+        const inputs: TransactionInput[] = [
+          new TransactionInput(
+            Buffer.alloc(32),
+            0,
+            Script.fromString(''),
+            0xffffffff,
+          ),
+        ]
+        const outputs: TransactionOutput[] = [
+          new TransactionOutput(BigInt(100), Script.fromString('')),
+        ]
+        const transaction = new Transaction(1, inputs, outputs, BigInt(0))
+
+        // Act
+        const signature = transaction.sign(
+          inputIndex,
+          privateKey,
+          script,
+          amount,
+          hashType,
+        )
+
+        // Assert
+        const expectedSignatureHex =
+          '0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3' // your expected signature in hex
+        expect(Buffer.from(signature.toU8Vec()).toString('hex')).toEqual(
+          expectedSignatureHex,
+        )
+      })
+    })
+
+    it('should verify a deterministic signature', () => {
+      // Arrange
+      const inputIndex = 0
+      const privateKey = new Uint8Array(
+        Buffer.from(
+          '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
+          'hex',
+        ),
+      )
+      const script = new Uint8Array([])
+      const amount = BigInt(100)
+      const hashType = TransactionSignature.SIGHASH_ALL
+      const inputs: TransactionInput[] = [
+        new TransactionInput(
+          Buffer.alloc(32),
+          0,
+          Script.fromString(''),
+          0xffffffff,
+        ),
+      ]
+      // expect tx output to equal hext
+      expect(inputs[0].toBuffer().toString('hex')).toEqual(
+        '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
+      )
+      const outputs: TransactionOutput[] = [
+        new TransactionOutput(BigInt(100), Script.fromString('')),
+      ]
+      expect(outputs[0].toBuffer().toString('hex')).toEqual(
+        '000000000000006400',
+      )
+      const transaction = new Transaction(1, inputs, outputs, BigInt(0))
+      expect(transaction.toBuffer().toString('hex')).toEqual(
+        '010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000',
+      )
+
+      // Act
+      const signature = transaction.sign(
+        inputIndex,
+        privateKey,
+        script,
+        amount,
+        hashType,
+      )
+
+      // Assert
+      const expectedSignatureHex =
+        '0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3' // your expected signature in hex
+      expect(Buffer.from(signature.toU8Vec()).toString('hex')).toEqual(
+        expectedSignatureHex,
+      )
+      const publicKey = new Key(privateKey).publicKey
+      const result = transaction.verify(
+        inputIndex,
+        publicKey,
+        signature,
+        script,
+        amount,
+      )
+      expect(result).toBe(true)
     })
   })
 })

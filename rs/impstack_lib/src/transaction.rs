@@ -193,7 +193,7 @@ impl Transaction {
     pub fn sign(
         &mut self,
         input_index: usize,
-        privkey: [u8; 32],
+        private_key: [u8; 32],
         script: Vec<u8>,
         amount: u64,
         hash_type: u8,
@@ -201,26 +201,26 @@ impl Transaction {
         let secp = Secp256k1::new();
         let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
             .expect("32 bytes");
-        let key = secp256k1::SecretKey::from_slice(&privkey).expect("32 bytes");
+        let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
         let sig = secp.sign(&message, &key);
-        let sig = sig.serialize_der();
+        let sig = sig.serialize_compact();
         TransactionSignature::new(hash_type, sig.to_vec())
     }
 
     pub fn verify(
         &mut self,
         input_index: usize,
-        pubkey: [u8; 33],
-        signature: Vec<u8>,
+        public_key: [u8; 33],
+        signature: TransactionSignature,
         script: Vec<u8>,
         amount: u64,
         hash_type: u8,
     ) -> bool {
         let secp = Secp256k1::new();
-        let pubkey = PublicKey::from_slice(&pubkey).expect("33 bytes");
+        let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
         let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
             .expect("32 bytes");
-        let signature = Signature::from_der(&signature).expect("64 bytes");
+        let signature = Signature::from_compact(&signature.sig_buf).expect("64 bytes");
         secp.verify(&message, &signature, &pubkey).is_ok()
     }
 }
@@ -228,6 +228,7 @@ impl Transaction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::key::Key;
     use crate::script::Script;
 
     #[test]
@@ -434,5 +435,64 @@ mod tests {
             hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
                 .unwrap();
         assert_eq!(preimage, expected);
+    }
+
+    #[test]
+    fn sign_and_verify() {
+        // Arrange
+        let input_index = 0;
+        let private_key =
+            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
+                .unwrap();
+        let script = vec![];
+        let amount = 100;
+        let hash_type = TransactionSignature::SIGHASH_ALL;
+        let inputs = vec![TransactionInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string("").unwrap(),
+            0xffffffff,
+        )];
+        assert_eq!(
+            hex::encode(&inputs[0].to_u8_vec()),
+            "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
+        );
+        let outputs = vec![TransactionOutput::new(
+            100,
+            Script::from_string("").unwrap(),
+        )];
+        assert_eq!(hex::encode(&outputs[0].to_u8_vec()), "000000000000006400");
+        let mut transaction = Transaction::new(1, inputs, outputs, 0);
+        assert_eq!(hex::encode(&transaction.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+
+        // Act
+        let signature = transaction.sign(
+            input_index,
+            private_key.as_slice().try_into().unwrap(),
+            script.clone(),
+            amount,
+            hash_type,
+        );
+
+        // Assert
+        let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
+        assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
+
+        // Arrange
+        let key = Key::new(private_key);
+        let public_key = key.public_key();
+
+        // Act
+        let result = transaction.verify(
+            input_index,
+            public_key.as_slice().try_into().unwrap(),
+            signature,
+            script.clone(),
+            amount,
+            hash_type,
+        );
+
+        // Assert
+        assert!(result);
     }
 }
