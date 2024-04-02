@@ -131,7 +131,6 @@ describe('ScriptInterpreter', () => {
       const outputAddress = new Address(outputPubKey)
       const outputScript = Script.fromPubKeyHashOutput(outputAddress.address)
       const outputAmount = BigInt(100)
-      const output = new TransactionOutput(outputAmount, outputScript)
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')
       const outputTxIndex = 0
 

@@ -214,8 +214,8 @@ impl Transaction {
         signature: TransactionSignature,
         script: Vec<u8>,
         amount: u64,
-        hash_type: u8,
     ) -> bool {
+        let hash_type = signature.hash_type;
         let secp = Secp256k1::new();
         let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
         let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
@@ -489,7 +489,6 @@ mod tests {
             signature,
             script.clone(),
             amount,
-            hash_type,
         );
 
         // Assert

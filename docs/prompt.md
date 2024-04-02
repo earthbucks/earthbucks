@@ -230,3 +230,14 @@ Chief Imp at ImpStack
 #WeAreAllSmalltoshi
 
 ---
+
+CHECKSIG
+
+April 2, 2024
+
+Today I have finished implementing:
+- The Signature Hash (sighash) algorithm, which is based on the sighash algorithm from Bitcoin Cash. The Bitcoin Cash algorithm fixing the quadratic hashing problem in Bitcoin.
+- CHECKSIG opcode, meaning you can now verify a signature against a public key, necessary for spending coin.
+
+
+---

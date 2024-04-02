@@ -3,6 +3,7 @@ use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
 use crate::transaction::Transaction;
+use crate::transaction_signature::TransactionSignature;
 use num_bigint::ToBigInt;
 
 pub struct ScriptInterpreter {
@@ -65,6 +66,29 @@ impl ScriptInterpreter {
             None,
             "".to_string(),
             0 as u64,
+        )
+    }
+
+    pub fn from_output_script_transaction(
+        script: Script,
+        transaction: Transaction,
+        n_in: usize,
+        stack: Vec<Vec<u8>>,
+        value: u64,
+    ) -> Self {
+        Self::new(
+            script,
+            transaction,
+            n_in,
+            stack,
+            Vec::new(),
+            0,
+            0,
+            Vec::new(),
+            None,
+            None,
+            "".to_string(),
+            value,
         )
     }
 
@@ -835,6 +859,43 @@ impl ScriptInterpreter {
                     let buf = self.stack.pop().unwrap();
                     let hash = double_blake3_hash(&buf);
                     self.stack.push(hash.to_vec());
+                } else if opcode == OP["CHECKSIG"] || opcode == OP["CHECKSIGVERIFY"] {
+                    if self.stack.len() < 2 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let pub_key_buf = self.stack.pop().unwrap();
+                    if pub_key_buf.len() != 33 {
+                        self.err_str = "invalid public key length".to_string();
+                        break;
+                    }
+                    let sig_buf = self.stack.pop().unwrap();
+                    if sig_buf.len() != 65 {
+                        self.err_str = "invalid signature length".to_string();
+                        break;
+                    }
+                    let signature = TransactionSignature::from_u8_vec(&sig_buf);
+
+                    let exec_script_buf = self.script.to_u8_vec();
+
+                    let pub_key_arr: [u8; 33] =
+                        pub_key_buf.try_into().unwrap_or_else(|v: Vec<u8>| {
+                            panic!("Expected a Vec of length {} but it was {}", 33, v.len())
+                        });
+
+                    let success = self.transaction.verify(
+                        self.n_in,
+                        pub_key_arr,
+                        signature,
+                        exec_script_buf,
+                        self.value,
+                    );
+
+                    self.stack.push(vec![if success { 1 } else { 0 }]);
+                    if opcode == OP["CHECKSIGVERIFY"] && !success {
+                        self.err_str = "CHECKSIGVERIFY failed".to_string();
+                        break;
+                    }
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;
@@ -868,6 +929,8 @@ impl ScriptInterpreter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::address::Address;
+    use crate::key::Key;
     use crate::transaction_input::TransactionInput;
     use crate::transaction_output::TransactionOutput;
     use hex;
@@ -938,6 +1001,62 @@ mod tests {
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
             assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+        }
+
+        #[test]
+        fn checksig() {
+            let output_priv_key_hex =
+                "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
+            let output_priv_key_buf = hex::decode(output_priv_key_hex).unwrap();
+            let output_key = Key::new(output_priv_key_buf.clone());
+            let output_pub_key = output_key.public_key();
+            assert_eq!(
+                hex::encode(&output_pub_key),
+                "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
+            );
+            let output_address = Address::new(output_pub_key.to_vec());
+            let output_script = Script::from_pub_key_hash_output(output_address.address());
+            let output_amount = 100;
+            let output_tx_id = vec![0; 32];
+            let output_tx_index = 0;
+
+            let mut transaction = Transaction::new(
+                1,
+                vec![TransactionInput::new(
+                    output_tx_id.clone(),
+                    output_tx_index,
+                    Script::from_string("").unwrap(),
+                    0xffffffff,
+                )],
+                vec![TransactionOutput::new(output_amount, output_script.clone())],
+                0,
+            );
+
+            let output_priv_key_arr: [u8; 32] =
+                output_priv_key_buf.try_into().unwrap_or_else(|v: Vec<u8>| {
+                    panic!("Expected a Vec of length {} but it was {}", 32, v.len())
+                });
+
+            let sig = transaction.sign(
+                0,
+                output_priv_key_arr,
+                output_script.to_u8_vec(),
+                output_amount,
+                TransactionSignature::SIGHASH_ALL,
+            );
+
+            let stack = vec![sig.to_u8_vec(), output_pub_key.to_vec()];
+
+            let mut script_interpreter = ScriptInterpreter::from_output_script_transaction(
+                output_script,
+                transaction,
+                0,
+                stack,
+                output_amount,
+            );
+
+            let result = script_interpreter.eval_script();
+            assert!(result);
         }
     }
 
