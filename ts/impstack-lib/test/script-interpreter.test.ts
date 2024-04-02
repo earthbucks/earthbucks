@@ -6,6 +6,9 @@ import TransactionInput from '../src/transaction-input'
 import TransactionOutput from '../src/transaction-output'
 import fs from 'fs'
 import path from 'path'
+import Key from '../src/key'
+import Address from '../src/address'
+import TransactionSignature from '../src/transaction-signature'
 
 describe('ScriptInterpreter', () => {
   let transaction: Transaction
@@ -113,6 +116,44 @@ describe('ScriptInterpreter', () => {
         scriptInterpreter.returnValue &&
           Buffer.from(scriptInterpreter.returnValue).toString('hex'),
       ).toEqual('ff')
+    })
+
+    test.skip('CHECKSIG', () => {
+      const outputPrivKeyHex = 'd9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725'
+      const outputPrivKeyBuf = Buffer.from(outputPrivKeyHex, 'hex')
+      const outputPrivKeyU8Vec = new Uint8Array(outputPrivKeyBuf)
+      const outputKey = new Key(outputPrivKeyU8Vec)
+      const outputPubKey = outputKey.publicKey
+      const outputAddress = new Address(outputPubKey)
+      const outputScript = Script.fromPubKeyHashOutput(outputAddress.address)
+      const outputAmount = BigInt(100)
+      const output = new TransactionOutput(outputAmount, outputScript)
+      const outputTxId = Buffer.from('00'.repeat(32), 'hex')
+      const outputTxIndex = 0
+
+      const transaction = new Transaction(
+        1,
+        [new TransactionInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
+        [],
+        BigInt(0),
+      )
+
+      const sig = transaction.sign(0, outputPrivKeyU8Vec, outputScript.toU8Vec(), outputAmount, TransactionSignature.SIGHASH_ALL)
+
+      const stack = [sig.toU8Vec(), outputPubKey]
+
+      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+        outputScript,
+        transaction,
+        0
+      )
+      scriptInterpreter.stack = stack
+
+      const result = scriptInterpreter.evalScript()
+      console.log(scriptInterpreter.errStr)
+      console.log(scriptInterpreter.returnValue)
+      console.log(scriptInterpreter.returnSuccess)
+      expect(result).toBe(true)
     })
   })
 
