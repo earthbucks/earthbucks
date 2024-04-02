@@ -176,13 +176,8 @@ export default class Transaction {
     amount: bigint,
     hashType: number,
   ): Uint8Array {
-    // console.log('sighash inputIndex', inputIndex)
-    // console.log('sighash script', Buffer.from(script).toString('hex'))
-    // console.log('sighash amount', amount)
-    // console.log('sighash hashType', hashType)
     const preimage = this.sighashPreimage(inputIndex, script, amount, hashType)
     let hash = doubleBlake3Hash(preimage)
-    // console.log('sighash', Buffer.from(hash).toString('hex'))
     return hash
   }
 

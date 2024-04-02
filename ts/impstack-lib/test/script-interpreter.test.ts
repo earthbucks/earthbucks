@@ -118,13 +118,16 @@ describe('ScriptInterpreter', () => {
       ).toEqual('ff')
     })
 
-    test.skip('CHECKSIG', () => {
-      const outputPrivKeyHex = 'd9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725'
+    test('CHECKSIG', () => {
+      const outputPrivKeyHex =
+        'd9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725'
       const outputPrivKeyBuf = Buffer.from(outputPrivKeyHex, 'hex')
       const outputPrivKeyU8Vec = new Uint8Array(outputPrivKeyBuf)
       const outputKey = new Key(outputPrivKeyU8Vec)
       const outputPubKey = outputKey.publicKey
-      expect(Buffer.from(outputPubKey).toString('hex')).toEqual('0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987')
+      expect(Buffer.from(outputPubKey).toString('hex')).toEqual(
+        '0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987',
+      )
       const outputAddress = new Address(outputPubKey)
       const outputScript = Script.fromPubKeyHashOutput(outputAddress.address)
       const outputAmount = BigInt(100)
@@ -134,28 +137,37 @@ describe('ScriptInterpreter', () => {
 
       const transaction = new Transaction(
         1,
-        [new TransactionInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
+        [
+          new TransactionInput(
+            outputTxId,
+            outputTxIndex,
+            new Script(),
+            0xffffffff,
+          ),
+        ],
         [new TransactionOutput(outputAmount, outputScript)],
         BigInt(0),
       )
 
-      const sig = transaction.sign(0, outputPrivKeyU8Vec, outputScript.toU8Vec(), outputAmount, TransactionSignature.SIGHASH_ALL)
+      const sig = transaction.sign(
+        0,
+        outputPrivKeyU8Vec,
+        outputScript.toU8Vec(),
+        outputAmount,
+        TransactionSignature.SIGHASH_ALL,
+      )
 
       const stack = [sig.toU8Vec(), outputPubKey]
 
       const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
         outputScript,
         transaction,
-        0
+        0,
       )
       scriptInterpreter.stack = stack
       scriptInterpreter.value = outputAmount
 
       const result = scriptInterpreter.evalScript()
-      console.log(scriptInterpreter.pc)
-      console.log(scriptInterpreter.errStr)
-      console.log(scriptInterpreter.returnValue)
-      console.log(scriptInterpreter.returnSuccess)
       expect(result).toBe(true)
     })
   })

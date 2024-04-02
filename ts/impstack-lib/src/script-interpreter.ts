@@ -769,13 +769,11 @@ export default class ScriptInterpreter {
             this.errStr = 'invalid public key length'
             break
           }
-          // console.log(Buffer.from(pubKeyBuf).toString('hex'))
           let sigBuf = this.stack.pop() as Uint8Array
           if (sigBuf.length !== 65) {
             this.errStr = 'invalid signature length'
             break
           }
-          // console.log(Buffer.from(sigBuf).toString('hex'))
           const signature = TransactionSignature.fromU8Vec(sigBuf)
 
           let execScriptBuf = new Uint8Array(this.script.toU8Vec())
