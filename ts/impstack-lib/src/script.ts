@@ -58,4 +58,18 @@ export default class Script {
   static fromU8Vec(arr: Uint8Array): Script {
     return new Script().fromU8Vec(arr)
   }
+
+  static fromPubKeyHashOutput(pubKeyHash: Uint8Array): Script {
+    return new Script([
+      new ScriptChunk(OP.DUP),
+      new ScriptChunk(OP.DOUBLEBLAKE3),
+      ScriptChunk.fromData(pubKeyHash),
+      new ScriptChunk(OP.EQUALVERIFY),
+      new ScriptChunk(OP.CHECKSIG),
+    ])
+  }
+
+  static fromPubKeyHashInput(sig: Uint8Array, pubKey: Uint8Array): Script {
+    return new Script([ScriptChunk.fromData(sig), ScriptChunk.fromData(pubKey)])
+  }
 }

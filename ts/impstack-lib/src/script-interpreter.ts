@@ -776,13 +776,13 @@ export default class ScriptInterpreter {
           }
           const signature = TransactionSignature.fromU8Vec(sigBuf)
 
-          let subScript = new Uint8Array(this.script.toU8Vec())
+          let execScriptBuf = new Uint8Array(this.script.toU8Vec())
 
           const success = this.transaction.verify(
             this.nIn,
             pubKeyBuf,
             signature,
-            subScript,
+            execScriptBuf,
             this.value,
           )
 

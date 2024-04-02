@@ -83,6 +83,31 @@ impl Script {
         script.self_from_u8_vec(arr)?;
         Result::Ok(script)
     }
+
+    pub fn from_pub_key_hash_output(pub_key_hash: &[u8]) -> Self {
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::new(OP["DUP"], None));
+        script
+            .chunks
+            .push(ScriptChunk::new(OP["DOUBLEBLAKE3"], None));
+        script
+            .chunks
+            .push(ScriptChunk::from_data(pub_key_hash.to_vec()));
+        script
+            .chunks
+            .push(ScriptChunk::new(OP["EQUALVERIFY"], None));
+        script.chunks.push(ScriptChunk::new(OP["CHECKSIG"], None));
+        script
+    }
+
+    pub fn from_pub_key_hash_input(signature: &[u8], pub_key: &[u8]) -> Self {
+        let mut script = Self::new(Vec::new());
+        script
+            .chunks
+            .push(ScriptChunk::from_data(signature.to_vec()));
+        script.chunks.push(ScriptChunk::from_data(pub_key.to_vec()));
+        script
+    }
 }
 
 #[cfg(test)]
