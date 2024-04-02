@@ -47,7 +47,7 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  static fromTransactionScript(
+  static fromScriptTransaction(
     script: Script,
     transaction: Transaction,
     nIn: number,
