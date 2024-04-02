@@ -164,7 +164,7 @@ export default class Transaction {
     writer.writeUInt32BE(this.inputs[inputIndex].sequence)
     writer.writeU8Vec(outputsHash)
     writer.writeUInt64BEBigInt(this.locktime)
-    writer.writeUInt32BE(hashType)
+    writer.writeUInt8(hashType)
     return writer.toU8Vec()
   }
 

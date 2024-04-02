@@ -125,11 +125,11 @@ impl Transaction {
         input_index: usize,
         script_u8_vec: Vec<u8>,
         amount: u64,
-        hash_type: u32,
+        hash_type: u8,
     ) -> Vec<u8> {
-        const SIGHASH_ANYONECANPAY: u32 = 0x80;
-        const SIGHASH_SINGLE: u32 = 0x03;
-        const SIGHASH_NONE: u32 = 0x02;
+        const SIGHASH_ANYONECANPAY: u8 = 0x80;
+        const SIGHASH_SINGLE: u8 = 0x03;
+        const SIGHASH_NONE: u8 = 0x02;
 
         let mut prevouts_hash = vec![0; 32];
         let mut sequence_hash = vec![0; 32];
@@ -173,7 +173,7 @@ impl Transaction {
         bw.write_u32_be(self.inputs[input_index].sequence);
         bw.write_u8_vec(outputs_hash);
         bw.write_u64_be(self.lock_time);
-        bw.write_u32_be(hash_type);
+        bw.write_u8(hash_type);
         bw.to_u8_vec()
     }
 
@@ -182,7 +182,7 @@ impl Transaction {
         input_index: usize,
         script_u8_vec: Vec<u8>,
         amount: u64,
-        hash_type: u32,
+        hash_type: u8,
     ) -> Vec<u8> {
         let preimage = self.sighash_preimage(input_index, script_u8_vec, amount, hash_type);
         double_blake3_hash(&preimage).to_vec()
@@ -395,7 +395,7 @@ mod tests {
         let preimage = transaction.sighash(0, script.to_u8_vec(), amount, hash_type);
 
         let expected =
-            hex::decode("ff69befa9a79812747d1270a0cba212e4f6eaefa8a69054e6a48627c6b8cd5c7")
+            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
                 .unwrap();
         assert_eq!(preimage, expected);
     }

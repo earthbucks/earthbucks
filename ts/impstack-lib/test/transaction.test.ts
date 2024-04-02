@@ -208,7 +208,7 @@ describe('Transaction', () => {
       expect(result).toBeInstanceOf(Uint8Array)
 
       expect(Buffer.from(result).toString('hex')).toEqual(
-        'ff69befa9a79812747d1270a0cba212e4f6eaefa8a69054e6a48627c6b8cd5c7',
+        '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
       )
     })
   })
