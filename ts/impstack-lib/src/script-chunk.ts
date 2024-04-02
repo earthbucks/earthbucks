@@ -91,14 +91,23 @@ export default class ScriptChunk {
     const opcode = arr[0]
     if (opcode === OP.PUSHDATA1) {
       const len = arr[1]
+      if (arr.byteLength < len + 2) {
+        throw new Error('Buffer length is other than expected')
+      }
       this.opcode = opcode
       this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 2, len)
     } else if (opcode === OP.PUSHDATA2) {
       const len = buf.readUInt16BE(1)
+      if (arr.byteLength < len + 3) {
+        throw new Error('Buffer length is other than expected')
+      }
       this.opcode = opcode
       this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 3, len)
     } else if (opcode === OP.PUSHDATA4) {
       const len = buf.readUInt32BE(1)
+      if (arr.byteLength < len + 5) {
+        throw new Error('Buffer length is other than expected')
+      }
       this.opcode = opcode
       this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 5, len)
     } else {

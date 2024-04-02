@@ -160,6 +160,38 @@ describe('ScriptChunk', () => {
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4)
       expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
     })
+
+    test('should throw error if length does not match expected length', () => {
+      const buffer = new Uint8Array(100).fill(0)
+      const arr = new Uint8Array([OP.PUSHDATA1, 200, ...buffer])
+      expect(() => new ScriptChunk().fromU8Vec(arr)).toThrow(
+        'Buffer length is other than expected',
+      )
+    })
+
+    test('should throw error if length does not match expected length', () => {
+      const buffer = new Uint8Array(100).fill(0)
+      const arr = new BufferWriter()
+        .writeUInt8(OP.PUSHDATA2)
+        .writeUInt16BE(200)
+        .writeU8Vec(buffer)
+        .toU8Vec()
+      expect(() => new ScriptChunk().fromU8Vec(arr)).toThrow(
+        'Buffer length is other than expected',
+      )
+    })
+
+    test('should throw error if length does not match expected length', () => {
+      const buffer = new Uint8Array(100).fill(0)
+      const arr = new BufferWriter()
+        .writeUInt8(OP.PUSHDATA4)
+        .writeUInt32BE(200)
+        .writeU8Vec(buffer)
+        .toU8Vec()
+      expect(() => new ScriptChunk().fromU8Vec(arr)).toThrow(
+        'Buffer length is other than expected',
+      )
+    })
   })
 
   describe('fromData', () => {
