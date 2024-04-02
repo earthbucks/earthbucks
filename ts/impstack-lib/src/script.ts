@@ -72,4 +72,17 @@ export default class Script {
   static fromPubKeyHashInput(sig: Uint8Array, pubKey: Uint8Array): Script {
     return new Script([ScriptChunk.fromData(sig), ScriptChunk.fromData(pubKey)])
   }
+
+  static fromMultiSigOutput(m: number, pubKeys: Uint8Array[]): Script {
+    return new Script([
+      ScriptChunk.fromSmallNumber(m),
+      ...pubKeys.map(ScriptChunk.fromData),
+      ScriptChunk.fromSmallNumber(pubKeys.length),
+      new ScriptChunk(OP.CHECKMULTISIG),
+    ])
+  }
+
+  static fromMultiSigInput(sigs: Uint8Array[]): Script {
+    return new Script(sigs.map(ScriptChunk.fromData))
+  }
 }

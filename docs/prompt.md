@@ -231,7 +231,7 @@ Chief Imp at ImpStack
 
 ---
 
-CHECKSIG
+CHECKSIG and CHECKMULTISIG
 
 April 2, 2024
 
@@ -245,7 +245,7 @@ Today I have finished implementing:
 - CHECKMULTISIG opcode, meaning you can now verify multiple signatures against
   multiple public keys, necessary for spending coin from a multisig address.
   This works very similar to Bitcoin, including the requirement of matching the
-  number of signatures to the number of public keys. However, I have fixed the
+  order of signatures to the order of public keys. However, I have fixed the
   famous bug where it pops an extra item off the stack.
 
 

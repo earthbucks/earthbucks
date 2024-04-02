@@ -169,6 +169,80 @@ describe('ScriptInterpreter', () => {
       const result = scriptInterpreter.evalScript()
       expect(result).toBe(true)
     })
+
+    test('CHECKMULTISIG', () => {
+      // Define private keys
+      const privKeysHex = [
+        'eee66a051d43a62b00da7185bbf2a13b42f601a0b987a8f1815b4213c9343451',
+        'f8749a7b6a825eb9e82e27720fd3b90e0f157adc75fe3e0efbf3c8a335eb3ef5',
+        '5df05870846dd200a7d29da98ad32016209d99af0422d66e568f97720d1acee3',
+        'c91b042751b94d705abee4fc67eb483dc32ae432e037f66120f5e865e4257c66',
+        'b78467b0ea6afa6c42c94333dcece978829bdb7ba7b97a2273b72cdc6be8c553',
+      ]
+
+      // Convert private keys to Uint8Array format
+      const privKeysU8Vec = privKeysHex.map(
+        (hex) => new Uint8Array(Buffer.from(hex, 'hex')),
+      )
+
+      // Generate public keys
+      const pubKeys = privKeysU8Vec.map((privKey) => new Key(privKey).publicKey)
+
+      // Create a multisig output script
+      const outputScript = Script.fromMultiSigOutput(3, pubKeys)
+
+      // Other transaction parameters
+      const outputAmount = BigInt(100)
+      const outputTxId = Buffer.from('00'.repeat(32), 'hex')
+      const outputTxIndex = 0
+
+      // Create a transaction
+      const transaction = new Transaction(
+        1,
+        [
+          new TransactionInput(
+            outputTxId,
+            outputTxIndex,
+            new Script(),
+            0xffffffff,
+          ),
+        ],
+        [new TransactionOutput(outputAmount, outputScript)],
+        BigInt(0),
+      )
+
+      // Sign the transaction with the first 3 private keys
+      const sigs = privKeysU8Vec
+        .slice(0, 3)
+        .map((privKey) =>
+          transaction
+            .sign(
+              0,
+              privKey,
+              outputScript.toU8Vec(),
+              outputAmount,
+              TransactionSignature.SIGHASH_ALL,
+            )
+            .toU8Vec(),
+        )
+
+      // Create a stack with the signatures
+      const stack = [...sigs]
+
+      // Create a script interpreter
+      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
+        outputScript,
+        transaction,
+        0,
+        stack,
+        outputAmount,
+      )
+
+      // Evaluate the script
+      const result = scriptInterpreter.evalScript()
+      expect(scriptInterpreter.errStr).toBe('')
+      expect(result).toBe(true)
+    })
   })
 
   describe('test vectors', () => {

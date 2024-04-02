@@ -4,7 +4,8 @@ use crate::script::Script;
 use crate::script_num::ScriptNum;
 use crate::transaction::Transaction;
 use crate::transaction_signature::TransactionSignature;
-use num_bigint::ToBigInt;
+use num_bigint::{BigInt, ToBigInt};
+use num_traits::ToPrimitive;
 
 pub struct ScriptInterpreter {
     pub script: Script,
@@ -894,6 +895,73 @@ impl ScriptInterpreter {
                     self.stack.push(vec![if success { 1 } else { 0 }]);
                     if opcode == OP["CHECKSIGVERIFY"] && !success {
                         self.err_str = "CHECKSIGVERIFY failed".to_string();
+                        break;
+                    }
+                } else if opcode == OP["CHECKMULTISIG"] || opcode == OP["CHECKMULTISIGVERIFY"] {
+                    if self.stack.len() < 1 {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let n_keys = ScriptNum::from_u8_vec(&self.stack.pop().unwrap()).num;
+                    if n_keys < BigInt::from(0) || n_keys > BigInt::from(16) {
+                        self.err_str = "invalid number of keys".to_string();
+                        break;
+                    }
+                    if self.stack.len() < (n_keys.to_usize().unwrap() + 1) {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let mut pub_keys: Vec<Vec<u8>> = Vec::new();
+                    for _ in 0..n_keys.to_usize().unwrap() {
+                        let pub_key_buf = self.stack.pop().unwrap();
+                        if pub_key_buf.len() != 33 {
+                            self.err_str = "invalid public key length".to_string();
+                            break;
+                        }
+                        pub_keys.push(pub_key_buf);
+                    }
+                    let n_sigs = ScriptNum::from_u8_vec(&self.stack.pop().unwrap()).num;
+                    if n_sigs < BigInt::from(0) || n_sigs > n_keys {
+                        self.err_str = "invalid number of signatures".to_string();
+                        break;
+                    }
+                    if self.stack.len() < n_sigs.to_usize().unwrap() {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let mut sigs: Vec<Vec<u8>> = Vec::new();
+                    for _ in 0..n_sigs.to_usize().unwrap() {
+                        let sig_buf = self.stack.pop().unwrap();
+                        if sig_buf.len() != 65 {
+                            self.err_str = "invalid signature length".to_string();
+                            break;
+                        }
+                        sigs.push(sig_buf);
+                    }
+                    let exec_script_buf = self.script.to_u8_vec();
+
+                    let mut matched_sigs = 0;
+                    for i in 0..n_sigs.to_usize().unwrap() {
+                        for j in 0..pub_keys.len() {
+                            let success = self.transaction.verify(
+                                self.n_in,
+                                pub_keys[j][..33].try_into().unwrap(),
+                                TransactionSignature::from_u8_vec(&sigs[i].clone()),
+                                exec_script_buf.clone(),
+                                self.value,
+                            );
+                            if success {
+                                matched_sigs += 1;
+                                pub_keys.remove(j); // Remove the matched public key
+                                break;
+                            }
+                        }
+                    }
+                    let success = matched_sigs == n_sigs.to_usize().unwrap();
+
+                    self.stack.push(vec![if success { 1 } else { 0 }]);
+                    if opcode == OP["CHECKMULTISIGVERIFY"] && !success {
+                        self.err_str = "CHECKMULTISIGVERIFY failed".to_string();
                         break;
                     }
                 } else {

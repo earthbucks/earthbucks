@@ -823,7 +823,7 @@ export default class ScriptInterpreter {
             break
           }
           let nKeys = ScriptNum.fromU8Vec(this.stack.pop() as Uint8Array).num
-          if (nKeys < 0 || nKeys > 20) {
+          if (nKeys < 0 || nKeys > 16) {
             this.errStr = 'invalid number of keys'
             break
           }
@@ -845,7 +845,7 @@ export default class ScriptInterpreter {
             this.errStr = 'invalid number of signatures'
             break
           }
-          if (this.stack.length < nSigs + 1n) {
+          if (this.stack.length < nSigs) {
             this.errStr = 'invalid stack operation'
             break
           }

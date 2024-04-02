@@ -139,6 +139,14 @@ impl ScriptChunk {
             ScriptChunk::new(0, None)
         }
     }
+
+    pub fn from_small_number(n: i8) -> ScriptChunk {
+        if n == -1 || (n >= 1 && n <= 16) {
+            ScriptChunk::new(n as u8 + *OP.get("1").unwrap() - 1, None)
+        } else {
+            ScriptChunk::new(0, None)
+        }
+    }
 }
 
 #[cfg(test)]

@@ -108,6 +108,27 @@ impl Script {
         script.chunks.push(ScriptChunk::from_data(pub_key.to_vec()));
         script
     }
+
+    pub fn from_multi_sig_output(m: u8, pub_keys: Vec<Vec<u8>>) -> Self {
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::from_small_number(m as i8));
+        for pub_key in pub_keys.clone() {
+            script.chunks.push(ScriptChunk::from_data(pub_key));
+        }
+        script
+            .chunks
+            .push(ScriptChunk::from_small_number(pub_keys.len() as i8));
+        script.chunks.push(ScriptChunk::new(OP["CHECKMULTISIG"], None));
+        script
+    }
+
+    pub fn from_multi_sig_input(sigs: Vec<Vec<u8>>) -> Self {
+        let mut script = Self::new(Vec::new());
+        for sig in sigs {
+            script.chunks.push(ScriptChunk::from_data(sig));
+        }
+        script
+    }
 }
 
 #[cfg(test)]

@@ -133,4 +133,12 @@ export default class ScriptChunk {
       return new ScriptChunk(0)
     }
   }
+
+  static fromSmallNumber(n: number): ScriptChunk {
+    if (n === -1 || (n >= 1 && n <= 16)) {
+      return new ScriptChunk(n + OP['1'] - 1)
+    } else {
+      return new ScriptChunk(0)
+    }
+  }
 }
