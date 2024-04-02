@@ -159,13 +159,13 @@ describe('ScriptInterpreter', () => {
 
       const stack = [sig.toU8Vec(), outputPubKey]
 
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
         outputScript,
         transaction,
         0,
+        stack,
+        outputAmount,
       )
-      scriptInterpreter.stack = stack
-      scriptInterpreter.value = outputAmount
 
       const result = scriptInterpreter.evalScript()
       expect(result).toBe(true)

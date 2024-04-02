@@ -68,6 +68,29 @@ export default class ScriptInterpreter {
     )
   }
 
+  static fromOutputScriptTransaction(
+    script: Script,
+    transaction: Transaction,
+    nIn: number,
+    stack: Uint8Array[],
+    value: bigint,
+  ): ScriptInterpreter {
+    return new ScriptInterpreter(
+      script,
+      transaction,
+      nIn,
+      stack,
+      [],
+      0,
+      0,
+      [],
+      undefined,
+      undefined,
+      '',
+      value,
+    )
+  }
+
   static castToBool(buf: Uint8Array): boolean {
     return Buffer.compare(buf, Buffer.alloc(buf.length)) !== 0
   }
