@@ -1126,6 +1126,84 @@ mod tests {
             let result = script_interpreter.eval_script();
             assert!(result);
         }
+
+        #[test]
+        fn checkmultisig() {
+            // Define private keys
+            let priv_keys_hex = vec![
+                "eee66a051d43a62b00da7185bbf2a13b42f601a0b987a8f1815b4213c9343451",
+                "f8749a7b6a825eb9e82e27720fd3b90e0f157adc75fe3e0efbf3c8a335eb3ef5",
+                "5df05870846dd200a7d29da98ad32016209d99af0422d66e568f97720d1acee3",
+                "c91b042751b94d705abee4fc67eb483dc32ae432e037f66120f5e865e4257c66",
+                "b78467b0ea6afa6c42c94333dcece978829bdb7ba7b97a2273b72cdc6be8c553",
+            ];
+
+            // Convert private keys to Vec<u8> format
+            let priv_keys_u8_vec: Vec<Vec<u8>> = priv_keys_hex
+                .iter()
+                .map(|hex| hex::decode(hex).unwrap())
+                .collect();
+
+            // Generate public keys
+            let pub_keys: Vec<Vec<u8>> = priv_keys_u8_vec
+                .iter()
+                .map(|priv_key| Key::new(priv_key.clone()).public_key().clone())
+                .collect();
+
+            // Create a multisig output script
+            let output_script = Script::from_multi_sig_output(3, pub_keys);
+
+            // Other transaction parameters
+            let output_amount = 100;
+            let output_tx_id = vec![0; 32];
+            let output_tx_index = 0;
+
+            // Create a transaction
+            let mut transaction = Transaction::new(
+                1,
+                vec![TransactionInput::new(
+                    output_tx_id.clone(),
+                    output_tx_index,
+                    Script::from_string("").unwrap(),
+                    0xffffffff,
+                )],
+                vec![TransactionOutput::new(output_amount, output_script.clone())],
+                0,
+            );
+
+            // Sign the transaction with the first 3 private keys
+            let sigs: Vec<Vec<u8>> = priv_keys_u8_vec[0..3]
+                .iter()
+                .map(|priv_key| {
+                    transaction
+                        .sign(
+                            0,
+                            priv_key[..32].try_into().unwrap(),
+                            output_script.to_u8_vec(),
+                            output_amount,
+                            TransactionSignature::SIGHASH_ALL,
+                        )
+                        .to_u8_vec()
+                })
+                .collect();
+
+            // Create a stack with the signatures
+            let stack = sigs.clone();
+
+            // Create a script interpreter
+            let mut script_interpreter = ScriptInterpreter::from_output_script_transaction(
+                output_script,
+                transaction,
+                0,
+                stack,
+                output_amount,
+            );
+
+            // Evaluate the script
+            let result = script_interpreter.eval_script();
+            assert_eq!(script_interpreter.err_str, "");
+            assert_eq!(result, true);
+        }
     }
 
     mod test_vectors {

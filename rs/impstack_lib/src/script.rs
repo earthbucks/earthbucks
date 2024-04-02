@@ -118,7 +118,9 @@ impl Script {
         script
             .chunks
             .push(ScriptChunk::from_small_number(pub_keys.len() as i8));
-        script.chunks.push(ScriptChunk::new(OP["CHECKMULTISIG"], None));
+        script
+            .chunks
+            .push(ScriptChunk::new(OP["CHECKMULTISIG"], None));
         script
     }
 
