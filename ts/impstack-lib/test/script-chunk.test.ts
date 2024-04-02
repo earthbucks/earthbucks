@@ -161,4 +161,27 @@ describe('ScriptChunk', () => {
       expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
     })
   })
+
+  describe('fromData', () => {
+    test('should create a ScriptChunk with opcode OP_PUSHDATA1 and a buffer', () => {
+      const buffer = new Uint8Array(255).fill(0)
+      const scriptChunk = ScriptChunk.fromData(buffer)
+      expect(scriptChunk.opcode).toBe(OP.PUSHDATA1)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+
+    test('should create a ScriptChunk with opcode OP_PUSHDATA2 and a buffer', () => {
+      const buffer = new Uint8Array(256).fill(0)
+      const scriptChunk = ScriptChunk.fromData(buffer)
+      expect(scriptChunk.opcode).toBe(OP.PUSHDATA2)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+
+    test('should create a ScriptChunk with opcode OP_PUSHDATA4 and a buffer', () => {
+      const buffer = new Uint8Array(65536).fill(0)
+      const scriptChunk = ScriptChunk.fromData(buffer)
+      expect(scriptChunk.opcode).toBe(OP.PUSHDATA4)
+      expect(scriptChunk.buffer).toEqual(Buffer.from(buffer))
+    })
+  })
 })

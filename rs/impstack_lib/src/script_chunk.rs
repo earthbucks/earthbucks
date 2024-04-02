@@ -117,6 +117,19 @@ impl ScriptChunk {
         chunk.from_u8_vec(arr)?;
         Ok(chunk)
     }
+
+    pub fn from_data(data: Vec<u8>) -> ScriptChunk {
+        let len = data.len();
+        if len <= 0xff {
+            ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(data))
+        } else if len <= 0xffff {
+            ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(data))
+        } else if len <= 0xffffffff {
+            ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(data))
+        } else {
+            ScriptChunk::new(0, None)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -277,5 +290,29 @@ mod tests {
         let chunk = ScriptChunk::from_u8_vec_new(arr).unwrap();
         assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
         assert_eq!(chunk.buffer, Some(vec![1, 2]));
+    }
+
+    #[test]
+    fn test_from_data() {
+        let data = vec![1, 2, 3];
+        let chunk = ScriptChunk::from_data(data.clone());
+        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.buffer, Some(data));
+    }
+
+    #[test]
+    fn test_from_data_pushdata2() {
+        let data = vec![1; 256];
+        let chunk = ScriptChunk::from_data(data.clone());
+        assert_eq!(chunk.opcode, *OP.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.buffer, Some(data));
+    }
+
+    #[test]
+    fn test_from_data_pushdata4() {
+        let data = vec![1; 65536];
+        let chunk = ScriptChunk::from_data(data.clone());
+        assert_eq!(chunk.opcode, *OP.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.buffer, Some(data));
     }
 }

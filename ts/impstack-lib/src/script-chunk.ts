@@ -111,4 +111,17 @@ export default class ScriptChunk {
   static fromU8Vec(arr: Uint8Array): ScriptChunk {
     return new ScriptChunk().fromU8Vec(arr)
   }
+
+  static fromData(data: Uint8Array): ScriptChunk {
+    const len = data.length
+    if (len <= 0xff) {
+      return new ScriptChunk(OP.PUSHDATA1, data)
+    } else if (len <= 0xffff) {
+      return new ScriptChunk(OP.PUSHDATA2, data)
+    } else if (len <= 0xffffffff) {
+      return new ScriptChunk(OP.PUSHDATA4, data)
+    } else {
+      return new ScriptChunk(0)
+    }
+  }
 }
