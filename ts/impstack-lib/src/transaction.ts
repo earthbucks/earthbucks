@@ -4,6 +4,8 @@ import VarInt from './var-int'
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
+import { ecdsaSign, ecdsaVerify } from 'secp256k1'
+import TransactionSignature from './transaction-signature'
 
 export default class Transaction {
   public version: number
@@ -113,7 +115,7 @@ export default class Transaction {
 
   sighashPreimage(
     inputIndex: number,
-    scriptU8Vec: Uint8Array,
+    script: Uint8Array,
     amount: bigint,
     hashType: number,
   ): Uint8Array {
@@ -158,8 +160,8 @@ export default class Transaction {
     writer.writeU8Vec(sequenceHash)
     writer.writeU8Vec(this.inputs[inputIndex].inputTxId)
     writer.writeUInt32BE(this.inputs[inputIndex].inputTxIndex)
-    writer.writeVarIntNum(scriptU8Vec.length)
-    writer.writeU8Vec(scriptU8Vec)
+    writer.writeVarIntNum(script.length)
+    writer.writeU8Vec(script)
     writer.writeUInt64BEBigInt(amount)
     writer.writeUInt32BE(this.inputs[inputIndex].sequence)
     writer.writeU8Vec(outputsHash)
@@ -170,16 +172,36 @@ export default class Transaction {
 
   sighash(
     inputIndex: number,
-    scriptCode: Uint8Array,
+    script: Uint8Array,
     amount: bigint,
     hashType: number,
   ): Uint8Array {
-    const preimage = this.sighashPreimage(
-      inputIndex,
-      scriptCode,
-      amount,
-      hashType,
-    )
+    const preimage = this.sighashPreimage(inputIndex, script, amount, hashType)
     return doubleBlake3Hash(preimage)
+  }
+
+  sign(
+    inputIndex: number,
+    privateKey: Uint8Array,
+    script: Uint8Array,
+    amount: bigint,
+    hashType: number,
+  ): TransactionSignature {
+    const hash = this.sighash(inputIndex, script, amount, hashType)
+    let sigBuf = ecdsaSign(hash, privateKey).signature
+    const sig = new TransactionSignature(hashType, sigBuf)
+    return sig
+  }
+
+  verify(
+    inputIndex: number,
+    publicKey: Uint8Array,
+    sig: TransactionSignature,
+    script: Uint8Array,
+    amount: bigint,
+    hashType: number,
+  ): boolean {
+    const hash = this.sighash(inputIndex, script, amount, hashType)
+    return ecdsaVerify(hash, sig.sigBuf, publicKey)
   }
 }

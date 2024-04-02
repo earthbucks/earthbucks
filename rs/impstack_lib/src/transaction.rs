@@ -4,7 +4,9 @@ use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 use crate::transaction_input::TransactionInput;
 use crate::transaction_output::TransactionOutput;
+use crate::transaction_signature::TransactionSignature;
 use crate::var_int::VarInt;
+use secp256k1::{Message, PublicKey, Secp256k1, Signature};
 
 pub struct Transaction {
     pub version: u8,
@@ -186,6 +188,40 @@ impl Transaction {
     ) -> Vec<u8> {
         let preimage = self.sighash_preimage(input_index, script_u8_vec, amount, hash_type);
         double_blake3_hash(&preimage).to_vec()
+    }
+
+    pub fn sign(
+        &mut self,
+        input_index: usize,
+        privkey: [u8; 32],
+        script: Vec<u8>,
+        amount: u64,
+        hash_type: u8,
+    ) -> TransactionSignature {
+        let secp = Secp256k1::new();
+        let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
+            .expect("32 bytes");
+        let key = secp256k1::SecretKey::from_slice(&privkey).expect("32 bytes");
+        let sig = secp.sign(&message, &key);
+        let sig = sig.serialize_der();
+        TransactionSignature::new(hash_type, sig.to_vec())
+    }
+
+    pub fn verify(
+        &mut self,
+        input_index: usize,
+        pubkey: [u8; 33],
+        signature: Vec<u8>,
+        script: Vec<u8>,
+        amount: u64,
+        hash_type: u8,
+    ) -> bool {
+        let secp = Secp256k1::new();
+        let pubkey = PublicKey::from_slice(&pubkey).expect("33 bytes");
+        let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
+            .expect("32 bytes");
+        let signature = Signature::from_der(&signature).expect("64 bytes");
+        secp.verify(&message, &signature, &pubkey).is_ok()
     }
 }
 
@@ -391,7 +427,7 @@ mod tests {
 
         let script = Script::from_string("").unwrap();
         let amount = 1;
-        let hash_type = 1;
+        let hash_type = TransactionSignature::SIGHASH_ALL;
         let preimage = transaction.sighash(0, script.to_u8_vec(), amount, hash_type);
 
         let expected =

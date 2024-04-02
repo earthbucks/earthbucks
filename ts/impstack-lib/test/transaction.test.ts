@@ -6,6 +6,7 @@ import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
 import BufferWriter from '../src/buffer-writer'
 import { blake3Hash } from '../src/blake3'
+import TransactionSignature from '../src/transaction-signature'
 
 describe('Transaction', () => {
   describe('constructor', () => {
@@ -203,7 +204,12 @@ describe('Transaction', () => {
 
       const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()
-      const result = transaction.sighash(0, scriptU8Vec, BigInt(1), 1)
+      const result = transaction.sighash(
+        0,
+        scriptU8Vec,
+        BigInt(1),
+        TransactionSignature.SIGHASH_ALL,
+      )
 
       expect(result).toBeInstanceOf(Uint8Array)
 
