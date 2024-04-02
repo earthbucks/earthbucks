@@ -878,7 +878,7 @@ mod tests {
         #[test]
         fn test_zero() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string_new("0").unwrap();
+            let script = Script::from_string("0").unwrap();
             let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
@@ -888,7 +888,7 @@ mod tests {
         #[test]
         fn test_pushdata1() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string_new("0xff").unwrap();
+            let script = Script::from_string("0xff").unwrap();
             let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
@@ -899,7 +899,7 @@ mod tests {
         #[test]
         fn test_pushdata2() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string_new(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
+            let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
             let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
@@ -913,7 +913,7 @@ mod tests {
         #[test]
         fn test_pushdata4() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string_new(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
+            let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
             let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
@@ -927,7 +927,7 @@ mod tests {
         #[test]
         fn test_1negate() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string_new("1NEGATE").unwrap();
+            let script = Script::from_string("1NEGATE").unwrap();
             let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
@@ -968,18 +968,18 @@ mod tests {
                 // to confirm tests are running:
                 // cargo test script_interpreter -- --nocapture
 
-                let script = Script::from_string_new(&test_script.script).unwrap();
+                let script = Script::from_string(&test_script.script).unwrap();
                 let transaction = Transaction::new(
                     1,
                     vec![TransactionInput::new(
                         vec![],
                         0,
-                        Script::from_string_new("").unwrap(),
+                        Script::from_string("").unwrap(),
                         0xffffffff,
                     )],
                     vec![TransactionOutput::new(
                         0 as u64,
-                        Script::from_string_new("").unwrap(),
+                        Script::from_string("").unwrap(),
                     )],
                     0 as u64,
                 );

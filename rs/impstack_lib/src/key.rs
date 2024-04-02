@@ -1,10 +1,8 @@
 extern crate rand;
 extern crate secp256k1;
-extern crate sha2;
 
 use rand::{rngs::OsRng, Rng};
 use secp256k1::{PublicKey, SecretKey};
-// use sha2::{Digest, Sha256};
 
 pub struct Key {
     private_key: SecretKey,

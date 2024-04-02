@@ -198,13 +198,13 @@ mod tests {
     fn test_transaction() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -226,13 +226,13 @@ mod tests {
     fn test_from_buffer_reader() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -255,13 +255,13 @@ mod tests {
     fn test_hash_once() {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -277,13 +277,13 @@ mod tests {
     fn test_hash() {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let transaction_input =
             TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
 
         let version = 1;
@@ -301,12 +301,12 @@ mod tests {
         let inputs = vec![TransactionInput::new(
             vec![0; 32],
             0,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
             0xffffffff,
         )];
         let outputs = vec![TransactionOutput::new(
             100 as u64,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
         )];
 
         let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
@@ -327,12 +327,12 @@ mod tests {
         let inputs = vec![TransactionInput::new(
             vec![0; 32],
             0,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
             0xffffffff,
         )];
         let outputs = vec![TransactionOutput::new(
             100 as u64,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
         )];
 
         let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
@@ -353,12 +353,12 @@ mod tests {
         let inputs = vec![TransactionInput::new(
             vec![0; 32],
             0,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
             0xffffffff,
         )];
         let outputs = vec![TransactionOutput::new(
             100 as u64,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
         )];
 
         let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
@@ -379,17 +379,17 @@ mod tests {
         let inputs = vec![TransactionInput::new(
             vec![0; 32],
             0,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
             0xffffffff,
         )];
         let outputs = vec![TransactionOutput::new(
             100 as u64,
-            Script::from_string_new("").unwrap(),
+            Script::from_string("").unwrap(),
         )];
 
         let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
 
-        let script = Script::from_string_new("").unwrap();
+        let script = Script::from_string("").unwrap();
         let amount = 1;
         let hash_type = 1;
         let preimage = transaction.sighash(0, script.to_u8_vec(), amount, hash_type);

@@ -25,7 +25,7 @@ impl TransactionInput {
         let input_tx_id = reader.read(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
-        let script = Script::from_u8_vec_new(reader.read(size as usize).as_slice())?;
+        let script = Script::from_u8_vec(reader.read(size as usize).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }
@@ -36,7 +36,7 @@ impl TransactionInput {
         let input_tx_id = reader.read(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_var_int() as usize;
-        let script = Script::from_u8_vec_new(reader.read(size as usize).as_slice())?;
+        let script = Script::from_u8_vec(reader.read(size as usize).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }
@@ -61,7 +61,7 @@ mod tests {
     fn test_transaction_input() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string_new("");
+        let script = Script::from_string("");
         let sequence = 0;
 
         let script_clone = match script {
@@ -95,7 +95,7 @@ mod tests {
         let input_tx_id = vec![0u8; 32];
         let input_tx_index = 1u32;
         let script_hex = "";
-        let script = Script::from_string_new(script_hex);
+        let script = Script::from_string(script_hex);
         let sequence = 2u32;
 
         let script_v8_vec = match script {

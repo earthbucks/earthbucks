@@ -18,7 +18,7 @@ impl TransactionOutput {
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
         let script_arr = reader.read(script_len);
-        let script = match Script::from_u8_vec_new(&script_arr[..]) {
+        let script = match Script::from_u8_vec(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
         };
@@ -31,7 +31,7 @@ impl TransactionOutput {
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
         let script_arr = reader.read(script_len);
-        let script = match Script::from_u8_vec_new(&script_arr[..]) {
+        let script = match Script::from_u8_vec(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
         };
@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn test_transaction_output_from_u8_vec_and_to_u8_vec() {
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec());
         let result = match result {
@@ -73,8 +73,7 @@ mod tests {
     fn test_big_push_data() {
         let data = vec![0u8; 0xffff];
         let value = 100;
-        let script =
-            Script::from_string_new(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
+        let script = Script::from_string(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec()).unwrap();
         assert_eq!(
@@ -86,7 +85,7 @@ mod tests {
     #[test]
     fn test_buffer_reader() {
         let value = 100;
-        let script = Script::from_string_new("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let transaction_output = TransactionOutput::new(value, script);
         let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(
             transaction_output.to_u8_vec(),
