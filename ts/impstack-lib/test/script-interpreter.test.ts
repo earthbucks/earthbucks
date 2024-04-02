@@ -124,6 +124,7 @@ describe('ScriptInterpreter', () => {
       const outputPrivKeyU8Vec = new Uint8Array(outputPrivKeyBuf)
       const outputKey = new Key(outputPrivKeyU8Vec)
       const outputPubKey = outputKey.publicKey
+      expect(Buffer.from(outputPubKey).toString('hex')).toEqual('0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987')
       const outputAddress = new Address(outputPubKey)
       const outputScript = Script.fromPubKeyHashOutput(outputAddress.address)
       const outputAmount = BigInt(100)
@@ -134,7 +135,7 @@ describe('ScriptInterpreter', () => {
       const transaction = new Transaction(
         1,
         [new TransactionInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
-        [],
+        [new TransactionOutput(outputAmount, outputScript)],
         BigInt(0),
       )
 
@@ -148,8 +149,10 @@ describe('ScriptInterpreter', () => {
         0
       )
       scriptInterpreter.stack = stack
+      scriptInterpreter.value = outputAmount
 
       const result = scriptInterpreter.evalScript()
+      console.log(scriptInterpreter.pc)
       console.log(scriptInterpreter.errStr)
       console.log(scriptInterpreter.returnValue)
       console.log(scriptInterpreter.returnSuccess)
