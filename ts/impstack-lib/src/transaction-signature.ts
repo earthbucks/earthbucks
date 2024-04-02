@@ -17,4 +17,10 @@ export default class TransactionSignature {
     hashTypeBuf.writeUInt8(this.hashType)
     return new Uint8Array(Buffer.concat([hashTypeBuf, this.sigBuf]))
   }
+
+  static fromU8Vec(u8vec: Uint8Array): TransactionSignature {
+    const hashType = u8vec[0]
+    const sigBuf = u8vec.slice(1)
+    return new TransactionSignature(hashType, sigBuf)
+  }
 }

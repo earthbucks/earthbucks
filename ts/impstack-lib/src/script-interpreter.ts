@@ -3,14 +3,15 @@ import Script from './script'
 import Transaction from './transaction'
 import ScriptNum from './script-num'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
+import TransactionSignature from './transaction-signature'
 
 export default class ScriptInterpreter {
   public script: Script
   public transaction: Transaction
+  public nIn: number
   public stack: Uint8Array[]
   public altStack: Uint8Array[]
   public pc: number
-  public pBeginCodeHash: number
   public nOpCount: number
   public ifStack: boolean[]
   public returnValue?: Uint8Array
@@ -21,10 +22,10 @@ export default class ScriptInterpreter {
   constructor(
     script: Script,
     transaction: Transaction,
+    nIn: number,
     stack: Uint8Array[],
     altStack: Uint8Array[],
     pc: number,
-    pBeginCodeHash: number,
     nOpCount: number,
     ifStack: boolean[],
     returnValue: Uint8Array | undefined,
@@ -34,10 +35,10 @@ export default class ScriptInterpreter {
   ) {
     this.script = script
     this.transaction = transaction
+    this.nIn = nIn
     this.stack = stack
     this.altStack = altStack
     this.pc = pc
-    this.pBeginCodeHash = pBeginCodeHash
     this.nOpCount = nOpCount
     this.ifStack = ifStack
     this.returnValue = returnValue
@@ -46,16 +47,17 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  static fromScript(
+  static fromTransactionScript(
     script: Script,
     transaction: Transaction,
+    nIn: number,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       transaction,
+      nIn,
       [],
       [],
-      0,
       0,
       0,
       [],
@@ -757,6 +759,38 @@ export default class ScriptInterpreter {
           }
           let buf = this.stack.pop() as Uint8Array
           this.stack.push(doubleBlake3Hash(buf))
+        } else if (opcode === OP.CHECKSIG || opcode === OP.CHECKSIGVERIFY) {
+          if (this.stack.length < 2) {
+            this.errStr = 'invalid stack operation'
+            break
+          }
+          let pubKeyBuf = this.stack.pop() as Uint8Array
+          if (pubKeyBuf.length !== 33) {
+            this.errStr = 'invalid public key length'
+            break
+          }
+          let sigBuf = this.stack.pop() as Uint8Array
+          if (sigBuf.length !== 65) {
+            this.errStr = 'invalid signature length'
+            break
+          }
+          const signature = TransactionSignature.fromU8Vec(sigBuf)
+
+          let subScript = new Uint8Array(this.script.toU8Vec())
+
+          const success = this.transaction.verify(
+            this.nIn,
+            pubKeyBuf,
+            signature,
+            subScript,
+            this.value,
+          )
+
+          this.stack.push(new Uint8Array([success ? 1 : 0]))
+          if (opcode === OP.CHECKSIGVERIFY && !success) {
+            this.errStr = 'CHECKSIGVERIFY failed'
+            break
+          }
         } else {
           this.errStr = 'invalid opcode'
           break

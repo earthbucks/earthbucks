@@ -19,4 +19,10 @@ impl TransactionSignature {
         result.extend(&self.sig_buf);
         result
     }
+
+    pub fn from_u8_vec(data: &[u8]) -> Self {
+        let hash_type = data[0];
+        let sig_buf = data[1..].to_vec();
+        Self { hash_type, sig_buf }
+    }
 }

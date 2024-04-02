@@ -8,40 +8,40 @@ use num_bigint::ToBigInt;
 pub struct ScriptInterpreter {
     pub script: Script,
     pub transaction: Transaction,
+    pub n_in: usize,
     pub stack: Vec<Vec<u8>>,
     pub alt_stack: Vec<Vec<u8>>,
     pub pc: usize,
-    pub p_begin_code_hash: usize,
     pub n_op_count: usize,
     pub if_stack: Vec<bool>,
     pub return_value: Option<Vec<u8>>,
     pub return_success: Option<bool>,
     pub err_str: String,
-    pub value: i64,
+    pub value: u64,
 }
 
 impl ScriptInterpreter {
     pub fn new(
         script: Script,
         transaction: Transaction,
+        n_in: usize,
         stack: Vec<Vec<u8>>,
         alt_stack: Vec<Vec<u8>>,
         pc: usize,
-        p_begin_code_hash: usize,
         n_op_count: usize,
         if_stack: Vec<bool>,
         return_value: Option<Vec<u8>>,
         return_success: Option<bool>,
         err_str: String,
-        value: i64,
+        value: u64,
     ) -> Self {
         Self {
             script,
             transaction,
+            n_in,
             stack,
             alt_stack,
             pc,
-            p_begin_code_hash,
             n_op_count,
             if_stack,
             return_value,
@@ -51,20 +51,20 @@ impl ScriptInterpreter {
         }
     }
 
-    pub fn from_script(script: Script, transaction: Transaction) -> Self {
+    pub fn from_transaction_script(script: Script, transaction: Transaction, n_in: usize) -> Self {
         Self::new(
             script,
             transaction,
+            n_in,
             Vec::new(),
             Vec::new(),
-            0,
             0,
             0,
             Vec::new(),
             None,
             None,
-            String::new(),
-            0,
+            "".to_string(),
+            0 as u64,
         )
     }
 
@@ -879,7 +879,8 @@ mod tests {
         fn test_zero() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            let mut script_interpreter =
+                ScriptInterpreter::from_transaction_script(script, transaction, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
             assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "00");
@@ -889,7 +890,8 @@ mod tests {
         fn test_pushdata1() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0xff").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            let mut script_interpreter =
+                ScriptInterpreter::from_transaction_script(script, transaction, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -900,7 +902,8 @@ mod tests {
         fn test_pushdata2() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            let mut script_interpreter =
+                ScriptInterpreter::from_transaction_script(script, transaction, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -914,7 +917,8 @@ mod tests {
         fn test_pushdata4() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            let mut script_interpreter =
+                ScriptInterpreter::from_transaction_script(script, transaction, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -928,7 +932,8 @@ mod tests {
         fn test_1negate() {
             let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("1NEGATE").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+            let mut script_interpreter =
+                ScriptInterpreter::from_transaction_script(script, transaction, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -983,7 +988,8 @@ mod tests {
                     )],
                     0 as u64,
                 );
-                let mut script_interpreter = ScriptInterpreter::from_script(script, transaction);
+                let mut script_interpreter =
+                    ScriptInterpreter::from_transaction_script(script, transaction, 0);
                 script_interpreter.eval_script();
                 assert_eq!(
                     script_interpreter.err_str, test_script.expected_error,

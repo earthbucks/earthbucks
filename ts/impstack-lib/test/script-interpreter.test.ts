@@ -22,9 +22,10 @@ describe('ScriptInterpreter', () => {
   describe('sanity tests', () => {
     test('0', () => {
       const script = new Script().fromString('0')
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(false)
@@ -36,9 +37,10 @@ describe('ScriptInterpreter', () => {
 
     test('pushdata1', () => {
       const script = new Script().fromString('0xff')
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
@@ -51,9 +53,10 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA1', () => {
       const script = new Script().fromString('0xffff')
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
@@ -66,9 +69,10 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA2', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(256))
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
@@ -81,9 +85,10 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA4', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(65536))
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
@@ -96,9 +101,10 @@ describe('ScriptInterpreter', () => {
 
     test('1NEGATE', () => {
       const script = new Script().fromString('1NEGATE')
-      const scriptInterpreter = ScriptInterpreter.fromScript(
+      const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
         script,
         transaction,
+        0,
       )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
@@ -140,9 +146,10 @@ describe('ScriptInterpreter', () => {
       testScripts.forEach((testScript) => {
         test(testScript.name, () => {
           const script = Script.fromString(testScript.script)
-          const scriptInterpreter = ScriptInterpreter.fromScript(
+          const scriptInterpreter = ScriptInterpreter.fromTransactionScript(
             script,
             transaction,
+            0,
           )
           scriptInterpreter.evalScript()
 
