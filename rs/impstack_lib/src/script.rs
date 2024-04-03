@@ -2,7 +2,7 @@ use crate::buffer_reader::BufferReader;
 use crate::opcode::OP;
 use crate::script_chunk::ScriptChunk;
 
-#[derive(Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Script {
     pub chunks: Vec<ScriptChunk>,
 }

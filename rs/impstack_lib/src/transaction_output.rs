@@ -3,6 +3,7 @@ use crate::buffer_writer::BufferWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct TransactionOutput {
     value: u64,
     script: Script,

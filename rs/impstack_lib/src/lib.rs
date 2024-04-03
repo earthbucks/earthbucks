@@ -11,5 +11,6 @@ pub mod script_num;
 pub mod transaction;
 pub mod transaction_input;
 pub mod transaction_output;
+pub mod transaction_output_map;
 pub mod transaction_signature;
 pub mod var_int;
