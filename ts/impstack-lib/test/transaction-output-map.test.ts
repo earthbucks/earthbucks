@@ -42,4 +42,18 @@ describe('TransactionOutputMap', () => {
     const retrievedOutput = transactionOutputMap.get(txIdHash, outputIndex)
     expect(retrievedOutput).toBe(transactionOutput)
   })
+
+  test('values method should return all TransactionOutput values', () => {
+    const transactionOutputMap = new TransactionOutputMap()
+    const transactionOutput1 = transactionOutput
+    const transactionOutput2 = transactionOutput
+    transactionOutputMap.add(transactionOutput1, txIdHash, 0)
+    transactionOutputMap.add(transactionOutput2, txIdHash, 1)
+
+    const values = Array.from(transactionOutputMap.values())
+
+    expect(values.length).toBe(2)
+    expect(values).toContain(transactionOutput1)
+    expect(values).toContain(transactionOutput2)
+  })
 })

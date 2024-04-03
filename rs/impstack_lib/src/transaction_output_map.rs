@@ -30,6 +30,10 @@ impl TransactionOutputMap {
         let name = Self::name_from_output(tx_id_hash, output_index);
         self.map.get(&name)
     }
+
+    pub fn values(&self) -> Vec<&TransactionOutput> {
+        self.map.values().collect()
+    }
 }
 
 #[cfg(test)]
@@ -78,5 +82,21 @@ mod tests {
         transaction_output_map.add(transaction_output.clone(), &tx_id_hash, output_index);
         let retrieved_output = transaction_output_map.get(&tx_id_hash, output_index);
         assert_eq!(retrieved_output, Some(&transaction_output));
+    }
+
+    #[test]
+    fn test_values() {
+        let mut transaction_output_map = TransactionOutputMap::new();
+        let transaction_output1 = TransactionOutput::new(100, Script::from_string("").unwrap());
+        let transaction_output2 = TransactionOutput::new(200, Script::from_string("").unwrap());
+        let tx_id_hash1 = [1, 2, 3, 4];
+        let tx_id_hash2 = [5, 6, 7, 8];
+        let output_index = 0;
+        transaction_output_map.add(transaction_output1.clone(), &tx_id_hash1, output_index);
+        transaction_output_map.add(transaction_output2.clone(), &tx_id_hash2, output_index);
+        let values: Vec<&TransactionOutput> = transaction_output_map.values();
+        assert_eq!(values.len(), 2);
+        assert!(values.contains(&&transaction_output1));
+        assert!(values.contains(&&transaction_output2));
     }
 }

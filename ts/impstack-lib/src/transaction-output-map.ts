@@ -34,4 +34,8 @@ export default class TransactionOutputMap {
     const name = TransactionOutputMap.nameFromOutput(txIdHash, outputIndex)
     return this.map.get(name)
   }
+
+  values(): IterableIterator<TransactionOutput> {
+    return this.map.values()
+  }
 }
