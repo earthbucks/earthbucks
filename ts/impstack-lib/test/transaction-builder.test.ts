@@ -43,19 +43,14 @@ describe('TransactionBuilder', () => {
     expect(transaction.outputs[0].value).toBe(BigInt(50))
   })
 
-  // test('should build an invalid transaction when input is insufficient to cover the output', () => {
-  //   const output = new TransactionOutput(
-  //     BigInt(30),
-  //     Script.fromPubKeyHashOutput('pubKeyHash'),
-  //   )
-  //   transactionBuilder.addOutput(BigInt(50), 'pubKeyHash')
-  //   txOutMap.add('txOutId', output)
-  //   transactionBuilder.txOutMap = txOutMap
+  test('should build an invalid transaction when input is insufficient to cover the output', () => {
+    transactionBuilder.addOutput(BigInt(10000), Script.fromString(''))
 
-  //   const transaction = transactionBuilder.build()
+    const transaction = transactionBuilder.build()
 
-  //   expect(transaction.inputs.length).toBe(1)
-  //   expect(transaction.outputs.length).toBe(1)
-  //   expect(transaction.outputs[0].value).toBe(BigInt(50))
-  // })
+    expect(transaction.inputs.length).toBe(5)
+    expect(transaction.outputs.length).toBe(1)
+    expect(transactionBuilder.inputAmount).toBe(BigInt(500))
+    expect(transaction.outputs[0].value).toBe(BigInt(10000))
+  })
 })

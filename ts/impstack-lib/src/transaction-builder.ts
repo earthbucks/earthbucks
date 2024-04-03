@@ -8,11 +8,13 @@ export default class TransactionBuilder {
   public txOutMap: TransactionOutputMap
   public transaction: Transaction
   public changeScript: Script
+  public inputAmount: bigint
 
   constructor(txOutMap: TransactionOutputMap, changeScript: Script) {
     this.transaction = new Transaction(1, [], [], BigInt(0))
     this.txOutMap = txOutMap
     this.changeScript = changeScript
+    this.inputAmount = BigInt(0)
   }
 
   addOutput(value: bigint, script: Script): void {
@@ -62,6 +64,7 @@ export default class TransactionBuilder {
         break
       }
     }
+    this.inputAmount = inputAmount
     if (changeAmount > BigInt(0)) {
       this.addOutput(changeAmount, this.changeScript)
     }
