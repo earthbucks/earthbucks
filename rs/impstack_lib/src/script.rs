@@ -119,6 +119,13 @@ impl Script {
         script
     }
 
+    pub fn from_pub_key_hash_input_placeholder() -> Self {
+        // 65 bytes for the signature and 33 bytes for the public key, all zeroes
+        let signature = vec![0; 65];
+        let pub_key = vec![0; 33];
+        Self::from_pub_key_hash_input(&signature, &pub_key)
+    }
+
     pub fn from_multi_sig_output(m: u8, pub_keys: Vec<Vec<u8>>) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::from_small_number(m as i8));
