@@ -69,7 +69,37 @@ export default class Script {
     ])
   }
 
+  isPubKeyHashOutput(): boolean {
+    return (
+      this.chunks.length === 5 &&
+      this.chunks[0].opcode === OP.DUP &&
+      this.chunks[1].opcode === OP.DOUBLEBLAKE3 &&
+      this.chunks[2].opcode === OP.PUSHDATA1 &&
+      this.chunks[2].buffer?.length === 32 &&
+      this.chunks[3].opcode === OP.EQUALVERIFY &&
+      this.chunks[4].opcode === OP.CHECKSIG
+    )
+  }
+
   static fromPubKeyHashInput(sig: Uint8Array, pubKey: Uint8Array): Script {
+    return new Script([ScriptChunk.fromData(sig), ScriptChunk.fromData(pubKey)])
+  }
+
+  isPubKeyHashInput(): boolean {
+    return (
+      this.chunks.length === 2 &&
+      this.chunks[0].opcode === OP['PUSHDATA1'] &&
+      this.chunks[0].buffer?.length === 65 &&
+      this.chunks[1].opcode === OP['PUSHDATA1'] &&
+      this.chunks[1].buffer?.length === 33
+    )
+  }
+
+  static fromPubKeyHashInputPlaceholder(): Script {
+    const sig = Buffer.alloc(65)
+    sig.fill(0)
+    const pubKey = Buffer.alloc(33)
+    pubKey.fill(0)
     return new Script([ScriptChunk.fromData(sig), ScriptChunk.fromData(pubKey)])
   }
 

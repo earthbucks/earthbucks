@@ -61,4 +61,34 @@ describe('Script', () => {
     // Check that the final string matches the initial string
     expect(finalString).toEqual('0xffff 0xffff')
   })
+
+  describe('pubkeyhash', () => {
+    test('fromPubKeyHashOutput', () => {
+      const script = Script.fromPubKeyHashOutput(
+        new Uint8Array(Buffer.from('01'.repeat(32), 'hex')),
+      )
+      expect(script.toString()).toBe(
+        'DUP DOUBLEBLAKE3 0x' + '01'.repeat(32) + ' EQUALVERIFY CHECKSIG',
+      )
+    })
+
+    test('isPubKeyHashOutput', () => {
+      const script = Script.fromPubKeyHashOutput(
+        new Uint8Array(Buffer.from('01'.repeat(32), 'hex')),
+      )
+      expect(script.isPubKeyHashOutput()).toBe(true)
+    })
+
+    test('isPubKeyHashOutput false', () => {
+      const script = Script.fromString(
+        'DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG',
+      )
+      expect(script.isPubKeyHashOutput()).toBe(false)
+    })
+
+    test('fromPubKeyHashInputPlacholder', () => {
+      const script = Script.fromPubKeyHashInputPlaceholder()
+      expect(script.isPubKeyHashInput()).toBe(true)
+    })
+  })
 })
