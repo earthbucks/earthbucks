@@ -45,21 +45,33 @@ describe('TransactionSigner', () => {
     expect(transaction.outputs.length).toBe(2)
     expect(transaction.outputs[0].value).toBe(BigInt(50))
 
-    transactionSigner = new TransactionSigner(transaction, txOutMap, pubKeyHashKeyMap)
+    transactionSigner = new TransactionSigner(
+      transaction,
+      txOutMap,
+      pubKeyHashKeyMap,
+    )
     const signed = transactionSigner.sign(0)
     expect(signed).toBe(true)
 
     const txInput = transaction.inputs[0]
+    const txOutput = txOutMap.get(txInput.inputTxId, txInput.inputTxIndex)
+    const execScript = txOutput?.script as Script
     const sigBuf = txInput.script.chunks[0].buffer as Uint8Array
     expect(sigBuf?.length).toBe(65)
     const pubKeyBuf = txInput.script.chunks[1].buffer as Uint8Array
     expect(pubKeyBuf?.length).toBe(33)
 
-    // const stack = [sigBuf, pubKeyBuf]
+    const stack = [sigBuf, pubKeyBuf]
 
-    // const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(script, transaction, 0, stack, 100n)
+    const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
+      execScript,
+      transaction,
+      0,
+      stack,
+      100n,
+    )
 
-    // const result = scriptInterpreter.evalScript()
-    // expect(result).toBe(true)
+    const result = scriptInterpreter.evalScript()
+    expect(result).toBe(true)
   })
 })
