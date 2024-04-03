@@ -233,9 +233,9 @@ Chief Imp at ImpStack
 
 CHECKSIG and CHECKMULTISIG
 
-April 2, 2024
+April 3, 2024
 
-Today I have finished implementing:
+As of today I have finished implementing:
 
 - The Signature Hash (sighash) algorithm, which is based on the sighash
   algorithm from Bitcoin Cash. The Bitcoin Cash algorithm fixing the quadratic
@@ -247,6 +247,9 @@ Today I have finished implementing:
   This works very similar to Bitcoin, including the requirement of matching the
   order of signatures to the order of public keys. However, I have fixed the
   famous bug where it pops an extra item off the stack.
+- Rename all uses of "address" with "pub key hash", because "address" is a
+  confusing term that can mean many things. Users will never see the "pub key
+  hash", but will instead see only email addresses and domain names.
 
 
 ---
