@@ -72,3 +72,51 @@ impl TransactionBuilder {
         self.transaction.clone()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::key::Key;
+    use crate::pub_key_hash::PubKeyHash;
+    use crate::script::Script;
+
+    fn setup() -> TransactionBuilder {
+        let mut tx_out_map = TransactionOutputMap::new();
+        let change_script = Script::from_string("");
+
+        for i in 0..5 as u32 {
+            let key = Key::from_random();
+            let pub_key_hash = PubKeyHash::new(key.public_key().to_vec());
+            let script = Script::from_pub_key_hash_output(pub_key_hash.pub_key_hash());
+            let output = TransactionOutput::new(100, script);
+            tx_out_map.add(output, &vec![0; 32], i);
+        }
+
+        TransactionBuilder::new(tx_out_map, change_script.unwrap())
+    }
+
+    #[test]
+    fn test_build_valid_transaction_when_input_is_enough_to_cover_output() {
+        let mut transaction_builder = setup();
+        transaction_builder.add_output(50, Script::from_string("").unwrap());
+
+        let transaction = transaction_builder.build();
+
+        assert_eq!(transaction.inputs.len(), 1);
+        assert_eq!(transaction.outputs.len(), 2);
+        assert_eq!(transaction.outputs[0].value, 50);
+    }
+
+    #[test]
+    fn test_build_invalid_transaction_when_input_is_insufficient_to_cover_output() {
+        let mut transaction_builder = setup();
+        transaction_builder.add_output(10000, Script::from_string("").unwrap());
+
+        let transaction = transaction_builder.build();
+
+        assert_eq!(transaction.inputs.len(), 5);
+        assert_eq!(transaction.outputs.len(), 1);
+        assert_eq!(transaction_builder.input_amount, 500);
+        assert_eq!(transaction.outputs[0].value, 10000);
+    }
+}

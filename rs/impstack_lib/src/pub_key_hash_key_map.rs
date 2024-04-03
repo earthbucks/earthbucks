@@ -96,11 +96,14 @@ mod tests {
         pub_key_hash_key_map.add(key2.clone(), &pub_key_hash_u8_vec2);
         let values: Vec<&Key> = pub_key_hash_key_map.values().collect();
         assert_eq!(values.len(), 2);
-        
+
         let key1_encoded = hex::encode(&key1.private_key);
         let key2_encoded = hex::encode(&key2.private_key);
-        let values_encoded: Vec<String> = values.iter().map(|value| hex::encode(&value.private_key)).collect();
-        
+        let values_encoded: Vec<String> = values
+            .iter()
+            .map(|value| hex::encode(&value.private_key))
+            .collect();
+
         assert!(values_encoded.contains(&key1_encoded));
         assert!(values_encoded.contains(&key2_encoded));
     }
