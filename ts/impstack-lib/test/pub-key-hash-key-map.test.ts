@@ -18,18 +18,18 @@ describe('PubKeyHashKeyMap', () => {
 
   test('add', () => {
     pubKeyHashKeyMap.add(key, pubKeyHashU8Vec)
-    expect(pubKeyHashKeyMap.get(pubKeyHashU8Vec)).toBe(key)
+    expect(Buffer.from(pubKeyHashKeyMap.get(pubKeyHashU8Vec)?.privateKey || "").toString('hex')).toEqual(Buffer.from(key.privateKey).toString('hex'))
   })
 
   test('remove', () => {
     pubKeyHashKeyMap.add(key, pubKeyHashU8Vec)
     pubKeyHashKeyMap.remove(pubKeyHashU8Vec)
-    expect(pubKeyHashKeyMap.get(pubKeyHashU8Vec)).toBeUndefined()
+    expect(Buffer.from(pubKeyHashKeyMap.get(pubKeyHashU8Vec)?.privateKey || "").toString('hex')).toEqual('')
   })
 
   test('get', () => {
     pubKeyHashKeyMap.add(key, pubKeyHashU8Vec)
-    expect(pubKeyHashKeyMap.get(pubKeyHashU8Vec)).toBe(key)
+    expect(Buffer.from(pubKeyHashKeyMap.get(pubKeyHashU8Vec)?.privateKey || "").toString('hex')).toEqual(Buffer.from(key.privateKey).toString('hex'))
   })
 
   test('values method should return all Key values', () => {
@@ -43,7 +43,7 @@ describe('PubKeyHashKeyMap', () => {
     const values = Array.from(pubKeyHashKeyMap.values())
 
     expect(values.length).toBe(2)
-    expect(values).toContain(key1)
-    expect(values).toContain(key2)
+    expect(Buffer.from(values[0].privateKey).toString('hex')).toEqual(Buffer.from(key1.privateKey).toString('hex'))
+    expect(Buffer.from(values[1].privateKey).toString('hex')).toEqual(Buffer.from(key2.privateKey).toString('hex'))
   })
 })
