@@ -119,6 +119,14 @@ impl Script {
         script
     }
 
+    pub fn is_pub_key_hash_input(&self) -> bool {
+        self.chunks.len() == 2
+            && self.chunks[0].opcode == OP["PUSHDATA1"]
+            && self.chunks[0].buffer.as_ref().unwrap().len() == 65
+            && self.chunks[1].opcode == OP["PUSHDATA1"]
+            && self.chunks[1].buffer.as_ref().unwrap().len() == 33
+    }
+
     pub fn from_pub_key_hash_input_placeholder() -> Self {
         // 65 bytes for the signature and 33 bytes for the public key, all zeroes
         let signature = vec![0; 65];
