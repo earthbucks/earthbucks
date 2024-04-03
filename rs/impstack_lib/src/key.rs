@@ -4,9 +4,11 @@ extern crate secp256k1;
 use rand::{rngs::OsRng, Rng};
 use secp256k1::{PublicKey, SecretKey};
 
+// enable clone
+#[derive(Clone)]
 pub struct Key {
-    private_key: Vec<u8>,
-    public_key: Vec<u8>,
+    pub private_key: Vec<u8>,
+    pub public_key: Vec<u8>,
 }
 
 impl Key {

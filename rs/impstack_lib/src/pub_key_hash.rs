@@ -1,7 +1,7 @@
 use crate::blake3::double_blake3_hash;
 
 pub struct PubKeyHash {
-    pub_key_hash: [u8; 32],
+    pub pub_key_hash: [u8; 32],
 }
 
 impl PubKeyHash {
