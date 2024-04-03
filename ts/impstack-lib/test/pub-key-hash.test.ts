@@ -11,24 +11,26 @@ describe('PubKeyHash', () => {
     expect(pubKeyHash.pubKeyHash).toBeDefined()
   })
 
-  describe('standard test vectors: address.json', () => {
+  describe('standard test vectors: pub_key_hash.json', () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, '../../../json/address.json'),
+      path.resolve(__dirname, '../../../json/pub_key_hash.json'),
       'utf-8',
     )
 
     test('pubKeyHash pairs', () => {
       interface PubKeyHashPair {
         pub_key: string
-        address: string
+        pub_key_hash: string
       }
-      const pubKeyHashPairs: PubKeyHashPair[] = JSON.parse(data).address
+      const pubKeyHashPairs: PubKeyHashPair[] = JSON.parse(data).pub_key_hash
 
       for (const pair of pubKeyHashPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
         const pubKeyHash = new PubKeyHash(pubKey)
-        expect(Buffer.from(pubKeyHash.pubKeyHash).toString('hex')).toBe(pair.address)
+        expect(Buffer.from(pubKeyHash.pubKeyHash).toString('hex')).toBe(
+          pair.pub_key_hash,
+        )
       }
     })
   })

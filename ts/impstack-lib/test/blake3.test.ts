@@ -16,7 +16,9 @@ describe('blake3', () => {
     const pubKeyHash = Buffer.from(blake3Hash(pub_key))
 
     // Check that the computed pubKeyHash matches the expected pubKeyHash
-    expect(pubKeyHash.toString('hex')).toEqual(expected_pubKeyHash.toString('hex'))
+    expect(pubKeyHash.toString('hex')).toEqual(
+      expected_pubKeyHash.toString('hex'),
+    )
   })
 
   test('doubleHash', () => {
@@ -33,6 +35,8 @@ describe('blake3', () => {
     const pubKeyHash = Buffer.from(doubleBlake3Hash(pub_key))
 
     // Check that the computed pubKeyHash matches the expected pubKeyHash
-    expect(pubKeyHash.toString('hex')).toEqual(expected_pubKeyHash.toString('hex'))
+    expect(pubKeyHash.toString('hex')).toEqual(
+      expected_pubKeyHash.toString('hex'),
+    )
   })
 })

@@ -1,9 +1,9 @@
-pub mod address;
 pub mod blake3;
 pub mod buffer_reader;
 pub mod buffer_writer;
 pub mod key;
 pub mod opcode;
+pub mod pub_key_hash;
 pub mod script;
 pub mod script_chunk;
 pub mod script_interpreter;
