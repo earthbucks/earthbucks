@@ -28,13 +28,14 @@ export default class TransactionBuilder {
   }
 
   build(): Transaction {
-    // assume zero fees and send 100% of remainder to change. we need to compute
-    // the total spend amount, and then loop through every txOut, and add the
-    // txOut to the inputs, until we have enough to cover the total spend
-    // amount. then we add the change output. note that this function can
-    // produce transactions with insufficient inputs, and therefore invalid
-    // transactions. you must input enough to cover the total spend amount or
-    // the output will be invalid. note also that this output is not signed.
+    // assume zero fees and send 100% of remainder to change. we need to
+    // compute the total spend amount, and then loop through every txOut,
+    // and add the txOut to the inputs, until we have enough to cover the
+    // total spend amount. then we add the change output. note that this
+    // function can produce transactions with insufficient inputs, and
+    // therefore invalid transactions. you must input enough to cover the
+    // total spend amount or the output will be invalid. note also that this
+    // transaction is not signed.
     this.transaction.inputs = []
     const totalSpendAmount = this.transaction.outputs.reduce(
       (acc, output) => acc + output.value,
