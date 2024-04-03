@@ -13,6 +13,14 @@ export default class TransactionOutputMap {
     return `${txIdStr}:${outputIndexStr}`
   }
 
+  static nameToTxIdHash(name: string): Uint8Array {
+    return new Uint8Array(Buffer.from(name.split(':')[0], 'hex'))
+  }
+
+  static nameToOutputIndex(name: string): number {
+    return parseInt(name.split(':')[1])
+  }
+
   add(
     output: TransactionOutput,
     txIdHash: Uint8Array,

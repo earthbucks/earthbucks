@@ -15,21 +15,6 @@ export default class TransactionBuilder {
     this.changeScript = changeScript
   }
 
-  addInput(
-    prevTxId: Uint8Array,
-    prevOutputIndex: number,
-    script: Script,
-    sequence: number,
-  ): void {
-    const transactionInput = new TransactionInput(
-      prevTxId,
-      prevOutputIndex,
-      script,
-      sequence,
-    )
-    this.transaction.inputs.push(transactionInput)
-  }
-
   addOutput(value: bigint, script: Script): void {
     const transactionOutput = new TransactionOutput(value, script)
     this.txOutMap.add(
@@ -41,12 +26,45 @@ export default class TransactionBuilder {
   }
 
   build(): Transaction {
-    const transaction = new Transaction(
-      this.transaction.version,
-      this.transaction.inputs,
-      this.transaction.outputs,
-      this.transaction.locktime,
+    // assume zero fees and send 100% of remainder to change. we need to compute
+    // the total spend amount, and then loop through every txOut, and add the
+    // txOut to the inputs, until we have enough to cover the total spend
+    // amount. then we add the change output. note that this function can
+    // produce transactions with insufficient inputs, and therefore invalid
+    // transactions. you must input enough to cover the total spend amount or
+    // the output will be invalid. note also that this output is not signed.
+    this.transaction.inputs = []
+    const totalSpendAmount = this.transaction.outputs.reduce(
+      (acc, output) => acc + output.value,
+      BigInt(0),
     )
-    return transaction
+    let changeAmount = BigInt(0)
+    let inputAmount = BigInt(0)
+    for (const [txOutId, txOut] of this.txOutMap.map) {
+      const isPubKeyHashOutput = txOut.script.isPubKeyHashOutput()
+      if (!isPubKeyHashOutput) {
+        continue
+      }
+      const txIdHash = TransactionOutputMap.nameToTxIdHash(txOutId)
+      const outputIndex = TransactionOutputMap.nameToOutputIndex(txOutId)
+      const inputScript = Script.fromPubKeyHashInputPlaceholder()
+      const transactionInput = new TransactionInput(
+        txIdHash,
+        outputIndex,
+        inputScript,
+        0xffffffff,
+      )
+      const outputAmount = txOut.value
+      inputAmount += outputAmount
+      this.transaction.inputs.push(transactionInput)
+      if (inputAmount >= totalSpendAmount) {
+        changeAmount = inputAmount - totalSpendAmount
+        break
+      }
+    }
+    if (changeAmount > BigInt(0)) {
+      this.addOutput(changeAmount, this.changeScript)
+    }
+    return this.transaction
   }
 }
