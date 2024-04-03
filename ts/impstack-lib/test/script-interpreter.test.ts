@@ -7,7 +7,7 @@ import TransactionOutput from '../src/transaction-output'
 import fs from 'fs'
 import path from 'path'
 import Key from '../src/key'
-import Address from '../src/address'
+import PubKeyHash from '../src/pub-key-hash'
 import TransactionSignature from '../src/transaction-signature'
 
 describe('ScriptInterpreter', () => {
@@ -128,7 +128,7 @@ describe('ScriptInterpreter', () => {
       expect(Buffer.from(outputPubKey).toString('hex')).toEqual(
         '0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987',
       )
-      const outputAddress = new Address(outputPubKey)
+      const outputAddress = new PubKeyHash(outputPubKey)
       const outputScript = Script.fromPubKeyHashOutput(outputAddress.address)
       const outputAmount = BigInt(100)
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')

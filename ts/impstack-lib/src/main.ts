@@ -1,5 +1,5 @@
 import Key from './key'
-import Address from './address'
+import PubKeyHash from './pub-key-hash'
 
 function main() {
   const args = process.argv.slice(2)
@@ -27,7 +27,7 @@ function main() {
         const publicKey = key.publicKey
 
         // Get the corresponding address
-        const address = new Address(publicKey)
+        const address = new PubKeyHash(publicKey)
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privateKey).toString('hex')

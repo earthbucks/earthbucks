@@ -1,6 +1,6 @@
 import { doubleBlake3Hash } from './blake3'
 
-export default class Address {
+export default class PubKeyHash {
   private _address: Uint8Array
 
   constructor(publicKey: Uint8Array) {

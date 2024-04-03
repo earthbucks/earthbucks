@@ -1,18 +1,18 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import AddressKeyMap from '../src/address-key-map'
-import Address from '../src/address'
+import PubKeyHashKeyMap from '../src/pub-key-hash-key-map'
+import PubKeyHash from '../src/pub-key-hash'
 import Key from '../src/key'
 
 describe('AddressKeyMap', () => {
-  let addressKeyMap: AddressKeyMap
+  let addressKeyMap: PubKeyHashKeyMap
   let key: Key
-  let address: Address
+  let address: PubKeyHash
   let addressU8Vec: Uint8Array
 
   beforeEach(() => {
-    addressKeyMap = new AddressKeyMap()
+    addressKeyMap = new PubKeyHashKeyMap()
     key = Key.fromRandom()
-    address = new Address(key.publicKey)
+    address = new PubKeyHash(key.publicKey)
     addressU8Vec = address.address
   })
 
@@ -35,7 +35,7 @@ describe('AddressKeyMap', () => {
   test('values method should return all Key values', () => {
     const key1 = key
     const key2 = Key.fromRandom()
-    const address2 = new Address(key2.publicKey)
+    const address2 = new PubKeyHash(key2.publicKey)
     const addressU8Vec2 = address2.address
     addressKeyMap.add(key1, addressU8Vec)
     addressKeyMap.add(key2, addressU8Vec2)

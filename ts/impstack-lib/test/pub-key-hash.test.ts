@@ -2,12 +2,12 @@ import { describe, expect, test } from '@jest/globals'
 import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
-import Address from '../src/address'
+import PubKeyHash from '../src/pub-key-hash'
 
 describe('Address', () => {
   test('Address', () => {
     const key = Key.fromRandom()
-    const address = new Address(key.publicKey)
+    const address = new PubKeyHash(key.publicKey)
     expect(address.address).toBeDefined()
   })
 
@@ -27,7 +27,7 @@ describe('Address', () => {
       for (const pair of addressPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
-        const address = new Address(pubKey)
+        const address = new PubKeyHash(pubKey)
         expect(Buffer.from(address.address).toString('hex')).toBe(pair.address)
       }
     })

@@ -1,6 +1,6 @@
 import Key from './key'
 
-export default class AddressKeyMap {
+export default class PubKeyHashKeyMap {
   public map: Map<string, Key>
 
   constructor() {
