@@ -4,11 +4,11 @@ import fs from 'fs'
 import path from 'path'
 import PubKeyHash from '../src/pub-key-hash'
 
-describe('Address', () => {
-  test('Address', () => {
+describe('PubKeyHash', () => {
+  test('PubKeyHash', () => {
     const key = Key.fromRandom()
-    const address = new PubKeyHash(key.publicKey)
-    expect(address.address).toBeDefined()
+    const pubKeyHash = new PubKeyHash(key.publicKey)
+    expect(pubKeyHash.pubKeyHash).toBeDefined()
   })
 
   describe('standard test vectors: address.json', () => {
@@ -17,18 +17,18 @@ describe('Address', () => {
       'utf-8',
     )
 
-    test('address pairs', () => {
-      interface AddressPair {
+    test('pubKeyHash pairs', () => {
+      interface PubKeyHashPair {
         pub_key: string
         address: string
       }
-      const addressPairs: AddressPair[] = JSON.parse(data).address
+      const pubKeyHashPairs: PubKeyHashPair[] = JSON.parse(data).address
 
-      for (const pair of addressPairs) {
+      for (const pair of pubKeyHashPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
-        const address = new PubKeyHash(pubKey)
-        expect(Buffer.from(address.address).toString('hex')).toBe(pair.address)
+        const pubKeyHash = new PubKeyHash(pubKey)
+        expect(Buffer.from(pubKeyHash.pubKeyHash).toString('hex')).toBe(pair.address)
       }
     })
   })

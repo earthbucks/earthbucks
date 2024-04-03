@@ -7,19 +7,19 @@ export default class PubKeyHashKeyMap {
     this.map = new Map<string, Key>()
   }
 
-  add(key: Key, addressU8Vec: Uint8Array): void {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    this.map.set(addressHex, key)
+  add(key: Key, pubKeyHashU8Vec: Uint8Array): void {
+    const pubKeyHashHex = Buffer.from(pubKeyHashU8Vec).toString('hex')
+    this.map.set(pubKeyHashHex, key)
   }
 
-  remove(addressU8Vec: Uint8Array): void {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    this.map.delete(addressHex)
+  remove(pubKeyHashU8Vec: Uint8Array): void {
+    const pubKeyHashHex = Buffer.from(pubKeyHashU8Vec).toString('hex')
+    this.map.delete(pubKeyHashHex)
   }
 
-  get(addressU8Vec: Uint8Array): Key | undefined {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    return this.map.get(addressHex)
+  get(pubKeyHashU8Vec: Uint8Array): Key | undefined {
+    const pubKeyHashHex = Buffer.from(pubKeyHashU8Vec).toString('hex')
+    return this.map.get(pubKeyHashHex)
   }
 
   values(): IterableIterator<Key> {
