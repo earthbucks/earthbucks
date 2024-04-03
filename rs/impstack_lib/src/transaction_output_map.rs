@@ -2,7 +2,7 @@ use crate::transaction_output::TransactionOutput;
 use std::collections::HashMap;
 
 pub struct TransactionOutputMap {
-    map: HashMap<String, TransactionOutput>,
+    pub map: HashMap<String, TransactionOutput>,
 }
 
 impl TransactionOutputMap {
@@ -14,6 +14,14 @@ impl TransactionOutputMap {
 
     pub fn name_from_output(tx_id_hash: &[u8], output_index: u32) -> String {
         format!("{}:{}", hex::encode(tx_id_hash), output_index)
+    }
+
+    pub fn name_to_tx_id_hash(name: &str) -> Vec<u8> {
+        hex::decode(name.split(':').next().unwrap()).unwrap()
+    }
+
+    pub fn name_to_output_index(name: &str) -> u32 {
+        name.split(':').nth(1).unwrap().parse().unwrap()
     }
 
     pub fn add(&mut self, output: TransactionOutput, tx_id_hash: &[u8], output_index: u32) {

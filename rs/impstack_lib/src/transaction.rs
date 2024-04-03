@@ -8,6 +8,8 @@ use crate::transaction_signature::TransactionSignature;
 use crate::var_int::VarInt;
 use secp256k1::{Message, PublicKey, Secp256k1, Signature};
 
+// add clone support
+#[derive(Clone)]
 pub struct Transaction {
     pub version: u8,
     pub inputs: Vec<TransactionInput>,

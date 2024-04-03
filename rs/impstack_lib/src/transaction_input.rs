@@ -3,6 +3,8 @@ use crate::buffer_writer::BufferWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
+// add clone support
+#[derive(Clone)]
 pub struct TransactionInput {
     pub input_tx_id: Vec<u8>,
     pub input_tx_index: u32,

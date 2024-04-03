@@ -5,8 +5,8 @@ use crate::var_int::VarInt;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct TransactionOutput {
-    value: u64,
-    script: Script,
+    pub value: u64,
+    pub script: Script,
 }
 
 impl TransactionOutput {

@@ -10,6 +10,7 @@ pub mod script_chunk;
 pub mod script_interpreter;
 pub mod script_num;
 pub mod transaction;
+pub mod transaction_builder;
 pub mod transaction_input;
 pub mod transaction_output;
 pub mod transaction_output_map;
