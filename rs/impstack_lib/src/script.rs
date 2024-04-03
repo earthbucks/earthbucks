@@ -100,6 +100,16 @@ impl Script {
         script
     }
 
+    pub fn is_pub_key_hash_output(&self) -> bool {
+        self.chunks.len() == 5
+            && self.chunks[0].opcode == OP["DUP"]
+            && self.chunks[1].opcode == OP["DOUBLEBLAKE3"]
+            && self.chunks[2].opcode == OP["PUSHDATA1"]
+            && self.chunks[2].buffer.as_ref().unwrap().len() == 32
+            && self.chunks[3].opcode == OP["EQUALVERIFY"]
+            && self.chunks[4].opcode == OP["CHECKSIG"]
+    }
+
     pub fn from_pub_key_hash_input(signature: &[u8], pub_key: &[u8]) -> Self {
         let mut script = Self::new(Vec::new());
         script
@@ -225,5 +235,23 @@ mod tests {
         let new_script = Script::new(expected_chunks);
         let new_string = new_script.to_string().unwrap();
         assert_eq!(script.unwrap().to_string().unwrap(), new_string);
+    }
+
+    #[test]
+    fn test_is_pub_key_hash_output() {
+        let mut script = Script::from_string("").unwrap();
+        script.chunks = vec![
+            ScriptChunk::new(OP["DUP"], None),
+            ScriptChunk::new(OP["DOUBLEBLAKE3"], None),
+            ScriptChunk::new(OP["PUSHDATA1"], Some(vec![0; 32])),
+            ScriptChunk::new(OP["EQUALVERIFY"], None),
+            ScriptChunk::new(OP["CHECKSIG"], None),
+        ];
+
+        assert!(script.is_pub_key_hash_output());
+
+        // Change a chunk to make the script invalid
+        script.chunks[0].opcode = OP["BLAKE3"];
+        assert!(!script.is_pub_key_hash_output());
     }
 }
