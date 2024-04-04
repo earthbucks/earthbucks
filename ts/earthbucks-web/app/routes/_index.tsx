@@ -21,14 +21,14 @@ export default function Index() {
             <div className="hidden dark:block">
               <img
                 src="/earthbucks-text-white.png"
-                alt="ImpStack"
+                alt="EarthBucks"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/earthbucks-text-black.png"
-                alt="ImpStack"
+                alt="EarthBucks"
                 className="mx-auto block h-[50px]"
               />
             </div>
@@ -48,7 +48,7 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://discord.gg/6hyVpAVPC5"
+                href="https://discord.gg/dZfyrFk6uh"
                 target="_blank"
                 className="underline"
               >
@@ -56,7 +56,7 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://x.com/impstack_com"
+                href="https://x.com/earthbucks_com"
                 target="_blank"
                 className="underline"
               >
@@ -64,19 +64,11 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://github.com/impstack-com"
+                href="https://github.com/earthbucks"
                 target="_blank"
                 className="underline"
               >
                 GitHub
-              </a>{' '}
-              &middot;{' '}
-              <a
-                href="https://reddit.com/r/impstack"
-                target="_blank"
-                className="underline"
-              >
-                reddit
               </a>
             </div>
           </div>
