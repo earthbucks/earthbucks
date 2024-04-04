@@ -111,11 +111,6 @@ mod tests {
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
-        // let key = Key::from_random();
-        // let pub_key_hash = PubKeyHash::new(key.public_key.clone());
-        // let script = Script::from_pub_key_hash_output(&pub_key_hash.pub_key_hash.clone());
-        // let output = TransactionOutput::new(50, script);
-
         let mut transaction_builder =
             TransactionBuilder::new(&tx_out_map, Script::from_string("").unwrap());
         transaction_builder.add_output(50, Script::from_string("").unwrap());

@@ -74,4 +74,72 @@ describe('TransactionSigner', () => {
     const result = scriptInterpreter.evalScript()
     expect(result).toBe(true)
   })
+
+  test('should sign two inputs', () => {
+    const key = Key.fromRandom()
+    const pubKeyHash = new PubKeyHash(key.publicKey)
+    const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
+    const output = new TransactionOutput(BigInt(50), script)
+    transactionBuilder.addOutput(BigInt(100), Script.fromString(''))
+    transactionBuilder.addOutput(BigInt(100), Script.fromString(''))
+
+    const transaction = transactionBuilder.build()
+
+    expect(transaction.inputs.length).toBe(2)
+    expect(transaction.outputs.length).toBe(2)
+    expect(transaction.outputs[0].value).toBe(BigInt(100))
+    expect(transaction.outputs[1].value).toBe(BigInt(100))
+
+    transactionSigner = new TransactionSigner(
+      transaction,
+      txOutMap,
+      pubKeyHashKeyMap,
+    )
+    const signed1 = transactionSigner.sign(0)
+    expect(signed1).toBe(true)
+    const signed2 = transactionSigner.sign(1)
+    expect(signed2).toBe(true)
+
+    const txInput1 = transaction.inputs[0]
+    const txOutput1 = txOutMap.get(txInput1.inputTxId, txInput1.inputTxIndex)
+    const execScript1 = txOutput1?.script as Script
+    const sigBuf1 = txInput1.script.chunks[0].buffer as Uint8Array
+    expect(sigBuf1?.length).toBe(65)
+    const pubKeyBuf1 = txInput1.script.chunks[1].buffer as Uint8Array
+    expect(pubKeyBuf1?.length).toBe(33)
+
+    const stack1 = [sigBuf1, pubKeyBuf1]
+
+    const scriptInterpreter1 = ScriptInterpreter.fromOutputScriptTransaction(
+      execScript1,
+      transaction,
+      0,
+      stack1,
+      100n,
+    )
+
+    const result1 = scriptInterpreter1.evalScript()
+    expect(result1).toBe(true)
+
+    const txInput2 = transaction.inputs[1]
+    const txOutput2 = txOutMap.get(txInput2.inputTxId, txInput2.inputTxIndex)
+    const execScript2 = txOutput2?.script as Script
+    const sigBuf2 = txInput2.script.chunks[0].buffer as Uint8Array
+    expect(sigBuf2?.length).toBe(65)
+    const pubKeyBuf2 = txInput2.script.chunks[1].buffer as Uint8Array
+    expect(pubKeyBuf2?.length).toBe(33)
+
+    const stack2 = [sigBuf2, pubKeyBuf2]
+
+    const scriptInterpreter2 = ScriptInterpreter.fromOutputScriptTransaction(
+      execScript2,
+      transaction,
+      1,
+      stack2,
+      100n,
+    )
+
+    const result2 = scriptInterpreter2.evalScript()
+    expect(result2).toBe(true)
+  })
 })
