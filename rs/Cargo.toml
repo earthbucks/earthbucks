@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "impstack_lib",
+    "earthbucks_lib",
 ]
 resolver = "2"

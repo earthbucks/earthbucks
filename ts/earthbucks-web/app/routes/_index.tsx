@@ -36,7 +36,7 @@ export default function Index() {
               Small casual transactions for everybody on Planet Earth.
               <br />
               <br />
-              42 billion coins. Genesis block in 2024.
+              42 billion tokens. Genesis block in 2024.
               <br />
               <br />
               <a

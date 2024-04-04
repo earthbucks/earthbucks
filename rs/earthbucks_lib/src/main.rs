@@ -1,7 +1,7 @@
 #![allow(dead_code)] // TODO: remove this after launch
 
-use impstack_lib::key::Key;
-use impstack_lib::pub_key_hash;
+use earthbucks_lib::key::Key;
+use earthbucks_lib::pub_key_hash;
 use std::env;
 
 fn main() {

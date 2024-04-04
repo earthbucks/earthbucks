@@ -7,7 +7,7 @@ import Key from '../src/key'
 import PubKeyHash from '../src/pub-key-hash'
 import PubKeyHashKeyMap from '../src/pub-key-hash-key-map'
 import TransactionSigner from '../src/transaction-signer'
-import ScriptInterpreter from 'impstack-lib/src/script-interpreter'
+import ScriptInterpreter from 'earthbucks-lib/src/script-interpreter'
 
 describe('TransactionSigner', () => {
   let transactionBuilder: TransactionBuilder

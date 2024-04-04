@@ -1,10 +1,10 @@
-# ImpStack
+# EarthBucks
 
-42 million coins. No pre-mine. GPUs. Big blocks. Script.
+42 billion bucks. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in 2024.
 
-[impstack.com](https://impstack.com)
+[earthbucks.com](https://earthbucks.com)
 
 ## Architectural Overview
 
