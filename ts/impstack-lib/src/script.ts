@@ -115,4 +115,8 @@ export default class Script {
   static fromMultiSigInput(sigs: Uint8Array[]): Script {
     return new Script(sigs.map(ScriptChunk.fromData))
   }
+
+  isPushOnly(): boolean {
+    return this.chunks.every((chunk) => chunk.opcode <= OP.PUSHDATA4)
+  }
 }

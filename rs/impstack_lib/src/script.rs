@@ -156,6 +156,15 @@ impl Script {
         }
         script
     }
+
+    pub fn is_push_only(&self) -> bool {
+        for chunk in &self.chunks {
+            if chunk.opcode > OP["PUSHDATA4"] {
+                return false;
+            }
+        }
+        true
+    }
 }
 
 #[cfg(test)]
