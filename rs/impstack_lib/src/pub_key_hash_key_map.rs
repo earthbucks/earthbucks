@@ -1,6 +1,7 @@
 use crate::key::Key;
 use std::collections::HashMap;
 
+#[derive(Debug, Clone)]
 pub struct PubKeyHashKeyMap {
     map: HashMap<String, Key>,
 }

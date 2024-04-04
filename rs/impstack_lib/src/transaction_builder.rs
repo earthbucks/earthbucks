@@ -12,10 +12,10 @@ pub struct TransactionBuilder {
 }
 
 impl TransactionBuilder {
-    pub fn new(tx_out_map: TransactionOutputMap, change_script: Script) -> Self {
+    pub fn new(tx_out_map: &TransactionOutputMap, change_script: Script) -> Self {
         Self {
             transaction: Transaction::new(1, vec![], vec![], 0),
-            tx_out_map,
+            tx_out_map: tx_out_map.clone(),
             change_script,
             input_amount: 0,
         }
@@ -92,7 +92,7 @@ mod tests {
             tx_out_map.add(output, &vec![0; 32], i);
         }
 
-        TransactionBuilder::new(tx_out_map, change_script.unwrap())
+        TransactionBuilder::new(&tx_out_map, change_script.unwrap())
     }
 
     #[test]

@@ -5,7 +5,7 @@ use rand::{rngs::OsRng, Rng};
 use secp256k1::{PublicKey, SecretKey};
 
 // enable clone
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Key {
     pub private_key: Vec<u8>,
     pub public_key: Vec<u8>,

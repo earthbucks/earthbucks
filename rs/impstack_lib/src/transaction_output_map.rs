@@ -1,6 +1,7 @@
 use crate::transaction_output::TransactionOutput;
 use std::collections::HashMap;
 
+#[derive(Debug, Clone)]
 pub struct TransactionOutputMap {
     pub map: HashMap<String, TransactionOutput>,
 }
