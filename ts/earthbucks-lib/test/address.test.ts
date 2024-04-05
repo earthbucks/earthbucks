@@ -28,9 +28,7 @@ describe('Address', () => {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
         const address = new Address(pubKey)
-        expect(Buffer.from(address.address).toString('hex')).toBe(
-          pair.address,
-        )
+        expect(Buffer.from(address.address).toString('hex')).toBe(pair.address)
       }
     })
   })

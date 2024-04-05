@@ -15,9 +15,6 @@ pub struct Tx {
     pub inputs: Vec<TxInput>,
     pub outputs: Vec<TxOutput>,
     pub lock_time: u64,
-    prevouts_hash: Option<Vec<u8>>,
-    sequence_hash: Option<Vec<u8>>,
-    outputs_hash: Option<Vec<u8>>,
 }
 
 impl Tx {
@@ -27,9 +24,6 @@ impl Tx {
             inputs,
             outputs,
             lock_time,
-            prevouts_hash: None,
-            sequence_hash: None,
-            outputs_hash: None,
         }
     }
 
@@ -91,36 +85,33 @@ impl Tx {
         double_blake3_hash(&self.to_u8_vec()).to_vec()
     }
 
-    pub fn hash_prevouts(&mut self) -> Vec<u8> {
+    pub fn hash_prevouts(&self) -> Vec<u8> {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.input_tx_id);
             data.extend(&input.input_tx_index.to_be_bytes());
         }
-        self.prevouts_hash = Some(double_blake3_hash(&data).to_vec());
-        self.prevouts_hash.clone().unwrap()
+        double_blake3_hash(&data).to_vec()
     }
 
-    pub fn hash_sequence(&mut self) -> Vec<u8> {
+    pub fn hash_sequence(& self) -> Vec<u8> {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.sequence.to_le_bytes());
         }
-        self.sequence_hash = Some(double_blake3_hash(&data).to_vec());
-        self.sequence_hash.clone().unwrap()
+        double_blake3_hash(&data).to_vec()
     }
 
-    pub fn hash_outputs(&mut self) -> Vec<u8> {
+    pub fn hash_outputs(& self) -> Vec<u8> {
         let mut data = Vec::new();
         for output in &self.outputs {
             data.extend(&output.to_u8_vec());
         }
-        self.outputs_hash = Some(double_blake3_hash(&data).to_vec());
-        self.outputs_hash.clone().unwrap()
+        double_blake3_hash(&data).to_vec()
     }
 
     pub fn sighash_preimage(
-        &mut self,
+        &self,
         input_index: usize,
         script_u8_vec: Vec<u8>,
         amount: u64,
@@ -135,27 +126,18 @@ impl Tx {
         let mut outputs_hash = vec![0; 32];
 
         if hash_type & SIGHASH_ANYONECANPAY == 0 {
-            prevouts_hash = self
-                .prevouts_hash
-                .clone()
-                .unwrap_or_else(|| self.hash_prevouts());
+            prevouts_hash = self.hash_prevouts();
         }
 
         if hash_type & SIGHASH_ANYONECANPAY == 0
             && hash_type & 0x1f != SIGHASH_SINGLE
             && hash_type & 0x1f != SIGHASH_NONE
         {
-            sequence_hash = self
-                .sequence_hash
-                .clone()
-                .unwrap_or_else(|| self.hash_sequence());
+            sequence_hash = self.hash_sequence();
         }
 
         if hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
-            outputs_hash = self
-                .outputs_hash
-                .clone()
-                .unwrap_or_else(|| self.hash_outputs());
+            outputs_hash = self.hash_outputs();
         } else if hash_type & 0x1f == SIGHASH_SINGLE && input_index < self.outputs.len() {
             outputs_hash = double_blake3_hash(&self.outputs[input_index].to_u8_vec()).to_vec();
         }
@@ -336,7 +318,7 @@ mod tests {
         )];
         let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0 as u64);
 
         let result = tx.hash_prevouts();
 
@@ -359,7 +341,7 @@ mod tests {
         )];
         let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0 as u64);
 
         let result = tx.hash_sequence();
 
@@ -382,7 +364,7 @@ mod tests {
         )];
         let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0 as u64);
 
         let result = tx.hash_outputs();
 

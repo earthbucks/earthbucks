@@ -12,7 +12,6 @@ import TxVerifier from 'earthbucks-lib/src/tx-verifier'
 describe('TxVerifier', () => {
   let txBuilder: TxBuilder
   let txSigner: TxSigner
-  let txVerifier: TxVerifier
   let txOutMap: TxOutputMap
   let addressKeyMap: AddressKeyMap
 

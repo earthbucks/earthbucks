@@ -17,3 +17,4 @@ pub mod tx_output_map;
 pub mod tx_signature;
 pub mod tx_signer;
 pub mod var_int;
+pub mod tx_verifier;
