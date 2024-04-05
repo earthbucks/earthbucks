@@ -5,10 +5,12 @@ import ScriptInterpreter from './script-interpreter'
 export default class TxVerifier {
   public tx: Tx
   public txOutMap: TxOutputMap
+  public hashCache: HashCache
 
   constructor(tx: Tx, txOutMap: TxOutputMap) {
     this.tx = tx
     this.txOutMap = txOutMap
+    this.hashCache = new HashCache()
   }
 
   verifyInput(nIn: number): boolean {
@@ -33,6 +35,7 @@ export default class TxVerifier {
       nIn,
       stack,
       txOut.value,
+      this.hashCache,
     )
     const result = scriptInterpreter.evalScript()
     return result

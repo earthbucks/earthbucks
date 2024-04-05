@@ -88,6 +88,7 @@ mod tests {
     use crate::key::Key;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
+    use crate::tx::HashCache;
     use crate::tx_builder::TxBuilder;
     use crate::tx_output::TxOutput;
     use crate::tx_output_map::TxOutputMap;
@@ -133,8 +134,15 @@ mod tests {
 
         let stack = vec![sig_buf, pub_key_buf];
 
-        let mut script_interpreter =
-            ScriptInterpreter::from_output_script_tx(exec_script, signed_tx, 0, stack, 100);
+        let mut hash_cache = HashCache::new();
+        let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
+            exec_script,
+            signed_tx,
+            0,
+            stack,
+            100,
+            &mut hash_cache,
+        );
 
         let result = script_interpreter.eval_script();
         assert_eq!(result, true);
@@ -185,12 +193,14 @@ mod tests {
 
         let stack_1 = vec![sig_buf_1, pub_key_buf_1];
 
+        let mut hash_cache = HashCache::new();
         let mut script_interpreter_1 = ScriptInterpreter::from_output_script_tx(
             exec_script_1,
             signed_tx.clone(),
             0,
             stack_1,
             100,
+            &mut hash_cache,
         );
 
         let result_1 = script_interpreter_1.eval_script();
@@ -207,6 +217,7 @@ mod tests {
         assert_eq!(pub_key_buf_2.len(), 33);
 
         let stack_2 = vec![sig_buf_2, pub_key_buf_2];
+        let mut hash_cache = HashCache::new();
 
         let mut script_interpreter_2 = ScriptInterpreter::from_output_script_tx(
             exec_script_2,
@@ -214,6 +225,7 @@ mod tests {
             1,
             stack_2,
             100,
+            &mut hash_cache,
         );
 
         let result_2 = script_interpreter_2.eval_script();

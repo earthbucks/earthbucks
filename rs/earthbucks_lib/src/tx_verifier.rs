@@ -1,15 +1,21 @@
 use crate::script_interpreter::ScriptInterpreter;
-use crate::tx::Tx;
+use crate::tx::{HashCache, Tx};
 use crate::tx_output_map::TxOutputMap;
 
 pub struct TxVerifier {
     tx: Tx,
     tx_out_map: TxOutputMap,
+    hash_cache: HashCache,
 }
 
 impl TxVerifier {
     pub fn new(tx: Tx, tx_out_map: TxOutputMap) -> Self {
-        Self { tx, tx_out_map }
+        let hash_cache = HashCache::new();
+        Self {
+            tx,
+            tx_out_map,
+            hash_cache,
+        }
     }
 
     pub fn verify_input(&mut self, n_in: usize) -> bool {
@@ -36,6 +42,7 @@ impl TxVerifier {
                     n_in,
                     stack,
                     tx_out.value,
+                    &mut self.hash_cache,
                 );
                 let result = script_interpreter.eval_script();
                 return result;

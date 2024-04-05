@@ -33,6 +33,7 @@ export default class ScriptInterpreter {
     returnSuccess: boolean | undefined,
     errStr: string,
     value: bigint,
+    hashCache: HashCache,
   ) {
     this.script = script
     this.tx = tx
@@ -46,10 +47,15 @@ export default class ScriptInterpreter {
     this.returnSuccess = returnSuccess
     this.errStr = errStr
     this.value = value
-    this.hashCache = new HashCache()
+    this.hashCache = hashCache
   }
 
-  static fromScriptTx(script: Script, tx: Tx, nIn: number): ScriptInterpreter {
+  static fromScriptTx(
+    script: Script,
+    tx: Tx,
+    nIn: number,
+    hashCache: HashCache,
+  ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       tx,
@@ -63,6 +69,7 @@ export default class ScriptInterpreter {
       undefined,
       '',
       BigInt(0),
+      hashCache,
     )
   }
 
@@ -72,6 +79,7 @@ export default class ScriptInterpreter {
     nIn: number,
     stack: Uint8Array[],
     value: bigint,
+    hashCache: HashCache,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
@@ -86,6 +94,7 @@ export default class ScriptInterpreter {
       undefined,
       '',
       value,
+      hashCache,
     )
   }
 

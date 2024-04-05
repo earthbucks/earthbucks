@@ -7,7 +7,7 @@ use crate::tx_signature::TxSignature;
 use num_bigint::{BigInt, ToBigInt};
 use num_traits::ToPrimitive;
 
-pub struct ScriptInterpreter {
+pub struct ScriptInterpreter<'a> {
     pub script: Script,
     pub tx: Tx,
     pub n_in: usize,
@@ -20,10 +20,10 @@ pub struct ScriptInterpreter {
     pub return_success: Option<bool>,
     pub err_str: String,
     pub value: u64,
-    pub hash_cache: HashCache,
+    pub hash_cache: &'a mut HashCache,
 }
 
-impl ScriptInterpreter {
+impl<'a> ScriptInterpreter<'a> {
     pub fn new(
         script: Script,
         tx: Tx,
@@ -37,6 +37,7 @@ impl ScriptInterpreter {
         return_success: Option<bool>,
         err_str: String,
         value: u64,
+        hash_cache: &'a mut HashCache,
     ) -> Self {
         Self {
             script,
@@ -51,11 +52,16 @@ impl ScriptInterpreter {
             return_success,
             err_str,
             value,
-            hash_cache: HashCache::new(),
+            hash_cache,
         }
     }
 
-    pub fn from_script_tx(script: Script, tx: Tx, n_in: usize) -> Self {
+    pub fn from_script_tx(
+        script: Script,
+        tx: Tx,
+        n_in: usize,
+        hash_cache: &'a mut HashCache,
+    ) -> Self {
         Self::new(
             script,
             tx,
@@ -69,6 +75,7 @@ impl ScriptInterpreter {
             None,
             "".to_string(),
             0 as u64,
+            hash_cache,
         )
     }
 
@@ -78,6 +85,7 @@ impl ScriptInterpreter {
         n_in: usize,
         stack: Vec<Vec<u8>>,
         value: u64,
+        hash_cache: &'a mut HashCache,
     ) -> Self {
         Self::new(
             script,
@@ -92,6 +100,7 @@ impl ScriptInterpreter {
             None,
             "".to_string(),
             value,
+            hash_cache,
         )
     }
 
@@ -1014,7 +1023,9 @@ mod tests {
         fn test_zero() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+            let mut hash_cache = HashCache::new();
+            let mut script_interpreter =
+                ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
             assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "00");
@@ -1024,7 +1035,9 @@ mod tests {
         fn test_pushdata1() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0xff").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+            let mut hash_cache = HashCache::new();
+            let mut script_interpreter =
+                ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1035,7 +1048,10 @@ mod tests {
         fn test_pushdata2() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+
+            let mut hash_cache = HashCache::new();
+            let mut script_interpreter =
+                ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1049,7 +1065,9 @@ mod tests {
         fn test_pushdata4() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+            let mut hash_cache = HashCache::new();
+            let mut script_interpreter =
+                ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1063,7 +1081,9 @@ mod tests {
         fn test_1negate() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("1NEGATE").unwrap();
-            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+            let mut hash_cache = HashCache::new();
+            let mut script_interpreter =
+                ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1113,6 +1133,7 @@ mod tests {
             );
 
             let stack = vec![sig.to_u8_vec(), output_pub_key.to_vec()];
+            let mut hash_cache = HashCache::new();
 
             let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
                 output_script,
@@ -1120,6 +1141,7 @@ mod tests {
                 0,
                 stack,
                 output_amount,
+                &mut hash_cache,
             );
 
             let result = script_interpreter.eval_script();
@@ -1187,6 +1209,7 @@ mod tests {
 
             // Create a stack with the signatures
             let stack = sigs.clone();
+            let mut hash_cache = HashCache::new();
 
             // Create a script interpreter
             let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
@@ -1195,6 +1218,7 @@ mod tests {
                 0,
                 stack,
                 output_amount,
+                &mut hash_cache,
             );
 
             // Evaluate the script
@@ -1248,7 +1272,9 @@ mod tests {
                     vec![TxOutput::new(0 as u64, Script::from_string("").unwrap())],
                     0 as u64,
                 );
-                let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
+                let mut hash_cache = HashCache::new();
+                let mut script_interpreter =
+                    ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
                 script_interpreter.eval_script();
                 assert_eq!(
                     script_interpreter.err_str, test_script.expected_error,

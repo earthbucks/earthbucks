@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import ScriptInterpreter from '../src/script-interpreter'
 import Script from '../src/script'
-import Tx from '../src/tx'
+import Tx, { HashCache } from '../src/tx'
 import TxInput from '../src/tx-input'
 import TxOutput from '../src/tx-output'
 import fs from 'fs'
@@ -25,7 +25,13 @@ describe('ScriptInterpreter', () => {
   describe('sanity tests', () => {
     test('0', () => {
       const script = new Script().fromString('0')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(false)
       expect(
@@ -36,7 +42,13 @@ describe('ScriptInterpreter', () => {
 
     test('pushdata1', () => {
       const script = new Script().fromString('0xff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -48,7 +60,13 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA1', () => {
       const script = new Script().fromString('0xffff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -60,7 +78,13 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA2', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(256))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -72,7 +96,13 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA4', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(65536))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -84,7 +114,13 @@ describe('ScriptInterpreter', () => {
 
     test('1NEGATE', () => {
       const script = new Script().fromString('1NEGATE')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
+      const hashCache = new HashCache()
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
+        script,
+        tx,
+        0,
+        hashCache,
+      )
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -126,6 +162,7 @@ describe('ScriptInterpreter', () => {
       )
 
       const stack = [sig.toU8Vec(), outputPubKey]
+      const hashCache = new HashCache()
 
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
         outputScript,
@@ -133,6 +170,7 @@ describe('ScriptInterpreter', () => {
         0,
         stack,
         outputAmount,
+        hashCache,
       )
 
       const result = scriptInterpreter.evalScript()
@@ -190,6 +228,7 @@ describe('ScriptInterpreter', () => {
 
       // Create a stack with the signatures
       const stack = [...sigs]
+      const hashCache = new HashCache()
 
       // Create a script interpreter
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
@@ -198,6 +237,7 @@ describe('ScriptInterpreter', () => {
         0,
         stack,
         outputAmount,
+        hashCache,
       )
 
       // Evaluate the script
@@ -237,10 +277,12 @@ describe('ScriptInterpreter', () => {
       testScripts.forEach((testScript) => {
         test(testScript.name, () => {
           const script = Script.fromString(testScript.script)
+          const hashCache = new HashCache()
           const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,
             tx,
             0,
+            hashCache,
           )
           scriptInterpreter.evalScript()
 

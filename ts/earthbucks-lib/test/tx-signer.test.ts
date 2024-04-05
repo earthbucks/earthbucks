@@ -7,7 +7,8 @@ import Key from '../src/key'
 import Address from '../src/address'
 import AddressKeyMap from '../src/address-key-map'
 import TxSigner from '../src/tx-signer'
-import ScriptInterpreter from 'earthbucks-lib/src/script-interpreter'
+import ScriptInterpreter from '../src/script-interpreter'
+import { HashCache } from '../src/tx'
 
 describe('TxSigner', () => {
   let txBuilder: TxBuilder
@@ -58,6 +59,7 @@ describe('TxSigner', () => {
     expect(pubKeyBuf?.length).toBe(33)
 
     const stack = [sigBuf, pubKeyBuf]
+    const hashCache = new HashCache()
 
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       execScript,
@@ -65,6 +67,7 @@ describe('TxSigner', () => {
       0,
       stack,
       100n,
+      hashCache,
     )
 
     const result = scriptInterpreter.evalScript()
@@ -101,6 +104,7 @@ describe('TxSigner', () => {
     expect(pubKeyBuf1?.length).toBe(33)
 
     const stack1 = [sigBuf1, pubKeyBuf1]
+    const hashCache1 = new HashCache()
 
     const scriptInterpreter1 = ScriptInterpreter.fromOutputScriptTx(
       execScript1,
@@ -108,6 +112,7 @@ describe('TxSigner', () => {
       0,
       stack1,
       100n,
+      hashCache1,
     )
 
     const result1 = scriptInterpreter1.evalScript()
@@ -122,6 +127,7 @@ describe('TxSigner', () => {
     expect(pubKeyBuf2?.length).toBe(33)
 
     const stack2 = [sigBuf2, pubKeyBuf2]
+    const hashCache2 = new HashCache()
 
     const scriptInterpreter2 = ScriptInterpreter.fromOutputScriptTx(
       execScript2,
@@ -129,6 +135,7 @@ describe('TxSigner', () => {
       1,
       stack2,
       100n,
+      hashCache2,
     )
 
     const result2 = scriptInterpreter2.evalScript()
