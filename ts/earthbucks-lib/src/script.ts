@@ -59,17 +59,17 @@ export default class Script {
     return new Script().fromU8Vec(arr)
   }
 
-  static fromPubKeyHashOutput(pubKeyHash: Uint8Array): Script {
+  static fromAddressOutput(address: Uint8Array): Script {
     return new Script([
       new ScriptChunk(OP.DUP),
       new ScriptChunk(OP.DOUBLEBLAKE3),
-      ScriptChunk.fromData(pubKeyHash),
+      ScriptChunk.fromData(address),
       new ScriptChunk(OP.EQUALVERIFY),
       new ScriptChunk(OP.CHECKSIG),
     ])
   }
 
-  isPubKeyHashOutput(): boolean {
+  isAddressOutput(): boolean {
     return (
       this.chunks.length === 5 &&
       this.chunks[0].opcode === OP.DUP &&
@@ -81,11 +81,11 @@ export default class Script {
     )
   }
 
-  static fromPubKeyHashInput(sig: Uint8Array, pubKey: Uint8Array): Script {
+  static fromAddressInput(sig: Uint8Array, pubKey: Uint8Array): Script {
     return new Script([ScriptChunk.fromData(sig), ScriptChunk.fromData(pubKey)])
   }
 
-  isPubKeyHashInput(): boolean {
+  isAddressInput(): boolean {
     return (
       this.chunks.length === 2 &&
       this.chunks[0].opcode === OP['PUSHDATA1'] &&
@@ -95,7 +95,7 @@ export default class Script {
     )
   }
 
-  static fromPubKeyHashInputPlaceholder(): Script {
+  static fromAddressInputPlaceholder(): Script {
     const sig = Buffer.alloc(65)
     sig.fill(0)
     const pubKey = Buffer.alloc(33)

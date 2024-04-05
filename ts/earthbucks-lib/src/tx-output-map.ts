@@ -21,11 +21,7 @@ export default class TxOutputMap {
     return parseInt(name.split(':')[1])
   }
 
-  add(
-    output: TxOutput,
-    txIdHash: Uint8Array,
-    outputIndex: number,
-  ): void {
+  add(output: TxOutput, txIdHash: Uint8Array, outputIndex: number): void {
     const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex)
     this.map.set(name, output)
   }
@@ -35,10 +31,7 @@ export default class TxOutputMap {
     this.map.delete(name)
   }
 
-  get(
-    txIdHash: Uint8Array,
-    outputIndex: number,
-  ): TxOutput | undefined {
+  get(txIdHash: Uint8Array, outputIndex: number): TxOutput | undefined {
     const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex)
     return this.map.get(name)
   }

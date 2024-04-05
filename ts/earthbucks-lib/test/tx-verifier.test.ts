@@ -4,8 +4,8 @@ import TxOutputMap from '../src/tx-output-map'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import Key from '../src/key'
-import PubKeyHash from '../src/pub-key-hash'
-import PubKeyHashKeyMap from '../src/pub-key-hash-key-map'
+import Address from '../src/address'
+import AddressKeyMap from '../src/address-key-map'
 import TxSigner from '../src/tx-signer'
 import TxVerifier from 'earthbucks-lib/src/tx-verifier'
 
@@ -14,17 +14,17 @@ describe('TxVerifier', () => {
   let txSigner: TxSigner
   let txVerifier: TxVerifier
   let txOutMap: TxOutputMap
-  let pubKeyHashKeyMap: PubKeyHashKeyMap
+  let addressKeyMap: AddressKeyMap
 
   beforeEach(() => {
     txOutMap = new TxOutputMap()
-    pubKeyHashKeyMap = new PubKeyHashKeyMap()
+    addressKeyMap = new AddressKeyMap()
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = Key.fromRandom()
-      const pubKeyHash = new PubKeyHash(key.publicKey)
-      pubKeyHashKeyMap.add(key, pubKeyHash.pubKeyHash)
-      const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
+      const address = new Address(key.publicKey)
+      addressKeyMap.add(key, address.address)
+      const script = Script.fromAddressOutput(address.address)
       const output = new TxOutput(BigInt(100), script)
       txOutMap.add(output, Buffer.from('00'.repeat(32), 'hex'), i)
     }
@@ -35,8 +35,8 @@ describe('TxVerifier', () => {
 
   test('should sign and verify a tx', () => {
     const key = Key.fromRandom()
-    const pubKeyHash = new PubKeyHash(key.publicKey)
-    const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
+    const address = new Address(key.publicKey)
+    const script = Script.fromAddressOutput(address.address)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(50), Script.fromString(''))
 
@@ -46,11 +46,7 @@ describe('TxVerifier', () => {
     expect(tx.outputs.length).toBe(2)
     expect(tx.outputs[0].value).toBe(BigInt(50))
 
-    txSigner = new TxSigner(
-      tx,
-      txOutMap,
-      pubKeyHashKeyMap,
-    )
+    txSigner = new TxSigner(tx, txOutMap, addressKeyMap)
     const signed = txSigner.sign(0)
     expect(signed).toBe(true)
 
@@ -64,8 +60,8 @@ describe('TxVerifier', () => {
 
   test('should sign and verify a tx with two inputs', () => {
     const key = Key.fromRandom()
-    const pubKeyHash = new PubKeyHash(key.publicKey)
-    const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
+    const address = new Address(key.publicKey)
+    const script = Script.fromAddressOutput(address.address)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
@@ -77,11 +73,7 @@ describe('TxVerifier', () => {
     expect(tx.outputs[0].value).toBe(BigInt(100))
     expect(tx.outputs[1].value).toBe(BigInt(100))
 
-    txSigner = new TxSigner(
-      tx,
-      txOutMap,
-      pubKeyHashKeyMap,
-    )
+    txSigner = new TxSigner(tx, txOutMap, addressKeyMap)
     const signed1 = txSigner.sign(0)
     expect(signed1).toBe(true)
     const signed2 = txSigner.sign(1)

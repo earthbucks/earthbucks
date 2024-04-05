@@ -10,12 +10,7 @@ describe('TxInput', () => {
     const script = new Script()
     const sequence = 0xffffffff
 
-    const txInput = new TxInput(
-      inputTxHash,
-      inputTxIndex,
-      script,
-      sequence,
-    )
+    const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
     expect(txInput).toBeInstanceOf(TxInput)
     expect(txInput.inputTxId).toBe(inputTxHash)
     expect(txInput.inputTxIndex).toBe(inputTxIndex)
@@ -30,12 +25,7 @@ describe('TxInput', () => {
       const script = new Script()
       const sequence = 0xffffffff
 
-      const txInput = new TxInput(
-        inputTxHash,
-        inputTxIndex,
-        script,
-        sequence,
-      )
+      const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
 
       const reader = new BufferReader(txInput.toBuffer())
       const result = TxInput.fromBufferReader(reader)
@@ -56,12 +46,7 @@ describe('TxInput', () => {
       const script = new Script()
       const sequence = 0xffffffff
 
-      const txInput = new TxInput(
-        inputTxHash,
-        inputTxIndex,
-        script,
-        sequence,
-      )
+      const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
       const result = txInput.toBuffer()
       expect(result.toString('hex')).toEqual(
         '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
@@ -74,12 +59,7 @@ describe('TxInput', () => {
       const script = new Script().fromString('DOUBLEBLAKE3')
       const sequence = 0xffffffff
 
-      const txInput = new TxInput(
-        inputTxHash,
-        inputTxIndex,
-        script,
-        sequence,
-      )
+      const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
       const result = txInput.toBuffer()
       expect(result.toString('hex')).toEqual(
         '00000000000000000000000000000000000000000000000000000000000000000000000001a7ffffffff',
@@ -93,12 +73,7 @@ describe('TxInput', () => {
     const script = new Script().fromString('0x121212')
     const sequence = 0xffffffff
 
-    const txInput = new TxInput(
-      inputTxHash,
-      inputTxIndex,
-      script,
-      sequence,
-    )
+    const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
     const result = txInput.toBuffer()
     expect(result.toString('hex')).toEqual(
       '000000000000000000000000000000000000000000000000000000000000000000000000054c03121212ffffffff',

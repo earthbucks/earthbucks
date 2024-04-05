@@ -2,13 +2,13 @@ import { describe, expect, test } from '@jest/globals'
 import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
-import PubKeyHash from '../src/pub-key-hash'
+import Address from '../src/address'
 
-describe('PubKeyHash', () => {
-  test('PubKeyHash', () => {
+describe('Address', () => {
+  test('Address', () => {
     const key = Key.fromRandom()
-    const pubKeyHash = new PubKeyHash(key.publicKey)
-    expect(pubKeyHash.pubKeyHash).toBeDefined()
+    const address = new Address(key.publicKey)
+    expect(address.address).toBeDefined()
   })
 
   describe('standard test vectors: pub_key_hash.json', () => {
@@ -17,18 +17,18 @@ describe('PubKeyHash', () => {
       'utf-8',
     )
 
-    test('pubKeyHash pairs', () => {
-      interface PubKeyHashPair {
+    test('address pairs', () => {
+      interface AddressPair {
         pub_key: string
         pub_key_hash: string
       }
-      const pubKeyHashPairs: PubKeyHashPair[] = JSON.parse(data).pub_key_hash
+      const addressPairs: AddressPair[] = JSON.parse(data).pub_key_hash
 
-      for (const pair of pubKeyHashPairs) {
+      for (const pair of addressPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
-        const pubKeyHash = new PubKeyHash(pubKey)
-        expect(Buffer.from(pubKeyHash.pubKeyHash).toString('hex')).toBe(
+        const address = new Address(pubKey)
+        expect(Buffer.from(address.address).toString('hex')).toBe(
           pair.pub_key_hash,
         )
       }

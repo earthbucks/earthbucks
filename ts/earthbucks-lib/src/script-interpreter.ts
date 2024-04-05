@@ -47,11 +47,7 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  static fromScriptTx(
-    script: Script,
-    tx: Tx,
-    nIn: number,
-  ): ScriptInterpreter {
+  static fromScriptTx(script: Script, tx: Tx, nIn: number): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
       tx,

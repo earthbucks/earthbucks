@@ -19,11 +19,7 @@ export default class TxBuilder {
 
   addOutput(value: bigint, script: Script): void {
     const txOutput = new TxOutput(value, script)
-    this.txOutMap.add(
-      txOutput,
-      this.tx.id(),
-      this.tx.outputs.length,
-    )
+    this.txOutMap.add(txOutput, this.tx.id(), this.tx.outputs.length)
     this.tx.outputs.push(txOutput)
   }
 
@@ -44,13 +40,13 @@ export default class TxBuilder {
     let changeAmount = BigInt(0)
     let inputAmount = BigInt(0)
     for (const [txOutId, txOut] of this.txOutMap.map) {
-      const isPubKeyHashOutput = txOut.script.isPubKeyHashOutput()
-      if (!isPubKeyHashOutput) {
+      const isAddressOutput = txOut.script.isAddressOutput()
+      if (!isAddressOutput) {
         continue
       }
       const txIdHash = TxOutputMap.nameToTxIdHash(txOutId)
       const outputIndex = TxOutputMap.nameToOutputIndex(txOutId)
-      const inputScript = Script.fromPubKeyHashInputPlaceholder()
+      const inputScript = Script.fromAddressInputPlaceholder()
       const txInput = new TxInput(
         txIdHash,
         outputIndex,

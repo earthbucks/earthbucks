@@ -1,11 +1,11 @@
 import Key from './key'
-import PubKeyHash from './pub-key-hash'
+import Address from './address'
 
 function main() {
   const args = process.argv.slice(2)
 
   if (args.length === 0) {
-    console.log('Please provide an argument: --key or --pubKeyHash')
+    console.log('Please provide an argument: --key or --address')
     return
   }
 
@@ -20,26 +20,26 @@ function main() {
         console.log(`Public key: ${publicKeyHex}`)
       }
       break
-    case '--pubKeyHash':
+    case '--address':
       {
         // Generate a new private key
         const key = Key.fromRandom()
         const publicKey = key.publicKey
 
-        // Get the corresponding pubKeyHash
-        const pubKeyHash = new PubKeyHash(publicKey)
+        // Get the corresponding address
+        const address = new Address(publicKey)
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privateKey).toString('hex')
         const publicKeyHex = Buffer.from(publicKey).toString('hex')
-        const pubKeyHashHex = Buffer.from(pubKeyHash.pubKeyHash).toString('hex')
+        const addressHex = Buffer.from(address.address).toString('hex')
         console.log(`Private key: ${privateKeyHex}`)
         console.log(`Public key: ${publicKeyHex}`)
-        console.log(`PubKeyHash: ${pubKeyHashHex}`)
+        console.log(`Address: ${addressHex}`)
       }
       break
     default:
-      console.log('Invalid argument. Please provide --key or --pubKeyHash')
+      console.log('Invalid argument. Please provide --key or --address')
       break
   }
 }

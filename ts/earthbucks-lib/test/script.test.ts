@@ -63,8 +63,8 @@ describe('Script', () => {
   })
 
   describe('pubkeyhash', () => {
-    test('fromPubKeyHashOutput', () => {
-      const script = Script.fromPubKeyHashOutput(
+    test('fromAddressOutput', () => {
+      const script = Script.fromAddressOutput(
         new Uint8Array(Buffer.from('01'.repeat(32), 'hex')),
       )
       expect(script.toString()).toBe(
@@ -72,23 +72,23 @@ describe('Script', () => {
       )
     })
 
-    test('isPubKeyHashOutput', () => {
-      const script = Script.fromPubKeyHashOutput(
+    test('isAddressOutput', () => {
+      const script = Script.fromAddressOutput(
         new Uint8Array(Buffer.from('01'.repeat(32), 'hex')),
       )
-      expect(script.isPubKeyHashOutput()).toBe(true)
+      expect(script.isAddressOutput()).toBe(true)
     })
 
-    test('isPubKeyHashOutput false', () => {
+    test('isAddressOutput false', () => {
       const script = Script.fromString(
         'DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG',
       )
-      expect(script.isPubKeyHashOutput()).toBe(false)
+      expect(script.isAddressOutput()).toBe(false)
     })
 
-    test('fromPubKeyHashInputPlacholder', () => {
-      const script = Script.fromPubKeyHashInputPlaceholder()
-      expect(script.isPubKeyHashInput()).toBe(true)
+    test('fromAddressInputPlacholder', () => {
+      const script = Script.fromAddressInputPlaceholder()
+      expect(script.isAddressInput()).toBe(true)
     })
   })
 })

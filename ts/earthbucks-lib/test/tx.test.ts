@@ -31,9 +31,7 @@ describe('Tx', () => {
     const inputs: TxInput[] = [
       new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
     ]
-    const outputs: TxOutput[] = [
-      new TxOutput(BigInt(100), new Script()),
-    ]
+    const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
     const locktime = BigInt(0)
 
     const tx = new Tx(version, inputs, outputs, locktime)
@@ -49,9 +47,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -71,9 +67,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -94,9 +88,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -111,9 +103,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -128,9 +118,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -149,9 +137,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -170,9 +156,7 @@ describe('Tx', () => {
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), new Script()),
-      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
       const locktime = BigInt(0)
 
       const tx = new Tx(version, inputs, outputs, locktime)
@@ -189,12 +173,7 @@ describe('Tx', () => {
     test('sighash', () => {
       const version = 1
       const inputs: TxInput[] = [
-        new TxInput(
-          Buffer.alloc(32),
-          0,
-          Script.fromString(''),
-          0xffffffff,
-        ),
+        new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
       ]
       const outputs: TxOutput[] = [
         new TxOutput(BigInt(100), Script.fromString('')),
@@ -233,12 +212,7 @@ describe('Tx', () => {
         const amount = BigInt(100)
         const hashType = TxSignature.SIGHASH_ALL
         const inputs: TxInput[] = [
-          new TxInput(
-            Buffer.alloc(32),
-            0,
-            Script.fromString(''),
-            0xffffffff,
-          ),
+          new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
         ]
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromString('')),
@@ -276,12 +250,7 @@ describe('Tx', () => {
       const amount = BigInt(100)
       const hashType = TxSignature.SIGHASH_ALL
       const inputs: TxInput[] = [
-        new TxInput(
-          Buffer.alloc(32),
-          0,
-          Script.fromString(''),
-          0xffffffff,
-        ),
+        new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
       ]
       // expect tx output to equal hext
       expect(inputs[0].toBuffer().toString('hex')).toEqual(
@@ -314,13 +283,7 @@ describe('Tx', () => {
         expectedSignatureHex,
       )
       const publicKey = new Key(privateKey).publicKey
-      const result = tx.verify(
-        inputIndex,
-        publicKey,
-        signature,
-        script,
-        amount,
-      )
+      const result = tx.verify(inputIndex, publicKey, signature, script, amount)
       expect(result).toBe(true)
     })
   })

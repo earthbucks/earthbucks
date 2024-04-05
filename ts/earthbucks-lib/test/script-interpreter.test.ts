@@ -7,7 +7,7 @@ import TxOutput from '../src/tx-output'
 import fs from 'fs'
 import path from 'path'
 import Key from '../src/key'
-import PubKeyHash from '../src/pub-key-hash'
+import Address from '../src/address'
 import TxSignature from '../src/tx-signature'
 
 describe('ScriptInterpreter', () => {
@@ -25,11 +25,7 @@ describe('ScriptInterpreter', () => {
   describe('sanity tests', () => {
     test('0', () => {
       const script = new Script().fromString('0')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(false)
       expect(
@@ -40,11 +36,7 @@ describe('ScriptInterpreter', () => {
 
     test('pushdata1', () => {
       const script = new Script().fromString('0xff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -56,11 +48,7 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA1', () => {
       const script = new Script().fromString('0xffff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -72,11 +60,7 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA2', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(256))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -88,11 +72,7 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA4', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(65536))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -104,11 +84,7 @@ describe('ScriptInterpreter', () => {
 
     test('1NEGATE', () => {
       const script = new Script().fromString('1NEGATE')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
-        script,
-        tx,
-        0,
-      )
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(script, tx, 0)
       scriptInterpreter.evalScript()
       expect(scriptInterpreter.returnSuccess).toBe(true)
       expect(scriptInterpreter.returnValue).toBeDefined()
@@ -128,24 +104,15 @@ describe('ScriptInterpreter', () => {
       expect(Buffer.from(outputPubKey).toString('hex')).toEqual(
         '0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987',
       )
-      const outputPubKeyHash = new PubKeyHash(outputPubKey)
-      const outputScript = Script.fromPubKeyHashOutput(
-        outputPubKeyHash.pubKeyHash,
-      )
+      const outputAddress = new Address(outputPubKey)
+      const outputScript = Script.fromAddressOutput(outputAddress.address)
       const outputAmount = BigInt(100)
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')
       const outputTxIndex = 0
 
       const tx = new Tx(
         1,
-        [
-          new TxInput(
-            outputTxId,
-            outputTxIndex,
-            new Script(),
-            0xffffffff,
-          ),
-        ],
+        [new TxInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
         [new TxOutput(outputAmount, outputScript)],
         BigInt(0),
       )
@@ -201,14 +168,7 @@ describe('ScriptInterpreter', () => {
       // Create a tx
       const tx = new Tx(
         1,
-        [
-          new TxInput(
-            outputTxId,
-            outputTxIndex,
-            new Script(),
-            0xffffffff,
-          ),
-        ],
+        [new TxInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
         [new TxOutput(outputAmount, outputScript)],
         BigInt(0),
       )
