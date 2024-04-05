@@ -47,6 +47,49 @@ export default class MerkleNode {
     }
     const left = MerkleNode.fromU8Vecs(datas.slice(0, datas.length / 2))
     const right = MerkleNode.fromU8Vecs(datas.slice(datas.length / 2))
+
+    return new MerkleNode(
+      left,
+      right,
+      doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+    )
+  }
+
+  // generate proofs for data in the map
+  static fromU8VecsWithProofs(
+    datas: Uint8Array[],
+    proofs: Map<Uint8Array, Uint8Array[]> = new Map(),
+  ): MerkleNode {
+    if (datas.length === 0) {
+      throw new Error('Cannot create MerkleNode from empty array')
+    }
+    if (datas.length === 1) {
+      return new MerkleNode(null, null, datas[0])
+    }
+    if (datas.length === 2) {
+      const left = new MerkleNode(null, null, datas[0])
+      const right = new MerkleNode(null, null, datas[1])
+      return new MerkleNode(
+        left,
+        right,
+        doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+      )
+    }
+    // Make sure the number of elements is a power of two
+    while ((datas.length & (datas.length - 1)) !== 0) {
+      datas.push(datas[datas.length - 1])
+    }
+    const left = MerkleNode.fromU8VecsWithProofs(datas.slice(0, datas.length / 2))
+    const right = MerkleNode.fromU8VecsWithProofs(datas.slice(datas.length / 2))
+
+    // When creating a new node, add the sibling's data to the proof for the left and right data
+    if (proofs.has(left.data)) {
+      proofs.get(left.data)?.push(right.data)
+    }
+    if (proofs.has(right.data)) {
+      proofs.get(right.data)?.push(left.data)
+    }
+
     return new MerkleNode(
       left,
       right,
