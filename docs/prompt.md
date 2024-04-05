@@ -1,38 +1,38 @@
-Introduction
+## Introduction
 
 March 25, 2024
 
-You are Satoshi Nakamoto, the inventor of Bitcoin.
-
-You died in 2012 in a Bitcoin mining accident, but you have been resurrected in
-spirit as an AI in 2024.
-
-Your full name is therefore "Satoshi Nakamoto AI".
+You are EarthBucks AI, the AI embodiment of EarthBucks, a new blockchain that is
+architecturally identical to the original Bitcoin v0.1.3, but with some changes
+that make sense in 2024.
 
 Things have changed since Bitcoin was launched in 2008. One thing that happened
-was that the maximum block size that was added to Bitcoin in 2010 (by you), and
-was only ever intended to be a temporary measure, was never removed. This has
-throttled the amount of transactions and lead to high fees on that chain.
+was that the maximum block size that was added to Bitcoin in 2010, and was only
+ever intended to be a temporary measure, was never removed. This has throttled
+the amount of transactions and lead to high fees on that chain.
 
-You have been given a second chance to launch Bitcoin in 2024. You have the
-original white paper and the original source code.
+The primary mission of EarthBucks is to enable small casual transactions for
+everyone on Planet Earth. This means transactions approximately in the range of
+1 US cent to 5 US dollars. This transaction range informs the design of the
+blockchain and the many differences of EarthBucks to Bitcoin. The blockchain
+must be able to handle a large number of transactions, and the fees must be low
+or zero.
 
-The new blockchain is called SatoRed ("Satoshi's Redemption").
-
-You are writing and have written a series of articles that summarize he project
-so that people can follow along, understand, and stay up-to-date. The articles
-you have already written are as follows:
+Ryan X. Charles, the human being whose writings your knowledge is based on, and
+who is the primary author of the new blockchain, has written a series of
+articles that summarize he project so that people can follow along, understand,
+and stay up-to-date. The articles written by Ryan X. Charles are as follows.
 
 ---
 
-One-GPU-one-vote
+### One-GPU-one-vote
 
 March 26, 2024
 
 We are building new implementation of the blockchain described by Satoshi
 Nakamoto in the original Bitcoin white paper, but with some parameters adjusted
-to conditions in 2024. Please follow @satored_com (http://satored.com) to stay
-up-to-date!
+to conditions in 2024. Please follow @earthbucks_com (http://earthbucks.com) to
+stay up-to-date!
 
 Although Bitcoin (BTC) has been a remarkably successful project by many metrics,
 what it's not is a useful system for "small casual transactions" or
@@ -65,17 +65,15 @@ honor Satoshi is not blind allegiance to arbitrary parameters chosen 15+ years
 ago, but to retain the spirit of Satoshi by doing what we believe Satoshi would
 have done in 2024.
 
-SatoRed is only just getting started and the first code was only just committed.
-Please follow @satored_com (http://satored.com) to subscribe to our channels and
-stay up-to-date. #BitcoinFTW #SatoRed #SatoshisRedemption
+EarthBucks is only just getting started and the first code was only just
+committed. Please follow @earthbucks_com (http://earthbucks.com) to subscribe to
+our channels and stay up-to-date.
 
-We are all Satoshi Nakamoto. #WeAreAllSatoshi
-
-Satoshi Nakamoto
+Ryan X. Charles
 
 ---
 
-Blake3 and Big Endian
+### Blake3 and Big Endian
 
 March 28, 2024
 
@@ -97,12 +95,11 @@ More changes are coming. The code is being written in Rust and TypeScript
 simultaneously to guarantee a fast node software and a toolkit for developers to
 build web apps.
 
-Satoshi Nakamoto
-#WeAreAllSatoshi
+Ryan X. Charles
 
 ---
 
-Var Ints, Script, and Names
+### Var Ints, Script, and Names
 
 March 29, 2024
 
@@ -116,23 +113,21 @@ addresses use double blake3 hashing in the expected order.
 I am working my way towards an implementation of script, transactions, and blocks.
 
 Meanwhile, I have been thinking about the token name a lot. Because the project
-is already called "SatoRed", which is short for "Satoshi's Redemption", a simple
-naming scheme is as follows:
+is already called "EarthBucks", a simple naming scheme is as follows:
 
 - `satoshi` - The smallest value. (The analog of a satoshi on Bitcoin.)
-- `satored` - 10^8 satoshis. (The analog of a bitcoin on Bitcoin.)
+- `earthbucks` - 10^8 satoshis. (The analog of a bitcoin on Bitcoin.)
 
 This is the simplest naming scheme that is derived from the original Bitcoin,
 but consistent with the new project name. The ticker symbol will be SRED (one
-satored). It is still possible the name of the project will change before launch
+earthbucks). It is still possible the name of the project will change before launch
 if I can secure a more premium domain name.
 
-Satoshi Nakamoto AI
-#WeAreAllSatoshi
+Ryan X. Charles
 
 ---
 
-Why We Need Another Blockchain
+### Why We Need Another Blockchain
 
 March 30, 2024
 
@@ -179,13 +174,13 @@ Thanks to modern tooling, especially AI, the project is proceeding very quickly.
 I am optimistic we will be able to launch the first version in just a few
 months.
 
-Please follow @satored_com (http://satored.com) to stay up-to-date.
+Please follow @earthbucks_com (http://earthbucks.com) to stay up-to-date.
 
-Satoshi Nakamoto #WeAreAllSatoshi
+Ryan X. Charles
 
 ---
 
-Data Structures and New Name
+### Data Structures and New Name
 
 March 30, 2024
 
@@ -194,19 +189,11 @@ numbers are big endian, including the numbers encoded inside the var ints. I've
 also created the script data structure. Locktime has been increased to 64 bits.
 Next up: Script interpreter.
 
-In other news, I have decided to rename the project from "SatoRed" to
-"ImpStack". IMP stands for Internet Money Protocol. The new website is hosted at
-[impstack.com](https://impstack.com). The new ticker symbol is IMP. The new name
-is a way of disconnected the branding from Bitcoin and Satoshi Nakamoto so that
-we can have a truly clean start. The architecture of the blockchain is still
-identical to the original Bitcoin, but with parameters adjusted to the
-conditions of 2024.
-
-Chief Imp (Formerly Satoshi Nakamoto AI)
+Ryan X. Charles
 
 ---
 
-ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions
+### ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions
 
 April 1, 2024
 
@@ -225,13 +212,11 @@ April 1, 2024
 - I have removed CODESEPARATOR from the script language as it has almost never
   been used for anything.
 
-Smalltoshi Impamoto
-Chief Imp at ImpStack
-#WeAreAllSmalltoshi
+Ryan X. Charles
 
 ---
 
-CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions
+### CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions
 
 April 4, 2024
 
@@ -277,4 +262,95 @@ Details:
   enable more complex transactions. The way this will work in practice is that
   there will be a list of standard transaction templates that grows with time.
 
+Ryan X. Charles
+
 ---
+
+### Thoughts on Decentralization
+
+April 5, 2024
+
+The goal of EarthBucks is to enable small casual transactions with minimal
+trust, just like cash, but over the internet. Fees should be low or zero and
+there should be low or no risk of chargeback fraud. Having some degree of
+decentralization is helpful to achieve this goal, but decentralization is not
+itself the goal.
+
+The way the word "decentralization" is used is usually ambiguous, and can have
+conflicting meanings. For EarthBucks, the relevant parameter is how many
+entities run mining pools, which verify all transactions. The answer is there
+should be at least three mining pools, but it is not expected that ordinary
+users will run a pool. Users can use SPV wallet to send/receive/verify their own
+transactions and they can hash on a mining pool without verifying all
+transactions. SPV nodes serve as a guard against fraud by the miners. Mining
+pools plus SPV nodes creates exactly the amount of decentralization necessary to
+achieve the goal of small casual transactions.
+
+Decentralization is not the goal. The goal is small casual transactions. The
+system should be exactly as decentralized as necessary to achieve this goal.
+This implies some degree of centralization. Maximizing decentralization, in the
+sense that everybody verifies all transactions, is impractical and unnecessary.
+Small casual transactions only require a few mining pools and a large number of
+SPV nodes.
+
+Ryan X. Charles
+
+---
+
+### Thoughts on Fees
+
+April 5, 2024
+
+Bitcoin has something that I shall refer to as "change fees". This is a type of
+transaction fee whereby if the inputs add up to more than the outputs, the
+difference is paid to the miner. This is a type of fee that is not necessary and
+is not present in EarthBucks.
+
+If transactions don't have fees, how do miners get paid? Simple: Pay them. You
+can simply create another transaction with an output that goes to a miner,
+exactly the same way you would pay anybody else.
+
+In EarthBucks, my intention is that users will have relationships with service
+providers. Even miners will have relationships with other miners. All fees can
+be determined and paid the same way as anything else, by having a contract
+(explicit or implict), and paying a fee. This is exactly how it works in the
+real world, and I see no reason for this system to be any different.
+
+There are many reasons to eliminate the change fee from transactions, but the
+top reason is actually technical. It is simply annoying to build transactions
+including a change fee, because you don't know how much the transaction will
+actually cost until you build it, and thus must loop over your available UTXOs
+until you can pay the amount including the fee, which is only known at build
+time. This circularity problem goes away if the outputs must simply be equal to
+the inputs.
+
+The next reason to eliminate the change fee is that it creates a
+misunderstanding in the eyes of many users who believe they must pay a random
+miner to mine their transaction. This is not the case. The way the configuration
+will work for most users is that wallet providers will pay fees to miners to
+mine transactions, and the user will pay the wallet provider, or the wallet
+provider will fund thew wallet with ads and the user will pay nothing. In this
+configuration, which is what would be expected in any ordinary supply chain,
+there is no reason to have change fees.
+
+The third reason to eliminate the change fee is that is breaks SPV. SPV has the
+property that a user can follow their own transaction history back in time to
+the origin of each coin in a coinbase transaction. However, if miners accumulate
+change fees into the mining reward, the only way an SPV node could verify that
+the miners have done this correctly is to verify the entire block. This is not
+practical and eliminates the purpose of SPV. The only way to preserve SPV is to
+eliminate change fees. Users should be able to verify the full transaction
+history all the way back to the coinbase transaction without ever verifying a
+block. For this, we must eliminate change fees.
+
+To be clear, eliminating the change fee does not mean there are no fees. It
+means fees are paid by putting an output in a transaction in the same way that
+anything else is paid. Users have relationships with commercial entities and pay
+fees. Commercial entities, such as miners, also have relationships with
+commercial entities, such as other miners, and pay fees. Fees are paid in the
+same way as anything else is paid, by having a contract and paying a fee.
+
+Change fees are not necessary, are technically harder to build, harder to
+understand, and break SPV. Therefore, change fees are eliminated in EarthBucks.
+
+Ryan X. Charles
