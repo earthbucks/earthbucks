@@ -12,9 +12,6 @@ export default class Tx {
   public inputs: TxInput[]
   public outputs: TxOutput[]
   public locktime: bigint
-  private prevoutsHash?: Uint8Array
-  private sequenceHash?: Uint8Array
-  private outputsHash?: Uint8Array
 
   constructor(
     version: number,
@@ -128,8 +125,7 @@ export default class Tx {
     let outputsHash = new Uint8Array(32)
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
-      this.prevoutsHash = this.prevoutsHash ?? this.hashPrevouts()
-      prevoutsHash = this.prevoutsHash
+      prevoutsHash = this.hashPrevouts()
     }
 
     if (
@@ -137,16 +133,14 @@ export default class Tx {
       (hashType & 0x1f) !== SIGHASH_SINGLE &&
       (hashType & 0x1f) !== SIGHASH_NONE
     ) {
-      this.sequenceHash = this.sequenceHash ?? this.hashSequence()
-      sequenceHash = this.sequenceHash
+      sequenceHash = this.hashSequence()
     }
 
     if (
       (hashType & 0x1f) !== SIGHASH_SINGLE &&
       (hashType & 0x1f) !== SIGHASH_NONE
     ) {
-      this.outputsHash = this.outputsHash ?? this.hashOutputs()
-      outputsHash = this.outputsHash
+      outputsHash = this.hashOutputs()
     } else if (
       (hashType & 0x1f) === SIGHASH_SINGLE &&
       inputIndex < this.outputs.length
