@@ -18,7 +18,7 @@ impl TxVerifier {
         }
     }
 
-    pub fn verify_input(&mut self, n_in: usize) -> bool {
+    pub fn verify_input_script(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_index;
@@ -50,11 +50,39 @@ impl TxVerifier {
         }
     }
 
-    pub fn verify(&mut self) -> bool {
+    pub fn verify_scripts(&mut self) -> bool {
         for i in 0..self.tx.inputs.len() {
-            if !self.verify_input(i) {
+            if !self.verify_input_script(i) {
                 return false;
             }
+        }
+        true
+    }
+
+    pub fn verify_output_values(&self) -> bool {
+        let mut total_output_value = 0;
+        for output in &self.tx.outputs {
+            total_output_value += output.value;
+        }
+        let mut total_input_value = 0;
+        for input in &self.tx.inputs {
+            let tx_out = self
+                .tx_out_map
+                .get(&input.input_tx_id, input.input_tx_index);
+            match tx_out {
+                None => return false,
+                Some(tx_out) => total_input_value += tx_out.value,
+            }
+        }
+        total_input_value == total_output_value
+    }
+
+    pub fn verify(&mut self) -> bool {
+        if !self.verify_scripts() {
+            return false;
+        }
+        if !self.verify_output_values() {
+            return false;
         }
         true
     }
@@ -105,8 +133,14 @@ mod tests {
         assert_eq!(signed, true);
 
         let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
-        let verified_input = tx_verifier.verify_input(0);
+        let verified_input = tx_verifier.verify_input_script(0);
         assert_eq!(verified_input, true);
+
+        let verified_scripts = tx_verifier.verify_scripts();
+        assert_eq!(verified_scripts, true);
+
+        let verified_output_values = tx_verifier.verify_output_values();
+        assert_eq!(verified_output_values, true);
 
         let verified = tx_verifier.verify();
         assert_eq!(verified, true);
@@ -147,10 +181,16 @@ mod tests {
         let signed_tx = tx_signer.tx;
 
         let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
-        let verified_input1 = tx_verifier.verify_input(0);
+        let verified_input1 = tx_verifier.verify_input_script(0);
         assert_eq!(verified_input1, true);
-        let verified_input2 = tx_verifier.verify_input(1);
+        let verified_input2 = tx_verifier.verify_input_script(1);
         assert_eq!(verified_input2, true);
+
+        let verified_scripts = tx_verifier.verify_scripts();
+        assert_eq!(verified_scripts, true);
+
+        let verified_output_values = tx_verifier.verify_output_values();
+        assert_eq!(verified_output_values, true);
 
         let verified = tx_verifier.verify();
         assert_eq!(verified, true);

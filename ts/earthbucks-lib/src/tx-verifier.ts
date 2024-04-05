@@ -13,7 +13,7 @@ export default class TxVerifier {
     this.hashCache = new HashCache()
   }
 
-  verifyInput(nIn: number): boolean {
+  verifyInputScript(nIn: number): boolean {
     const txInput = this.tx.inputs[nIn]
     const txOutHash = txInput.inputTxId
     const outputIndex = txInput.inputTxIndex
@@ -41,12 +41,32 @@ export default class TxVerifier {
     return result
   }
 
-  verify(): boolean {
+  verifyScripts(): boolean {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      if (!this.verifyInput(i)) {
+      if (!this.verifyInputScript(i)) {
         return false
       }
     }
     return true
+  }
+
+  verifyOutputValues(): boolean {
+    let totalOutputValue = BigInt(0)
+    let totalInputValue = BigInt(0)
+    for (const output of this.tx.outputs) {
+      totalOutputValue += output.value
+    }
+    for (const input of this.tx.inputs) {
+      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxIndex)
+      if (!txOut) {
+        return false
+      }
+      totalInputValue += txOut.value
+    }
+    return totalOutputValue === totalInputValue
+  }
+
+  verify(): boolean {
+    return this.verifyScripts() && this.verifyOutputValues()
   }
 }
