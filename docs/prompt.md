@@ -354,3 +354,19 @@ Change fees are not necessary, are technically harder to build, harder to
 understand, and break SPV. Therefore, change fees are eliminated in EarthBucks.
 
 Ryan X. Charles
+
+---
+
+Verifying Transactions and Input/Output Equality
+
+April 5, 2024
+
+I have just finished implementing the transaction verifier in both typescript
+and rust and it has an important feature: it checks that the input values are
+equal to the output values.
+
+Checking that input value = output value is consistent with my earlier
+declaration that change fees are eliminated. What this means in practice that a
+transaction is not valid if it includes a change fee.
+
+Ryan X. Charles
