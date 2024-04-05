@@ -59,3 +59,100 @@ impl TxVerifier {
         true
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::address::Address;
+    use crate::address_key_map::AddressKeyMap;
+    use crate::key::Key;
+    use crate::script::Script;
+    use crate::tx_builder::TxBuilder;
+    use crate::tx_output::TxOutput;
+    use crate::tx_output_map::TxOutputMap;
+    use crate::tx_signer::TxSigner;
+
+    use super::*;
+
+    #[test]
+    fn should_sign_and_verify_a_tx() {
+        let mut tx_out_map = TxOutputMap::new();
+        let mut address_key_map = AddressKeyMap::new();
+        // generate 5 keys, 5 outputs, and add them to the tx_out_map
+        for i in 0..5 {
+            let key = Key::from_random();
+            let address = Address::new(key.clone().public_key);
+            address_key_map.add(key, &address.address);
+            let script = Script::from_address_output(&address.address);
+            let output = TxOutput::new(100, script);
+            tx_out_map.add(output, &vec![0; 32], i);
+        }
+
+        let change_script = Script::from_string("").unwrap();
+        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script);
+
+        tx_builder.add_output(50, Script::from_string("").unwrap());
+
+        let tx = tx_builder.build();
+
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 50);
+        assert_eq!(tx.outputs[1].value, 50);
+
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
+        let signed = tx_signer.sign(0);
+        let signed_tx = tx_signer.tx;
+        assert_eq!(signed, true);
+
+        let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
+        let verified_input = tx_verifier.verify_input(0);
+        assert_eq!(verified_input, true);
+
+        let verified = tx_verifier.verify();
+        assert_eq!(verified, true);
+    }
+
+    #[test]
+    fn should_sign_and_verify_a_tx_with_two_inputs() {
+        let mut tx_out_map = TxOutputMap::new();
+        let mut address_key_map = AddressKeyMap::new();
+        // generate 5 keys, 5 outputs, and add them to the tx_out_map
+        for i in 0..5 {
+            let key = Key::from_random();
+            let address = Address::new(key.clone().public_key);
+            address_key_map.add(key, &address.address);
+            let script = Script::from_address_output(&address.address);
+            let output = TxOutput::new(100, script);
+            tx_out_map.add(output, &vec![0; 32], i);
+        }
+
+        let change_script = Script::from_string("").unwrap();
+        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script);
+
+        tx_builder.add_output(100, Script::from_string("").unwrap());
+        tx_builder.add_output(100, Script::from_string("").unwrap());
+
+        let tx = tx_builder.build();
+
+        assert_eq!(tx.inputs.len(), 2);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 100);
+        assert_eq!(tx.outputs[1].value, 100);
+
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
+        let signed1 = tx_signer.sign(0);
+        assert_eq!(signed1, true);
+        let signed2 = tx_signer.sign(1);
+        assert_eq!(signed2, true);
+        let signed_tx = tx_signer.tx;
+
+        let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
+        let verified_input1 = tx_verifier.verify_input(0);
+        assert_eq!(verified_input1, true);
+        let verified_input2 = tx_verifier.verify_input(1);
+        assert_eq!(verified_input2, true);
+
+        let verified = tx_verifier.verify();
+        assert_eq!(verified, true);
+    }
+}

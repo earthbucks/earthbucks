@@ -36,7 +36,6 @@ describe('TxVerifier', () => {
     const key = Key.fromRandom()
     const address = new Address(key.publicKey)
     const script = Script.fromAddressOutput(address.address)
-    const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(50), Script.fromString(''))
 
     const tx = txBuilder.build()
@@ -61,7 +60,6 @@ describe('TxVerifier', () => {
     const key = Key.fromRandom()
     const address = new Address(key.publicKey)
     const script = Script.fromAddressOutput(address.address)
-    const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
 
