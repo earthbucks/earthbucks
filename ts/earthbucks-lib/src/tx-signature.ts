@@ -1,4 +1,4 @@
-export default class TransactionSignature {
+export default class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001
   static readonly SIGHASH_NONE = 0x00000002
   static readonly SIGHASH_SINGLE = 0x00000003
@@ -18,9 +18,9 @@ export default class TransactionSignature {
     return new Uint8Array(Buffer.concat([hashTypeBuf, this.sigBuf]))
   }
 
-  static fromU8Vec(u8vec: Uint8Array): TransactionSignature {
+  static fromU8Vec(u8vec: Uint8Array): TxSignature {
     const hashType = u8vec[0]
     const sigBuf = u8vec.slice(1)
-    return new TransactionSignature(hashType, sigBuf)
+    return new TxSignature(hashType, sigBuf)
   }
 }

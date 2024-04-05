@@ -1,26 +1,26 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import TransactionInput from '../src/transaction-input'
+import TxInput from '../src/tx-input'
 import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
 
-describe('TransactionInput', () => {
-  test('should create a TransactionInput', () => {
+describe('TxInput', () => {
+  test('should create a TxInput', () => {
     const inputTxHash = Buffer.alloc(32)
     const inputTxIndex = 0
     const script = new Script()
     const sequence = 0xffffffff
 
-    const transactionInput = new TransactionInput(
+    const txInput = new TxInput(
       inputTxHash,
       inputTxIndex,
       script,
       sequence,
     )
-    expect(transactionInput).toBeInstanceOf(TransactionInput)
-    expect(transactionInput.inputTxId).toBe(inputTxHash)
-    expect(transactionInput.inputTxIndex).toBe(inputTxIndex)
-    expect(transactionInput.script).toBe(script)
-    expect(transactionInput.sequence).toBe(sequence)
+    expect(txInput).toBeInstanceOf(TxInput)
+    expect(txInput.inputTxId).toBe(inputTxHash)
+    expect(txInput.inputTxIndex).toBe(inputTxIndex)
+    expect(txInput.script).toBe(script)
+    expect(txInput.sequence).toBe(sequence)
   })
 
   describe('fromBufferReader', () => {
@@ -30,16 +30,16 @@ describe('TransactionInput', () => {
       const script = new Script()
       const sequence = 0xffffffff
 
-      const transactionInput = new TransactionInput(
+      const txInput = new TxInput(
         inputTxHash,
         inputTxIndex,
         script,
         sequence,
       )
 
-      const reader = new BufferReader(transactionInput.toBuffer())
-      const result = TransactionInput.fromBufferReader(reader)
-      expect(result).toBeInstanceOf(TransactionInput)
+      const reader = new BufferReader(txInput.toBuffer())
+      const result = TxInput.fromBufferReader(reader)
+      expect(result).toBeInstanceOf(TxInput)
       expect(Buffer.from(result.inputTxId).toString('hex')).toEqual(
         Buffer.from(inputTxHash).toString('hex'),
       )
@@ -56,13 +56,13 @@ describe('TransactionInput', () => {
       const script = new Script()
       const sequence = 0xffffffff
 
-      const transactionInput = new TransactionInput(
+      const txInput = new TxInput(
         inputTxHash,
         inputTxIndex,
         script,
         sequence,
       )
-      const result = transactionInput.toBuffer()
+      const result = txInput.toBuffer()
       expect(result.toString('hex')).toEqual(
         '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
       )
@@ -74,13 +74,13 @@ describe('TransactionInput', () => {
       const script = new Script().fromString('DOUBLEBLAKE3')
       const sequence = 0xffffffff
 
-      const transactionInput = new TransactionInput(
+      const txInput = new TxInput(
         inputTxHash,
         inputTxIndex,
         script,
         sequence,
       )
-      const result = transactionInput.toBuffer()
+      const result = txInput.toBuffer()
       expect(result.toString('hex')).toEqual(
         '00000000000000000000000000000000000000000000000000000000000000000000000001a7ffffffff',
       )
@@ -93,13 +93,13 @@ describe('TransactionInput', () => {
     const script = new Script().fromString('0x121212')
     const sequence = 0xffffffff
 
-    const transactionInput = new TransactionInput(
+    const txInput = new TxInput(
       inputTxHash,
       inputTxIndex,
       script,
       sequence,
     )
-    const result = transactionInput.toBuffer()
+    const result = txInput.toBuffer()
     expect(result.toString('hex')).toEqual(
       '000000000000000000000000000000000000000000000000000000000000000000000000054c03121212ffffffff',
     )

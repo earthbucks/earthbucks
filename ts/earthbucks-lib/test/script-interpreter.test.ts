@@ -1,23 +1,23 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import ScriptInterpreter from '../src/script-interpreter'
 import Script from '../src/script'
-import Transaction from '../src/transaction'
-import TransactionInput from '../src/transaction-input'
-import TransactionOutput from '../src/transaction-output'
+import Tx from '../src/tx'
+import TxInput from '../src/tx-input'
+import TxOutput from '../src/tx-output'
 import fs from 'fs'
 import path from 'path'
 import Key from '../src/key'
 import PubKeyHash from '../src/pub-key-hash'
-import TransactionSignature from '../src/transaction-signature'
+import TxSignature from '../src/tx-signature'
 
 describe('ScriptInterpreter', () => {
-  let transaction: Transaction
+  let tx: Tx
 
   beforeEach(() => {
-    transaction = new Transaction(
+    tx = new Tx(
       1,
-      [new TransactionInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
-      [new TransactionOutput(BigInt(0), new Script())],
+      [new TxInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
+      [new TxOutput(BigInt(0), new Script())],
       BigInt(0),
     )
   })
@@ -25,9 +25,9 @@ describe('ScriptInterpreter', () => {
   describe('sanity tests', () => {
     test('0', () => {
       const script = new Script().fromString('0')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -40,9 +40,9 @@ describe('ScriptInterpreter', () => {
 
     test('pushdata1', () => {
       const script = new Script().fromString('0xff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -56,9 +56,9 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA1', () => {
       const script = new Script().fromString('0xffff')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -72,9 +72,9 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA2', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(256))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -88,9 +88,9 @@ describe('ScriptInterpreter', () => {
 
     test('PUSHDATA4', () => {
       const script = new Script().fromString('0x' + 'ff'.repeat(65536))
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -104,9 +104,9 @@ describe('ScriptInterpreter', () => {
 
     test('1NEGATE', () => {
       const script = new Script().fromString('1NEGATE')
-      const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
-        transaction,
+        tx,
         0,
       )
       scriptInterpreter.evalScript()
@@ -136,33 +136,33 @@ describe('ScriptInterpreter', () => {
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')
       const outputTxIndex = 0
 
-      const transaction = new Transaction(
+      const tx = new Tx(
         1,
         [
-          new TransactionInput(
+          new TxInput(
             outputTxId,
             outputTxIndex,
             new Script(),
             0xffffffff,
           ),
         ],
-        [new TransactionOutput(outputAmount, outputScript)],
+        [new TxOutput(outputAmount, outputScript)],
         BigInt(0),
       )
 
-      const sig = transaction.sign(
+      const sig = tx.sign(
         0,
         outputPrivKeyU8Vec,
         outputScript.toU8Vec(),
         outputAmount,
-        TransactionSignature.SIGHASH_ALL,
+        TxSignature.SIGHASH_ALL,
       )
 
       const stack = [sig.toU8Vec(), outputPubKey]
 
-      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
         outputScript,
-        transaction,
+        tx,
         0,
         stack,
         outputAmount,
@@ -193,37 +193,37 @@ describe('ScriptInterpreter', () => {
       // Create a multisig output script
       const outputScript = Script.fromMultiSigOutput(3, pubKeys)
 
-      // Other transaction parameters
+      // Other tx parameters
       const outputAmount = BigInt(100)
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')
       const outputTxIndex = 0
 
-      // Create a transaction
-      const transaction = new Transaction(
+      // Create a tx
+      const tx = new Tx(
         1,
         [
-          new TransactionInput(
+          new TxInput(
             outputTxId,
             outputTxIndex,
             new Script(),
             0xffffffff,
           ),
         ],
-        [new TransactionOutput(outputAmount, outputScript)],
+        [new TxOutput(outputAmount, outputScript)],
         BigInt(0),
       )
 
-      // Sign the transaction with the first 3 private keys
+      // Sign the tx with the first 3 private keys
       const sigs = privKeysU8Vec
         .slice(0, 3)
         .map((privKey) =>
-          transaction
+          tx
             .sign(
               0,
               privKey,
               outputScript.toU8Vec(),
               outputAmount,
-              TransactionSignature.SIGHASH_ALL,
+              TxSignature.SIGHASH_ALL,
             )
             .toU8Vec(),
         )
@@ -232,9 +232,9 @@ describe('ScriptInterpreter', () => {
       const stack = [...sigs]
 
       // Create a script interpreter
-      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
+      const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
         outputScript,
-        transaction,
+        tx,
         0,
         stack,
         outputAmount,
@@ -263,13 +263,13 @@ describe('ScriptInterpreter', () => {
       )
       const jsonString = fs.readFileSync(filePath, 'utf-8')
       const testScripts: TestScript[] = JSON.parse(jsonString).scripts
-      let transaction: Transaction
+      let tx: Tx
 
       beforeEach(() => {
-        transaction = new Transaction(
+        tx = new Tx(
           1,
-          [new TransactionInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
-          [new TransactionOutput(BigInt(0), new Script())],
+          [new TxInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
+          [new TxOutput(BigInt(0), new Script())],
           BigInt(0),
         )
       })
@@ -277,9 +277,9 @@ describe('ScriptInterpreter', () => {
       testScripts.forEach((testScript) => {
         test(testScript.name, () => {
           const script = Script.fromString(testScript.script)
-          const scriptInterpreter = ScriptInterpreter.fromScriptTransaction(
+          const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,
-            transaction,
+            tx,
             0,
           )
           scriptInterpreter.evalScript()

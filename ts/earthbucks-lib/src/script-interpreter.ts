@@ -1,13 +1,13 @@
 import { OPCODE_TO_NAME, OP } from './opcode'
 import Script from './script'
-import Transaction from './transaction'
+import Tx from './tx'
 import ScriptNum from './script-num'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
-import TransactionSignature from './transaction-signature'
+import TxSignature from './tx-signature'
 
 export default class ScriptInterpreter {
   public script: Script
-  public transaction: Transaction
+  public tx: Tx
   public nIn: number
   public stack: Uint8Array[]
   public altStack: Uint8Array[]
@@ -21,7 +21,7 @@ export default class ScriptInterpreter {
 
   constructor(
     script: Script,
-    transaction: Transaction,
+    tx: Tx,
     nIn: number,
     stack: Uint8Array[],
     altStack: Uint8Array[],
@@ -34,7 +34,7 @@ export default class ScriptInterpreter {
     value: bigint,
   ) {
     this.script = script
-    this.transaction = transaction
+    this.tx = tx
     this.nIn = nIn
     this.stack = stack
     this.altStack = altStack
@@ -47,14 +47,14 @@ export default class ScriptInterpreter {
     this.value = value
   }
 
-  static fromScriptTransaction(
+  static fromScriptTx(
     script: Script,
-    transaction: Transaction,
+    tx: Tx,
     nIn: number,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
-      transaction,
+      tx,
       nIn,
       [],
       [],
@@ -68,16 +68,16 @@ export default class ScriptInterpreter {
     )
   }
 
-  static fromOutputScriptTransaction(
+  static fromOutputScriptTx(
     script: Script,
-    transaction: Transaction,
+    tx: Tx,
     nIn: number,
     stack: Uint8Array[],
     value: bigint,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
       script,
-      transaction,
+      tx,
       nIn,
       stack,
       [],
@@ -797,11 +797,11 @@ export default class ScriptInterpreter {
             this.errStr = 'invalid signature length'
             break
           }
-          const signature = TransactionSignature.fromU8Vec(sigBuf)
+          const signature = TxSignature.fromU8Vec(sigBuf)
 
           let execScriptBuf = new Uint8Array(this.script.toU8Vec())
 
-          const success = this.transaction.verify(
+          const success = this.tx.verify(
             this.nIn,
             pubKeyBuf,
             signature,
@@ -863,10 +863,10 @@ export default class ScriptInterpreter {
           let matchedSigs = 0n
           for (let i = 0; i < nSigs; i++) {
             for (let j = 0; j < pubKeys.length; j++) {
-              const success = this.transaction.verify(
+              const success = this.tx.verify(
                 this.nIn,
                 pubKeys[j],
-                TransactionSignature.fromU8Vec(sigs[i]),
+                TxSignature.fromU8Vec(sigs[i]),
                 execScriptBuf,
                 this.value,
               )

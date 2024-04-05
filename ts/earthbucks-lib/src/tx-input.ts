@@ -3,7 +3,7 @@ import BufferReader from './buffer-reader'
 import Script from './script'
 import VarInt from './var-int'
 
-export default class TransactionInput {
+export default class TxInput {
   public inputTxId: Uint8Array
   public inputTxIndex: number
   public script: Script
@@ -21,23 +21,23 @@ export default class TransactionInput {
     this.sequence = sequence
   }
 
-  static fromU8Vec(buf: Uint8Array): TransactionInput {
+  static fromU8Vec(buf: Uint8Array): TxInput {
     const reader = new BufferReader(buf)
     const inputTxHash = reader.read(32)
     const inputTxIndex = reader.readUInt32LE()
     const scriptLen = reader.readVarIntNum()
     const script = Script.fromU8Vec(reader.read(scriptLen))
     const sequence = reader.readUInt32LE()
-    return new TransactionInput(inputTxHash, inputTxIndex, script, sequence)
+    return new TxInput(inputTxHash, inputTxIndex, script, sequence)
   }
 
-  static fromBufferReader(reader: BufferReader): TransactionInput {
+  static fromBufferReader(reader: BufferReader): TxInput {
     const inputTxHash = reader.read(32)
     const inputTxIndex = reader.readUInt32LE()
     const scriptLen = reader.readVarIntNum()
     const script = Script.fromU8Vec(reader.read(scriptLen))
     const sequence = reader.readUInt32LE()
-    return new TransactionInput(inputTxHash, inputTxIndex, script, sequence)
+    return new TxInput(inputTxHash, inputTxIndex, script, sequence)
   }
 
   toU8Vec(): Uint8Array {

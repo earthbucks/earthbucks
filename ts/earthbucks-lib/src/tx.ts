@@ -1,16 +1,16 @@
-import TransactionInput from './transaction-input'
-import TransactionOutput from './transaction-output'
+import TxInput from './tx-input'
+import TxOutput from './tx-output'
 import VarInt from './var-int'
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 import { ecdsaSign, ecdsaVerify } from 'secp256k1'
-import TransactionSignature from './transaction-signature'
+import TxSignature from './tx-signature'
 
-export default class Transaction {
+export default class Tx {
   public version: number
-  public inputs: TransactionInput[]
-  public outputs: TransactionOutput[]
+  public inputs: TxInput[]
+  public outputs: TxOutput[]
   public locktime: bigint
   private prevoutsHash?: Uint8Array
   private sequenceHash?: Uint8Array
@@ -18,8 +18,8 @@ export default class Transaction {
 
   constructor(
     version: number,
-    inputs: TransactionInput[],
-    outputs: TransactionOutput[],
+    inputs: TxInput[],
+    outputs: TxOutput[],
     locktime: bigint,
   ) {
     this.version = version
@@ -28,37 +28,37 @@ export default class Transaction {
     this.locktime = locktime
   }
 
-  static fromU8Vec(buf: Uint8Array): Transaction {
+  static fromU8Vec(buf: Uint8Array): Tx {
     const reader = new BufferReader(buf)
     const version = reader.readUInt8()
     const numInputs = reader.readVarIntNum()
     const inputs = []
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TransactionInput.fromBufferReader(reader))
+      inputs.push(TxInput.fromBufferReader(reader))
     }
     const numOutputs = reader.readVarIntNum()
     const outputs = []
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TransactionOutput.fromBufferReader(reader))
+      outputs.push(TxOutput.fromBufferReader(reader))
     }
     const locktime = reader.readUInt64BEBigInt()
-    return new Transaction(version, inputs, outputs, BigInt(locktime))
+    return new Tx(version, inputs, outputs, BigInt(locktime))
   }
 
-  static fromBufferReader(reader: BufferReader): Transaction {
+  static fromBufferReader(reader: BufferReader): Tx {
     const version = reader.readUInt8()
     const numInputs = reader.readVarIntNum()
     const inputs = []
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TransactionInput.fromBufferReader(reader))
+      inputs.push(TxInput.fromBufferReader(reader))
     }
     const numOutputs = reader.readVarIntNum()
     const outputs = []
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TransactionOutput.fromBufferReader(reader))
+      outputs.push(TxOutput.fromBufferReader(reader))
     }
     const locktime = reader.readUInt64BEBigInt()
-    return new Transaction(version, inputs, outputs, BigInt(locktime))
+    return new Tx(version, inputs, outputs, BigInt(locktime))
   }
 
   toU8Vec(): Uint8Array {
@@ -187,17 +187,17 @@ export default class Transaction {
     script: Uint8Array,
     amount: bigint,
     hashType: number,
-  ): TransactionSignature {
+  ): TxSignature {
     const hash = this.sighash(inputIndex, script, amount, hashType)
     let sigBuf = ecdsaSign(hash, privateKey).signature
-    const sig = new TransactionSignature(hashType, sigBuf)
+    const sig = new TxSignature(hashType, sigBuf)
     return sig
   }
 
   verify(
     inputIndex: number,
     publicKey: Uint8Array,
-    sig: TransactionSignature,
+    sig: TxSignature,
     script: Uint8Array,
     amount: bigint,
   ): boolean {

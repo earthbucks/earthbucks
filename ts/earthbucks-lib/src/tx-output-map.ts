@@ -1,10 +1,10 @@
-import TransactionOutput from './transaction-output'
+import TxOutput from './tx-output'
 
-export default class TransactionOutputMap {
-  public map: Map<string, TransactionOutput>
+export default class TxOutputMap {
+  public map: Map<string, TxOutput>
 
   constructor() {
-    this.map = new Map<string, TransactionOutput>()
+    this.map = new Map<string, TxOutput>()
   }
 
   static nameFromOutput(txIdHash: Uint8Array, outputIndex: number): string {
@@ -22,28 +22,28 @@ export default class TransactionOutputMap {
   }
 
   add(
-    output: TransactionOutput,
+    output: TxOutput,
     txIdHash: Uint8Array,
     outputIndex: number,
   ): void {
-    const name = TransactionOutputMap.nameFromOutput(txIdHash, outputIndex)
+    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex)
     this.map.set(name, output)
   }
 
   remove(txIdHash: Uint8Array, outputIndex: number): void {
-    const name = TransactionOutputMap.nameFromOutput(txIdHash, outputIndex)
+    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex)
     this.map.delete(name)
   }
 
   get(
     txIdHash: Uint8Array,
     outputIndex: number,
-  ): TransactionOutput | undefined {
-    const name = TransactionOutputMap.nameFromOutput(txIdHash, outputIndex)
+  ): TxOutput | undefined {
+    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex)
     return this.map.get(name)
   }
 
-  values(): IterableIterator<TransactionOutput> {
+  values(): IterableIterator<TxOutput> {
     return this.map.values()
   }
 }

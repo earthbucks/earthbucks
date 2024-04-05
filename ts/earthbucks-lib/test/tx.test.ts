@@ -1,44 +1,44 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import Transaction from '../src/transaction'
-import TransactionInput from '../src/transaction-input'
-import TransactionOutput from '../src/transaction-output'
+import Tx from '../src/tx'
+import TxInput from '../src/tx-input'
+import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
 import BufferWriter from '../src/buffer-writer'
 import { blake3Hash } from '../src/blake3'
-import TransactionSignature from '../src/transaction-signature'
+import TxSignature from '../src/tx-signature'
 import Key from '../src/key'
 
-describe('Transaction', () => {
+describe('Tx', () => {
   describe('constructor', () => {
-    test('should create a Transaction', () => {
+    test('should create a Tx', () => {
       const version = 1
-      const inputs: TransactionInput[] = []
-      const outputs: TransactionOutput[] = []
+      const inputs: TxInput[] = []
+      const outputs: TxOutput[] = []
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
-      expect(transaction).toBeInstanceOf(Transaction)
-      expect(transaction.version).toBe(version)
-      expect(transaction.inputs).toBe(inputs)
-      expect(transaction.outputs).toBe(outputs)
-      expect(transaction.locktime).toBe(locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
+      expect(tx).toBeInstanceOf(Tx)
+      expect(tx.version).toBe(version)
+      expect(tx.inputs).toBe(inputs)
+      expect(tx.outputs).toBe(outputs)
+      expect(tx.locktime).toBe(locktime)
     })
   })
 
   test('to/from u8Vec', () => {
     const version = 1
-    const inputs: TransactionInput[] = [
-      new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+    const inputs: TxInput[] = [
+      new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
     ]
-    const outputs: TransactionOutput[] = [
-      new TransactionOutput(BigInt(100), new Script()),
+    const outputs: TxOutput[] = [
+      new TxOutput(BigInt(100), new Script()),
     ]
     const locktime = BigInt(0)
 
-    const transaction = new Transaction(version, inputs, outputs, locktime)
-    const result = Transaction.fromU8Vec(transaction.toU8Vec())
-    expect(transaction.toBuffer().toString('hex')).toEqual(
+    const tx = new Tx(version, inputs, outputs, locktime)
+    const result = Tx.fromU8Vec(tx.toU8Vec())
+    expect(tx.toBuffer().toString('hex')).toEqual(
       result.toBuffer().toString('hex'),
     )
   })
@@ -46,18 +46,18 @@ describe('Transaction', () => {
   describe('fromU8Vec', () => {
     test('fromU8Vec', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
-      const result = Transaction.fromU8Vec(transaction.toU8Vec())
-      expect(result).toBeInstanceOf(Transaction)
+      const result = Tx.fromU8Vec(tx.toU8Vec())
+      expect(result).toBeInstanceOf(Tx)
       expect(result.version).toEqual(version)
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
@@ -68,19 +68,19 @@ describe('Transaction', () => {
   describe('fromBufferReader', () => {
     test('fromBufferReader', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
-      const reader = new BufferReader(transaction.toBuffer())
-      const result = Transaction.fromBufferReader(reader)
-      expect(result).toBeInstanceOf(Transaction)
+      const reader = new BufferReader(tx.toBuffer())
+      const result = Tx.fromBufferReader(reader)
+      expect(result).toBeInstanceOf(Tx)
       expect(result.version).toEqual(version)
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
@@ -89,53 +89,53 @@ describe('Transaction', () => {
   })
 
   describe('hashonce', () => {
-    it('should return the hash of the transaction', () => {
+    it('should return the hash of the tx', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
-      const expectedHash = blake3Hash(transaction.toU8Vec())
-      expect(transaction.blake3Hash()).toEqual(expectedHash)
+      const tx = new Tx(version, inputs, outputs, locktime)
+      const expectedHash = blake3Hash(tx.toU8Vec())
+      expect(tx.blake3Hash()).toEqual(expectedHash)
     })
   })
 
   describe('hash', () => {
-    it('should return the hash of the hash of the transaction', () => {
+    it('should return the hash of the hash of the tx', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
-      const expectedHash = blake3Hash(blake3Hash(transaction.toU8Vec()))
-      expect(transaction.id()).toEqual(expectedHash)
+      const tx = new Tx(version, inputs, outputs, locktime)
+      const expectedHash = blake3Hash(blake3Hash(tx.toU8Vec()))
+      expect(tx.id()).toEqual(expectedHash)
     })
   })
 
   describe('sighash', () => {
     test('hashPrevouts', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
-      const result = transaction.hashPrevouts()
+      const result = tx.hashPrevouts()
 
       expect(result).toBeInstanceOf(Uint8Array)
 
@@ -146,17 +146,17 @@ describe('Transaction', () => {
 
     test('hashSequence', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
-      const result = transaction.hashSequence()
+      const result = tx.hashSequence()
 
       expect(result).toBeInstanceOf(Uint8Array)
 
@@ -167,17 +167,17 @@ describe('Transaction', () => {
 
     test('hashOutputs', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), new Script()),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), new Script()),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
-      const result = transaction.hashOutputs()
+      const result = tx.hashOutputs()
 
       expect(result).toBeInstanceOf(Uint8Array)
 
@@ -188,28 +188,28 @@ describe('Transaction', () => {
 
     test('sighash', () => {
       const version = 1
-      const inputs: TransactionInput[] = [
-        new TransactionInput(
+      const inputs: TxInput[] = [
+        new TxInput(
           Buffer.alloc(32),
           0,
           Script.fromString(''),
           0xffffffff,
         ),
       ]
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), Script.fromString('')),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), Script.fromString('')),
       ]
       const locktime = BigInt(0)
 
-      const transaction = new Transaction(version, inputs, outputs, locktime)
+      const tx = new Tx(version, inputs, outputs, locktime)
 
       const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()
-      const result = transaction.sighash(
+      const result = tx.sighash(
         0,
         scriptU8Vec,
         BigInt(1),
-        TransactionSignature.SIGHASH_ALL,
+        TxSignature.SIGHASH_ALL,
       )
 
       expect(result).toBeInstanceOf(Uint8Array)
@@ -231,22 +231,22 @@ describe('Transaction', () => {
         )
         const script = new Uint8Array([])
         const amount = BigInt(100)
-        const hashType = TransactionSignature.SIGHASH_ALL
-        const inputs: TransactionInput[] = [
-          new TransactionInput(
+        const hashType = TxSignature.SIGHASH_ALL
+        const inputs: TxInput[] = [
+          new TxInput(
             Buffer.alloc(32),
             0,
             Script.fromString(''),
             0xffffffff,
           ),
         ]
-        const outputs: TransactionOutput[] = [
-          new TransactionOutput(BigInt(100), Script.fromString('')),
+        const outputs: TxOutput[] = [
+          new TxOutput(BigInt(100), Script.fromString('')),
         ]
-        const transaction = new Transaction(1, inputs, outputs, BigInt(0))
+        const tx = new Tx(1, inputs, outputs, BigInt(0))
 
         // Act
-        const signature = transaction.sign(
+        const signature = tx.sign(
           inputIndex,
           privateKey,
           script,
@@ -274,9 +274,9 @@ describe('Transaction', () => {
       )
       const script = new Uint8Array([])
       const amount = BigInt(100)
-      const hashType = TransactionSignature.SIGHASH_ALL
-      const inputs: TransactionInput[] = [
-        new TransactionInput(
+      const hashType = TxSignature.SIGHASH_ALL
+      const inputs: TxInput[] = [
+        new TxInput(
           Buffer.alloc(32),
           0,
           Script.fromString(''),
@@ -287,19 +287,19 @@ describe('Transaction', () => {
       expect(inputs[0].toBuffer().toString('hex')).toEqual(
         '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
       )
-      const outputs: TransactionOutput[] = [
-        new TransactionOutput(BigInt(100), Script.fromString('')),
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), Script.fromString('')),
       ]
       expect(outputs[0].toBuffer().toString('hex')).toEqual(
         '000000000000006400',
       )
-      const transaction = new Transaction(1, inputs, outputs, BigInt(0))
-      expect(transaction.toBuffer().toString('hex')).toEqual(
+      const tx = new Tx(1, inputs, outputs, BigInt(0))
+      expect(tx.toBuffer().toString('hex')).toEqual(
         '010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000',
       )
 
       // Act
-      const signature = transaction.sign(
+      const signature = tx.sign(
         inputIndex,
         privateKey,
         script,
@@ -314,7 +314,7 @@ describe('Transaction', () => {
         expectedSignatureHex,
       )
       const publicKey = new Key(privateKey).publicKey
-      const result = transaction.verify(
+      const result = tx.verify(
         inputIndex,
         publicKey,
         signature,

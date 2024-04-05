@@ -1,22 +1,22 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import TransactionBuilder from '../src/transaction-builder'
-import TransactionOutputMap from '../src/transaction-output-map'
-import TransactionOutput from '../src/transaction-output'
+import TxBuilder from '../src/tx-builder'
+import TxOutputMap from '../src/tx-output-map'
+import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import Key from '../src/key'
 import PubKeyHash from '../src/pub-key-hash'
 import PubKeyHashKeyMap from '../src/pub-key-hash-key-map'
-import TransactionSigner from '../src/transaction-signer'
+import TxSigner from '../src/tx-signer'
 import ScriptInterpreter from 'earthbucks-lib/src/script-interpreter'
 
-describe('TransactionSigner', () => {
-  let transactionBuilder: TransactionBuilder
-  let transactionSigner: TransactionSigner
-  let txOutMap: TransactionOutputMap
+describe('TxSigner', () => {
+  let txBuilder: TxBuilder
+  let txSigner: TxSigner
+  let txOutMap: TxOutputMap
   let pubKeyHashKeyMap: PubKeyHashKeyMap
 
   beforeEach(() => {
-    txOutMap = new TransactionOutputMap()
+    txOutMap = new TxOutputMap()
     pubKeyHashKeyMap = new PubKeyHashKeyMap()
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
@@ -24,36 +24,36 @@ describe('TransactionSigner', () => {
       const pubKeyHash = new PubKeyHash(key.publicKey)
       pubKeyHashKeyMap.add(key, pubKeyHash.pubKeyHash)
       const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
-      const output = new TransactionOutput(BigInt(100), script)
+      const output = new TxOutput(BigInt(100), script)
       txOutMap.add(output, Buffer.from('00'.repeat(32), 'hex'), i)
     }
 
     const changeScript = Script.fromString('')
-    transactionBuilder = new TransactionBuilder(txOutMap, changeScript)
+    txBuilder = new TxBuilder(txOutMap, changeScript)
   })
 
-  test('should sign a transaction', () => {
+  test('should sign a tx', () => {
     const key = Key.fromRandom()
     const pubKeyHash = new PubKeyHash(key.publicKey)
     const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
-    const output = new TransactionOutput(BigInt(50), script)
-    transactionBuilder.addOutput(BigInt(50), Script.fromString(''))
+    const output = new TxOutput(BigInt(50), script)
+    txBuilder.addOutput(BigInt(50), Script.fromString(''))
 
-    const transaction = transactionBuilder.build()
+    const tx = txBuilder.build()
 
-    expect(transaction.inputs.length).toBe(1)
-    expect(transaction.outputs.length).toBe(2)
-    expect(transaction.outputs[0].value).toBe(BigInt(50))
+    expect(tx.inputs.length).toBe(1)
+    expect(tx.outputs.length).toBe(2)
+    expect(tx.outputs[0].value).toBe(BigInt(50))
 
-    transactionSigner = new TransactionSigner(
-      transaction,
+    txSigner = new TxSigner(
+      tx,
       txOutMap,
       pubKeyHashKeyMap,
     )
-    const signed = transactionSigner.sign(0)
+    const signed = txSigner.sign(0)
     expect(signed).toBe(true)
 
-    const txInput = transaction.inputs[0]
+    const txInput = tx.inputs[0]
     const txOutput = txOutMap.get(txInput.inputTxId, txInput.inputTxIndex)
     const execScript = txOutput?.script as Script
     const sigBuf = txInput.script.chunks[0].buffer as Uint8Array
@@ -63,9 +63,9 @@ describe('TransactionSigner', () => {
 
     const stack = [sigBuf, pubKeyBuf]
 
-    const scriptInterpreter = ScriptInterpreter.fromOutputScriptTransaction(
+    const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       execScript,
-      transaction,
+      tx,
       0,
       stack,
       100n,
@@ -79,28 +79,28 @@ describe('TransactionSigner', () => {
     const key = Key.fromRandom()
     const pubKeyHash = new PubKeyHash(key.publicKey)
     const script = Script.fromPubKeyHashOutput(pubKeyHash.pubKeyHash)
-    const output = new TransactionOutput(BigInt(50), script)
-    transactionBuilder.addOutput(BigInt(100), Script.fromString(''))
-    transactionBuilder.addOutput(BigInt(100), Script.fromString(''))
+    const output = new TxOutput(BigInt(50), script)
+    txBuilder.addOutput(BigInt(100), Script.fromString(''))
+    txBuilder.addOutput(BigInt(100), Script.fromString(''))
 
-    const transaction = transactionBuilder.build()
+    const tx = txBuilder.build()
 
-    expect(transaction.inputs.length).toBe(2)
-    expect(transaction.outputs.length).toBe(2)
-    expect(transaction.outputs[0].value).toBe(BigInt(100))
-    expect(transaction.outputs[1].value).toBe(BigInt(100))
+    expect(tx.inputs.length).toBe(2)
+    expect(tx.outputs.length).toBe(2)
+    expect(tx.outputs[0].value).toBe(BigInt(100))
+    expect(tx.outputs[1].value).toBe(BigInt(100))
 
-    transactionSigner = new TransactionSigner(
-      transaction,
+    txSigner = new TxSigner(
+      tx,
       txOutMap,
       pubKeyHashKeyMap,
     )
-    const signed1 = transactionSigner.sign(0)
+    const signed1 = txSigner.sign(0)
     expect(signed1).toBe(true)
-    const signed2 = transactionSigner.sign(1)
+    const signed2 = txSigner.sign(1)
     expect(signed2).toBe(true)
 
-    const txInput1 = transaction.inputs[0]
+    const txInput1 = tx.inputs[0]
     const txOutput1 = txOutMap.get(txInput1.inputTxId, txInput1.inputTxIndex)
     const execScript1 = txOutput1?.script as Script
     const sigBuf1 = txInput1.script.chunks[0].buffer as Uint8Array
@@ -110,9 +110,9 @@ describe('TransactionSigner', () => {
 
     const stack1 = [sigBuf1, pubKeyBuf1]
 
-    const scriptInterpreter1 = ScriptInterpreter.fromOutputScriptTransaction(
+    const scriptInterpreter1 = ScriptInterpreter.fromOutputScriptTx(
       execScript1,
-      transaction,
+      tx,
       0,
       stack1,
       100n,
@@ -121,7 +121,7 @@ describe('TransactionSigner', () => {
     const result1 = scriptInterpreter1.evalScript()
     expect(result1).toBe(true)
 
-    const txInput2 = transaction.inputs[1]
+    const txInput2 = tx.inputs[1]
     const txOutput2 = txOutMap.get(txInput2.inputTxId, txInput2.inputTxIndex)
     const execScript2 = txOutput2?.script as Script
     const sigBuf2 = txInput2.script.chunks[0].buffer as Uint8Array
@@ -131,9 +131,9 @@ describe('TransactionSigner', () => {
 
     const stack2 = [sigBuf2, pubKeyBuf2]
 
-    const scriptInterpreter2 = ScriptInterpreter.fromOutputScriptTransaction(
+    const scriptInterpreter2 = ScriptInterpreter.fromOutputScriptTx(
       execScript2,
-      transaction,
+      tx,
       1,
       stack2,
       100n,
