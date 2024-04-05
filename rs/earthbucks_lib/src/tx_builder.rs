@@ -45,12 +45,12 @@ impl TxBuilder {
         let mut change_amount = 0;
         let mut input_amount = 0;
         for (tx_out_id, tx_out) in self.tx_out_map.map.iter() {
-            if !tx_out.script.is_pub_key_hash_output() {
+            if !tx_out.script.is_address_output() {
                 continue;
             }
             let tx_id_hash = TxOutputMap::name_to_tx_id_hash(tx_out_id);
             let output_index = TxOutputMap::name_to_output_index(tx_out_id);
-            let input_script = Script::from_pub_key_hash_input_placeholder();
+            let input_script = Script::from_address_input_placeholder();
             let tx_input = TxInput::new(tx_id_hash, output_index, input_script, 0xffffffff);
             input_amount += tx_out.value;
             self.tx.inputs.push(tx_input);
@@ -71,7 +71,7 @@ impl TxBuilder {
 mod tests {
     use super::*;
     use crate::key::Key;
-    use crate::pub_key_hash::PubKeyHash;
+    use crate::address::Address;
     use crate::script::Script;
 
     fn setup() -> TxBuilder {
@@ -80,8 +80,8 @@ mod tests {
 
         for i in 0..5 as u32 {
             let key = Key::from_random();
-            let pub_key_hash = PubKeyHash::new(key.public_key().to_vec());
-            let script = Script::from_pub_key_hash_output(pub_key_hash.pub_key_hash());
+            let address = Address::new(key.public_key().to_vec());
+            let script = Script::from_address_output(address.address());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, &vec![0; 32], i);
         }

@@ -1,24 +1,24 @@
 {
-  "pub_key_hash": [
+  "address": [
     {
       "pub_key": "0341ee98513da8509fea0c89b81aca409e56f5aaa3076fb78233850ad0e54e2628",
-      "pub_key_hash": "51544e51d07a92f41854bd2a14d0f33dcbc936b8910eb9c699b656cd89308132"
+      "address": "51544e51d07a92f41854bd2a14d0f33dcbc936b8910eb9c699b656cd89308132"
     },
     {
       "pub_key": "0377942438b3a843ae22761f8f8fe841b01b5f261b13403b722852c656b780e249",
-      "pub_key_hash": "854c0f2088e4c1540840cb8e7f5261cd9dd7c5a4e68b6508ce7e5b860ec761e4"
+      "address": "854c0f2088e4c1540840cb8e7f5261cd9dd7c5a4e68b6508ce7e5b860ec761e4"
     },
     {
       "pub_key": "03425ca223d255cc51ca8512aa0aa06cc9d1c8b68d1e0de37be7ff649ed302280a",
-      "pub_key_hash": "fc36a942b12b157c01db0247827340573ca9706e7aee962d0e0cff09f02648be"
+      "address": "fc36a942b12b157c01db0247827340573ca9706e7aee962d0e0cff09f02648be"
     },
     {
       "pub_key": "03ae3bd51d2598b4befd7e25a3571ac4d552be8d9e84b2abb539f7136c4e670e5d",
-      "pub_key_hash": "75167cf2c5f17030ef80d982c95b41d8b254aeda7fe68b63a2a0919fa423e71f"
+      "address": "75167cf2c5f17030ef80d982c95b41d8b254aeda7fe68b63a2a0919fa423e71f"
     },
     {
       "pub_key": "02b6c009b2f263bd9df09aaf8e006756a728f6475c6e99901df6f8b82fb86a637d",
-      "pub_key_hash": "15d62e816593fab37a67db1cee682810a20f8ae1f2a3a60a1abed6bac238e451"
+      "address": "15d62e816593fab37a67db1cee682810a20f8ae1f2a3a60a1abed6bac238e451"
     }
   ]
 }

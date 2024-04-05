@@ -84,7 +84,7 @@ impl Script {
         Result::Ok(script)
     }
 
-    pub fn from_pub_key_hash_output(pub_key_hash: &[u8]) -> Self {
+    pub fn from_address_output(address: &[u8]) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(OP["DUP"], None));
         script
@@ -92,7 +92,7 @@ impl Script {
             .push(ScriptChunk::new(OP["DOUBLEBLAKE3"], None));
         script
             .chunks
-            .push(ScriptChunk::from_data(pub_key_hash.to_vec()));
+            .push(ScriptChunk::from_data(address.to_vec()));
         script
             .chunks
             .push(ScriptChunk::new(OP["EQUALVERIFY"], None));
@@ -100,7 +100,7 @@ impl Script {
         script
     }
 
-    pub fn is_pub_key_hash_output(&self) -> bool {
+    pub fn is_address_output(&self) -> bool {
         self.chunks.len() == 5
             && self.chunks[0].opcode == OP["DUP"]
             && self.chunks[1].opcode == OP["DOUBLEBLAKE3"]
@@ -110,7 +110,7 @@ impl Script {
             && self.chunks[4].opcode == OP["CHECKSIG"]
     }
 
-    pub fn from_pub_key_hash_input(signature: &[u8], pub_key: &[u8]) -> Self {
+    pub fn from_address_input(signature: &[u8], pub_key: &[u8]) -> Self {
         let mut script = Self::new(Vec::new());
         script
             .chunks
@@ -119,7 +119,7 @@ impl Script {
         script
     }
 
-    pub fn is_pub_key_hash_input(&self) -> bool {
+    pub fn is_address_input(&self) -> bool {
         self.chunks.len() == 2
             && self.chunks[0].opcode == OP["PUSHDATA1"]
             && self.chunks[0].buffer.as_ref().unwrap().len() == 65
@@ -127,11 +127,11 @@ impl Script {
             && self.chunks[1].buffer.as_ref().unwrap().len() == 33
     }
 
-    pub fn from_pub_key_hash_input_placeholder() -> Self {
+    pub fn from_address_input_placeholder() -> Self {
         // 65 bytes for the signature and 33 bytes for the public key, all zeroes
         let signature = vec![0; 65];
         let pub_key = vec![0; 33];
-        Self::from_pub_key_hash_input(&signature, &pub_key)
+        Self::from_address_input(&signature, &pub_key)
     }
 
     pub fn from_multi_sig_output(m: u8, pub_keys: Vec<Vec<u8>>) -> Self {
@@ -262,7 +262,7 @@ mod tests {
     }
 
     #[test]
-    fn test_is_pub_key_hash_output() {
+    fn test_is_address_output() {
         let mut script = Script::from_string("").unwrap();
         script.chunks = vec![
             ScriptChunk::new(OP["DUP"], None),
@@ -272,10 +272,10 @@ mod tests {
             ScriptChunk::new(OP["CHECKSIG"], None),
         ];
 
-        assert!(script.is_pub_key_hash_output());
+        assert!(script.is_address_output());
 
         // Change a chunk to make the script invalid
         script.chunks[0].opcode = OP["BLAKE3"];
-        assert!(!script.is_pub_key_hash_output());
+        assert!(!script.is_address_output());
     }
 }

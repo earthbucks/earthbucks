@@ -998,7 +998,7 @@ impl ScriptInterpreter {
 mod tests {
     use super::*;
     use crate::key::Key;
-    use crate::pub_key_hash::PubKeyHash;
+    use crate::address::Address;
     use crate::tx_input::TxInput;
     use crate::tx_output::TxOutput;
     use hex;
@@ -1077,9 +1077,9 @@ mod tests {
                 hex::encode(&output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
-            let output_pub_key_hash = PubKeyHash::new(output_pub_key.to_vec());
+            let output_address = Address::new(output_pub_key.to_vec());
             let output_script =
-                Script::from_pub_key_hash_output(output_pub_key_hash.pub_key_hash());
+                Script::from_address_output(output_address.address());
             let output_amount = 100;
             let output_tx_id = vec![0; 32];
             let output_tx_index = 0;

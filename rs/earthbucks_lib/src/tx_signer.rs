@@ -1,20 +1,20 @@
-use crate::pub_key_hash_key_map::PubKeyHashKeyMap;
+use crate::address_key_map::AddressKeyMap;
 use crate::tx::Tx;
 use crate::tx_output_map::TxOutputMap;
 use crate::tx_signature::TxSignature;
 
 pub struct TxSigner {
     pub tx: Tx,
-    pub pub_key_hash_key_map: PubKeyHashKeyMap,
+    pub address_key_map: AddressKeyMap,
     pub tx_out_map: TxOutputMap,
 }
 
 impl TxSigner {
-    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, pub_key_hash_key_map: &PubKeyHashKeyMap) -> Self {
+    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, address_key_map: &AddressKeyMap) -> Self {
         Self {
             tx,
             tx_out_map: tx_out_map.clone(),
-            pub_key_hash_key_map: pub_key_hash_key_map.clone(),
+            address_key_map: address_key_map.clone(),
         }
     }
 
@@ -27,18 +27,18 @@ impl TxSigner {
             Some(tx_out) => tx_out,
             None => return false,
         };
-        if !tx_out.script.is_pub_key_hash_output() {
+        if !tx_out.script.is_address_output() {
             return false;
         }
-        let pub_key_hash = match &tx_out.script.chunks[2].buffer {
-            Some(pub_key_hash) => pub_key_hash,
+        let address = match &tx_out.script.chunks[2].buffer {
+            Some(address) => address,
             None => return false,
         };
         let input_script = &mut tx_input.script;
-        if !input_script.is_pub_key_hash_input() {
+        if !input_script.is_address_input() {
             return false;
         }
-        let key = match self.pub_key_hash_key_map.get(pub_key_hash) {
+        let key = match self.address_key_map.get(address) {
             Some(key) => key,
             None => return false,
         };
@@ -84,8 +84,8 @@ impl TxSigner {
 mod tests {
     use super::*;
     use crate::key::Key;
-    use crate::pub_key_hash::PubKeyHash;
-    use crate::pub_key_hash_key_map::PubKeyHashKeyMap;
+    use crate::address::Address;
+    use crate::address_key_map::AddressKeyMap;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
     use crate::tx_builder::TxBuilder;
@@ -95,14 +95,14 @@ mod tests {
     #[test]
     fn should_sign_a_tx() {
         let mut tx_out_map = TxOutputMap::new();
-        let mut pub_key_hash_key_map = PubKeyHashKeyMap::new();
+        let mut address_key_map = AddressKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let pub_key_hash = PubKeyHash::new(key.public_key.clone());
-            pub_key_hash_key_map.add(key.clone(), &pub_key_hash.pub_key_hash.clone());
-            let script = Script::from_pub_key_hash_output(&pub_key_hash.pub_key_hash.clone());
+            let address = Address::new(key.public_key.clone());
+            address_key_map.add(key.clone(), &address.address.clone());
+            let script = Script::from_address_output(&address.address.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -116,7 +116,7 @@ mod tests {
         assert_eq!(tx.outputs.len(), 2);
         assert_eq!(tx.outputs[0].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pub_key_hash_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
         assert_eq!(signed, true);
@@ -143,14 +143,14 @@ mod tests {
     #[test]
     fn should_sign_two_inputs() {
         let mut tx_out_map = TxOutputMap::new();
-        let mut pub_key_hash_key_map = PubKeyHashKeyMap::new();
+        let mut address_key_map = AddressKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let pub_key_hash = PubKeyHash::new(key.public_key.clone());
-            pub_key_hash_key_map.add(key.clone(), &pub_key_hash.pub_key_hash.clone());
-            let script = Script::from_pub_key_hash_output(&pub_key_hash.pub_key_hash.clone());
+            let address = Address::new(key.public_key.clone());
+            address_key_map.add(key.clone(), &address.address.clone());
+            let script = Script::from_address_output(&address.address.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -166,7 +166,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 100);
         assert_eq!(tx.outputs[1].value, 100);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pub_key_hash_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
         let signed1 = tx_signer.sign(0);
         let signed2 = tx_signer.sign(1);
         let signed_tx = tx_signer.tx;
