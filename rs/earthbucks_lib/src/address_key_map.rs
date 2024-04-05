@@ -36,8 +36,8 @@ impl AddressKeyMap {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::key::Key;
     use crate::address::Address;
+    use crate::key::Key;
     use hex;
 
     #[test]

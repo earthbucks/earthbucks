@@ -8,6 +8,22 @@ use crate::tx_signature::TxSignature;
 use crate::var_int::VarInt;
 use secp256k1::{Message, PublicKey, Secp256k1, Signature};
 
+pub struct HashCache {
+    pub prevouts_hash: Option<Vec<u8>>,
+    pub sequence_hash: Option<Vec<u8>>,
+    pub outputs_hash: Option<Vec<u8>>,
+}
+
+impl HashCache {
+    pub fn new() -> Self {
+        Self {
+            prevouts_hash: None,
+            sequence_hash: None,
+            outputs_hash: None,
+        }
+    }
+}
+
 // add clone support
 #[derive(Clone)]
 pub struct Tx {
@@ -94,7 +110,7 @@ impl Tx {
         double_blake3_hash(&data).to_vec()
     }
 
-    pub fn hash_sequence(& self) -> Vec<u8> {
+    pub fn hash_sequence(&self) -> Vec<u8> {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.sequence.to_le_bytes());
@@ -102,7 +118,7 @@ impl Tx {
         double_blake3_hash(&data).to_vec()
     }
 
-    pub fn hash_outputs(& self) -> Vec<u8> {
+    pub fn hash_outputs(&self) -> Vec<u8> {
         let mut data = Vec::new();
         for output in &self.outputs {
             data.extend(&output.to_u8_vec());
@@ -116,6 +132,7 @@ impl Tx {
         script_u8_vec: Vec<u8>,
         amount: u64,
         hash_type: u8,
+        hash_cache: &mut HashCache,
     ) -> Vec<u8> {
         const SIGHASH_ANYONECANPAY: u8 = 0x80;
         const SIGHASH_SINGLE: u8 = 0x03;
@@ -126,18 +143,36 @@ impl Tx {
         let mut outputs_hash = vec![0; 32];
 
         if hash_type & SIGHASH_ANYONECANPAY == 0 {
-            prevouts_hash = self.hash_prevouts();
+            // prevouts_hash = self.hash_prevouts();
+            if hash_cache.prevouts_hash.is_none() {
+                let hash = self.hash_prevouts();
+                hash_cache.prevouts_hash = Some(hash);
+            }
+
+            prevouts_hash = hash_cache.prevouts_hash.as_ref().unwrap().clone();
         }
 
         if hash_type & SIGHASH_ANYONECANPAY == 0
             && hash_type & 0x1f != SIGHASH_SINGLE
             && hash_type & 0x1f != SIGHASH_NONE
         {
-            sequence_hash = self.hash_sequence();
+            // sequence_hash = self.hash_sequence();
+            if hash_cache.sequence_hash.is_none() {
+                let hash = self.hash_sequence();
+                hash_cache.sequence_hash = Some(hash);
+            }
+
+            sequence_hash = hash_cache.sequence_hash.as_ref().unwrap().clone();
         }
 
         if hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
-            outputs_hash = self.hash_outputs();
+            // outputs_hash = self.hash_outputs();
+            if hash_cache.outputs_hash.is_none() {
+                let hash = self.hash_outputs();
+                hash_cache.outputs_hash = Some(hash);
+            }
+
+            outputs_hash = hash_cache.outputs_hash.as_ref().unwrap().clone();
         } else if hash_type & 0x1f == SIGHASH_SINGLE && input_index < self.outputs.len() {
             outputs_hash = double_blake3_hash(&self.outputs[input_index].to_u8_vec()).to_vec();
         }
@@ -158,18 +193,42 @@ impl Tx {
         bw.to_u8_vec()
     }
 
-    pub fn sighash(
+    pub fn sighash_no_cache(
         &mut self,
         input_index: usize,
         script_u8_vec: Vec<u8>,
         amount: u64,
         hash_type: u8,
     ) -> Vec<u8> {
-        let preimage = self.sighash_preimage(input_index, script_u8_vec, amount, hash_type);
+        let mut hash_cache = HashCache {
+            prevouts_hash: None,
+            sequence_hash: None,
+            outputs_hash: None,
+        };
+        let preimage = self.sighash_preimage(
+            input_index,
+            script_u8_vec,
+            amount,
+            hash_type,
+            &mut hash_cache,
+        );
         double_blake3_hash(&preimage).to_vec()
     }
 
-    pub fn sign(
+    pub fn sighash_with_cache(
+        &mut self,
+        input_index: usize,
+        script_u8_vec: Vec<u8>,
+        amount: u64,
+        hash_type: u8,
+        hash_cache: &mut HashCache,
+    ) -> Vec<u8> {
+        let preimage =
+            self.sighash_preimage(input_index, script_u8_vec, amount, hash_type, hash_cache);
+        double_blake3_hash(&preimage).to_vec()
+    }
+
+    pub fn sign_no_cache(
         &mut self,
         input_index: usize,
         private_key: [u8; 32],
@@ -178,15 +237,40 @@ impl Tx {
         hash_type: u8,
     ) -> TxSignature {
         let secp = Secp256k1::new();
-        let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
-            .expect("32 bytes");
+        let message =
+            Message::from_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
+                .expect("32 bytes");
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
         let sig = secp.sign(&message, &key);
         let sig = sig.serialize_compact();
         TxSignature::new(hash_type, sig.to_vec())
     }
 
-    pub fn verify(
+    pub fn sign_with_cache(
+        &mut self,
+        input_index: usize,
+        private_key: [u8; 32],
+        script: Vec<u8>,
+        amount: u64,
+        hash_type: u8,
+        hash_cache: &mut HashCache,
+    ) -> TxSignature {
+        let secp = Secp256k1::new();
+        let message = Message::from_slice(&self.sighash_with_cache(
+            input_index,
+            script,
+            amount,
+            hash_type,
+            hash_cache,
+        ))
+        .expect("32 bytes");
+        let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
+        let sig = secp.sign(&message, &key);
+        let sig = sig.serialize_compact();
+        TxSignature::new(hash_type, sig.to_vec())
+    }
+
+    pub fn verify_no_cache(
         &mut self,
         input_index: usize,
         public_key: [u8; 33],
@@ -197,8 +281,33 @@ impl Tx {
         let hash_type = signature.hash_type;
         let secp = Secp256k1::new();
         let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
-        let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
-            .expect("32 bytes");
+        let message =
+            Message::from_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
+                .expect("32 bytes");
+        let signature = Signature::from_compact(&signature.sig_buf).expect("64 bytes");
+        secp.verify(&message, &signature, &pubkey).is_ok()
+    }
+
+    pub fn verify_with_cache(
+        &mut self,
+        input_index: usize,
+        public_key: [u8; 33],
+        signature: TxSignature,
+        script: Vec<u8>,
+        amount: u64,
+        hash_type: u8,
+        hash_cache: &mut HashCache,
+    ) -> bool {
+        let secp = Secp256k1::new();
+        let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
+        let message = Message::from_slice(&self.sighash_with_cache(
+            input_index,
+            script,
+            amount,
+            hash_type,
+            hash_cache,
+        ))
+        .expect("32 bytes");
         let signature = Signature::from_compact(&signature.sig_buf).expect("64 bytes");
         secp.verify(&message, &signature, &pubkey).is_ok()
     }
@@ -392,7 +501,32 @@ mod tests {
         let script = Script::from_string("").unwrap();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let preimage = tx.sighash(0, script.to_u8_vec(), amount, hash_type);
+        let preimage = tx.sighash_no_cache(0, script.to_u8_vec(), amount, hash_type);
+
+        let expected =
+            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
+                .unwrap();
+        assert_eq!(preimage, expected);
+    }
+
+    #[test]
+    fn test_sighash_with_cache() {
+        let version = 1;
+        let inputs = vec![TxInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string("").unwrap(),
+            0xffffffff,
+        )];
+        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+
+        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+
+        let script = Script::from_string("").unwrap();
+        let amount = 1;
+        let hash_type = TxSignature::SIGHASH_ALL;
+        let hash_cache = &mut HashCache::new();
+        let preimage = tx.sighash_with_cache(0, script.to_u8_vec(), amount, hash_type, hash_cache);
 
         let expected =
             hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
@@ -426,7 +560,7 @@ mod tests {
         assert_eq!(hex::encode(&tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
 
         // Act
-        let signature = tx.sign(
+        let signature = tx.sign_no_cache(
             input_index,
             private_key.as_slice().try_into().unwrap(),
             script.clone(),
@@ -443,12 +577,72 @@ mod tests {
         let public_key = key.public_key();
 
         // Act
-        let result = tx.verify(
+        let result = tx.verify_no_cache(
             input_index,
             public_key.as_slice().try_into().unwrap(),
             signature,
             script.clone(),
             amount,
+        );
+
+        // Assert
+        assert!(result);
+    }
+
+    #[test]
+    fn sign_and_verify_with_cache() {
+        // Arrange
+        let input_index = 0;
+        let private_key =
+            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
+                .unwrap();
+        let script = vec![];
+        let amount = 100;
+        let hash_type = TxSignature::SIGHASH_ALL;
+        let inputs = vec![TxInput::new(
+            vec![0; 32],
+            0,
+            Script::from_string("").unwrap(),
+            0xffffffff,
+        )];
+        assert_eq!(
+            hex::encode(&inputs[0].to_u8_vec()),
+            "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
+        );
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        assert_eq!(hex::encode(&outputs[0].to_u8_vec()), "000000000000006400");
+        let mut tx = Tx::new(1, inputs, outputs, 0);
+        assert_eq!(hex::encode(&tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        let hash_cache_1 = &mut HashCache::new();
+
+        // Act
+        let signature = tx.sign_with_cache(
+            input_index,
+            private_key.as_slice().try_into().unwrap(),
+            script.clone(),
+            amount,
+            hash_type,
+            hash_cache_1,
+        );
+
+        // Assert
+        let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
+        assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
+
+        // Arrange
+        let key = Key::new(private_key);
+        let public_key = key.public_key();
+        let hash_cache_2 = &mut HashCache::new();
+
+        // Act
+        let result = tx.verify_with_cache(
+            input_index,
+            public_key.as_slice().try_into().unwrap(),
+            signature,
+            script.clone(),
+            amount,
+            hash_type,
+            hash_cache_2,
         );
 
         // Assert

@@ -53,7 +53,7 @@ impl TxSigner {
             Ok(array) => array,
             Err(_e) => return false,
         };
-        let sig = self.tx.sign(
+        let sig = self.tx.sign_no_cache(
             n_in,
             private_key_array,
             output_script_buf.to_vec(),
@@ -83,9 +83,9 @@ impl TxSigner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::key::Key;
     use crate::address::Address;
     use crate::address_key_map::AddressKeyMap;
+    use crate::key::Key;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
     use crate::tx_builder::TxBuilder;

@@ -43,7 +43,7 @@ export default class TxSigner {
     inputScript.chunks[1].buffer = Buffer.from(pubKey)
     const outputScriptBuf = txOut.script.toU8Vec()
     const outputAmount = txOut.value
-    const sig = this.tx.sign(
+    const sig = this.tx.signNoCache(
       nIn,
       key.privateKey,
       outputScriptBuf,

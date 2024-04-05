@@ -1,7 +1,7 @@
 #![allow(dead_code)] // TODO: remove this after launch
 
-use earthbucks_lib::key::Key;
 use earthbucks_lib::address;
+use earthbucks_lib::key::Key;
 use std::env;
 
 fn main() {
@@ -38,9 +38,7 @@ fn main() {
             }
         },
         _ => {
-            println!(
-                "Too many arguments. Please provide only one argument: --key or --address"
-            );
+            println!("Too many arguments. Please provide only one argument: --key or --address");
         }
     }
 }

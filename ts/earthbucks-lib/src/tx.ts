@@ -7,6 +7,12 @@ import { blake3Hash, doubleBlake3Hash } from './blake3'
 import { ecdsaSign, ecdsaVerify } from 'secp256k1'
 import TxSignature from './tx-signature'
 
+export class HashCache {
+  public hashPrevouts?: Uint8Array
+  public hashSequence?: Uint8Array
+  public hashOutputs?: Uint8Array
+}
+
 export default class Tx {
   public version: number
   public inputs: TxInput[]
@@ -115,6 +121,7 @@ export default class Tx {
     script: Uint8Array,
     amount: bigint,
     hashType: number,
+    hashCache: HashCache,
   ): Uint8Array {
     const SIGHASH_ANYONECANPAY = 0x80
     const SIGHASH_SINGLE = 0x03
@@ -125,7 +132,10 @@ export default class Tx {
     let outputsHash = new Uint8Array(32)
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
-      prevoutsHash = this.hashPrevouts()
+      if (!hashCache.hashPrevouts) {
+        hashCache.hashPrevouts = this.hashPrevouts()
+      }
+      prevoutsHash = hashCache.hashPrevouts
     }
 
     if (
@@ -133,14 +143,20 @@ export default class Tx {
       (hashType & 0x1f) !== SIGHASH_SINGLE &&
       (hashType & 0x1f) !== SIGHASH_NONE
     ) {
-      sequenceHash = this.hashSequence()
+      if (!hashCache.hashSequence) {
+        hashCache.hashSequence = this.hashSequence()
+      }
+      sequenceHash = hashCache.hashSequence
     }
 
     if (
       (hashType & 0x1f) !== SIGHASH_SINGLE &&
       (hashType & 0x1f) !== SIGHASH_NONE
     ) {
-      outputsHash = this.hashOutputs()
+      if (!hashCache.hashOutputs) {
+        hashCache.hashOutputs = this.hashOutputs()
+      }
+      outputsHash = hashCache.hashOutputs
     } else if (
       (hashType & 0x1f) === SIGHASH_SINGLE &&
       inputIndex < this.outputs.length
@@ -164,31 +180,76 @@ export default class Tx {
     return writer.toU8Vec()
   }
 
-  sighash(
+  sighashNoCache(
     inputIndex: number,
     script: Uint8Array,
     amount: bigint,
     hashType: number,
   ): Uint8Array {
-    const preimage = this.sighashPreimage(inputIndex, script, amount, hashType)
+    const hashCache = new HashCache()
+    const preimage = this.sighashPreimage(
+      inputIndex,
+      script,
+      amount,
+      hashType,
+      hashCache,
+    )
     let hash = doubleBlake3Hash(preimage)
     return hash
   }
 
-  sign(
+  sighashWithCache(
+    inputIndex: number,
+    script: Uint8Array,
+    amount: bigint,
+    hashType: number,
+    hashCache: HashCache,
+  ): Uint8Array {
+    const preimage = this.sighashPreimage(
+      inputIndex,
+      script,
+      amount,
+      hashType,
+      hashCache,
+    )
+    let hash = doubleBlake3Hash(preimage)
+    return hash
+  }
+
+  signNoCache(
     inputIndex: number,
     privateKey: Uint8Array,
     script: Uint8Array,
     amount: bigint,
     hashType: number,
   ): TxSignature {
-    const hash = this.sighash(inputIndex, script, amount, hashType)
+    const hash = this.sighashNoCache(inputIndex, script, amount, hashType)
     let sigBuf = ecdsaSign(hash, privateKey).signature
     const sig = new TxSignature(hashType, sigBuf)
     return sig
   }
 
-  verify(
+  signWithCache(
+    inputIndex: number,
+    privateKey: Uint8Array,
+    script: Uint8Array,
+    amount: bigint,
+    hashType: number,
+    hashCache: HashCache,
+  ): TxSignature {
+    const hash = this.sighashWithCache(
+      inputIndex,
+      script,
+      amount,
+      hashType,
+      hashCache,
+    )
+    let sigBuf = ecdsaSign(hash, privateKey).signature
+    const sig = new TxSignature(hashType, sigBuf)
+    return sig
+  }
+
+  verifyNoCache(
     inputIndex: number,
     publicKey: Uint8Array,
     sig: TxSignature,
@@ -196,7 +257,26 @@ export default class Tx {
     amount: bigint,
   ): boolean {
     const hashType = sig.hashType
-    const hash = this.sighash(inputIndex, script, amount, hashType)
+    const hash = this.sighashNoCache(inputIndex, script, amount, hashType)
+    return ecdsaVerify(sig.sigBuf, hash, publicKey)
+  }
+
+  verifyWithCache(
+    inputIndex: number,
+    publicKey: Uint8Array,
+    sig: TxSignature,
+    script: Uint8Array,
+    amount: bigint,
+    hashCache: HashCache,
+  ): boolean {
+    const hashType = sig.hashType
+    const hash = this.sighashWithCache(
+      inputIndex,
+      script,
+      amount,
+      hashType,
+      hashCache,
+    )
     return ecdsaVerify(sig.sigBuf, hash, publicKey)
   }
 }

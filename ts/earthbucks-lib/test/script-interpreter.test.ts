@@ -117,7 +117,7 @@ describe('ScriptInterpreter', () => {
         BigInt(0),
       )
 
-      const sig = tx.sign(
+      const sig = tx.signNoCache(
         0,
         outputPrivKeyU8Vec,
         outputScript.toU8Vec(),
@@ -178,7 +178,7 @@ describe('ScriptInterpreter', () => {
         .slice(0, 3)
         .map((privKey) =>
           tx
-            .sign(
+            .signNoCache(
               0,
               privKey,
               outputScript.toU8Vec(),

@@ -797,7 +797,7 @@ export default class ScriptInterpreter {
 
           let execScriptBuf = new Uint8Array(this.script.toU8Vec())
 
-          const success = this.tx.verify(
+          const success = this.tx.verifyNoCache(
             this.nIn,
             pubKeyBuf,
             signature,
@@ -859,7 +859,7 @@ export default class ScriptInterpreter {
           let matchedSigs = 0n
           for (let i = 0; i < nSigs; i++) {
             for (let j = 0; j < pubKeys.length; j++) {
-              const success = this.tx.verify(
+              const success = this.tx.verifyNoCache(
                 this.nIn,
                 pubKeys[j],
                 TxSignature.fromU8Vec(sigs[i]),

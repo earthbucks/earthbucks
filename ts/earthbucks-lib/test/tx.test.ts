@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
-import Tx from '../src/tx'
+import Tx, { HashCache } from '../src/tx'
 import TxInput from '../src/tx-input'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
@@ -184,11 +184,41 @@ describe('Tx', () => {
 
       const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()
-      const result = tx.sighash(
+      const result = tx.sighashNoCache(
         0,
         scriptU8Vec,
         BigInt(1),
         TxSignature.SIGHASH_ALL,
+      )
+
+      expect(result).toBeInstanceOf(Uint8Array)
+
+      expect(Buffer.from(result).toString('hex')).toEqual(
+        '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
+      )
+    })
+
+    test('sighash with cache', () => {
+      const version = 1
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
+      ]
+      const outputs: TxOutput[] = [
+        new TxOutput(BigInt(100), Script.fromString('')),
+      ]
+      const locktime = BigInt(0)
+
+      const tx = new Tx(version, inputs, outputs, locktime)
+
+      const script = Script.fromString('')
+      const scriptU8Vec = script.toU8Vec()
+      const hashCache = new HashCache()
+      const result = tx.sighashWithCache(
+        0,
+        scriptU8Vec,
+        BigInt(1),
+        TxSignature.SIGHASH_ALL,
+        hashCache,
       )
 
       expect(result).toBeInstanceOf(Uint8Array)
@@ -220,7 +250,7 @@ describe('Tx', () => {
         const tx = new Tx(1, inputs, outputs, BigInt(0))
 
         // Act
-        const signature = tx.sign(
+        const signature = tx.signNoCache(
           inputIndex,
           privateKey,
           script,
@@ -235,56 +265,122 @@ describe('Tx', () => {
           expectedSignatureHex,
         )
       })
-    })
 
-    it('should verify a deterministic signature', () => {
-      // Arrange
-      const inputIndex = 0
-      const privateKey = new Uint8Array(
-        Buffer.from(
-          '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
-          'hex',
-        ),
-      )
-      const script = new Uint8Array([])
-      const amount = BigInt(100)
-      const hashType = TxSignature.SIGHASH_ALL
-      const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
-      ]
-      // expect tx output to equal hext
-      expect(inputs[0].toBuffer().toString('hex')).toEqual(
-        '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
-      )
-      const outputs: TxOutput[] = [
-        new TxOutput(BigInt(100), Script.fromString('')),
-      ]
-      expect(outputs[0].toBuffer().toString('hex')).toEqual(
-        '000000000000006400',
-      )
-      const tx = new Tx(1, inputs, outputs, BigInt(0))
-      expect(tx.toBuffer().toString('hex')).toEqual(
-        '010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000',
-      )
+      it('should verify a deterministic signature', () => {
+        // Arrange
+        const inputIndex = 0
+        const privateKey = new Uint8Array(
+          Buffer.from(
+            '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
+            'hex',
+          ),
+        )
+        const script = new Uint8Array([])
+        const amount = BigInt(100)
+        const hashType = TxSignature.SIGHASH_ALL
+        const inputs: TxInput[] = [
+          new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
+        ]
+        // expect tx output to equal hext
+        expect(inputs[0].toBuffer().toString('hex')).toEqual(
+          '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
+        )
+        const outputs: TxOutput[] = [
+          new TxOutput(BigInt(100), Script.fromString('')),
+        ]
+        expect(outputs[0].toBuffer().toString('hex')).toEqual(
+          '000000000000006400',
+        )
+        const tx = new Tx(1, inputs, outputs, BigInt(0))
+        expect(tx.toBuffer().toString('hex')).toEqual(
+          '010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000',
+        )
 
-      // Act
-      const signature = tx.sign(
-        inputIndex,
-        privateKey,
-        script,
-        amount,
-        hashType,
-      )
+        // Act
+        const signature = tx.signNoCache(
+          inputIndex,
+          privateKey,
+          script,
+          amount,
+          hashType,
+        )
 
-      // Assert
-      const expectedSignatureHex =
-        '0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3' // your expected signature in hex
-      expect(Buffer.from(signature.toU8Vec()).toString('hex')).toEqual(
-        expectedSignatureHex,
-      )
-      const publicKey = new Key(privateKey).publicKey
-      const result = tx.verify(inputIndex, publicKey, signature, script, amount)
-      expect(result).toBe(true)
+        // Assert
+        const expectedSignatureHex =
+          '0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3' // your expected signature in hex
+        expect(Buffer.from(signature.toU8Vec()).toString('hex')).toEqual(
+          expectedSignatureHex,
+        )
+        const publicKey = new Key(privateKey).publicKey
+        const result = tx.verifyNoCache(
+          inputIndex,
+          publicKey,
+          signature,
+          script,
+          amount,
+        )
+        expect(result).toBe(true)
+      })
+
+      it('should verify a deterministic signature with hash cache', () => {
+        // Arrange
+        const inputIndex = 0
+        const privateKey = new Uint8Array(
+          Buffer.from(
+            '7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad',
+            'hex',
+          ),
+        )
+        const script = new Uint8Array([])
+        const amount = BigInt(100)
+        const hashType = TxSignature.SIGHASH_ALL
+        const inputs: TxInput[] = [
+          new TxInput(Buffer.alloc(32), 0, Script.fromString(''), 0xffffffff),
+        ]
+        // expect tx output to equal hext
+        expect(inputs[0].toBuffer().toString('hex')).toEqual(
+          '00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff',
+        )
+        const outputs: TxOutput[] = [
+          new TxOutput(BigInt(100), Script.fromString('')),
+        ]
+        expect(outputs[0].toBuffer().toString('hex')).toEqual(
+          '000000000000006400',
+        )
+        const tx = new Tx(1, inputs, outputs, BigInt(0))
+        expect(tx.toBuffer().toString('hex')).toEqual(
+          '010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000',
+        )
+        const hashCache1 = new HashCache()
+
+        // Act
+        const signature = tx.signWithCache(
+          inputIndex,
+          privateKey,
+          script,
+          amount,
+          hashType,
+          hashCache1,
+        )
+
+        // Assert
+        const expectedSignatureHex =
+          '0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3' // your expected signature in hex
+        expect(Buffer.from(signature.toU8Vec()).toString('hex')).toEqual(
+          expectedSignatureHex,
+        )
+        const publicKey = new Key(privateKey).publicKey
+        const hashCache2 = new HashCache()
+        const result = tx.verifyWithCache(
+          inputIndex,
+          publicKey,
+          signature,
+          script,
+          amount,
+          hashCache2,
+        )
+        expect(result).toBe(true)
+      })
     })
   })
 })

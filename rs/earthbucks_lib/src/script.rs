@@ -90,9 +90,7 @@ impl Script {
         script
             .chunks
             .push(ScriptChunk::new(OP["DOUBLEBLAKE3"], None));
-        script
-            .chunks
-            .push(ScriptChunk::from_data(address.to_vec()));
+        script.chunks.push(ScriptChunk::from_data(address.to_vec()));
         script
             .chunks
             .push(ScriptChunk::new(OP["EQUALVERIFY"], None));

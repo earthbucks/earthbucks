@@ -23,8 +23,7 @@ mod tests {
 
         // Convert hex to bytes
         let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_address_vec =
-            hex::decode(expected_address_hex).expect("Decoding failed");
+        let expected_address_vec = hex::decode(expected_address_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_address = [0; 32];
@@ -51,8 +50,7 @@ mod tests {
 
         // Convert hex to bytes
         let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_address_vec =
-            hex::decode(expected_address_hex).expect("Decoding failed");
+        let expected_address_vec = hex::decode(expected_address_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_address = [0; 32];

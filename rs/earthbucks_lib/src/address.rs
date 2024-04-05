@@ -34,8 +34,7 @@ mod tests {
 
         // Convert hex to bytes
         let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_address_vec =
-            hex::decode(expected_address_hex).expect("Decoding failed");
+        let expected_address_vec = hex::decode(expected_address_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_address = [0; 32];
@@ -65,14 +64,12 @@ mod tests {
         let data = fs::read_to_string("../../json/address.json").expect("Unable to read file");
 
         // Parse the JSON data
-        let address_data: AddressData =
-            serde_json::from_str(&data).expect("Unable to parse JSON");
+        let address_data: AddressData = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in address_data.address {
             // Convert hex to bytes
             let pub_key = hex::decode(&pair.pub_key).expect("Decoding failed");
-            let expected_address_vec =
-                hex::decode(&pair.address).expect("Decoding failed");
+            let expected_address_vec = hex::decode(&pair.address).expect("Decoding failed");
 
             // Convert Vec<u8> to [u8; 32]
             let mut expected_address = [0; 32];
