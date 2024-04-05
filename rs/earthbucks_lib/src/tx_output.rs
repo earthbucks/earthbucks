@@ -4,12 +4,12 @@ use crate::script::Script;
 use crate::var_int::VarInt;
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct TransactionOutput {
+pub struct TxOutput {
     pub value: u64,
     pub script: Script,
 }
 
-impl TransactionOutput {
+impl TxOutput {
     pub fn new(value: u64, script: Script) -> Self {
         Self { value, script }
     }
@@ -55,17 +55,17 @@ mod tests {
     use crate::script::Script;
 
     #[test]
-    fn test_transaction_output_from_u8_vec_and_to_u8_vec() {
+    fn test_tx_output_from_u8_vec_and_to_u8_vec() {
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
-        let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec());
+        let tx_output = TxOutput::new(value, script);
+        let result = TxOutput::from_u8_vec(tx_output.to_u8_vec());
         let result = match result {
-            Ok(transaction_output) => transaction_output,
+            Ok(tx_output) => tx_output,
             Err(e) => panic!("{}", e),
         };
         assert_eq!(
-            hex::encode(transaction_output.to_u8_vec()),
+            hex::encode(tx_output.to_u8_vec()),
             hex::encode(result.to_u8_vec())
         );
     }
@@ -75,10 +75,10 @@ mod tests {
         let data = vec![0u8; 0xffff];
         let value = 100;
         let script = Script::from_string(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
-        let result = TransactionOutput::from_u8_vec(transaction_output.to_u8_vec()).unwrap();
+        let tx_output = TxOutput::new(value, script);
+        let result = TxOutput::from_u8_vec(tx_output.to_u8_vec()).unwrap();
         assert_eq!(
-            hex::encode(transaction_output.to_u8_vec()),
+            hex::encode(tx_output.to_u8_vec()),
             hex::encode(result.to_u8_vec())
         );
     }
@@ -87,13 +87,11 @@ mod tests {
     fn test_buffer_reader() {
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
-        let result = TransactionOutput::from_buffer_reader(&mut BufferReader::new(
-            transaction_output.to_u8_vec(),
-        ))
-        .unwrap();
+        let tx_output = TxOutput::new(value, script);
+        let result =
+            TxOutput::from_buffer_reader(&mut BufferReader::new(tx_output.to_u8_vec())).unwrap();
         assert_eq!(
-            hex::encode(transaction_output.to_u8_vec()),
+            hex::encode(tx_output.to_u8_vec()),
             hex::encode(result.to_u8_vec())
         );
     }

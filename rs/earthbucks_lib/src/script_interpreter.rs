@@ -2,14 +2,14 @@ use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
-use crate::transaction::Transaction;
-use crate::transaction_signature::TransactionSignature;
+use crate::tx::Tx;
+use crate::tx_signature::TxSignature;
 use num_bigint::{BigInt, ToBigInt};
 use num_traits::ToPrimitive;
 
 pub struct ScriptInterpreter {
     pub script: Script,
-    pub transaction: Transaction,
+    pub tx: Tx,
     pub n_in: usize,
     pub stack: Vec<Vec<u8>>,
     pub alt_stack: Vec<Vec<u8>>,
@@ -25,7 +25,7 @@ pub struct ScriptInterpreter {
 impl ScriptInterpreter {
     pub fn new(
         script: Script,
-        transaction: Transaction,
+        tx: Tx,
         n_in: usize,
         stack: Vec<Vec<u8>>,
         alt_stack: Vec<Vec<u8>>,
@@ -39,7 +39,7 @@ impl ScriptInterpreter {
     ) -> Self {
         Self {
             script,
-            transaction,
+            tx,
             n_in,
             stack,
             alt_stack,
@@ -53,10 +53,10 @@ impl ScriptInterpreter {
         }
     }
 
-    pub fn from_script_transaction(script: Script, transaction: Transaction, n_in: usize) -> Self {
+    pub fn from_script_tx(script: Script, tx: Tx, n_in: usize) -> Self {
         Self::new(
             script,
-            transaction,
+            tx,
             n_in,
             Vec::new(),
             Vec::new(),
@@ -70,16 +70,16 @@ impl ScriptInterpreter {
         )
     }
 
-    pub fn from_output_script_transaction(
+    pub fn from_output_script_tx(
         script: Script,
-        transaction: Transaction,
+        tx: Tx,
         n_in: usize,
         stack: Vec<Vec<u8>>,
         value: u64,
     ) -> Self {
         Self::new(
             script,
-            transaction,
+            tx,
             n_in,
             stack,
             Vec::new(),
@@ -875,7 +875,7 @@ impl ScriptInterpreter {
                         self.err_str = "invalid signature length".to_string();
                         break;
                     }
-                    let signature = TransactionSignature::from_u8_vec(&sig_buf);
+                    let signature = TxSignature::from_u8_vec(&sig_buf);
 
                     let exec_script_buf = self.script.to_u8_vec();
 
@@ -884,7 +884,7 @@ impl ScriptInterpreter {
                             panic!("Expected a Vec of length {} but it was {}", 33, v.len())
                         });
 
-                    let success = self.transaction.verify(
+                    let success = self.tx.verify(
                         self.n_in,
                         pub_key_arr,
                         signature,
@@ -943,10 +943,10 @@ impl ScriptInterpreter {
                     let mut matched_sigs = 0;
                     for i in 0..n_sigs.to_usize().unwrap() {
                         for j in 0..pub_keys.len() {
-                            let success = self.transaction.verify(
+                            let success = self.tx.verify(
                                 self.n_in,
                                 pub_keys[j][..33].try_into().unwrap(),
-                                TransactionSignature::from_u8_vec(&sigs[i].clone()),
+                                TxSignature::from_u8_vec(&sigs[i].clone()),
                                 exec_script_buf.clone(),
                                 self.value,
                             );
@@ -999,8 +999,8 @@ mod tests {
     use super::*;
     use crate::key::Key;
     use crate::pub_key_hash::PubKeyHash;
-    use crate::transaction_input::TransactionInput;
-    use crate::transaction_output::TransactionOutput;
+    use crate::tx_input::TxInput;
+    use crate::tx_output::TxOutput;
     use hex;
 
     mod sanity_tests {
@@ -1008,10 +1008,9 @@ mod tests {
 
         #[test]
         fn test_zero() {
-            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0").unwrap();
-            let mut script_interpreter =
-                ScriptInterpreter::from_script_transaction(script, transaction, 0);
+            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
             assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "00");
@@ -1019,10 +1018,9 @@ mod tests {
 
         #[test]
         fn test_pushdata1() {
-            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("0xff").unwrap();
-            let mut script_interpreter =
-                ScriptInterpreter::from_script_transaction(script, transaction, 0);
+            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1031,10 +1029,9 @@ mod tests {
 
         #[test]
         fn test_pushdata2() {
-            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
-            let mut script_interpreter =
-                ScriptInterpreter::from_script_transaction(script, transaction, 0);
+            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1046,10 +1043,9 @@ mod tests {
 
         #[test]
         fn test_pushdata4() {
-            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
-            let mut script_interpreter =
-                ScriptInterpreter::from_script_transaction(script, transaction, 0);
+            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1061,10 +1057,9 @@ mod tests {
 
         #[test]
         fn test_1negate() {
-            let transaction = Transaction::new(0, Vec::new(), Vec::new(), 0);
+            let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
             let script = Script::from_string("1NEGATE").unwrap();
-            let mut script_interpreter =
-                ScriptInterpreter::from_script_transaction(script, transaction, 0);
+            let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
@@ -1089,15 +1084,15 @@ mod tests {
             let output_tx_id = vec![0; 32];
             let output_tx_index = 0;
 
-            let mut transaction = Transaction::new(
+            let mut tx = Tx::new(
                 1,
-                vec![TransactionInput::new(
+                vec![TxInput::new(
                     output_tx_id.clone(),
                     output_tx_index,
                     Script::from_string("").unwrap(),
                     0xffffffff,
                 )],
-                vec![TransactionOutput::new(output_amount, output_script.clone())],
+                vec![TxOutput::new(output_amount, output_script.clone())],
                 0,
             );
 
@@ -1106,19 +1101,19 @@ mod tests {
                     panic!("Expected a Vec of length {} but it was {}", 32, v.len())
                 });
 
-            let sig = transaction.sign(
+            let sig = tx.sign(
                 0,
                 output_priv_key_arr,
                 output_script.to_u8_vec(),
                 output_amount,
-                TransactionSignature::SIGHASH_ALL,
+                TxSignature::SIGHASH_ALL,
             );
 
             let stack = vec![sig.to_u8_vec(), output_pub_key.to_vec()];
 
-            let mut script_interpreter = ScriptInterpreter::from_output_script_transaction(
+            let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
                 output_script,
-                transaction,
+                tx,
                 0,
                 stack,
                 output_amount,
@@ -1154,37 +1149,36 @@ mod tests {
             // Create a multisig output script
             let output_script = Script::from_multi_sig_output(3, pub_keys);
 
-            // Other transaction parameters
+            // Other tx parameters
             let output_amount = 100;
             let output_tx_id = vec![0; 32];
             let output_tx_index = 0;
 
-            // Create a transaction
-            let mut transaction = Transaction::new(
+            // Create a tx
+            let mut tx = Tx::new(
                 1,
-                vec![TransactionInput::new(
+                vec![TxInput::new(
                     output_tx_id.clone(),
                     output_tx_index,
                     Script::from_string("").unwrap(),
                     0xffffffff,
                 )],
-                vec![TransactionOutput::new(output_amount, output_script.clone())],
+                vec![TxOutput::new(output_amount, output_script.clone())],
                 0,
             );
 
-            // Sign the transaction with the first 3 private keys
+            // Sign the tx with the first 3 private keys
             let sigs: Vec<Vec<u8>> = priv_keys_u8_vec[0..3]
                 .iter()
                 .map(|priv_key| {
-                    transaction
-                        .sign(
-                            0,
-                            priv_key[..32].try_into().unwrap(),
-                            output_script.to_u8_vec(),
-                            output_amount,
-                            TransactionSignature::SIGHASH_ALL,
-                        )
-                        .to_u8_vec()
+                    tx.sign(
+                        0,
+                        priv_key[..32].try_into().unwrap(),
+                        output_script.to_u8_vec(),
+                        output_amount,
+                        TxSignature::SIGHASH_ALL,
+                    )
+                    .to_u8_vec()
                 })
                 .collect();
 
@@ -1192,9 +1186,9 @@ mod tests {
             let stack = sigs.clone();
 
             // Create a script interpreter
-            let mut script_interpreter = ScriptInterpreter::from_output_script_transaction(
+            let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
                 output_script,
-                transaction,
+                tx,
                 0,
                 stack,
                 output_amount,
@@ -1240,22 +1234,18 @@ mod tests {
                 // cargo test script_interpreter -- --nocapture
 
                 let script = Script::from_string(&test_script.script).unwrap();
-                let transaction = Transaction::new(
+                let tx = Tx::new(
                     1,
-                    vec![TransactionInput::new(
+                    vec![TxInput::new(
                         vec![],
                         0,
                         Script::from_string("").unwrap(),
                         0xffffffff,
                     )],
-                    vec![TransactionOutput::new(
-                        0 as u64,
-                        Script::from_string("").unwrap(),
-                    )],
+                    vec![TxOutput::new(0 as u64, Script::from_string("").unwrap())],
                     0 as u64,
                 );
-                let mut script_interpreter =
-                    ScriptInterpreter::from_script_transaction(script, transaction, 0);
+                let mut script_interpreter = ScriptInterpreter::from_script_tx(script, tx, 0);
                 script_interpreter.eval_script();
                 assert_eq!(
                     script_interpreter.err_str, test_script.expected_error,

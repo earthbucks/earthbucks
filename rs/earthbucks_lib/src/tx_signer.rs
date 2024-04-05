@@ -1,32 +1,28 @@
 use crate::pub_key_hash_key_map::PubKeyHashKeyMap;
-use crate::transaction::Transaction;
-use crate::transaction_output_map::TransactionOutputMap;
-use crate::transaction_signature::TransactionSignature;
+use crate::tx::Tx;
+use crate::tx_output_map::TxOutputMap;
+use crate::tx_signature::TxSignature;
 
-pub struct TransactionSigner {
-    pub transaction: Transaction,
+pub struct TxSigner {
+    pub tx: Tx,
     pub pub_key_hash_key_map: PubKeyHashKeyMap,
-    pub tx_out_map: TransactionOutputMap,
+    pub tx_out_map: TxOutputMap,
 }
 
-impl TransactionSigner {
-    pub fn new(
-        transaction: Transaction,
-        tx_out_map: &TransactionOutputMap,
-        pub_key_hash_key_map: &PubKeyHashKeyMap,
-    ) -> Self {
+impl TxSigner {
+    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, pub_key_hash_key_map: &PubKeyHashKeyMap) -> Self {
         Self {
-            transaction,
+            tx,
             tx_out_map: tx_out_map.clone(),
             pub_key_hash_key_map: pub_key_hash_key_map.clone(),
         }
     }
 
     pub fn sign(&mut self, n_in: usize) -> bool {
-        let mut transaction_clone = self.transaction.clone();
-        let transaction_input = &mut transaction_clone.inputs[n_in];
-        let tx_out_hash = &transaction_input.input_tx_id;
-        let output_index = transaction_input.input_tx_index;
+        let mut tx_clone = self.tx.clone();
+        let tx_input = &mut tx_clone.inputs[n_in];
+        let tx_out_hash = &tx_input.input_tx_id;
+        let output_index = tx_input.input_tx_index;
         let tx_out = match self.tx_out_map.get(&tx_out_hash, output_index) {
             Some(tx_out) => tx_out,
             None => return false,
@@ -38,7 +34,7 @@ impl TransactionSigner {
             Some(pub_key_hash) => pub_key_hash,
             None => return false,
         };
-        let input_script = &mut transaction_input.script;
+        let input_script = &mut tx_input.script;
         if !input_script.is_pub_key_hash_input() {
             return false;
         }
@@ -57,25 +53,25 @@ impl TransactionSigner {
             Ok(array) => array,
             Err(_e) => return false,
         };
-        let sig = self.transaction.sign(
+        let sig = self.tx.sign(
             n_in,
             private_key_array,
             output_script_buf.to_vec(),
             output_amount,
-            TransactionSignature::SIGHASH_ALL,
+            TxSignature::SIGHASH_ALL,
         );
         let sig_buf = sig.to_u8_vec();
         if sig_buf.len() != 65 {
             return false;
         }
         input_script.chunks[0].buffer = Some(sig_buf);
-        transaction_input.script = input_script.clone();
-        self.transaction = transaction_clone;
+        tx_input.script = input_script.clone();
+        self.tx = tx_clone;
         true
     }
 
     pub fn sign_all(&mut self) -> bool {
-        for i in 0..self.transaction.inputs.len() {
+        for i in 0..self.tx.inputs.len() {
             if !self.sign(i) {
                 return false;
             }
@@ -92,13 +88,13 @@ mod tests {
     use crate::pub_key_hash_key_map::PubKeyHashKeyMap;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
-    use crate::transaction_builder::TransactionBuilder;
-    use crate::transaction_output::TransactionOutput;
-    use crate::transaction_output_map::TransactionOutputMap;
+    use crate::tx_builder::TxBuilder;
+    use crate::tx_output::TxOutput;
+    use crate::tx_output_map::TxOutputMap;
 
     #[test]
-    fn should_sign_a_transaction() {
-        let mut tx_out_map = TransactionOutputMap::new();
+    fn should_sign_a_tx() {
+        let mut tx_out_map = TxOutputMap::new();
         let mut pub_key_hash_key_map = PubKeyHashKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -107,27 +103,25 @@ mod tests {
             let pub_key_hash = PubKeyHash::new(key.public_key.clone());
             pub_key_hash_key_map.add(key.clone(), &pub_key_hash.pub_key_hash.clone());
             let script = Script::from_pub_key_hash_output(&pub_key_hash.pub_key_hash.clone());
-            let output = TransactionOutput::new(100, script);
+            let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
-        let mut transaction_builder =
-            TransactionBuilder::new(&tx_out_map, Script::from_string("").unwrap());
-        transaction_builder.add_output(50, Script::from_string("").unwrap());
+        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_string("").unwrap());
+        tx_builder.add_output(50, Script::from_string("").unwrap());
 
-        let transaction = transaction_builder.build();
+        let tx = tx_builder.build();
 
-        assert_eq!(transaction.inputs.len(), 1);
-        assert_eq!(transaction.outputs.len(), 2);
-        assert_eq!(transaction.outputs[0].value, 50);
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 50);
 
-        let mut transaction_signer =
-            TransactionSigner::new(transaction.clone(), &tx_out_map, &pub_key_hash_key_map);
-        let signed = transaction_signer.sign(0);
-        let signed_transaction = transaction_signer.transaction;
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pub_key_hash_key_map);
+        let signed = tx_signer.sign(0);
+        let signed_tx = tx_signer.tx;
         assert_eq!(signed, true);
 
-        let tx_input = &signed_transaction.inputs[0];
+        let tx_input = &signed_tx.inputs[0];
         let tx_output = tx_out_map
             .get(&tx_input.input_tx_id.clone(), tx_input.input_tx_index)
             .unwrap();
@@ -139,13 +133,8 @@ mod tests {
 
         let stack = vec![sig_buf, pub_key_buf];
 
-        let mut script_interpreter = ScriptInterpreter::from_output_script_transaction(
-            exec_script,
-            signed_transaction,
-            0,
-            stack,
-            100,
-        );
+        let mut script_interpreter =
+            ScriptInterpreter::from_output_script_tx(exec_script, signed_tx, 0, stack, 100);
 
         let result = script_interpreter.eval_script();
         assert_eq!(result, true);
@@ -153,7 +142,7 @@ mod tests {
 
     #[test]
     fn should_sign_two_inputs() {
-        let mut tx_out_map = TransactionOutputMap::new();
+        let mut tx_out_map = TxOutputMap::new();
         let mut pub_key_hash_key_map = PubKeyHashKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -162,31 +151,29 @@ mod tests {
             let pub_key_hash = PubKeyHash::new(key.public_key.clone());
             pub_key_hash_key_map.add(key.clone(), &pub_key_hash.pub_key_hash.clone());
             let script = Script::from_pub_key_hash_output(&pub_key_hash.pub_key_hash.clone());
-            let output = TransactionOutput::new(100, script);
+            let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
-        let mut transaction_builder =
-            TransactionBuilder::new(&tx_out_map, Script::from_string("").unwrap());
-        transaction_builder.add_output(100, Script::from_string("").unwrap());
-        transaction_builder.add_output(100, Script::from_string("").unwrap());
+        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_string("").unwrap());
+        tx_builder.add_output(100, Script::from_string("").unwrap());
+        tx_builder.add_output(100, Script::from_string("").unwrap());
 
-        let transaction = transaction_builder.build();
+        let tx = tx_builder.build();
 
-        assert_eq!(transaction.inputs.len(), 2);
-        assert_eq!(transaction.outputs.len(), 2);
-        assert_eq!(transaction.outputs[0].value, 100);
-        assert_eq!(transaction.outputs[1].value, 100);
+        assert_eq!(tx.inputs.len(), 2);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 100);
+        assert_eq!(tx.outputs[1].value, 100);
 
-        let mut transaction_signer =
-            TransactionSigner::new(transaction.clone(), &tx_out_map, &pub_key_hash_key_map);
-        let signed1 = transaction_signer.sign(0);
-        let signed2 = transaction_signer.sign(1);
-        let signed_transaction = transaction_signer.transaction;
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pub_key_hash_key_map);
+        let signed1 = tx_signer.sign(0);
+        let signed2 = tx_signer.sign(1);
+        let signed_tx = tx_signer.tx;
         assert_eq!(signed1, true);
         assert_eq!(signed2, true);
 
-        let tx_input_1 = &signed_transaction.inputs[0];
+        let tx_input_1 = &signed_tx.inputs[0];
         let tx_output_1 = tx_out_map
             .get(&tx_input_1.input_tx_id.clone(), tx_input_1.input_tx_index)
             .unwrap();
@@ -198,9 +185,9 @@ mod tests {
 
         let stack_1 = vec![sig_buf_1, pub_key_buf_1];
 
-        let mut script_interpreter_1 = ScriptInterpreter::from_output_script_transaction(
+        let mut script_interpreter_1 = ScriptInterpreter::from_output_script_tx(
             exec_script_1,
-            signed_transaction.clone(),
+            signed_tx.clone(),
             0,
             stack_1,
             100,
@@ -209,7 +196,7 @@ mod tests {
         let result_1 = script_interpreter_1.eval_script();
         assert_eq!(result_1, true);
 
-        let tx_input_2 = &signed_transaction.inputs[1];
+        let tx_input_2 = &signed_tx.inputs[1];
         let tx_output_2 = tx_out_map
             .get(&tx_input_2.input_tx_id.clone(), tx_input_2.input_tx_index)
             .unwrap();
@@ -221,9 +208,9 @@ mod tests {
 
         let stack_2 = vec![sig_buf_2, pub_key_buf_2];
 
-        let mut script_interpreter_2 = ScriptInterpreter::from_output_script_transaction(
+        let mut script_interpreter_2 = ScriptInterpreter::from_output_script_tx(
             exec_script_2,
-            signed_transaction.clone(),
+            signed_tx.clone(),
             1,
             stack_2,
             100,

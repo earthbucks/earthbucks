@@ -1,9 +1,9 @@
-pub struct TransactionSignature {
+pub struct TxSignature {
     pub hash_type: u8,
     pub sig_buf: Vec<u8>,
 }
 
-impl TransactionSignature {
+impl TxSignature {
     pub const SIGHASH_ALL: u8 = 0x00000001;
     pub const SIGHASH_NONE: u8 = 0x00000002;
     pub const SIGHASH_SINGLE: u8 = 0x00000003;

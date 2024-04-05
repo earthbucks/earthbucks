@@ -2,31 +2,26 @@ use crate::blake3::blake3_hash;
 use crate::blake3::double_blake3_hash;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
-use crate::transaction_input::TransactionInput;
-use crate::transaction_output::TransactionOutput;
-use crate::transaction_signature::TransactionSignature;
+use crate::tx_input::TxInput;
+use crate::tx_output::TxOutput;
+use crate::tx_signature::TxSignature;
 use crate::var_int::VarInt;
 use secp256k1::{Message, PublicKey, Secp256k1, Signature};
 
 // add clone support
 #[derive(Clone)]
-pub struct Transaction {
+pub struct Tx {
     pub version: u8,
-    pub inputs: Vec<TransactionInput>,
-    pub outputs: Vec<TransactionOutput>,
+    pub inputs: Vec<TxInput>,
+    pub outputs: Vec<TxOutput>,
     pub lock_time: u64,
     prevouts_hash: Option<Vec<u8>>,
     sequence_hash: Option<Vec<u8>>,
     outputs_hash: Option<Vec<u8>>,
 }
 
-impl Transaction {
-    pub fn new(
-        version: u8,
-        inputs: Vec<TransactionInput>,
-        outputs: Vec<TransactionOutput>,
-        lock_time: u64,
-    ) -> Self {
+impl Tx {
+    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_time: u64) -> Self {
         Self {
             version,
             inputs,
@@ -44,12 +39,12 @@ impl Transaction {
         let input_count = reader.read_var_int() as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
-            inputs.push(TransactionInput::from_buffer_reader(&mut reader)?);
+            inputs.push(TxInput::from_buffer_reader(&mut reader)?);
         }
         let output_count = reader.read_var_int() as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
-            outputs.push(TransactionOutput::from_buffer_reader(&mut reader)?);
+            outputs.push(TxOutput::from_buffer_reader(&mut reader)?);
         }
         let lock_time = reader.read_u64_be();
         Ok(Self::new(version, inputs, outputs, lock_time))
@@ -62,12 +57,12 @@ impl Transaction {
         let input_count = reader.read_var_int() as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
-            inputs.push(TransactionInput::from_buffer_reader(reader)?);
+            inputs.push(TxInput::from_buffer_reader(reader)?);
         }
         let output_count = reader.read_var_int() as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
-            outputs.push(TransactionOutput::from_buffer_reader(reader)?);
+            outputs.push(TxOutput::from_buffer_reader(reader)?);
         }
         let lock_time = reader.read_u64_be();
         Ok(Self::new(version, inputs, outputs, lock_time))
@@ -199,21 +194,21 @@ impl Transaction {
         script: Vec<u8>,
         amount: u64,
         hash_type: u8,
-    ) -> TransactionSignature {
+    ) -> TxSignature {
         let secp = Secp256k1::new();
         let message = Message::from_slice(&self.sighash(input_index, script, amount, hash_type))
             .expect("32 bytes");
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
         let sig = secp.sign(&message, &key);
         let sig = sig.serialize_compact();
-        TransactionSignature::new(hash_type, sig.to_vec())
+        TxSignature::new(hash_type, sig.to_vec())
     }
 
     pub fn verify(
         &mut self,
         input_index: usize,
         public_key: [u8; 33],
-        signature: TransactionSignature,
+        signature: TxSignature,
         script: Vec<u8>,
         amount: u64,
     ) -> bool {
@@ -234,30 +229,29 @@ mod tests {
     use crate::script::Script;
 
     #[test]
-    fn test_transaction() -> Result<(), String> {
+    fn test_tx() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
-        let transaction_input =
-            TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
+        let tx_output = TxOutput::new(value, script);
 
         let version = 1;
-        let inputs = vec![transaction_input];
-        let outputs = vec![transaction_output];
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
         let lock_time = 0;
-        let transaction = Transaction::new(version, inputs, outputs, lock_time);
+        let tx = Tx::new(version, inputs, outputs, lock_time);
 
-        let buf = transaction.to_u8_vec();
-        let transaction2 = Transaction::from_u8_vec(buf).unwrap();
-        assert_eq!(transaction.version, transaction2.version);
-        assert_eq!(transaction.inputs.len(), transaction2.inputs.len());
-        assert_eq!(transaction.outputs.len(), transaction2.outputs.len());
-        assert_eq!(transaction.lock_time, transaction2.lock_time);
+        let buf = tx.to_u8_vec();
+        let tx2 = Tx::from_u8_vec(buf).unwrap();
+        assert_eq!(tx.version, tx2.version);
+        assert_eq!(tx.inputs.len(), tx2.inputs.len());
+        assert_eq!(tx.outputs.len(), tx2.outputs.len());
+        assert_eq!(tx.lock_time, tx2.lock_time);
         Ok(())
     }
 
@@ -267,26 +261,25 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
-        let transaction_input =
-            TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
+        let tx_output = TxOutput::new(value, script);
 
         let version = 1;
-        let inputs = vec![transaction_input];
-        let outputs = vec![transaction_output];
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
         let lock_time = 0;
-        let transaction = Transaction::new(version, inputs, outputs, lock_time);
+        let tx = Tx::new(version, inputs, outputs, lock_time);
 
-        let buf = transaction.to_u8_vec();
+        let buf = tx.to_u8_vec();
         let mut reader = BufferReader::new(buf);
-        let transaction2 = Transaction::from_buffer_reader(&mut reader).unwrap();
-        assert_eq!(transaction.version, transaction2.version);
-        assert_eq!(transaction.inputs.len(), transaction2.inputs.len());
-        assert_eq!(transaction.outputs.len(), transaction2.outputs.len());
-        assert_eq!(transaction.lock_time, transaction2.lock_time);
+        let tx2 = Tx::from_buffer_reader(&mut reader).unwrap();
+        assert_eq!(tx.version, tx2.version);
+        assert_eq!(tx.inputs.len(), tx2.inputs.len());
+        assert_eq!(tx.outputs.len(), tx2.outputs.len());
+        assert_eq!(tx.lock_time, tx2.lock_time);
         Ok(())
     }
 
@@ -296,20 +289,19 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
-        let transaction_input =
-            TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
+        let tx_output = TxOutput::new(value, script);
 
         let version = 1;
-        let inputs = vec![transaction_input];
-        let outputs = vec![transaction_output];
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
         let lock_time = 0;
-        let transaction = Transaction::new(version, inputs, outputs, lock_time);
-        let expected_hash = blake3_hash(&transaction.to_u8_vec()).to_vec();
-        assert_eq!(transaction.blake3_hash(), expected_hash);
+        let tx = Tx::new(version, inputs, outputs, lock_time);
+        let expected_hash = blake3_hash(&tx.to_u8_vec()).to_vec();
+        assert_eq!(tx.blake3_hash(), expected_hash);
     }
 
     #[test]
@@ -318,39 +310,35 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
-        let transaction_input =
-            TransactionInput::new(input_tx_id, input_tx_index, script, sequence);
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let transaction_output = TransactionOutput::new(value, script);
+        let tx_output = TxOutput::new(value, script);
 
         let version = 1;
-        let inputs = vec![transaction_input];
-        let outputs = vec![transaction_output];
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
         let lock_time = 0;
-        let transaction = Transaction::new(version, inputs, outputs, lock_time);
-        let expected_hash = double_blake3_hash(&transaction.to_u8_vec()).to_vec();
-        assert_eq!(transaction.id(), expected_hash);
+        let tx = Tx::new(version, inputs, outputs, lock_time);
+        let expected_hash = double_blake3_hash(&tx.to_u8_vec()).to_vec();
+        assert_eq!(tx.id(), expected_hash);
     }
 
     #[test]
     fn hash_prevouts() {
         let version = 1;
-        let inputs = vec![TransactionInput::new(
+        let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TransactionOutput::new(
-            100 as u64,
-            Script::from_string("").unwrap(),
-        )];
+        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
 
-        let result = transaction.hash_prevouts();
+        let result = tx.hash_prevouts();
 
         assert_eq!(result.len(), 32);
 
@@ -363,20 +351,17 @@ mod tests {
     #[test]
     fn hash_sequence() {
         let version = 1;
-        let inputs = vec![TransactionInput::new(
+        let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TransactionOutput::new(
-            100 as u64,
-            Script::from_string("").unwrap(),
-        )];
+        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
 
-        let result = transaction.hash_sequence();
+        let result = tx.hash_sequence();
 
         assert_eq!(result.len(), 32);
 
@@ -389,20 +374,17 @@ mod tests {
     #[test]
     fn hash_outputs() {
         let version = 1;
-        let inputs = vec![TransactionInput::new(
+        let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TransactionOutput::new(
-            100 as u64,
-            Script::from_string("").unwrap(),
-        )];
+        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
 
-        let result = transaction.hash_outputs();
+        let result = tx.hash_outputs();
 
         assert_eq!(result.len(), 32);
 
@@ -415,23 +397,20 @@ mod tests {
     #[test]
     fn test_sighash() {
         let version = 1;
-        let inputs = vec![TransactionInput::new(
+        let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TransactionOutput::new(
-            100 as u64,
-            Script::from_string("").unwrap(),
-        )];
+        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
 
-        let mut transaction = Transaction::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
 
         let script = Script::from_string("").unwrap();
         let amount = 1;
-        let hash_type = TransactionSignature::SIGHASH_ALL;
-        let preimage = transaction.sighash(0, script.to_u8_vec(), amount, hash_type);
+        let hash_type = TxSignature::SIGHASH_ALL;
+        let preimage = tx.sighash(0, script.to_u8_vec(), amount, hash_type);
 
         let expected =
             hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
@@ -448,8 +427,8 @@ mod tests {
                 .unwrap();
         let script = vec![];
         let amount = 100;
-        let hash_type = TransactionSignature::SIGHASH_ALL;
-        let inputs = vec![TransactionInput::new(
+        let hash_type = TxSignature::SIGHASH_ALL;
+        let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_string("").unwrap(),
@@ -459,16 +438,13 @@ mod tests {
             hex::encode(&inputs[0].to_u8_vec()),
             "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
         );
-        let outputs = vec![TransactionOutput::new(
-            100,
-            Script::from_string("").unwrap(),
-        )];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
         assert_eq!(hex::encode(&outputs[0].to_u8_vec()), "000000000000006400");
-        let mut transaction = Transaction::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(&transaction.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        let mut tx = Tx::new(1, inputs, outputs, 0);
+        assert_eq!(hex::encode(&tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
 
         // Act
-        let signature = transaction.sign(
+        let signature = tx.sign(
             input_index,
             private_key.as_slice().try_into().unwrap(),
             script.clone(),
@@ -485,7 +461,7 @@ mod tests {
         let public_key = key.public_key();
 
         // Act
-        let result = transaction.verify(
+        let result = tx.verify(
             input_index,
             public_key.as_slice().try_into().unwrap(),
             signature,
