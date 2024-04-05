@@ -1,4 +1,4 @@
-import Tx from './tx'
+import Tx, { HashCache } from './tx'
 import TxOutputMap from './tx-output-map'
 import ScriptInterpreter from './script-interpreter'
 

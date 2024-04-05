@@ -1,6 +1,6 @@
 import { OPCODE_TO_NAME, OP } from './opcode'
 import Script from './script'
-import Tx from './tx'
+import Tx, { HashCache } from './tx'
 import ScriptNum from './script-num'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 import TxSignature from './tx-signature'
@@ -18,6 +18,7 @@ export default class ScriptInterpreter {
   public returnSuccess?: boolean
   public errStr: string
   public value: bigint
+  public hashCache: HashCache
 
   constructor(
     script: Script,
@@ -45,6 +46,7 @@ export default class ScriptInterpreter {
     this.returnSuccess = returnSuccess
     this.errStr = errStr
     this.value = value
+    this.hashCache = new HashCache()
   }
 
   static fromScriptTx(script: Script, tx: Tx, nIn: number): ScriptInterpreter {
@@ -797,12 +799,13 @@ export default class ScriptInterpreter {
 
           let execScriptBuf = new Uint8Array(this.script.toU8Vec())
 
-          const success = this.tx.verifyNoCache(
+          const success = this.tx.verifyWithCache(
             this.nIn,
             pubKeyBuf,
             signature,
             execScriptBuf,
             this.value,
+            this.hashCache,
           )
 
           this.stack.push(new Uint8Array([success ? 1 : 0]))
@@ -859,12 +862,13 @@ export default class ScriptInterpreter {
           let matchedSigs = 0n
           for (let i = 0; i < nSigs; i++) {
             for (let j = 0; j < pubKeys.length; j++) {
-              const success = this.tx.verifyNoCache(
+              const success = this.tx.verifyWithCache(
                 this.nIn,
                 pubKeys[j],
                 TxSignature.fromU8Vec(sigs[i]),
                 execScriptBuf,
                 this.value,
+                this.hashCache,
               )
               if (success) {
                 matchedSigs += 1n

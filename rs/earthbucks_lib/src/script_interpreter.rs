@@ -2,7 +2,7 @@ use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::opcode::OP;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
-use crate::tx::Tx;
+use crate::tx::{HashCache, Tx};
 use crate::tx_signature::TxSignature;
 use num_bigint::{BigInt, ToBigInt};
 use num_traits::ToPrimitive;
@@ -20,6 +20,7 @@ pub struct ScriptInterpreter {
     pub return_success: Option<bool>,
     pub err_str: String,
     pub value: u64,
+    pub hash_cache: HashCache,
 }
 
 impl ScriptInterpreter {
@@ -50,6 +51,7 @@ impl ScriptInterpreter {
             return_success,
             err_str,
             value,
+            hash_cache: HashCache::new(),
         }
     }
 
@@ -884,12 +886,13 @@ impl ScriptInterpreter {
                             panic!("Expected a Vec of length {} but it was {}", 33, v.len())
                         });
 
-                    let success = self.tx.verify_no_cache(
+                    let success = self.tx.verify_with_cache(
                         self.n_in,
                         pub_key_arr,
                         signature,
                         exec_script_buf,
                         self.value,
+                        &mut self.hash_cache,
                     );
 
                     self.stack.push(vec![if success { 1 } else { 0 }]);
@@ -943,12 +946,13 @@ impl ScriptInterpreter {
                     let mut matched_sigs = 0;
                     for i in 0..n_sigs.to_usize().unwrap() {
                         for j in 0..pub_keys.len() {
-                            let success = self.tx.verify_no_cache(
+                            let success = self.tx.verify_with_cache(
                                 self.n_in,
                                 pub_keys[j][..33].try_into().unwrap(),
                                 TxSignature::from_u8_vec(&sigs[i].clone()),
                                 exec_script_buf.clone(),
                                 self.value,
+                                &mut self.hash_cache,
                             );
                             if success {
                                 matched_sigs += 1;
