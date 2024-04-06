@@ -14,7 +14,7 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/earthbucks-logo-noblur.png"
+              src="/earthbucks-logo.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
