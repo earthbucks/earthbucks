@@ -118,6 +118,14 @@ impl MerkleProof {
         }
         MerkleProof::new(root, proof)
     }
+
+    pub fn to_string(&self) -> String {
+        hex::encode(self.to_u8_vec())
+    }
+
+    pub fn from_string(hex: &str) -> MerkleProof {
+        MerkleProof::from_u8_vec(&hex::decode(hex).unwrap())
+    }
 }
 
 #[cfg(test)]
@@ -250,6 +258,19 @@ mod tests {
 
         let u8 = proof.to_u8_vec();
         let new_proof = MerkleProof::from_u8_vec(&u8);
+        let hex1 = hex::encode(proof.root);
+        let hex2 = hex::encode(new_proof.root);
+        assert_eq!(hex1, hex2);
+    }
+
+    #[test]
+    fn to_string_and_from_string() {
+        let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
+        let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
+        let proof = MerkleProof::new(data1.clone(), vec![(data2.clone(), true)]);
+
+        let hex = proof.to_string();
+        let new_proof = MerkleProof::from_string(&hex);
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);

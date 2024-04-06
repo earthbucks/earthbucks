@@ -91,4 +91,15 @@ export default class MerkleProof {
     }
     return new MerkleProof(root, proof)
   }
+
+  toString(): string {
+    const u8vec = this.toU8Vec()
+    const hex = Buffer.from(u8vec).toString('hex')
+    return hex
+  }
+
+  static fromString(hex: string): MerkleProof {
+    const u8vec = Buffer.from(hex, 'hex')
+    return MerkleProof.fromU8Vec(u8vec)
+  }
 }

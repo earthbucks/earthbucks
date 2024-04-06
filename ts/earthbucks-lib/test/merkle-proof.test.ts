@@ -125,4 +125,18 @@ describe('MerkleProof', () => {
     const u8vec2 = proof1FromU8Vec.toU8Vec()
     expect(Buffer.compare(u8vec1, u8vec2)).toBe(0)
   })
+
+  test('to/from string', () => {
+    const data1 = doubleBlake3Hash(Buffer.from('data1'))
+    const data2 = doubleBlake3Hash(Buffer.from('data2'))
+
+    const data = [data1, data2]
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data)
+
+    const proof1 = proofs[0]
+    const str = proof1.toString()
+    const proof1FromString = MerkleProof.fromString(str)
+    const str2 = proof1FromString.toString()
+    expect(str).toBe(str2)
+  })
 })
