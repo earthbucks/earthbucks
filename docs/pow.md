@@ -27,3 +27,6 @@
 - study: novo
 - study: mvc
 - drivechain, bip 300 + 301 https://www.drivechain.info/
+- ORE is a cryptocurrency with in-browser mining https://ore.supply/
+- list of alternate PoW algorithms https://github.com/sencha-dev/powkit
+- information about heavyhash https://assets.pubpub.org/xi9h9rps/01581688887859.pdf
