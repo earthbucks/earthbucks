@@ -138,6 +138,33 @@ mod tests {
     }
 
     #[test]
+    fn generate_proofs_and_root_with_3_datas() {
+        let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
+        let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
+        let data3 = double_blake3_hash("data3".as_bytes()).to_vec();
+
+        let data = vec![data1.clone(), data2.clone(), data3.clone()];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root.clone());
+        assert_eq!(
+            hex,
+            "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data2, proof2, &root);
+        assert!(verified2);
+
+        let proof3 = &proofs[2];
+        let verified3 = MerkleProof::verify_proof(&data3, proof3, &root);
+        assert!(verified3);
+    }
+
+    #[test]
     fn generate_proofs_and_root_with_4_datas() {
         let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
         let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
@@ -167,5 +194,25 @@ mod tests {
         let proof4 = &proofs[3];
         let verified4 = MerkleProof::verify_proof(&data4, proof4, &root);
         assert!(verified4);
+    }
+
+    #[test]
+    fn generate_proofs_and_root_with_non_unique_data() {
+        let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
+        let data = vec![data1.clone(), data1.clone()];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root.clone());
+        assert_eq!(
+          hex,
+          "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data1, proof2, &root);
+        assert!(verified2);
     }
 }

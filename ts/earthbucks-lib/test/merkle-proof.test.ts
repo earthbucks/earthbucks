@@ -38,6 +38,31 @@ describe('MerkleProof', () => {
     expect(verified2).toBe(true)
   })
 
+  test('generateProofsAndRoot with 3 datas', () => {
+    const data1 = doubleBlake3Hash(Buffer.from('data1'))
+    const data2 = doubleBlake3Hash(Buffer.from('data2'))
+    const data3 = doubleBlake3Hash(Buffer.from('data3'))
+
+    const data = [data1, data2, data3]
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data)
+    const hex = Buffer.from(root).toString('hex')
+    expect(hex).toBe(
+      '30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf',
+    )
+    const proof1 = proofs[0]
+    const verified1 = MerkleProof.verifyProof(data1, proof1, root)
+
+    expect(verified1).toBe(true)
+
+    const proof2 = proofs[1]
+    const verified2 = MerkleProof.verifyProof(data2, proof2, root)
+    expect(verified2).toBe(true)
+
+    const proof3 = proofs[2]
+    const verified3 = MerkleProof.verifyProof(data3, proof3, root)
+    expect(verified3).toBe(true)
+  })
+
   test('generateProofsAndRoot with 4 datas', () => {
     const data1 = doubleBlake3Hash(Buffer.from('data1'))
     const data2 = doubleBlake3Hash(Buffer.from('data2'))
@@ -66,5 +91,24 @@ describe('MerkleProof', () => {
     const proof4 = proofs[3]
     const verified4 = MerkleProof.verifyProof(data4, proof4, root)
     expect(verified4).toBe(true)
+  })
+
+  test('generate proofs and root with non-unique data', () => {
+    const data1 = doubleBlake3Hash(Buffer.from('data1'))
+
+    const data = [data1, Buffer.from(data1)]
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data)
+    const hex = Buffer.from(root).toString('hex')
+    expect(hex).toBe(
+      'b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3',
+    )
+
+    const proof1 = proofs[0]
+    const verified1 = MerkleProof.verifyProof(data1, proof1, root)
+    expect(verified1).toBe(true)
+
+    const proof2 = proofs[1]
+    const verified2 = MerkleProof.verifyProof(data1, proof2, root)
+    expect(verified2).toBe(true)
   })
 })
