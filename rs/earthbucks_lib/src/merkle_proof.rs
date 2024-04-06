@@ -1,4 +1,6 @@
 use crate::blake3::double_blake3_hash;
+use crate::buffer_reader::BufferReader;
+use crate::buffer_writer::BufferWriter;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
@@ -91,6 +93,30 @@ impl MerkleProof {
         ]
         .concat();
         (root, proofs)
+    }
+
+    pub fn to_u8_vec(&self) -> Vec<u8> {
+        let mut bw = BufferWriter::new();
+        bw.write_u8_vec(self.root.clone());
+        bw.write_var_int(self.proof.len() as u64);
+        for (sibling, is_left) in &self.proof {
+            bw.write_u8_vec(sibling.clone());
+            bw.write_u8(if *is_left { 1 } else { 0 });
+        }
+        bw.to_u8_vec()
+    }
+
+    pub fn from_u8_vec(u8: &[u8]) -> MerkleProof {
+        let mut br = BufferReader::new(u8.to_vec());
+        let root = br.read_u8_vec(32);
+        let mut proof = vec![];
+        let proof_length = br.read_var_int() as usize;
+        for _ in 0..proof_length {
+            let sibling = br.read_u8_vec(32);
+            let is_left = br.read_u8() == 1;
+            proof.push((sibling, is_left));
+        }
+        MerkleProof::new(root, proof)
     }
 }
 
@@ -203,8 +229,8 @@ mod tests {
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
         let hex = hex::encode(root.clone());
         assert_eq!(
-          hex,
-          "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3"
+            hex,
+            "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3"
         );
 
         let proof1 = &proofs[0];
@@ -214,5 +240,18 @@ mod tests {
         let proof2 = &proofs[1];
         let verified2 = MerkleProof::verify_proof(&data1, proof2, &root);
         assert!(verified2);
+    }
+
+    #[test]
+    fn to_u8_vec_and_from_u8_vec() {
+        let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
+        let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
+        let proof = MerkleProof::new(data1.clone(), vec![(data2.clone(), true)]);
+
+        let u8 = proof.to_u8_vec();
+        let new_proof = MerkleProof::from_u8_vec(&u8);
+        let hex1 = hex::encode(proof.root);
+        let hex2 = hex::encode(new_proof.root);
+        assert_eq!(hex1, hex2);
     }
 }

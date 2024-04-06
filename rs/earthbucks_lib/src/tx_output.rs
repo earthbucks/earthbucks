@@ -18,7 +18,7 @@ impl TxOutput {
         let mut reader = BufferReader::new(buf);
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read(script_len);
+        let script_arr = reader.read_u8_vec(script_len);
         let script = match Script::from_u8_vec(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -31,7 +31,7 @@ impl TxOutput {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read(script_len);
+        let script_arr = reader.read_u8_vec(script_len);
         let script = match Script::from_u8_vec(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
