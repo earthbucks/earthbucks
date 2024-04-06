@@ -23,19 +23,19 @@ export default class TxInput {
 
   static fromU8Vec(buf: Uint8Array): TxInput {
     const reader = new BufferReader(buf)
-    const inputTxHash = reader.read(32)
+    const inputTxHash = reader.readU8Vec(32)
     const inputTxIndex = reader.readUInt32LE()
     const scriptLen = reader.readVarIntNum()
-    const script = Script.fromU8Vec(reader.read(scriptLen))
+    const script = Script.fromU8Vec(reader.readU8Vec(scriptLen))
     const sequence = reader.readUInt32LE()
     return new TxInput(inputTxHash, inputTxIndex, script, sequence)
   }
 
   static fromBufferReader(reader: BufferReader): TxInput {
-    const inputTxHash = reader.read(32)
+    const inputTxHash = reader.readU8Vec(32)
     const inputTxIndex = reader.readUInt32LE()
     const scriptLen = reader.readVarIntNum()
-    const script = Script.fromU8Vec(reader.read(scriptLen))
+    const script = Script.fromU8Vec(reader.readU8Vec(scriptLen))
     const sequence = reader.readUInt32LE()
     return new TxInput(inputTxHash, inputTxIndex, script, sequence)
   }

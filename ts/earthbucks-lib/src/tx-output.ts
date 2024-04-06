@@ -16,7 +16,7 @@ export default class TxOutput {
     const reader = new BufferReader(buf)
     const value = reader.readUInt64BEBigInt()
     const scriptLen = reader.readVarIntNum()
-    const scriptArr = reader.read(scriptLen)
+    const scriptArr = reader.readU8Vec(scriptLen)
     const script = Script.fromU8Vec(scriptArr)
     return new TxOutput(value, script)
   }
@@ -24,7 +24,7 @@ export default class TxOutput {
   static fromBufferReader(reader: BufferReader): TxOutput {
     const value = reader.readUInt64BEBigInt()
     const scriptLen = reader.readVarIntNum()
-    const scriptArr = reader.read(scriptLen)
+    const scriptArr = reader.readU8Vec(scriptLen)
     const script = Script.fromU8Vec(scriptArr)
     return new TxOutput(value, script)
   }

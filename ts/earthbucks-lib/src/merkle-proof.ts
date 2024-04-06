@@ -1,4 +1,6 @@
 import { doubleBlake3Hash } from './blake3'
+import BufferWriter from './buffer-writer'
+import BufferReader from './buffer-reader'
 
 export default class MerkleProof {
   public root: Uint8Array
@@ -64,5 +66,29 @@ export default class MerkleProof {
       ),
     ]
     return [root, proofs]
+  }
+
+  toU8Vec() {
+    const bw = new BufferWriter()
+    bw.writeU8Vec(this.root)
+    bw.writeVarIntNum(this.proof.length)
+    for (const [sibling, isLeft] of this.proof) {
+      bw.writeU8Vec(sibling)
+      bw.writeUInt8(isLeft ? 1 : 0)
+    }
+    return bw.toU8Vec()
+  }
+
+  static fromU8Vec(u8: Uint8Array): MerkleProof {
+    const br = new BufferReader(u8)
+    const root = br.readU8Vec(32)
+    const proof: Array<[Uint8Array, boolean]> = []
+    const proofLength = br.readVarIntNum()
+    for (let i = 0; i < proofLength; i++) {
+      const sibling = br.readU8Vec(32)
+      const isLeft = br.readUInt8() === 1
+      proof.push([sibling, isLeft])
+    }
+    return new MerkleProof(root, proof)
   }
 }

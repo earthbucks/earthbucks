@@ -23,13 +23,13 @@ describe('BufferReader', () => {
 
   test('read returns correct subarray', () => {
     const len = 4
-    const result = bufferReader.read(len)
+    const result = bufferReader.readU8Vec(len)
     expect(result).toEqual(new Uint8Array(testBuffer.buffer, 0, len))
   })
 
   test('read updates position', () => {
     const len = 4
-    bufferReader.read(len)
+    bufferReader.readU8Vec(len)
     expect(bufferReader['pos']).toBe(len)
   })
 

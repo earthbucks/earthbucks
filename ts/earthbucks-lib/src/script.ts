@@ -45,7 +45,7 @@ export default class Script {
         } else if (len === OP.PUSHDATA4) {
           len = reader.readUInt32LE()
         }
-        chunk.buffer = Buffer.from(reader.read(len))
+        chunk.buffer = Buffer.from(reader.readU8Vec(len))
         if (chunk.buffer.length !== len) {
           throw new Error('invalid buffer length')
         }

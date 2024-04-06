@@ -12,7 +12,7 @@ export default class BufferReader {
     return this.pos >= this.buf.length
   }
 
-  read(len: number = this.buf.length): Uint8Array {
+  readU8Vec(len: number = this.buf.length): Uint8Array {
     const buf = this.buf.subarray(this.pos, this.pos + len)
     const arr = new Uint8Array(len)
     arr.set(buf)
@@ -130,13 +130,13 @@ export default class BufferReader {
     const first = this.buf.readUInt8(this.pos)
     switch (first) {
       case 0xfd:
-        return this.read(1 + 2)
+        return this.readU8Vec(1 + 2)
       case 0xfe:
-        return this.read(1 + 4)
+        return this.readU8Vec(1 + 4)
       case 0xff:
-        return this.read(1 + 8)
+        return this.readU8Vec(1 + 8)
       default:
-        return this.read(1)
+        return this.readU8Vec(1)
     }
   }
 
