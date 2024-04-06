@@ -1,4 +1,4 @@
-# EarthBucks
+# EarthBucks (EBX)
 
 42 billion bucks. No pre-mine. GPUs. Big blocks. Script.
 
