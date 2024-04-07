@@ -61,14 +61,6 @@ export default function Index() {
                 className="underline"
               >
                 X (Twitter)
-              </a>{' '}
-              &middot;{' '}
-              <a
-                href="https://github.com/earthbucks"
-                target="_blank"
-                className="underline"
-              >
-                GitHub
               </a>
             </div>
           </div>
