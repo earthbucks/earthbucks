@@ -10,7 +10,6 @@ describe('BlockHeader', () => {
       0,
       0,
       new Uint8Array(32),
-      new Uint8Array(32),
       0n,
     )
     const buf = bh1.toU8Vec()
@@ -21,7 +20,6 @@ describe('BlockHeader', () => {
     expect(bh1.timestamp).toBe(bh2.timestamp)
     expect(bh1.difficulty).toBe(bh2.difficulty)
     expect(bh1.nonce).toEqual(bh2.nonce)
-    expect(bh1.domain).toEqual(bh2.domain)
     expect(bh1.index).toBe(bh2.index)
   })
 
@@ -33,7 +31,6 @@ describe('BlockHeader', () => {
       0,
       0,
       new Uint8Array(32),
-      new Uint8Array(32),
       0n,
     )
     const buf = bh1.toBuffer()
@@ -44,13 +41,10 @@ describe('BlockHeader', () => {
     expect(bh1.timestamp).toBe(bh2.timestamp)
     expect(bh1.difficulty).toBe(bh2.difficulty)
     expect(bh1.nonce).toEqual(bh2.nonce)
-    expect(bh1.domain).toEqual(bh2.domain)
     expect(bh1.index).toBe(bh2.index)
   })
 
   test('isValid', () => {
-    const domain = 'earthbucks.com'
-    const domainBuf = BlockHeader.domainFromString(domain)
     const bh1 = new BlockHeader(
       1,
       new Uint8Array(32),
@@ -58,7 +52,6 @@ describe('BlockHeader', () => {
       0,
       0,
       new Uint8Array(32),
-      domainBuf,
       0n,
     )
     expect(bh1.isValid()).toBe(true)

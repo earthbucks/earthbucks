@@ -8,7 +8,6 @@ export default class BlockHeader {
   timestamp: number // uint32
   difficulty: number // 32 bits
   nonce: Uint8Array // 256 bits
-  domain: Uint8Array // 256 bits
   index: bigint // uint64
 
   constructor(
@@ -18,7 +17,6 @@ export default class BlockHeader {
     timestamp: number,
     difficulty: number,
     nonce: Uint8Array,
-    domain: Uint8Array,
     index: bigint,
   ) {
     this.version = version
@@ -27,7 +25,6 @@ export default class BlockHeader {
     this.timestamp = timestamp
     this.difficulty = difficulty
     this.nonce = nonce
-    this.domain = domain
     this.index = index
   }
 
@@ -39,7 +36,6 @@ export default class BlockHeader {
     bw.writeUInt32BE(this.timestamp)
     bw.writeUInt32BE(this.difficulty)
     bw.writeU8Vec(this.nonce)
-    bw.writeU8Vec(this.domain)
     bw.writeUInt64BEBigInt(this.index)
     return bw.toU8Vec()
   }
@@ -52,7 +48,6 @@ export default class BlockHeader {
     const timestamp = br.readUInt32BE()
     const difficulty = br.readUInt32BE()
     const nonce = br.readU8Vec(32)
-    const domain = br.readU8Vec(32)
     const index = br.readUInt64BEBigInt()
     return new BlockHeader(
       version,
@@ -61,7 +56,6 @@ export default class BlockHeader {
       timestamp,
       difficulty,
       nonce,
-      domain,
       index,
     )
   }
@@ -167,7 +161,7 @@ export default class BlockHeader {
 
   isValid(): boolean {
     const len = this.toBuffer().length
-    if (len !== 148) {
+    if (len !== 116) {
       return false
     }
     return (
@@ -177,7 +171,6 @@ export default class BlockHeader {
       BlockHeader.isValidTimestamp(this.timestamp) &&
       BlockHeader.isValidDifficulty(this.difficulty) &&
       BlockHeader.isValidNonce(this.nonce) &&
-      BlockHeader.isValidDomain(this.domain) &&
       BlockHeader.isValidIndex(this.index)
     )
   }
