@@ -93,6 +93,14 @@ impl Tx {
         writer.to_u8_vec()
     }
 
+    pub fn to_string(&self) -> String {
+        hex::encode(self.to_u8_vec())
+    }
+
+    pub fn from_string(hex: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        Self::from_u8_vec(hex::decode(hex)?)
+    }
+
     pub fn blake3_hash(&self) -> Vec<u8> {
         blake3_hash(&self.to_u8_vec()).to_vec()
     }
@@ -367,6 +375,33 @@ mod tests {
         let buf = tx.to_u8_vec();
         let mut reader = BufferReader::new(buf);
         let tx2 = Tx::from_buffer_reader(&mut reader).unwrap();
+        assert_eq!(tx.version, tx2.version);
+        assert_eq!(tx.inputs.len(), tx2.inputs.len());
+        assert_eq!(tx.outputs.len(), tx2.outputs.len());
+        assert_eq!(tx.lock_time, tx2.lock_time);
+        Ok(())
+    }
+
+    #[test]
+    fn test_to_string_and_from_string() -> Result<(), String> {
+        let input_tx_id = vec![0; 32];
+        let input_tx_index = 0;
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let sequence = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+
+        let value = 100;
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let tx_output = TxOutput::new(value, script);
+
+        let version = 1;
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
+        let lock_time = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_time);
+
+        let hex = tx.to_string();
+        let tx2 = Tx::from_string(&hex).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());

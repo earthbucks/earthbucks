@@ -82,6 +82,26 @@ describe('Tx', () => {
     })
   })
 
+  describe('to/from string', () => {
+    test('to/from string', () => {
+      const version = 1
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
+      const locktime = BigInt(0)
+
+      const tx = new Tx(version, inputs, outputs, locktime)
+
+      const result = Tx.fromString(tx.toString())
+      expect(result).toBeInstanceOf(Tx)
+      expect(result.version).toEqual(version)
+      expect(result.inputs.length).toEqual(inputs.length)
+      expect(result.outputs.length).toEqual(outputs.length)
+      expect(result.locktime).toEqual(locktime)
+    })
+  })
+
   describe('hashonce', () => {
     it('should return the hash of the tx', () => {
       const version = 1

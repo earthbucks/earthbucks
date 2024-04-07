@@ -83,6 +83,14 @@ export default class Tx {
     return Buffer.from(this.toU8Vec())
   }
 
+  toString(): string {
+    return this.toBuffer().toString('hex')
+  }
+
+  static fromString(hex: string): Tx {
+    return Tx.fromU8Vec(Buffer.from(hex, 'hex'))
+  }
+
   blake3Hash(): Uint8Array {
     return blake3Hash(this.toU8Vec())
   }
