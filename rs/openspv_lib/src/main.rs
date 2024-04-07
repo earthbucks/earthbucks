@@ -1,7 +1,7 @@
 #![allow(dead_code)] // TODO: remove this after launch
 
-use earthbucks_lib::address;
-use earthbucks_lib::key::Key;
+use openspv_lib::address;
+use openspv_lib::key::Key;
 use std::env;
 
 fn main() {

@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "earthbucks_lib",
+    "openspv_lib",
 ]
 resolver = "2"
