@@ -51,6 +51,16 @@ export default function Index() {
               >
                 X (Twitter)
               </a>
+              <br />
+              <br />
+              Sponsored by{' '}
+              <a
+                href="https://earthbucks.com"
+                target="_blank"
+                className="underline"
+              >
+                EarthBucks
+              </a>
             </div>
           </div>
         </div>

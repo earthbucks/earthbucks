@@ -64,7 +64,14 @@ export default function Index() {
               </a>
               <br />
               <br />
-              Powered by <a href="https://openspv.com">OpenSPV</a>
+              Powered by{' '}
+              <a
+                href="https://openspv.com"
+                target="_blank"
+                className="underline"
+              >
+                OpenSPV
+              </a>
             </div>
           </div>
         </div>
