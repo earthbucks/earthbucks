@@ -6,6 +6,7 @@ pub mod buffer_writer;
 pub mod key;
 pub mod merkle_node;
 pub mod merkle_proof;
+pub mod merkle_txs;
 pub mod opcode;
 pub mod script;
 pub mod script_chunk;

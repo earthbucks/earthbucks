@@ -6,6 +6,7 @@ export default class BlockHeader {
   difficulty: number // 32 bits
   nonce: Uint8Array // 256 bits
   domain: Uint8Array // 256 bits
+  index: number // uint32
 
   constructor(
     version: number,
@@ -15,6 +16,7 @@ export default class BlockHeader {
     difficulty: number,
     nonce: Uint8Array,
     domain: Uint8Array,
+    index: number,
   ) {
     this.version = version
     this.previousBlockHash = previousBlockHash
@@ -23,6 +25,7 @@ export default class BlockHeader {
     this.difficulty = difficulty
     this.nonce = nonce
     this.domain = domain
+    this.index = index
   }
 
   calculateTarget() {
