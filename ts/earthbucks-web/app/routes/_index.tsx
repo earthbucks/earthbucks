@@ -62,6 +62,9 @@ export default function Index() {
               >
                 X (Twitter)
               </a>
+              <br />
+              <br />
+              Powered by <a href="https://openspv.com">OpenSPV</a>
             </div>
           </div>
         </div>
