@@ -33,7 +33,7 @@ export default function Index() {
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Open-source blockchain generator.
+              Interoperable blockchain ecosystem.
               <br />
               <br />
               <a
