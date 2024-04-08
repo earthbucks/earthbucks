@@ -5,7 +5,7 @@ pub struct BlockHeader {
     version: u32,                 // uint32
     previous_block_hash: Vec<u8>, // 256 bits
     merkle_root: Vec<u8>,         // 256 bits
-    timestamp: u32,               // uint32
+    timestamp: u64,               // uint32
     target: Vec<u8>,              // 32 bits
     nonce: Vec<u8>,               // 256 bits
     index: u64,                   // uint64
@@ -16,7 +16,7 @@ impl BlockHeader {
         version: u32,
         previous_block_hash: Vec<u8>,
         merkle_root: Vec<u8>,
-        timestamp: u32,
+        timestamp: u64,
         target: Vec<u8>,
         nonce: Vec<u8>,
         index: u64,
@@ -37,7 +37,7 @@ impl BlockHeader {
         bw.write_u32_be(self.version);
         bw.write_u8_vec(self.previous_block_hash.clone());
         bw.write_u8_vec(self.merkle_root.clone());
-        bw.write_u32_be(self.timestamp);
+        bw.write_u64_be(self.timestamp);
         bw.write_u8_vec(self.target.clone());
         bw.write_u8_vec(self.nonce.clone());
         bw.write_u64_be(self.index);
@@ -49,7 +49,7 @@ impl BlockHeader {
         let version = br.read_u32_be();
         let previous_block_hash = br.read_u8_vec(32);
         let merkle_root = br.read_u8_vec(32);
-        let timestamp = br.read_u32_be();
+        let timestamp = br.read_u64_be();
         let target = br.read_u8_vec(32);
         let nonce = br.read_u8_vec(32);
         let index = br.read_u64_be();
@@ -98,7 +98,7 @@ impl BlockHeader {
 
     pub fn is_valid(&self) -> bool {
         let len = self.to_vec().len();
-        if len != 144 {
+        if len != 148 {
             return false;
         }
         return BlockHeader::is_valid_version(self.version)

@@ -5,7 +5,7 @@ export default class BlockHeader {
   version: number // uint32
   previousBlockHash: Uint8Array // 256 bits
   merkleRoot: Uint8Array // 256 bits
-  timestamp: number // uint32
+  timestamp: bigint // uint64
   target: Uint8Array // 256 bits
   nonce: Uint8Array // 256 bits
   index: bigint // uint64
@@ -14,7 +14,7 @@ export default class BlockHeader {
     version: number,
     previousBlockHash: Uint8Array,
     merkleRoot: Uint8Array,
-    timestamp: number,
+    timestamp: bigint,
     target: Uint8Array,
     nonce: Uint8Array,
     index: bigint,
@@ -33,7 +33,7 @@ export default class BlockHeader {
     bw.writeUInt32BE(this.version)
     bw.writeU8Vec(this.previousBlockHash)
     bw.writeU8Vec(this.merkleRoot)
-    bw.writeUInt32BE(this.timestamp)
+    bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
     bw.writeU8Vec(this.nonce)
     bw.writeUInt64BEBigInt(this.index)
@@ -45,7 +45,7 @@ export default class BlockHeader {
     const version = br.readUInt32BE()
     const previousBlockHash = br.readU8Vec(32)
     const merkleRoot = br.readU8Vec(32)
-    const timestamp = br.readUInt32BE()
+    const timestamp = br.readUInt64BEBigInt()
     const target = br.readU8Vec(32)
     const nonce = br.readU8Vec(32)
     const index = br.readUInt64BEBigInt()
@@ -94,7 +94,7 @@ export default class BlockHeader {
 
   isValid(): boolean {
     const len = this.toBuffer().length
-    if (len !== 144) {
+    if (len !== 148) {
       return false
     }
     return (
