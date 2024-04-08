@@ -7,9 +7,9 @@ import TxInput from './tx-input'
 import TxOutput from './tx-output'
 
 export default class BlockBuilder {
-  private header: BlockHeader
-  private txs: Tx[]
-  private merkleTxs: MerkleTxs
+  public header: BlockHeader
+  public txs: Tx[]
+  public merkleTxs: MerkleTxs
 
   constructor(header: BlockHeader, txs: Tx[], merkleTxs: MerkleTxs) {
     this.header = header
