@@ -22,7 +22,7 @@ describe('BlockBuilder', () => {
     const block = new Block(bh, [tx])
     const bb = BlockBuilder.fromBlock(block)
     expect(bb.header.version).toBe(bh.version)
-    expect(bb.header.previousBlockHash).toEqual(bh.previousBlockHash)
+    expect(bb.header.previousBlockId).toEqual(bh.previousBlockId)
     expect(bb.header.merkleRoot).toEqual(bh.merkleRoot)
     expect(bb.header.timestamp).toBe(bh.timestamp)
     expect(bb.header.target).toEqual(bh.target)
@@ -34,27 +34,33 @@ describe('BlockBuilder', () => {
     const outputAmount = 0n
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount)
     expect(bb.header.version).toBe(1)
-    expect(bb.header.previousBlockHash).toEqual(new Uint8Array(32))
+    expect(bb.header.previousBlockId).toEqual(new Uint8Array(32))
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root)
     expect(bb.header.timestamp).toBeLessThanOrEqual(new Date().getTime() / 1000)
     expect(bb.header.target).toEqual(target)
   })
 
   test('fromPrevBlock', () => {
-    const prevBlockId = new Uint8Array(32)
-    const prevBlockIndex = 0n
     const outputScript = new Script()
     const outputAmount = 0n
     const target = new Uint8Array(32)
-    const bb = BlockBuilder.fromPrevBlock(
-      prevBlockId,
-      prevBlockIndex,
+    const prevBlockHeader = new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+      target,
+      new Uint8Array(32),
+      0n,
+    )
+    const bb = BlockBuilder.fromPrevBlockHeader(
+      prevBlockHeader,
+      null,
       outputScript,
       outputAmount,
-      target,
     )
     expect(bb.header.version).toBe(1)
-    expect(bb.header.previousBlockHash).toEqual(prevBlockId)
+    expect(bb.header.previousBlockId).toEqual(prevBlockHeader.id())
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root)
     expect(bb.header.timestamp).toBeLessThanOrEqual(new Date().getTime() / 1000)
     expect(bb.header.target).toEqual(target)
@@ -75,7 +81,7 @@ describe('BlockBuilder', () => {
     const bb = BlockBuilder.fromBlock(block)
     const block2 = bb.toBlock()
     expect(block2.header.version).toBe(bh.version)
-    expect(block2.header.previousBlockHash).toEqual(bh.previousBlockHash)
+    expect(block2.header.previousBlockId).toEqual(bh.previousBlockId)
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot)
     expect(bb.header.timestamp).toEqual(0n)
     expect(block2.header.target).toEqual(bh.target)

@@ -41,19 +41,53 @@ export default class BlockBuilder {
     return new BlockBuilder(header, txs, merkleTxs)
   }
 
-  static fromPrevBlock(
-    prevBlockId: Uint8Array,
-    prevBlockIndex: bigint,
+  static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
+    // timeDiff is in seconds.
+    // twoWeeks in in seconds.
+    const twoWeeks = 2016n * 600n
+    // To prevent extreme difficulty adjustments, if it took less than 1 week or
+    // more than 8 weeks, we still consider it as 1 week or 8 weeks
+    // respectively.
+    if (timeDiff < twoWeeks / 2n) {
+      timeDiff = twoWeeks / 2n
+    }
+    if (timeDiff > twoWeeks * 4n) {
+      timeDiff = twoWeeks * 4n
+    }
+    const timeDiffPerTwoWeeksDividedByTimeDiff = twoWeeks / timeDiff
+    const targetNum = BigInt('0x' + Buffer.from(targetBuf).toString('hex'))
+    const targetTimesTimeDiffInSecs = targetNum * timeDiff
+    const newTargetNum =
+      targetTimesTimeDiffInSecs / timeDiffPerTwoWeeksDividedByTimeDiff
+    const newTargetBuf = Buffer.from(newTargetNum.toString(32), 'hex')
+    return newTargetBuf
+  }
+
+  static fromPrevBlockHeader(
+    prevBlockHeader: BlockHeader,
+    prevAdjustmentBlockHeader: BlockHeader | null, // exactly 2016 blocks before
     outputScript: Script,
     outputAmount: bigint,
-    target: Uint8Array,
   ): BlockBuilder {
-    const nonce = new Uint8Array(32)
-    const header = BlockHeader.fromPrevBlockId(
-      prevBlockId,
-      prevBlockIndex,
-      target,
-    )
+    let target = null
+    const index = prevBlockHeader.index + 1n
+    if (index % 2016n === 0n) {
+      if (
+        !prevAdjustmentBlockHeader ||
+        prevAdjustmentBlockHeader.index + 2016n !== index
+      ) {
+        throw new Error(
+          'must provide previous adjustment block header 2016 blocks before',
+        )
+      }
+      const timeDiff =
+        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp
+      const prevTarget = prevBlockHeader.target
+      target = BlockBuilder.adjustTarget(prevTarget, timeDiff)
+    } else {
+      target = prevBlockHeader.target
+    }
+    const header = BlockHeader.fromPrevBlockHeader(prevBlockHeader, target)
     const txs = []
     const txInput = TxInput.fromCoinbase(outputScript)
     const txOutput = new TxOutput(outputAmount, outputScript)

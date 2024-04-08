@@ -4,7 +4,7 @@ import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class BlockHeader {
   version: number // uint32
-  previousBlockHash: Uint8Array // 256 bits
+  previousBlockId: Uint8Array // 256 bits
   merkleRoot: Uint8Array // 256 bits
   timestamp: bigint // uint64
   target: Uint8Array // 256 bits
@@ -13,7 +13,7 @@ export default class BlockHeader {
 
   constructor(
     version: number,
-    previousBlockHash: Uint8Array,
+    previousBlockId: Uint8Array,
     merkleRoot: Uint8Array,
     timestamp: bigint,
     target: Uint8Array,
@@ -21,7 +21,7 @@ export default class BlockHeader {
     index: bigint,
   ) {
     this.version = version
-    this.previousBlockHash = previousBlockHash
+    this.previousBlockId = previousBlockId
     this.merkleRoot = merkleRoot
     this.timestamp = timestamp
     this.target = target
@@ -32,7 +32,7 @@ export default class BlockHeader {
   toU8Vec(): Uint8Array {
     const bw = new BufferWriter()
     bw.writeUInt32BE(this.version)
-    bw.writeU8Vec(this.previousBlockHash)
+    bw.writeU8Vec(this.previousBlockId)
     bw.writeU8Vec(this.merkleRoot)
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
@@ -90,7 +90,7 @@ export default class BlockHeader {
 
   toBufferWriter(bw: BufferWriter): BufferWriter {
     bw.writeUInt32BE(this.version)
-    bw.writeU8Vec(this.previousBlockHash)
+    bw.writeU8Vec(this.previousBlockId)
     bw.writeU8Vec(this.merkleRoot)
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
@@ -120,11 +120,12 @@ export default class BlockHeader {
     )
   }
 
-  static fromPrevBlockId(
-    prevBlockId: Uint8Array,
-    prevBlockIndex: bigint,
+  static fromPrevBlockHeader(
+    prevBlockHeader: BlockHeader,
     target: Uint8Array,
   ): BlockHeader {
+    const prevBlockId = prevBlockHeader.id()
+    const prevBlockIndex = prevBlockHeader.index
     const timestamp = BigInt(Math.floor(Date.now() / 1000)) // seconds
     const index = prevBlockIndex + 1n
     const nonce = new Uint8Array(32)
@@ -162,16 +163,14 @@ export default class BlockHeader {
     }
     return (
       BlockHeader.isValidVersion(this.version) &&
-      BlockHeader.isValidPreviousBlockHash(this.previousBlockHash) &&
+      BlockHeader.isValidPreviousBlockHash(this.previousBlockId) &&
       BlockHeader.isValidMerkleRoot(this.merkleRoot) &&
       BlockHeader.isValidNonce(this.nonce)
     )
   }
 
   isGenesis(): boolean {
-    return (
-      this.index === 0n && this.previousBlockHash.every((byte) => byte === 0)
-    )
+    return this.index === 0n && this.previousBlockId.every((byte) => byte === 0)
   }
 
   hash(): Uint8Array {
