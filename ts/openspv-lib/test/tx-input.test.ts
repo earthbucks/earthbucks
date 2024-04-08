@@ -133,4 +133,13 @@ describe('TxInput', () => {
     )
     expect(coinbaseTxInput.isCoinbase()).toBe(true)
   })
+
+  test('fromCoinbase', () => {
+    const script = new Script().fromString('0x121212')
+    const txInput = TxInput.fromCoinbase(script)
+    expect(txInput).toBeInstanceOf(TxInput)
+    expect(txInput.isNull()).toBe(true)
+    expect(txInput.isFinal()).toBe(true)
+    expect(txInput.script.toString()).toEqual(script.toString())
+  })
 })

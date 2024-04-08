@@ -65,6 +65,15 @@ impl TxInput {
     pub fn is_coinbase(&self) -> bool {
         self.is_null() && self.is_final()
     }
+
+    pub fn from_coinbase(script: Script) -> Self {
+        Self {
+            input_tx_id: vec![0; 32],
+            input_tx_index: 0xffffffff,
+            script,
+            sequence: 0xffffffff,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -193,5 +202,16 @@ mod tests {
             sequence: 0xffffffff,
         };
         assert!(coinbase_tx_input.is_coinbase());
+    }
+
+    #[test]
+    fn test_from_coinbase() {
+        let script = Script::from_string("0x121212").unwrap();
+        let tx_input = TxInput::from_coinbase(script);
+
+        assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
+        assert_eq!(tx_input.input_tx_index, 0xffffffff);
+        assert_eq!(tx_input.script.to_string().unwrap(), "0x121212");
+        assert_eq!(tx_input.sequence, 0xffffffff);
     }
 }

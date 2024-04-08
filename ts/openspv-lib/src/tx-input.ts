@@ -69,4 +69,13 @@ export default class TxInput {
   isCoinbase(): boolean {
     return this.isNull() && this.isFinal()
   }
+
+  static fromCoinbase(script: Script):  TxInput {
+    return new TxInput(
+      new Uint8Array(32),
+      0xffffffff,
+      script,
+      0xffffffff,
+    )
+  }
 }
