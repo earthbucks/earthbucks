@@ -6,6 +6,7 @@ import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 import { ecdsaSign, ecdsaVerify } from 'secp256k1'
 import TxSignature from './tx-signature'
+import Script from './script'
 
 export class HashCache {
   public hashPrevouts?: Uint8Array
@@ -89,6 +90,22 @@ export default class Tx {
 
   static fromString(hex: string): Tx {
     return Tx.fromU8Vec(Buffer.from(hex, 'hex'))
+  }
+
+  static fromCoinbase(
+    inputScript: Script,
+    outputScript: Script,
+    outputAmount: bigint,
+  ): Tx {
+    const version = 1
+    const inputs = [TxInput.fromCoinbase(inputScript)]
+    const outputs = [new TxOutput(outputAmount, outputScript)]
+    const locktime = BigInt(0)
+    return new Tx(version, inputs, outputs, locktime)
+  }
+
+  isCoinbase(): boolean {
+    return this.inputs.length === 1 && this.inputs[0].isCoinbase()
   }
 
   blake3Hash(): Uint8Array {

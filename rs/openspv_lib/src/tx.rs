@@ -2,6 +2,7 @@ use crate::blake3::blake3_hash;
 use crate::blake3::double_blake3_hash;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
+use crate::script::Script;
 use crate::tx_input::TxInput;
 use crate::tx_output::TxOutput;
 use crate::tx_signature::TxSignature;
@@ -99,6 +100,18 @@ impl Tx {
 
     pub fn from_string(hex: &str) -> Result<Self, Box<dyn std::error::Error>> {
         Self::from_u8_vec(hex::decode(hex)?)
+    }
+
+    pub fn from_coinbase(input_script: Script, output_script: Script, output_amount: u64) -> Self {
+        let version = 1;
+        let inputs = vec![TxInput::from_coinbase(input_script)];
+        let outputs = vec![TxOutput::new(output_amount, output_script)];
+        let lock_time = 0;
+        Self::new(version, inputs, outputs, lock_time)
+    }
+
+    pub fn is_coinbase(&self) -> bool {
+        self.inputs.len() == 1 && self.inputs[0].is_coinbase()
     }
 
     pub fn blake3_hash(&self) -> Vec<u8> {
@@ -407,6 +420,44 @@ mod tests {
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
         assert_eq!(tx.lock_time, tx2.lock_time);
         Ok(())
+    }
+
+    #[test]
+    fn test_from_coinbase() {
+        let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_amount = 100;
+        let tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        assert_eq!(tx.version, 1);
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.outputs.len(), 1);
+        assert_eq!(tx.lock_time, 0);
+    }
+
+    #[test]
+    fn test_is_coinbase() {
+        let input_tx_id = vec![0; 32];
+        let input_tx_index = 0;
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let sequence = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+
+        let value = 100;
+        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let tx_output = TxOutput::new(value, script);
+
+        let version = 1;
+        let inputs = vec![tx_input];
+        let outputs = vec![tx_output];
+        let lock_time = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_time);
+        assert!(!tx.is_coinbase());
+
+        let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_amount = 100;
+        let tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        assert!(tx.is_coinbase());
     }
 
     #[test]

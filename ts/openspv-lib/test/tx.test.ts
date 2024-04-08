@@ -102,6 +102,51 @@ describe('Tx', () => {
     })
   })
 
+  describe('fromCoinbase', () => {
+    test('fromCoinbase', () => {
+      const script = new Script().fromString('DOUBLEBLAKE3')
+      const txInput = TxInput.fromCoinbase(script)
+      expect(txInput).toBeInstanceOf(TxInput)
+      expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true)
+      expect(txInput.inputTxIndex).toBe(0xffffffff)
+      expect(txInput.script.toString()).toEqual(script.toString())
+      expect(txInput.sequence).toBe(0xffffffff)
+    })
+  })
+
+  describe('isCoinbase', () => {
+    test('isCoinbase', () => {
+      const version = 1
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0xffffffff, new Script(), 0xffffffff),
+      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
+      const locktime = BigInt(0)
+
+      const tx = new Tx(version, inputs, outputs, locktime)
+      expect(tx.isCoinbase()).toBe(true)
+    })
+
+    test('is not coinbase', () => {
+      const version = 1
+      const inputs: TxInput[] = [
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      ]
+      const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
+      const locktime = BigInt(0)
+
+      const tx = new Tx(version, inputs, outputs, locktime)
+      expect(tx.isCoinbase()).toBe(false)
+    })
+
+    test('fromCoinbase -> isCoinbase', () => {
+      const script = new Script().fromString('DOUBLEBLAKE3')
+      const txInput = TxInput.fromCoinbase(script)
+      const tx = new Tx(1, [txInput], [], BigInt(0))
+      expect(tx.isCoinbase()).toBe(true)
+    })
+  })
+
   describe('hashonce', () => {
     it('should return the hash of the tx', () => {
       const version = 1
