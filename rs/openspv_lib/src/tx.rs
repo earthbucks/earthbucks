@@ -46,19 +46,11 @@ impl Tx {
 
     pub fn from_u8_vec(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
         let mut reader = BufferReader::new(buf);
-        let version = reader.read_u8();
-        let input_count = reader.read_var_int() as usize;
-        let mut inputs = Vec::new();
-        for _ in 0..input_count {
-            inputs.push(TxInput::from_buffer_reader(&mut reader)?);
-        }
-        let output_count = reader.read_var_int() as usize;
-        let mut outputs = Vec::new();
-        for _ in 0..output_count {
-            outputs.push(TxOutput::from_buffer_reader(&mut reader)?);
-        }
-        let lock_time = reader.read_u64_be();
-        Ok(Self::new(version, inputs, outputs, lock_time))
+        Self::from_buffer_reader(&mut reader)
+    }
+
+    pub fn to_u8_vec(&self) -> Vec<u8> {
+        self.to_buffer_writer().to_u8_vec()
     }
 
     pub fn from_buffer_reader(
@@ -79,7 +71,7 @@ impl Tx {
         Ok(Self::new(version, inputs, outputs, lock_time))
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_buffer_writer(&self) -> BufferWriter {
         let mut writer = BufferWriter::new();
         writer.write_u8(self.version);
         writer.write_u8_vec(VarInt::from_u64_new(self.inputs.len() as u64).to_u8_vec());
@@ -91,7 +83,7 @@ impl Tx {
             writer.write_u8_vec(output.to_u8_vec());
         }
         writer.write_u64_be(self.lock_time);
-        writer.to_u8_vec()
+        writer
     }
 
     pub fn to_string(&self) -> String {

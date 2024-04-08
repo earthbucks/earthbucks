@@ -2,13 +2,13 @@ use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 
 pub struct BlockHeader {
-    version: u32,                 // uint32
-    previous_block_hash: Vec<u8>, // 256 bits
-    merkle_root: Vec<u8>,         // 256 bits
-    timestamp: u64,               // uint32
-    target: Vec<u8>,              // 32 bits
-    nonce: Vec<u8>,               // 256 bits
-    index: u64,                   // uint64
+    pub version: u32,                 // uint32
+    pub previous_block_hash: Vec<u8>, // 256 bits
+    pub merkle_root: Vec<u8>,         // 256 bits
+    pub timestamp: u64,               // uint32
+    pub target: Vec<u8>,              // 32 bits
+    pub nonce: Vec<u8>,               // 256 bits
+    pub index: u64,                   // uint64
 }
 
 impl BlockHeader {
@@ -62,6 +62,37 @@ impl BlockHeader {
             nonce,
             index,
         ))
+    }
+
+    pub fn from_buffer_reader(br: &mut BufferReader) -> BlockHeader {
+        let version = br.read_u32_be();
+        let previous_block_hash = br.read_u8_vec(32);
+        let merkle_root = br.read_u8_vec(32);
+        let timestamp = br.read_u64_be();
+        let target = br.read_u8_vec(32);
+        let nonce = br.read_u8_vec(32);
+        let index = br.read_u64_be();
+        BlockHeader::new(
+            version,
+            previous_block_hash,
+            merkle_root,
+            timestamp,
+            target,
+            nonce,
+            index,
+        )
+    }
+
+    pub fn to_buffer_writer(&self) -> BufferWriter {
+        let mut bw = BufferWriter::new();
+        bw.write_u32_be(self.version);
+        bw.write_u8_vec(self.previous_block_hash.clone());
+        bw.write_u8_vec(self.merkle_root.clone());
+        bw.write_u64_be(self.timestamp);
+        bw.write_u8_vec(self.target.clone());
+        bw.write_u8_vec(self.nonce.clone());
+        bw.write_u64_be(self.index);
+        bw
     }
 
     pub fn to_string(&self) -> String {

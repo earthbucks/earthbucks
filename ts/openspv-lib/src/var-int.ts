@@ -42,6 +42,11 @@ export default class VarInt {
     return new BufferReader(this.buf).readVarIntNum()
   }
 
+  static fromBufferReader(br: BufferReader): VarInt {
+    const buf = Buffer.from(br.readVarIntBuf())
+    return new VarInt(buf)
+  }
+
   isMinimal() {
     const bn = this.toBigInt()
     const varint = new VarInt().fromBigInt(bn)

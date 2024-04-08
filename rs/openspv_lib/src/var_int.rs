@@ -40,6 +40,11 @@ impl VarInt {
         BufferReader::new(self.buf.clone()).read_var_int()
     }
 
+    pub fn from_buffer_reader(br: &mut BufferReader) -> Self {
+        let buf = br.read_var_int_buf();
+        VarInt { buf }
+    }
+
     pub fn is_minimal(&self) -> bool {
         let bn = self.to_u64();
         let varint = VarInt::from_u64_new(bn);

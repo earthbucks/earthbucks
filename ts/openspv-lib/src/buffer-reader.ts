@@ -92,14 +92,14 @@ export default class BufferReader {
 
   readUInt64BEBigInt(): bigint {
     const buf = this.buf.subarray(this.pos, this.pos + 8)
-    const bn = BigInt('0x' + buf.toString('hex'))
+    const bn = BigInt('0x' + (buf.toString('hex') || '00'))
     this.pos += 8
     return bn
   }
 
   readUInt64LEBigInt(): bigint {
     const buf = this.readReverse(8)
-    const bn = BigInt('0x' + buf.toString('hex'))
+    const bn = BigInt('0x' + (buf.toString('hex') || '00'))
     return bn
   }
 

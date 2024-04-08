@@ -68,6 +68,36 @@ export default class BlockHeader {
     return BlockHeader.fromU8Vec(Uint8Array.from(buf))
   }
 
+  static fromBufferReader(br: BufferReader): BlockHeader {
+    const version = br.readUInt32BE()
+    const previousBlockHash = br.readU8Vec(32)
+    const merkleRoot = br.readU8Vec(32)
+    const timestamp = br.readUInt64BEBigInt()
+    const target = br.readU8Vec(32)
+    const nonce = br.readU8Vec(32)
+    const index = br.readUInt64BEBigInt()
+    return new BlockHeader(
+      version,
+      previousBlockHash,
+      merkleRoot,
+      timestamp,
+      target,
+      nonce,
+      index,
+    )
+  }
+
+  toBufferWriter(bw: BufferWriter): BufferWriter {
+    bw.writeUInt32BE(this.version)
+    bw.writeU8Vec(this.previousBlockHash)
+    bw.writeU8Vec(this.merkleRoot)
+    bw.writeUInt64BEBigInt(this.timestamp)
+    bw.writeU8Vec(this.target)
+    bw.writeU8Vec(this.nonce)
+    bw.writeUInt64BEBigInt(this.index)
+    return bw
+  }
+
   toString(): string {
     return this.toBuffer().toString('hex')
   }
