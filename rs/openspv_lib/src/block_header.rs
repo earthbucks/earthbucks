@@ -64,21 +64,13 @@ impl BlockHeader {
         ))
     }
 
-    pub fn to_vec(&self) -> Vec<u8> {
-        self.to_u8_vec()
+    pub fn to_string(&self) -> String {
+        hex::encode(&self.to_u8_vec())
     }
 
-    pub fn from_vec(buf: Vec<u8>) -> Result<BlockHeader, &'static str> {
-        BlockHeader::from_u8_vec(buf)
-    }
-
-    pub fn to_hex_string(&self) -> String {
-        hex::encode(&self.to_vec())
-    }
-
-    pub fn from_hex_string(str: String) -> Result<BlockHeader, &'static str> {
+    pub fn from_string(str: String) -> Result<BlockHeader, &'static str> {
         let buf = hex::decode(str).map_err(|_| "Invalid hex string")?;
-        BlockHeader::from_vec(buf)
+        BlockHeader::from_u8_vec(buf)
     }
 
     pub fn is_valid_version(version: u32) -> bool {
@@ -97,7 +89,7 @@ impl BlockHeader {
     }
 
     pub fn is_valid(&self) -> bool {
-        let len = self.to_vec().len();
+        let len = self.to_u8_vec().len();
         if len != 148 {
             return false;
         }
@@ -115,8 +107,8 @@ mod tests {
     #[test]
     fn test_to_u8_vec_and_from_u8_vec() {
         let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
-        let buf = bh1.to_vec();
-        let bh2 = BlockHeader::from_vec(buf).unwrap();
+        let buf = bh1.to_u8_vec();
+        let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
@@ -129,8 +121,8 @@ mod tests {
     #[test]
     fn test_to_buffer() {
         let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
-        let buf = bh1.to_vec();
-        let bh2 = BlockHeader::from_vec(buf).unwrap();
+        let buf = bh1.to_u8_vec();
+        let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
