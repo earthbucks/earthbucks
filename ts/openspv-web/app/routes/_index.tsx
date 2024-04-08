@@ -33,7 +33,7 @@ export default function Index() {
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Interoperable blockchain ecosystem.
+              Simplified Payment Verification
               <br />
               <br />
               <a
