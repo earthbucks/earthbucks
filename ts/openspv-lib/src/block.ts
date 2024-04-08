@@ -3,6 +3,7 @@ import Tx from './tx'
 import VarInt from './var-int'
 import BufferWriter from './buffer-writer'
 import BufferReader from './buffer-reader'
+import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class Block {
   public header: BlockHeader
@@ -47,5 +48,13 @@ export default class Block {
 
   static fromU8Vec(buf: Uint8Array): Block {
     return Block.fromBufferReader(new BufferReader(buf))
+  }
+
+  hash(): Uint8Array {
+    return blake3Hash(this.toU8Vec())
+  }
+
+  id(): Uint8Array {
+    return doubleBlake3Hash(this.toU8Vec())
   }
 }
