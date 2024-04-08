@@ -6,7 +6,7 @@ pub struct BlockHeader {
     previous_block_hash: Vec<u8>, // 256 bits
     merkle_root: Vec<u8>,         // 256 bits
     timestamp: u32,               // uint32
-    difficulty: u32,              // 32 bits
+    target: Vec<u8>,              // 32 bits
     nonce: Vec<u8>,               // 256 bits
     index: u64,                   // uint64
 }
@@ -17,7 +17,7 @@ impl BlockHeader {
         previous_block_hash: Vec<u8>,
         merkle_root: Vec<u8>,
         timestamp: u32,
-        difficulty: u32,
+        target: Vec<u8>,
         nonce: Vec<u8>,
         index: u64,
     ) -> BlockHeader {
@@ -26,7 +26,7 @@ impl BlockHeader {
             previous_block_hash,
             merkle_root,
             timestamp,
-            difficulty,
+            target,
             nonce,
             index,
         }
@@ -38,7 +38,7 @@ impl BlockHeader {
         bw.write_u8_vec(self.previous_block_hash.clone());
         bw.write_u8_vec(self.merkle_root.clone());
         bw.write_u32_be(self.timestamp);
-        bw.write_u32_be(self.difficulty);
+        bw.write_u8_vec(self.target.clone());
         bw.write_u8_vec(self.nonce.clone());
         bw.write_u64_be(self.index);
         bw.to_u8_vec()
@@ -50,7 +50,7 @@ impl BlockHeader {
         let previous_block_hash = br.read_u8_vec(32);
         let merkle_root = br.read_u8_vec(32);
         let timestamp = br.read_u32_be();
-        let difficulty = br.read_u32_be();
+        let target = br.read_u8_vec(32);
         let nonce = br.read_u8_vec(32);
         let index = br.read_u64_be();
         Ok(BlockHeader::new(
@@ -58,7 +58,7 @@ impl BlockHeader {
             previous_block_hash,
             merkle_root,
             timestamp,
-            difficulty,
+            target,
             nonce,
             index,
         ))
@@ -81,19 +81,6 @@ impl BlockHeader {
         BlockHeader::from_vec(buf)
     }
 
-    pub fn calculate_target(&self) -> u32 {
-        let difficulty = self.difficulty;
-        let exponent = difficulty >> 24;
-        let coefficient = difficulty & 0xffffff;
-        let target;
-        if exponent <= 3 {
-            target = coefficient >> (8 * (3 - exponent));
-        } else {
-            target = coefficient << (8 * (exponent - 3));
-        }
-        target
-    }
-
     pub fn is_valid_version(version: u32) -> bool {
         version == 1
     }
@@ -111,7 +98,7 @@ impl BlockHeader {
 
     pub fn is_valid(&self) -> bool {
         let len = self.to_vec().len();
-        if len != 116 {
+        if len != 144 {
             return false;
         }
         return BlockHeader::is_valid_version(self.version)
@@ -127,35 +114,35 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_and_from_u8_vec() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, 0, vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
         let buf = bh1.to_vec();
         let bh2 = BlockHeader::from_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
         assert_eq!(bh1.timestamp, bh2.timestamp);
-        assert_eq!(bh1.difficulty, bh2.difficulty);
+        assert_eq!(bh1.target, bh2.target);
         assert_eq!(bh1.nonce, bh2.nonce);
         assert_eq!(bh1.index, bh2.index);
     }
 
     #[test]
     fn test_to_buffer() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, 0, vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
         let buf = bh1.to_vec();
         let bh2 = BlockHeader::from_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
         assert_eq!(bh1.timestamp, bh2.timestamp);
-        assert_eq!(bh1.difficulty, bh2.difficulty);
+        assert_eq!(bh1.target, bh2.target);
         assert_eq!(bh1.nonce, bh2.nonce);
         assert_eq!(bh1.index, bh2.index);
     }
 
     #[test]
     fn test_is_valid() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, 0, vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
         assert!(bh1.is_valid());
     }
 }

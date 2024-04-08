@@ -8,7 +8,7 @@ describe('BlockHeader', () => {
       new Uint8Array(32),
       new Uint8Array(32),
       0,
-      0,
+      new Uint8Array(32),
       new Uint8Array(32),
       0n,
     )
@@ -18,7 +18,7 @@ describe('BlockHeader', () => {
     expect(bh1.previousBlockHash).toEqual(bh2.previousBlockHash)
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot)
     expect(bh1.timestamp).toBe(bh2.timestamp)
-    expect(bh1.difficulty).toBe(bh2.difficulty)
+    expect(bh1.target).toEqual(bh2.target)
     expect(bh1.nonce).toEqual(bh2.nonce)
     expect(bh1.index).toBe(bh2.index)
   })
@@ -29,7 +29,7 @@ describe('BlockHeader', () => {
       new Uint8Array(32),
       new Uint8Array(32),
       0,
-      0,
+      new Uint8Array(32),
       new Uint8Array(32),
       0n,
     )
@@ -39,7 +39,7 @@ describe('BlockHeader', () => {
     expect(bh1.previousBlockHash).toEqual(bh2.previousBlockHash)
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot)
     expect(bh1.timestamp).toBe(bh2.timestamp)
-    expect(bh1.difficulty).toBe(bh2.difficulty)
+    expect(bh1.target).toEqual(bh2.target)
     expect(bh1.nonce).toEqual(bh2.nonce)
     expect(bh1.index).toBe(bh2.index)
   })
@@ -50,7 +50,7 @@ describe('BlockHeader', () => {
       new Uint8Array(32),
       new Uint8Array(32),
       0,
-      0,
+      new Uint8Array(32),
       new Uint8Array(32),
       0n,
     )

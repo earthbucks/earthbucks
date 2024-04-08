@@ -6,7 +6,7 @@ export default class BlockHeader {
   previousBlockHash: Uint8Array // 256 bits
   merkleRoot: Uint8Array // 256 bits
   timestamp: number // uint32
-  difficulty: number // 32 bits
+  target: Uint8Array // 256 bits
   nonce: Uint8Array // 256 bits
   index: bigint // uint64
 
@@ -15,7 +15,7 @@ export default class BlockHeader {
     previousBlockHash: Uint8Array,
     merkleRoot: Uint8Array,
     timestamp: number,
-    difficulty: number,
+    target: Uint8Array,
     nonce: Uint8Array,
     index: bigint,
   ) {
@@ -23,7 +23,7 @@ export default class BlockHeader {
     this.previousBlockHash = previousBlockHash
     this.merkleRoot = merkleRoot
     this.timestamp = timestamp
-    this.difficulty = difficulty
+    this.target = target
     this.nonce = nonce
     this.index = index
   }
@@ -34,7 +34,7 @@ export default class BlockHeader {
     bw.writeU8Vec(this.previousBlockHash)
     bw.writeU8Vec(this.merkleRoot)
     bw.writeUInt32BE(this.timestamp)
-    bw.writeUInt32BE(this.difficulty)
+    bw.writeU8Vec(this.target)
     bw.writeU8Vec(this.nonce)
     bw.writeUInt64BEBigInt(this.index)
     return bw.toU8Vec()
@@ -46,7 +46,7 @@ export default class BlockHeader {
     const previousBlockHash = br.readU8Vec(32)
     const merkleRoot = br.readU8Vec(32)
     const timestamp = br.readUInt32BE()
-    const difficulty = br.readUInt32BE()
+    const target = br.readU8Vec(32)
     const nonce = br.readU8Vec(32)
     const index = br.readUInt64BEBigInt()
     return new BlockHeader(
@@ -54,7 +54,7 @@ export default class BlockHeader {
       previousBlockHash,
       merkleRoot,
       timestamp,
-      difficulty,
+      target,
       nonce,
       index,
     )
@@ -76,19 +76,6 @@ export default class BlockHeader {
     return BlockHeader.fromBuffer(Buffer.from(str, 'hex'))
   }
 
-  calculateTarget() {
-    const difficulty = this.difficulty
-    const exponent = BigInt(difficulty >> 24)
-    const coefficient = BigInt(difficulty & 0xffffff)
-    let target
-    if (exponent <= 3) {
-      target = coefficient >> (8n * (3n - exponent))
-    } else {
-      target = coefficient << (8n * (exponent - 3n))
-    }
-    return target
-  }
-
   static isValidVersion(version: number): boolean {
     return version === 1
   }
@@ -107,7 +94,7 @@ export default class BlockHeader {
 
   isValid(): boolean {
     const len = this.toBuffer().length
-    if (len !== 116) {
+    if (len !== 144) {
       return false
     }
     return (
