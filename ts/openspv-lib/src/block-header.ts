@@ -180,4 +180,27 @@ export default class BlockHeader {
   id(): Uint8Array {
     return doubleBlake3Hash(this.toU8Vec())
   }
+
+  static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
+    const target = BigInt('0x' + Buffer.from(targetBuf).toString('hex'))
+    const twoWeeks = 2016n * 600n // seconds
+
+    // To prevent extreme difficulty adjustments, if it took less than 1 week or
+    // more than 8 weeks, we still consider it as 1 week or 8 weeks
+    // respectively.
+    if (timeDiff < twoWeeks / 2n) {
+      timeDiff = twoWeeks / 2n // seconds
+    }
+    if (timeDiff > twoWeeks * 2n) {
+      timeDiff = twoWeeks * 2n // seconds
+    }
+
+    const newTarget = (target * timeDiff) / twoWeeks // seconds
+
+    const newTargetBuf = Buffer.from(
+      newTarget.toString(16).padStart(64, '0'),
+      'hex',
+    )
+    return Uint8Array.from(newTargetBuf)
+  }
 }

@@ -41,28 +41,6 @@ export default class BlockBuilder {
     return new BlockBuilder(header, txs, merkleTxs)
   }
 
-  static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
-    // timeDiff is in seconds.
-    // twoWeeks in in seconds.
-    const twoWeeks = 2016n * 600n
-    // To prevent extreme difficulty adjustments, if it took less than 1 week or
-    // more than 8 weeks, we still consider it as 1 week or 8 weeks
-    // respectively.
-    if (timeDiff < twoWeeks / 2n) {
-      timeDiff = twoWeeks / 2n
-    }
-    if (timeDiff > twoWeeks * 4n) {
-      timeDiff = twoWeeks * 4n
-    }
-    const timeDiffPerTwoWeeksDividedByTimeDiff = twoWeeks / timeDiff
-    const targetNum = BigInt('0x' + Buffer.from(targetBuf).toString('hex'))
-    const targetTimesTimeDiffInSecs = targetNum * timeDiff
-    const newTargetNum =
-      targetTimesTimeDiffInSecs / timeDiffPerTwoWeeksDividedByTimeDiff
-    const newTargetBuf = Buffer.from(newTargetNum.toString(32), 'hex')
-    return newTargetBuf
-  }
-
   static fromPrevBlockHeader(
     prevBlockHeader: BlockHeader,
     prevAdjustmentBlockHeader: BlockHeader | null, // exactly 2016 blocks before
@@ -83,7 +61,7 @@ export default class BlockBuilder {
       const timeDiff =
         prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp
       const prevTarget = prevBlockHeader.target
-      target = BlockBuilder.adjustTarget(prevTarget, timeDiff)
+      target = BlockHeader.adjustTarget(prevTarget, timeDiff)
     } else {
       target = prevBlockHeader.target
     }
