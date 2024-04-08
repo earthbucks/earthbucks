@@ -97,4 +97,19 @@ describe('Block', () => {
       '082081dcb7b17538d3e40ceb876fe70e8e2c9d29f68ed7c55d6ce3a3e23b972f',
     )
   })
+
+  test('isGenesis', () => {
+    const bh = new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+    )
+    const tx = new Tx(1, [], [], 0n)
+    const block = new Block(bh, [tx])
+    expect(block.isGenesis()).toBe(true)
+  })
 })

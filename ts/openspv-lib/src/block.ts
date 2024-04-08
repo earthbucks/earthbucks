@@ -57,4 +57,8 @@ export default class Block {
   id(): Uint8Array {
     return doubleBlake3Hash(this.toU8Vec())
   }
+
+  isGenesis(): boolean {
+    return this.header.isGenesis() && this.txs.length === 1
+  }
 }

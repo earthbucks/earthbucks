@@ -129,6 +129,10 @@ impl BlockHeader {
             && BlockHeader::is_valid_merkle_root(self.merkle_root.clone())
             && BlockHeader::is_valid_nonce(self.nonce.clone());
     }
+
+    pub fn is_genesis(&self) -> bool {
+        self.index == 0 && self.previous_block_hash.iter().all(|&x| x == 0)
+    }
 }
 
 #[cfg(test)]
@@ -167,5 +171,11 @@ mod tests {
     fn test_is_valid() {
         let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
         assert!(bh1.is_valid());
+    }
+
+    #[test]
+    fn test_is_genesis() {
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        assert!(bh1.is_genesis());
     }
 }

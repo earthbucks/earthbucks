@@ -56,4 +56,17 @@ describe('BlockHeader', () => {
     )
     expect(bh1.isValid()).toBe(true)
   })
+
+  test('isGenesis', () => {
+    const bh1 = new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+    )
+    expect(bh1.isGenesis()).toBe(true)
+  })
 })

@@ -119,4 +119,12 @@ mod tests {
             "082081dcb7b17538d3e40ceb876fe70e8e2c9d29f68ed7c55d6ce3a3e23b972f"
         );
     }
+
+    #[test]
+    fn test_is_genesis() {
+        let header = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let tx = Tx::new(1, vec![], vec![], 0);
+        let block = Block::new(header, vec![tx]);
+        assert_eq!(block.header.is_genesis(), true);
+    }
 }

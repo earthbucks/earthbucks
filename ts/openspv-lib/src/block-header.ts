@@ -134,4 +134,10 @@ export default class BlockHeader {
       BlockHeader.isValidNonce(this.nonce)
     )
   }
+
+  isGenesis(): boolean {
+    return (
+      this.index === 0n && this.previousBlockHash.every((byte) => byte === 0)
+    )
+  }
 }
