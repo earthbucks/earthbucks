@@ -1,4 +1,3 @@
-use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::block_header::BlockHeader;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
@@ -48,14 +47,6 @@ impl Block {
         let mut br = BufferReader::new(buf);
         Self::from_buffer_reader(&mut br)
     }
-
-    pub fn hash(&self) -> Vec<u8> {
-        blake3_hash(&self.to_u8_vec()).to_vec()
-    }
-
-    pub fn id(&self) -> Vec<u8> {
-        double_blake3_hash(&self.to_u8_vec()).to_vec()
-    }
 }
 
 #[cfg(test)]
@@ -92,32 +83,6 @@ mod tests {
         let block2 = Block::from_buffer_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);
-    }
-
-    #[test]
-    fn test_hash() {
-        let header = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
-        let tx = Tx::new(1, vec![], vec![], 0);
-        let block = Block::new(header, vec![tx]);
-        let hash_buf = block.hash();
-        let hash_hex = hex::encode(hash_buf);
-        assert_eq!(
-            hash_hex,
-            "52e5f4747e31dd27920febfc098c18aa68aa16b316809682dc5194cd3b247c17"
-        );
-    }
-
-    #[test]
-    fn test_id() {
-        let header = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
-        let tx = Tx::new(1, vec![], vec![], 0);
-        let block = Block::new(header, vec![tx]);
-        let id_buf = block.id();
-        let id_hex = hex::encode(id_buf);
-        assert_eq!(
-            id_hex,
-            "082081dcb7b17538d3e40ceb876fe70e8e2c9d29f68ed7c55d6ce3a3e23b972f"
-        );
     }
 
     #[test]

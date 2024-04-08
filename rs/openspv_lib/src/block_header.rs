@@ -1,16 +1,16 @@
-use std::time::SystemTime;
-
+use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
+use std::time::SystemTime;
 
 pub struct BlockHeader {
-    pub version: u32,                 // uint32
+    pub version: u32,           // uint32
     pub prev_block_id: Vec<u8>, // 256 bits
-    pub merkle_root: Vec<u8>,         // 256 bits
-    pub timestamp: u64,               // uint32
-    pub target: Vec<u8>,              // 32 bits
-    pub nonce: Vec<u8>,               // 256 bits
-    pub index: u64,                   // uint64
+    pub merkle_root: Vec<u8>,   // 256 bits
+    pub timestamp: u64,         // uint32
+    pub target: Vec<u8>,        // 32 bits
+    pub nonce: Vec<u8>,         // 256 bits
+    pub index: u64,             // uint64
 }
 
 impl BlockHeader {
@@ -135,7 +135,7 @@ impl BlockHeader {
     pub fn is_genesis(&self) -> bool {
         self.index == 0 && self.prev_block_id.iter().all(|&x| x == 0)
     }
-    
+
     pub fn from_genesis(initial_target: [u8; 32]) -> Self {
         let timestamp = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
@@ -172,6 +172,14 @@ impl BlockHeader {
             nonce: nonce.to_vec(),
             index,
         }
+    }
+
+    pub fn hash(&self) -> [u8; 32] {
+        blake3_hash(&self.to_u8_vec())
+    }
+
+    pub fn id(&self) -> [u8; 32] {
+        double_blake3_hash(&self.to_u8_vec())
     }
 }
 
@@ -217,5 +225,27 @@ mod tests {
     fn test_is_genesis() {
         let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
         assert!(bh1.is_genesis());
+    }
+
+    #[test]
+    fn test_hash() {
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let hash = bh1.hash();
+        let hex = hex::encode(hash);
+        assert_eq!(
+            hex,
+            "ec821c0b0375d4e80eca5fb437652b2d53f32a613d4349d665a67406ba0d239e"
+        );
+    }
+
+    #[test]
+    fn test_id() {
+        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let id = bh1.id();
+        let hex = hex::encode(id);
+        assert_eq!(
+            hex,
+            "8bbebda6265eb4265ff52f6e744d2859e6ef58c640e1df355072c4a9541b8aba"
+        );
     }
 }

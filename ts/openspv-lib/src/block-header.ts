@@ -1,5 +1,6 @@
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
+import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class BlockHeader {
   version: number // uint32
@@ -171,5 +172,13 @@ export default class BlockHeader {
     return (
       this.index === 0n && this.previousBlockHash.every((byte) => byte === 0)
     )
+  }
+
+  hash(): Uint8Array {
+    return blake3Hash(this.toU8Vec())
+  }
+
+  id(): Uint8Array {
+    return doubleBlake3Hash(this.toU8Vec())
   }
 }

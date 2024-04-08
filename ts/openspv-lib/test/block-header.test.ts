@@ -69,4 +69,34 @@ describe('BlockHeader', () => {
     )
     expect(bh1.isGenesis()).toBe(true)
   })
+
+  test('hash', () => {
+    const bh1 = new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+    )
+    expect(Buffer.from(bh1.hash()).toString('hex')).toBe(
+      'ec821c0b0375d4e80eca5fb437652b2d53f32a613d4349d665a67406ba0d239e',
+    )
+  })
+
+  test('id', () => {
+    const bh1 = new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      0n,
+    )
+    expect(Buffer.from(bh1.id()).toString('hex')).toBe(
+      '8bbebda6265eb4265ff52f6e744d2859e6ef58c640e1df355072c4a9541b8aba',
+    )
+  })
 })

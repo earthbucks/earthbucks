@@ -50,14 +50,6 @@ export default class Block {
     return Block.fromBufferReader(new BufferReader(buf))
   }
 
-  hash(): Uint8Array {
-    return blake3Hash(this.toU8Vec())
-  }
-
-  id(): Uint8Array {
-    return doubleBlake3Hash(this.toU8Vec())
-  }
-
   isGenesis(): boolean {
     return this.header.isGenesis() && this.txs.length === 1
   }

@@ -62,42 +62,6 @@ describe('Block', () => {
     expect(block2.header.index).toBe(bh.index)
   })
 
-  test('hash', () => {
-    const bh = new BlockHeader(
-      1,
-      new Uint8Array(32),
-      new Uint8Array(32),
-      0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
-      0n,
-    )
-    const tx = new Tx(1, [], [], 0n)
-    const block = new Block(bh, [tx])
-    const hash = block.hash()
-    expect(Buffer.from(hash).toString('hex')).toEqual(
-      '52e5f4747e31dd27920febfc098c18aa68aa16b316809682dc5194cd3b247c17',
-    )
-  })
-
-  test('id', () => {
-    const bh = new BlockHeader(
-      1,
-      new Uint8Array(32),
-      new Uint8Array(32),
-      0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
-      0n,
-    )
-    const tx = new Tx(1, [], [], 0n)
-    const block = new Block(bh, [tx])
-    const id = block.id()
-    expect(Buffer.from(id).toString('hex')).toEqual(
-      '082081dcb7b17538d3e40ceb876fe70e8e2c9d29f68ed7c55d6ce3a3e23b972f',
-    )
-  })
-
   test('isGenesis', () => {
     const bh = new BlockHeader(
       1,

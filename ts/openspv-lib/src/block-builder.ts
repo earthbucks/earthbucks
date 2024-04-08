@@ -52,7 +52,6 @@ export default class BlockBuilder {
     const header = BlockHeader.fromPrevBlockId(
       prevBlockId,
       prevBlockIndex,
-      nonce,
       target,
     )
     const txs = []
