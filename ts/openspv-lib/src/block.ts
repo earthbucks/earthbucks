@@ -42,27 +42,10 @@ export default class Block {
   }
 
   toU8Vec(): Uint8Array {
-    const bw = new BufferWriter()
-    bw.writeU8Vec(this.header.toU8Vec())
-    bw.writeVarIntNum(this.txs.length)
-    this.txs.forEach((tx) => {
-      bw.writeU8Vec(tx.toU8Vec())
-    })
-    return bw.toU8Vec()
+    return this.toBufferWriter(new BufferWriter()).toU8Vec()
   }
 
-  fromU8Vec(buf: Uint8Array): Block {
-    const br = new BufferReader(buf)
-    const header = BlockHeader.fromU8Vec(br.readU8Vec(80))
-    const txCountVarInt = VarInt.fromBufferReader(br)
-    if (!txCountVarInt.isMinimal()) {
-      throw new Error('non-minimally encoded varint')
-    }
-    const txCount = txCountVarInt.toBigInt()
-    const txs: Tx[] = []
-    for (let i = 0; i < txCount; i++) {
-      txs.push(Tx.fromBufferReader(br))
-    }
-    return new Block(header, txs)
+  static fromU8Vec(buf: Uint8Array): Block {
+    return Block.fromBufferReader(new BufferReader(buf))
   }
 }
