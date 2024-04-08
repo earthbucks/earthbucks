@@ -79,4 +79,58 @@ describe('TxInput', () => {
       '000000000000000000000000000000000000000000000000000000000000000000000000054c03121212ffffffff',
     )
   })
+
+  test('isNull', () => {
+    const inputTxHash = Buffer.alloc(32)
+    const inputTxIndex = 0
+    const script = new Script().fromString('0x121212')
+    const sequence = 0
+
+    const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
+    expect(txInput.isNull()).toBe(false)
+
+    const nullTxInput = new TxInput(
+      Buffer.alloc(32),
+      0xffffffff,
+      new Script(),
+      0xffffffff,
+    )
+    expect(nullTxInput.isNull()).toBe(true)
+  })
+
+  test('isFinal', () => {
+    const inputTxHash = Buffer.alloc(32)
+    const inputTxIndex = 0
+    const script = new Script().fromString('0x121212')
+    const sequence = 0
+
+    const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
+    expect(txInput.isFinal()).toBe(false)
+
+    const finalTxInput = new TxInput(
+      Buffer.alloc(32),
+      0xffffffff,
+      new Script(),
+      0xffffffff,
+    )
+    expect(finalTxInput.isFinal()).toBe(true)
+  })
+
+  test('isCoinbase', () => {
+    const inputTxHash = Buffer.alloc(32)
+    const inputTxIndex = 0
+    const script = new Script().fromString('0x121212')
+    const sequence = 0
+
+    const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
+    expect(txInput.isCoinbase()).toBe(false)
+
+    const coinbaseTxInput = new TxInput(
+      Buffer.alloc(32),
+      0xffffffff,
+      new Script(),
+      0xffffffff,
+    )
+    expect(coinbaseTxInput.isCoinbase()).toBe(true)
+  })
 })

@@ -53,6 +53,18 @@ impl TxInput {
         writer.write_u32_be(self.sequence);
         writer.to_u8_vec()
     }
+
+    pub fn is_null(&self) -> bool {
+        self.input_tx_id.iter().all(|&byte| byte == 0) && self.input_tx_index == 0xffffffff
+    }
+
+    pub fn is_final(&self) -> bool {
+        self.sequence == 0xffffffff
+    }
+
+    pub fn is_coinbase(&self) -> bool {
+        self.is_null() && self.is_final()
+    }
 }
 
 #[cfg(test)]
@@ -124,5 +136,62 @@ mod tests {
         assert_eq!(tx_input.input_tx_index, input_tx_index);
         assert_eq!(script2_hex, script_hex);
         assert_eq!(tx_input.sequence, sequence);
+    }
+
+    #[test]
+    fn test_is_null() {
+        let tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0,
+            script: Script::from_string("0x121212").unwrap(),
+            sequence: 0,
+        };
+        assert!(!tx_input.is_null());
+
+        let null_tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0xffffffff,
+            script: Script::from_string("").unwrap(),
+            sequence: 0xffffffff,
+        };
+        assert!(null_tx_input.is_null());
+    }
+
+    #[test]
+    fn test_is_final() {
+        let tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0,
+            script: Script::from_string("0x121212").unwrap(),
+            sequence: 0,
+        };
+        assert!(!tx_input.is_final());
+
+        let final_tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0xffffffff,
+            script: Script::from_string("").unwrap(),
+            sequence: 0xffffffff,
+        };
+        assert!(final_tx_input.is_final());
+    }
+
+    #[test]
+    fn test_is_coinbase() {
+        let tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0,
+            script: Script::from_string("0x121212").unwrap(),
+            sequence: 0,
+        };
+        assert!(!tx_input.is_coinbase());
+
+        let coinbase_tx_input = TxInput {
+            input_tx_id: [0; 32].to_vec(),
+            input_tx_index: 0xffffffff,
+            script: Script::from_string("").unwrap(),
+            sequence: 0xffffffff,
+        };
+        assert!(coinbase_tx_input.is_coinbase());
     }
 }

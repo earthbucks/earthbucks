@@ -54,4 +54,19 @@ export default class TxInput {
   toBuffer(): Buffer {
     return Buffer.from(this.toU8Vec())
   }
+
+  isNull(): boolean {
+    return (
+      this.inputTxId.every((byte) => byte === 0) &&
+      this.inputTxIndex === 0xffffffff
+    )
+  }
+
+  isFinal(): boolean {
+    return this.sequence === 0xffffffff
+  }
+
+  isCoinbase(): boolean {
+    return this.isNull() && this.isFinal()
+  }
 }
