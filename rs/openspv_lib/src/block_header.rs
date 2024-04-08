@@ -1,9 +1,11 @@
+use std::time::SystemTime;
+
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 
 pub struct BlockHeader {
     pub version: u32,                 // uint32
-    pub previous_block_hash: Vec<u8>, // 256 bits
+    pub prev_block_id: Vec<u8>, // 256 bits
     pub merkle_root: Vec<u8>,         // 256 bits
     pub timestamp: u64,               // uint32
     pub target: Vec<u8>,              // 32 bits
@@ -14,7 +16,7 @@ pub struct BlockHeader {
 impl BlockHeader {
     pub fn new(
         version: u32,
-        previous_block_hash: Vec<u8>,
+        prev_block_id: Vec<u8>,
         merkle_root: Vec<u8>,
         timestamp: u64,
         target: Vec<u8>,
@@ -23,7 +25,7 @@ impl BlockHeader {
     ) -> BlockHeader {
         BlockHeader {
             version,
-            previous_block_hash,
+            prev_block_id,
             merkle_root,
             timestamp,
             target,
@@ -35,7 +37,7 @@ impl BlockHeader {
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut bw = BufferWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_u8_vec(self.previous_block_hash.clone());
+        bw.write_u8_vec(self.prev_block_id.clone());
         bw.write_u8_vec(self.merkle_root.clone());
         bw.write_u64_be(self.timestamp);
         bw.write_u8_vec(self.target.clone());
@@ -86,7 +88,7 @@ impl BlockHeader {
     pub fn to_buffer_writer(&self) -> BufferWriter {
         let mut bw = BufferWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_u8_vec(self.previous_block_hash.clone());
+        bw.write_u8_vec(self.prev_block_id.clone());
         bw.write_u8_vec(self.merkle_root.clone());
         bw.write_u64_be(self.timestamp);
         bw.write_u8_vec(self.target.clone());
@@ -125,13 +127,51 @@ impl BlockHeader {
             return false;
         }
         return BlockHeader::is_valid_version(self.version)
-            && BlockHeader::is_valid_previous_block_hash(self.previous_block_hash.clone())
+            && BlockHeader::is_valid_previous_block_hash(self.prev_block_id.clone())
             && BlockHeader::is_valid_merkle_root(self.merkle_root.clone())
             && BlockHeader::is_valid_nonce(self.nonce.clone());
     }
 
     pub fn is_genesis(&self) -> bool {
-        self.index == 0 && self.previous_block_hash.iter().all(|&x| x == 0)
+        self.index == 0 && self.prev_block_id.iter().all(|&x| x == 0)
+    }
+    
+    pub fn from_genesis(initial_target: [u8; 32]) -> Self {
+        let timestamp = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_secs();
+        Self {
+            version: 1,
+            prev_block_id: [0; 32].to_vec(),
+            merkle_root: [0; 32].to_vec(),
+            timestamp,
+            target: initial_target.to_vec(),
+            nonce: [0; 32].to_vec(),
+            index: 0,
+        }
+    }
+
+    pub fn from_prev_block_id(
+        prev_block_id: [u8; 32],
+        prev_block_index: u64,
+        target: [u8; 32],
+    ) -> Self {
+        let timestamp = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_secs();
+        let index = prev_block_index + 1;
+        let nonce = [0; 32];
+        Self {
+            version: 1,
+            prev_block_id: prev_block_id.to_vec(),
+            merkle_root: [0; 32].to_vec(),
+            timestamp,
+            target: target.to_vec(),
+            nonce: nonce.to_vec(),
+            index,
+        }
     }
 }
 
@@ -145,7 +185,7 @@ mod tests {
         let buf = bh1.to_u8_vec();
         let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
-        assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
+        assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
         assert_eq!(bh1.timestamp, bh2.timestamp);
         assert_eq!(bh1.target, bh2.target);
@@ -159,7 +199,7 @@ mod tests {
         let buf = bh1.to_u8_vec();
         let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
-        assert_eq!(bh1.previous_block_hash, bh2.previous_block_hash);
+        assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
         assert_eq!(bh1.timestamp, bh2.timestamp);
         assert_eq!(bh1.target, bh2.target);

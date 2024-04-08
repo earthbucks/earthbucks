@@ -106,6 +106,38 @@ export default class BlockHeader {
     return BlockHeader.fromBuffer(Buffer.from(str, 'hex'))
   }
 
+  static fromGenesis(initialTarget: Uint8Array): BlockHeader {
+    const timestamp = BigInt(Math.floor(Date.now() / 1000)) // seconds
+    return new BlockHeader(
+      1,
+      new Uint8Array(32),
+      new Uint8Array(32),
+      timestamp,
+      initialTarget,
+      new Uint8Array(32),
+      0n,
+    )
+  }
+
+  static fromPrevBlockId(
+    prevBlockId: Uint8Array,
+    prevBlockIndex: bigint,
+    target: Uint8Array,
+  ): BlockHeader {
+    const timestamp = BigInt(Math.floor(Date.now() / 1000)) // seconds
+    const index = prevBlockIndex + 1n
+    const nonce = new Uint8Array(32)
+    return new BlockHeader(
+      1,
+      prevBlockId,
+      new Uint8Array(32),
+      timestamp,
+      target,
+      nonce,
+      index,
+    )
+  }
+
   static isValidVersion(version: number): boolean {
     return version === 1
   }
