@@ -16,7 +16,7 @@ export default function Index() {
             <img
               src="/earthbucks-logo.png"
               alt=""
-              className="mx-auto mb-4 block h-[200px] w-[200px]"
+              className="mx-auto mb-4 block w-[200px]"
             />
             <div className="hidden dark:block">
               <img
@@ -73,6 +73,12 @@ export default function Index() {
                 OpenSPV
               </a>
             </div>
+            <br />
+            <img
+              src="/earthbucks-note-small.png"
+              alt=""
+              className="mx-auto mb-4 block w-[80px]"
+            />
           </div>
         </div>
       </div>
