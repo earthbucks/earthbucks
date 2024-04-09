@@ -49,10 +49,11 @@ export default class BlockBuilder {
   ): BlockBuilder {
     let target = null
     const index = prevBlockHeader.index + 1n
-    if (index % 2016n === 0n) {
+    if (index % BlockHeader.BLOCKS_PER_ADJUSTMENT === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.index + 2016n !== index
+        prevAdjustmentBlockHeader.index + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
+          index
       ) {
         throw new Error(
           'must provide previous adjustment block header 2016 blocks before',

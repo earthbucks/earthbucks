@@ -1,6 +1,8 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
+use num_bigint::BigUint;
+use num_integer::Integer;
 use std::time::SystemTime;
 
 pub struct BlockHeader {
@@ -180,6 +182,25 @@ impl BlockHeader {
 
     pub fn id(&self) -> [u8; 32] {
         double_blake3_hash(&self.to_u8_vec())
+    }
+
+    pub fn adjust_target(target_buf: Vec<u8>, time_diff: u64) -> Vec<u8> {
+        let target = BigUint::from_bytes_be(&target_buf);
+        let two_weeks = 2016 * 600; // seconds
+        let time_diff = time_diff as u64;
+        let time_diff = if time_diff < two_weeks / 2 {
+            two_weeks / 2
+        } else if time_diff > two_weeks * 2 {
+            two_weeks * 2
+        } else {
+            time_diff
+        };
+        let new_target = (target * time_diff).div_floor(&BigUint::from(two_weeks));
+        let mut new_target_bytes = new_target.to_bytes_be();
+        while new_target_bytes.len() < 32 {
+            new_target_bytes.insert(0, 0);
+        }
+        new_target_bytes
     }
 }
 

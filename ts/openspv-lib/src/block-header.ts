@@ -3,6 +3,8 @@ import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class BlockHeader {
+  static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
+
   version: number // uint32
   previousBlockId: Uint8Array // 256 bits
   merkleRoot: Uint8Array // 256 bits
@@ -183,7 +185,7 @@ export default class BlockHeader {
 
   static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
     const target = BigInt('0x' + Buffer.from(targetBuf).toString('hex'))
-    const twoWeeks = 2016n * 600n // seconds
+    const twoWeeks = BlockHeader.BLOCKS_PER_ADJUSTMENT * 600n // seconds
 
     // To prevent extreme difficulty adjustments, if it took less than 1 week or
     // more than 8 weeks, we still consider it as 1 week or 8 weeks

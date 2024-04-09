@@ -191,6 +191,7 @@ dependencies = [
  "hex",
  "lazy_static",
  "num-bigint",
+ "num-integer",
  "num-traits",
  "rand",
  "secp256k1",
