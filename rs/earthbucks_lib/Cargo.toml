@@ -2,6 +2,7 @@
 name = "earthbucks_lib"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 secp256k1 = "0.29.0"

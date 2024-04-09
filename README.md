@@ -41,3 +41,12 @@ Additional nodes:
 - impulsecash.com: mining pool (ts full node + gui)
 - compubutton.com: spv wallet (ts spv node + gui)
 - openspv.com: spv wallet (rs spv node + gui)
+
+## License
+
+All software is copyright Ryan X. Charles LLC and is not open-source unless
+otherwise specified. Some software is open-source and is licensed under the MIT
+license. See the LICENSE file in each directory for details. Some software that
+is not open-source is included for educational purposes only.
+
+Copyright (c) 2024 Ryan X. Charles LLC

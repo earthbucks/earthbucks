@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@napi-rs/blake-hash": "^1.3.4",
     "@types/secp256k1": "^4.0.6",
