@@ -7,7 +7,8 @@ use crate::tx_input::TxInput;
 use crate::tx_output::TxOutput;
 use crate::tx_signature::TxSignature;
 use crate::var_int::VarInt;
-use secp256k1::{Message, PublicKey, Secp256k1, Signature};
+use secp256k1::{Message, PublicKey, Secp256k1};
+use secp256k1::ecdsa::Signature;
 
 pub struct HashCache {
     pub prevouts_hash: Option<Vec<u8>>,
@@ -251,10 +252,10 @@ impl Tx {
     ) -> TxSignature {
         let secp = Secp256k1::new();
         let message =
-            Message::from_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
+            Message::from_digest_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
                 .expect("32 bytes");
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
-        let sig = secp.sign(&message, &key);
+        let sig = secp.sign_ecdsa(&message, &key);
         let sig = sig.serialize_compact();
         TxSignature::new(hash_type, sig.to_vec())
     }
@@ -269,7 +270,7 @@ impl Tx {
         hash_cache: &mut HashCache,
     ) -> TxSignature {
         let secp = Secp256k1::new();
-        let message = Message::from_slice(&self.sighash_with_cache(
+        let message = Message::from_digest_slice(&self.sighash_with_cache(
             input_index,
             script,
             amount,
@@ -278,7 +279,7 @@ impl Tx {
         ))
         .expect("32 bytes");
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
-        let sig = secp.sign(&message, &key);
+        let sig = secp.sign_ecdsa(&message, &key);
         let sig = sig.serialize_compact();
         TxSignature::new(hash_type, sig.to_vec())
     }
@@ -295,10 +296,10 @@ impl Tx {
         let secp = Secp256k1::new();
         let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
         let message =
-            Message::from_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
+            Message::from_digest_slice(&self.sighash_no_cache(input_index, script, amount, hash_type))
                 .expect("32 bytes");
         let signature = Signature::from_compact(&signature.sig_buf).expect("64 bytes");
-        secp.verify(&message, &signature, &pubkey).is_ok()
+        secp.verify_ecdsa(&message, &signature, &pubkey).is_ok()
     }
 
     pub fn verify_with_cache(
@@ -313,7 +314,7 @@ impl Tx {
         let hash_type = signature.hash_type;
         let secp = Secp256k1::new();
         let pubkey = PublicKey::from_slice(&public_key).expect("33 bytes");
-        let message = Message::from_slice(&self.sighash_with_cache(
+        let message = Message::from_digest_slice(&self.sighash_with_cache(
             input_index,
             script,
             amount,
@@ -322,7 +323,7 @@ impl Tx {
         ))
         .expect("32 bytes");
         let signature = Signature::from_compact(&signature.sig_buf).expect("64 bytes");
-        secp.verify(&message, &signature, &pubkey).is_ok()
+        secp.verify_ecdsa(&message, &signature, &pubkey).is_ok()
     }
 }
 
