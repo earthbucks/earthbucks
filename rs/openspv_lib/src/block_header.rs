@@ -5,9 +5,6 @@ use num_bigint::BigUint;
 use num_integer::Integer;
 use std::time::SystemTime;
 
-pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
-pub const BLOCK_INTERVAL: u64 = 600;
-
 pub struct BlockHeader {
     pub version: u32,           // uint32
     pub prev_block_id: Vec<u8>, // 256 bits
@@ -19,6 +16,9 @@ pub struct BlockHeader {
 }
 
 impl BlockHeader {
+    pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
+    pub const BLOCK_INTERVAL: u64 = 600;
+
     pub fn new(
         version: u32,
         prev_block_id: Vec<u8>,
@@ -194,7 +194,7 @@ impl BlockHeader {
 
     pub fn adjust_target(target_buf: Vec<u8>, time_diff: u64) -> Vec<u8> {
         let target = BigUint::from_bytes_be(&target_buf);
-        let two_weeks = BLOCKS_PER_ADJUSTMENT * BLOCK_INTERVAL;
+        let two_weeks = BlockHeader::BLOCKS_PER_ADJUSTMENT * BlockHeader::BLOCK_INTERVAL;
         let time_diff = time_diff as u64;
         let time_diff = if time_diff < two_weeks / 2 {
             two_weeks / 2
