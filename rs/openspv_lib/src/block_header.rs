@@ -123,6 +123,10 @@ impl BlockHeader {
         nonce.len() == 32
     }
 
+    pub fn is_valid_target(target: Vec<u8>) -> bool {
+        target.len() == 32
+    }
+
     pub fn is_valid(&self) -> bool {
         let len = self.to_u8_vec().len();
         if len != 148 {
@@ -131,7 +135,8 @@ impl BlockHeader {
         return BlockHeader::is_valid_version(self.version)
             && BlockHeader::is_valid_previous_block_hash(self.prev_block_id.clone())
             && BlockHeader::is_valid_merkle_root(self.merkle_root.clone())
-            && BlockHeader::is_valid_nonce(self.nonce.clone());
+            && BlockHeader::is_valid_nonce(self.nonce.clone())
+            && BlockHeader::is_valid_target(self.target.clone());
     }
 
     pub fn is_genesis(&self) -> bool {

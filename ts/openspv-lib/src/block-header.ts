@@ -3,7 +3,7 @@ import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class BlockHeader {
-  static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
+  static readonly BLOCKS_PER_ADJUSTMENT = 2016n
 
   version: number // uint32
   previousBlockId: Uint8Array // 256 bits
@@ -158,6 +158,10 @@ export default class BlockHeader {
     return nonce.length === 32
   }
 
+  static isValidTarget(target: Uint8Array): boolean {
+    return target.length === 32
+  }
+
   isValid(): boolean {
     const len = this.toBuffer().length
     if (len !== 148) {
@@ -167,7 +171,8 @@ export default class BlockHeader {
       BlockHeader.isValidVersion(this.version) &&
       BlockHeader.isValidPreviousBlockHash(this.previousBlockId) &&
       BlockHeader.isValidMerkleRoot(this.merkleRoot) &&
-      BlockHeader.isValidNonce(this.nonce)
+      BlockHeader.isValidNonce(this.nonce) &&
+      BlockHeader.isValidTarget(this.target)
     )
   }
 
