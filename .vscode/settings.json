@@ -29,7 +29,6 @@
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
   "rust-analyzer.linkedProjects": [
-    "rs/Cargo.toml",
-    "./rs/openspv_lib/Cargo.toml"
+    "rs/Cargo.toml"
   ]
 }

@@ -7,7 +7,7 @@ import Key from '../src/key'
 import Address from '../src/address'
 import AddressKeyMap from '../src/address-key-map'
 import TxSigner from '../src/tx-signer'
-import TxVerifier from 'openspv-lib/src/tx-verifier'
+import TxVerifier from '../src/tx-verifier'
 
 describe('TxVerifier', () => {
   let txBuilder: TxBuilder

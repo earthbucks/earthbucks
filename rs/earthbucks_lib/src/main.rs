@@ -1,5 +1,5 @@
-use openspv_lib::address;
-use openspv_lib::key::Key;
+use earthbucks_lib::address;
+use earthbucks_lib::key::Key;
 use std::env;
 
 fn main() {
