@@ -50,30 +50,18 @@ impl BlockBuilder {
         output_script: Script,
         output_amount: u64,
     ) -> Result<Self, &'static str> {
-        let index = prev_block_header.index + 1;
-        let mut target = prev_block_header.target.clone();
-        if index % BlockHeader::BLOCKS_PER_ADJUSTMENT == 0 {
-            match prev_adjustment_block_header {
-                Some(pabh) if pabh.index + BlockHeader::BLOCKS_PER_ADJUSTMENT == index => {
-                    let time_diff = prev_block_header.timestamp - pabh.timestamp;
-                    target =
-                        BlockHeader::adjust_target(prev_block_header.clone().target, time_diff);
-                }
-                _ => {
-                    return Err("must provide previous adjustment block header 2016 blocks before")
-                }
-            }
-        }
-        let target_buf: [u8; 32] = target.try_into().unwrap();
-        let mut header =
-            BlockHeader::from_prev_block_header(&prev_block_header.clone(), target_buf);
+        let mut header = BlockHeader::from_prev_block_header(
+            prev_block_header.clone(),
+            prev_adjustment_block_header,
+        )
+        .unwrap();
         let tx_input = TxInput::from_coinbase(output_script.clone());
         let tx_output = TxOutput::new(output_amount, output_script.clone());
         let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
         let txs = vec![coinbase_tx];
         let merkle_txs = MerkleTxs::new(txs.clone());
         let root = merkle_txs.root.clone();
-        header.merkle_root = root;
+        header.merkle_root = root.clone();
         Ok(Self::new(header, txs, merkle_txs))
     }
 }

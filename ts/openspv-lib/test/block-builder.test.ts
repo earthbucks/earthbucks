@@ -40,7 +40,7 @@ describe('BlockBuilder', () => {
     expect(bb.header.target).toEqual(target)
   })
 
-  test('fromPrevBlock', () => {
+  test('fromPrevBlockHeader', () => {
     const outputScript = new Script()
     const outputAmount = 0n
     const target = new Uint8Array(32)

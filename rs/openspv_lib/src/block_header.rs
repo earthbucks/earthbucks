@@ -3,7 +3,7 @@ use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 use num_bigint::BigUint;
 use num_integer::Integer;
-use std::time::SystemTime;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone)]
 pub struct BlockHeader {
@@ -163,22 +163,38 @@ impl BlockHeader {
         }
     }
 
-    pub fn from_prev_block_header(prev_block_header: &BlockHeader, target: [u8; 32]) -> Self {
-        let timestamp = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .expect("Time went backwards")
-            .as_secs();
+    pub fn from_prev_block_header(
+        prev_block_header: BlockHeader,
+        prev_adjustment_block_header: Option<BlockHeader>,
+    ) -> Result<Self, &'static str> {
+        let prev_block_id = prev_block_header.id();
         let index = prev_block_header.index + 1;
-        let nonce = [0; 32];
-        Self {
-            version: 1,
-            prev_block_id: prev_block_header.id().to_vec(),
-            merkle_root: [0; 32].to_vec(),
-            timestamp,
-            target: target.to_vec(),
-            nonce: nonce.to_vec(),
-            index,
+        let mut target = prev_block_header.target.clone();
+        if index % BlockHeader::BLOCKS_PER_ADJUSTMENT == 0 {
+            match prev_adjustment_block_header {
+                Some(pabh) if pabh.index + BlockHeader::BLOCKS_PER_ADJUSTMENT == index => {
+                    let time_diff = prev_block_header.timestamp - pabh.timestamp;
+                    target = BlockHeader::adjust_target(prev_block_header.target, time_diff);
+                }
+                _ => {
+                    return Err("must provide previous adjustment block header 2016 blocks before")
+                }
+            }
         }
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let nonce = [0u8; 32].to_vec();
+        Ok(Self::new(
+            1,
+            prev_block_id.to_vec(),
+            [0u8; 32].to_vec(),
+            timestamp,
+            target,
+            nonce,
+            index,
+        ))
     }
 
     pub fn hash(&self) -> [u8; 32] {

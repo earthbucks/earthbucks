@@ -125,12 +125,29 @@ export default class BlockHeader {
 
   static fromPrevBlockHeader(
     prevBlockHeader: BlockHeader,
-    target: Uint8Array,
+    prevAdjustmentBlockHeader: BlockHeader | null,
   ): BlockHeader {
+    let target = null
+    const index = prevBlockHeader.index + 1n
+    if (index % BlockHeader.BLOCKS_PER_ADJUSTMENT === 0n) {
+      if (
+        !prevAdjustmentBlockHeader ||
+        prevAdjustmentBlockHeader.index + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
+          index
+      ) {
+        throw new Error(
+          'must provide previous adjustment block header 2016 blocks before',
+        )
+      }
+      const timeDiff =
+        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp
+      const prevTarget = prevBlockHeader.target
+      target = BlockHeader.adjustTarget(prevTarget, timeDiff)
+    } else {
+      target = prevBlockHeader.target
+    }
     const prevBlockId = prevBlockHeader.id()
-    const prevBlockIndex = prevBlockHeader.index
     const timestamp = BigInt(Math.floor(Date.now() / 1000)) // seconds
-    const index = prevBlockIndex + 1n
     const nonce = new Uint8Array(32)
     return new BlockHeader(
       1,

@@ -47,26 +47,10 @@ export default class BlockBuilder {
     outputScript: Script,
     outputAmount: bigint,
   ): BlockBuilder {
-    let target = null
-    const index = prevBlockHeader.index + 1n
-    if (index % BlockHeader.BLOCKS_PER_ADJUSTMENT === 0n) {
-      if (
-        !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.index + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
-          index
-      ) {
-        throw new Error(
-          'must provide previous adjustment block header 2016 blocks before',
-        )
-      }
-      const timeDiff =
-        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp
-      const prevTarget = prevBlockHeader.target
-      target = BlockHeader.adjustTarget(prevTarget, timeDiff)
-    } else {
-      target = prevBlockHeader.target
-    }
-    const header = BlockHeader.fromPrevBlockHeader(prevBlockHeader, target)
+    const header = BlockHeader.fromPrevBlockHeader(
+      prevBlockHeader,
+      prevAdjustmentBlockHeader,
+    )
     const txs = []
     const txInput = TxInput.fromCoinbase(outputScript)
     const txOutput = new TxOutput(outputAmount, outputScript)
