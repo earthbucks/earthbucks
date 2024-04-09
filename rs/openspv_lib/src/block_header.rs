@@ -163,20 +163,16 @@ impl BlockHeader {
         }
     }
 
-    pub fn from_prev_block_id(
-        prev_block_id: [u8; 32],
-        prev_block_index: u64,
-        target: [u8; 32],
-    ) -> Self {
+    pub fn from_prev_block_header(prev_block_header: &BlockHeader, target: [u8; 32]) -> Self {
         let timestamp = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .expect("Time went backwards")
             .as_secs();
-        let index = prev_block_index + 1;
+        let index = prev_block_header.index + 1;
         let nonce = [0; 32];
         Self {
             version: 1,
-            prev_block_id: prev_block_id.to_vec(),
+            prev_block_id: prev_block_header.id().to_vec(),
             merkle_root: [0; 32].to_vec(),
             timestamp,
             target: target.to_vec(),
