@@ -5,12 +5,23 @@
   "main": "index.js",
   "scripts": {
     "main": "tsx src/main.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "keywords": [],
-  "author": "",
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "license": "MIT",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
+  },
   "dependencies": {
-    "earthbucks-lib": "workspace:*"
+    "@jest/globals": "^29.7.0",
+    "earthbucks-lib": "workspace:*",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.5"
   }
 }
