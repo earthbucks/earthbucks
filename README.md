@@ -4,7 +4,8 @@ Simplified Payment Verification.
 
 Website: [openspv.com](https://openspv.com)
 
-OpenSPV is sponsored by EarthBucks.
+OpenSPV theoretically supports many blockchains, but for now we are focused on
+the new blockchain EarthBucks (EBX).
 
 ## EarthBucks (EBX)
 
