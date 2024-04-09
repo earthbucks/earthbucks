@@ -100,6 +100,95 @@ describe('BlockHeader', () => {
     )
   })
 
+  describe('fromPrevBlockHeader', () => {
+    test('fromPrevBlockHeader', () => {
+      const prevBlockHeader = new BlockHeader(
+        1,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        0n,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        0n,
+      )
+      const prevAdjustmentBlockHeader = null
+      const bh = BlockHeader.fromPrevBlockHeader(
+        prevBlockHeader,
+        prevAdjustmentBlockHeader,
+      )
+      expect(bh.version).toBe(1)
+      expect(bh.prevBlockId).toEqual(prevBlockHeader.id())
+      expect(bh.merkleRoot).toEqual(new Uint8Array(32))
+      expect(bh.timestamp).toBeLessThanOrEqual(new Date().getTime() / 1000)
+      expect(bh.target).toEqual(new Uint8Array(32))
+    })
+
+    test('should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT', () => {
+      const prevBlockHeader = new BlockHeader(
+        1,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+      )
+      const prevAdjustmentBlockHeader = new BlockHeader(
+        1,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        0n,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        0n,
+      )
+      const bh = BlockHeader.fromPrevBlockHeader(
+        prevBlockHeader,
+        prevAdjustmentBlockHeader,
+      )
+      expect(bh.index).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
+      expect(bh.target).toEqual(
+        BlockHeader.adjustTarget(new Uint8Array(32), 0n),
+      )
+    })
+
+    test('should correctly adjust the target for non-trivial adjustment', () => {
+      const initialTarget = Uint8Array.from(
+        Buffer.from(
+          '00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+          'hex',
+        ),
+      )
+      const timeDiff = (2016n * 600n) / 2n // One week
+      const prevBlockHeader = new BlockHeader(
+        1,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        timeDiff - 1n,
+        initialTarget,
+        new Uint8Array(32),
+        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+      )
+      const prevAdjustmentBlockHeader = new BlockHeader(
+        1,
+        new Uint8Array(32),
+        new Uint8Array(32),
+        0n,
+        initialTarget,
+        new Uint8Array(32),
+        0n,
+      )
+      const bh = BlockHeader.fromPrevBlockHeader(
+        prevBlockHeader,
+        prevAdjustmentBlockHeader,
+      )
+      expect(bh.index).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
+      expect(Buffer.from(bh.target).toString('hex')).toEqual(
+        '000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      )
+    })
+  })
+
   describe('adjustTarget', () => {
     test('adjustTarget', () => {
       const prevTarget = new Uint8Array(32)

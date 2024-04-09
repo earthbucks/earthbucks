@@ -292,6 +292,95 @@ mod tests {
     }
 
     #[test]
+    fn test_from_prev_block_header() {
+        let prev_block_header = BlockHeader::new(
+            1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+        );
+        let bh = BlockHeader::from_prev_block_header(prev_block_header.clone(), None).unwrap();
+        assert_eq!(bh.version, 1);
+        assert_eq!(bh.prev_block_id, prev_block_header.id());
+        assert_eq!(bh.merkle_root, [0u8; 32]);
+        assert!(
+            bh.timestamp
+                <= SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+        );
+        assert_eq!(bh.target, [0u8; 32]);
+    }
+
+    #[test]
+    fn test_from_prev_block_header_adjustment() {
+        let prev_block_header = BlockHeader::new(
+            1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
+        );
+        let prev_adjustment_block_header = BlockHeader::new(
+            1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+        );
+        let bh = BlockHeader::from_prev_block_header(
+            prev_block_header,
+            Some(prev_adjustment_block_header),
+        )
+        .unwrap();
+        assert_eq!(bh.index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
+        assert_eq!(bh.target, BlockHeader::adjust_target([0u8; 32].to_vec(), 0));
+    }
+
+    #[test]
+    fn test_from_prev_block_header_non_trivial_adjustment() {
+        // 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        let initial_target_hex = "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let initial_target = hex::decode(initial_target_hex).unwrap();
+        let time_diff = (2016 * 600) / 2; // One week
+        let prev_block_header = BlockHeader::new(
+            1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            time_diff - 1,
+            initial_target.to_vec(),
+            [0u8; 32].to_vec(),
+            BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
+        );
+        let prev_adjustment_block_header = BlockHeader::new(
+            1,
+            [0u8; 32].to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+            initial_target.to_vec(),
+            [0u8; 32].to_vec(),
+            0,
+        );
+        let bh = BlockHeader::from_prev_block_header(
+            prev_block_header,
+            Some(prev_adjustment_block_header),
+        )
+        .unwrap();
+        assert_eq!(bh.index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
+        let new_target_hex = "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let new_target = hex::decode(new_target_hex).unwrap();
+        assert_eq!(bh.target, new_target);
+    }
+
+    #[test]
     fn test_adjust_target() {
         let prev_target = vec![0u8; 32];
         let time_diff = 0;
