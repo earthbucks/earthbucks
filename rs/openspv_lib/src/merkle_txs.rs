@@ -2,9 +2,9 @@ use crate::merkle_proof::MerkleProof;
 use crate::tx::Tx;
 
 pub struct MerkleTxs {
-    txs: Vec<Tx>,
-    root: Vec<u8>,
-    proofs: Vec<MerkleProof>,
+    pub txs: Vec<Tx>,
+    pub root: Vec<u8>,
+    pub proofs: Vec<MerkleProof>,
 }
 
 impl MerkleTxs {

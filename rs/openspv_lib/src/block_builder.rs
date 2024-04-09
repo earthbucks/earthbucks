@@ -1,10 +1,10 @@
 use crate::block::Block;
 use crate::block_header::BlockHeader;
 use crate::merkle_txs::MerkleTxs;
+use crate::script::Script;
 use crate::tx::Tx;
-// use crate::script::Script;
-// use crate::tx_input::TxInput;
-// use crate::tx_output::TxOutput;
+use crate::tx_input::TxInput;
+use crate::tx_output::TxOutput;
 
 pub struct BlockBuilder {
     pub header: BlockHeader,
@@ -27,6 +27,22 @@ impl BlockBuilder {
         let merkle_txs = MerkleTxs::new(txs.clone());
         Self::new(header, txs, merkle_txs)
     }
+
+    pub fn from_genesis(
+        initial_target: [u8; 32],
+        output_script: Script,
+        output_amount: u64,
+    ) -> Self {
+        let mut header = BlockHeader::from_genesis(initial_target);
+        let tx_input = TxInput::from_coinbase(output_script.clone());
+        let tx_output = TxOutput::new(output_amount, output_script.clone());
+        let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
+        let txs = vec![coinbase_tx];
+        let merkle_txs = MerkleTxs::new(txs.clone());
+        let root = merkle_txs.root.clone();
+        header.merkle_root = root;
+        Self::new(header, txs, merkle_txs)
+    }
 }
 
 #[cfg(test)]
@@ -35,6 +51,7 @@ mod tests {
     use crate::block::Block;
     use crate::block_header::BlockHeader;
     use crate::tx::Tx;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
     fn test_from_block() {
@@ -55,5 +72,24 @@ mod tests {
         assert_eq!(bb.header.merkle_root, bh.merkle_root);
         assert_eq!(bb.header.timestamp, bh.timestamp);
         assert_eq!(bb.header.target, bh.target);
+    }
+
+    #[test]
+    fn test_from_genesis() {
+        let target = [0u8; 32];
+        let output_script = Script::from_string("").unwrap();
+        let output_amount = 0;
+        let bb = BlockBuilder::from_genesis(target, output_script.clone(), output_amount);
+        assert_eq!(bb.header.version, 1);
+        assert_eq!(bb.header.prev_block_id, [0u8; 32]);
+        assert_eq!(bb.header.merkle_root, bb.merkle_txs.root);
+        assert!(
+            bb.header.timestamp
+                <= SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+        );
+        assert_eq!(bb.header.target, target);
     }
 }
