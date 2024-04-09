@@ -1,0 +1,9 @@
+[package]
+name = "earthbucks_node"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+"earthbucks_lib" = { path = "../earthbucks_lib" }
+hex = "0.4.3"

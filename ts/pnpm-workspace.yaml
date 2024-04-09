@@ -1,0 +1,3 @@
+packages:
+  - 'earthbucks-lib'
+  - 'earthbucks-node'
