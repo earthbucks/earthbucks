@@ -5,6 +5,9 @@ use num_bigint::BigUint;
 use num_integer::Integer;
 use std::time::SystemTime;
 
+pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
+pub const BLOCK_INTERVAL: u64 = 600;
+
 pub struct BlockHeader {
     pub version: u32,           // uint32
     pub prev_block_id: Vec<u8>, // 256 bits
@@ -191,7 +194,7 @@ impl BlockHeader {
 
     pub fn adjust_target(target_buf: Vec<u8>, time_diff: u64) -> Vec<u8> {
         let target = BigUint::from_bytes_be(&target_buf);
-        let two_weeks = 2016 * 600; // seconds
+        let two_weeks = BLOCKS_PER_ADJUSTMENT * BLOCK_INTERVAL;
         let time_diff = time_diff as u64;
         let time_diff = if time_diff < two_weeks / 2 {
             two_weeks / 2
@@ -272,6 +275,55 @@ mod tests {
         assert_eq!(
             hex,
             "8bbebda6265eb4265ff52f6e744d2859e6ef58c640e1df355072c4a9541b8aba"
+        );
+    }
+
+    #[test]
+    fn test_adjust_target() {
+        let prev_target = vec![0u8; 32];
+        let time_diff = 0;
+        assert_eq!(
+            BlockHeader::adjust_target(prev_target, time_diff),
+            vec![0u8; 32]
+        );
+    }
+
+    #[test]
+    fn test_adjust_target_less_than_one_week() {
+        let target_buf =
+            hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap();
+        let time_diff = 2016 * 200;
+        let new_target = BlockHeader::adjust_target(target_buf, time_diff);
+        assert_eq!(
+            hex::encode(new_target),
+            "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        );
+    }
+
+    #[test]
+    fn test_adjust_target_more_than_eight_weeks() {
+        let target_buf =
+            hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap();
+        let time_diff = 2016 * 600 * 3;
+        let new_target = BlockHeader::adjust_target(target_buf, time_diff);
+        assert_eq!(
+            hex::encode(new_target),
+            "00000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+        );
+    }
+
+    #[test]
+    fn test_adjust_target_exactly_two_weeks() {
+        let target_buf =
+            hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap();
+        let time_diff = 2016 * 600;
+        let new_target = BlockHeader::adjust_target(target_buf, time_diff);
+        assert_eq!(
+            hex::encode(new_target),
+            "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
         );
     }
 }

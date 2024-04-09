@@ -4,6 +4,7 @@ import { blake3Hash, doubleBlake3Hash } from './blake3'
 
 export default class BlockHeader {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n
+  static readonly BLOCK_INTERVAL = 600n // seconds
 
   version: number // uint32
   previousBlockId: Uint8Array // 256 bits
@@ -190,7 +191,8 @@ export default class BlockHeader {
 
   static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
     const target = BigInt('0x' + Buffer.from(targetBuf).toString('hex'))
-    const twoWeeks = BlockHeader.BLOCKS_PER_ADJUSTMENT * 600n // seconds
+    const twoWeeks =
+      BlockHeader.BLOCKS_PER_ADJUSTMENT * BlockHeader.BLOCK_INTERVAL
 
     // To prevent extreme difficulty adjustments, if it took less than 1 week or
     // more than 8 weeks, we still consider it as 1 week or 8 weeks
