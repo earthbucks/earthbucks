@@ -7,7 +7,7 @@ export default class BlockHeader {
   static readonly BLOCK_INTERVAL = 600n // seconds
 
   version: number // uint32
-  previousBlockId: Uint8Array // 256 bits
+  prevBlockId: Uint8Array // 256 bits
   merkleRoot: Uint8Array // 256 bits
   timestamp: bigint // uint64
   target: Uint8Array // 256 bits
@@ -16,7 +16,7 @@ export default class BlockHeader {
 
   constructor(
     version: number,
-    previousBlockId: Uint8Array,
+    prevBlockId: Uint8Array,
     merkleRoot: Uint8Array,
     timestamp: bigint,
     target: Uint8Array,
@@ -24,7 +24,7 @@ export default class BlockHeader {
     index: bigint,
   ) {
     this.version = version
-    this.previousBlockId = previousBlockId
+    this.prevBlockId = prevBlockId
     this.merkleRoot = merkleRoot
     this.timestamp = timestamp
     this.target = target
@@ -35,7 +35,7 @@ export default class BlockHeader {
   toU8Vec(): Uint8Array {
     const bw = new BufferWriter()
     bw.writeUInt32BE(this.version)
-    bw.writeU8Vec(this.previousBlockId)
+    bw.writeU8Vec(this.prevBlockId)
     bw.writeU8Vec(this.merkleRoot)
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
@@ -93,7 +93,7 @@ export default class BlockHeader {
 
   toBufferWriter(bw: BufferWriter): BufferWriter {
     bw.writeUInt32BE(this.version)
-    bw.writeU8Vec(this.previousBlockId)
+    bw.writeU8Vec(this.prevBlockId)
     bw.writeU8Vec(this.merkleRoot)
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
@@ -170,7 +170,7 @@ export default class BlockHeader {
     }
     return (
       BlockHeader.isValidVersion(this.version) &&
-      BlockHeader.isValidPreviousBlockHash(this.previousBlockId) &&
+      BlockHeader.isValidPreviousBlockHash(this.prevBlockId) &&
       BlockHeader.isValidMerkleRoot(this.merkleRoot) &&
       BlockHeader.isValidNonce(this.nonce) &&
       BlockHeader.isValidTarget(this.target)
@@ -178,7 +178,7 @@ export default class BlockHeader {
   }
 
   isGenesis(): boolean {
-    return this.index === 0n && this.previousBlockId.every((byte) => byte === 0)
+    return this.index === 0n && this.prevBlockId.every((byte) => byte === 0)
   }
 
   hash(): Uint8Array {

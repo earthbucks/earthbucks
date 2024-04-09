@@ -54,7 +54,7 @@ describe('Block', () => {
     const br = new BufferReader(bw.toU8Vec())
     const block2 = Block.fromBufferReader(br)
     expect(block2.header.version).toBe(bh.version)
-    expect(block2.header.previousBlockId).toEqual(bh.previousBlockId)
+    expect(block2.header.prevBlockId).toEqual(bh.prevBlockId)
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot)
     expect(block2.header.timestamp).toBe(bh.timestamp)
     expect(block2.header.target).toEqual(bh.target)

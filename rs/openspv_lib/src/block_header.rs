@@ -5,6 +5,7 @@ use num_bigint::BigUint;
 use num_integer::Integer;
 use std::time::SystemTime;
 
+#[derive(Debug, Clone)]
 pub struct BlockHeader {
     pub version: u32,           // uint32
     pub prev_block_id: Vec<u8>, // 256 bits
