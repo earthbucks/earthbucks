@@ -17,18 +17,23 @@ Website: [earthbucks.com](https://earthbucks.com)
 
 ## Architecture
 
-All protocol code is implemented in Rust (rs) and TypeScript (rs) simultaneously
-with common test vectors.
-
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms)
-- node (full/spv, merkler, mempool, p2p web API, wallets, mysql)
-- pow (CUDA, WebGL, WebGPU, CPU)
-- sdk (client)
+- sdk (client for full node and spv node)
+
+rs only:
+
+- node (merkler, validator, mempool, p2p web API, wallets, auth, mysql)
+  - block-listener (p2p listener, rpc listener)
+  - block-builder (block generator, miner)
+  - spv (blockheaders only - same database as full node)
+- server-pow (CUDA, CPU, OpenCL)
 
 ts only:
+
 - gui (auth, wallet, explorer, mining pool, button)
+- browser-pow (WebGL, WebGPU)
 
 ## Initial Nodes
 
