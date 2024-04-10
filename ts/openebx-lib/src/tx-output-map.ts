@@ -1,4 +1,5 @@
 import TxOutput from './tx-output'
+import { Buffer } from 'buffer'
 
 export default class TxOutputMap {
   public map: Map<string, TxOutput>

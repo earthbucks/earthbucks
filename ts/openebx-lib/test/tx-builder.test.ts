@@ -6,6 +6,7 @@ import Script from '../src/script'
 import Key from '../src/key'
 import Address from '../src/address'
 import AddressKeyMap from '../src/address-key-map'
+import { Buffer } from 'buffer'
 
 describe('TxBuilder', () => {
   let txBuilder: TxBuilder

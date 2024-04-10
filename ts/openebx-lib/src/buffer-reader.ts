@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export default class BufferReader {
   private buf: Buffer
   private pos: number

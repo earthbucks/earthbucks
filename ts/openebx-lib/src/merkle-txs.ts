@@ -1,5 +1,6 @@
 import MerkleProof from './merkle-proof'
 import Tx from './tx'
+import { Buffer } from 'buffer'
 
 export default class MerkleTxs {
   public txs: Tx[]

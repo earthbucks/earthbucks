@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import ScriptChunk from '../src/script-chunk'
 import { OP } from '../src/opcode'
 import BufferWriter from '../src/buffer-writer'
+import { Buffer } from 'buffer'
 
 describe('ScriptChunk', () => {
   let scriptChunk: ScriptChunk

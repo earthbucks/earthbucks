@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import BufferWriter from '../src/buffer-writer'
+import { Buffer } from 'buffer'
 
 describe('BufferWriter', () => {
   let bufferWriter: BufferWriter

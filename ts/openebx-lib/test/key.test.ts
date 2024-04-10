@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals'
 import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
+import { Buffer } from 'buffer'
 
 describe('Key', () => {
   test('Key', () => {

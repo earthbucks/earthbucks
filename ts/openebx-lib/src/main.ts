@@ -1,5 +1,6 @@
 import Key from './key'
 import Address from './address'
+import { Buffer } from 'buffer'
 
 function main() {
   const args = process.argv.slice(2)

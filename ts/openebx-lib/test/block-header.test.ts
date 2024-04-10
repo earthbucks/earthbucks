@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import BlockHeader from '../src/block-header'
+import { Buffer } from 'buffer'
 
 describe('BlockHeader', () => {
   test('toU8Vec and fromU8Vec', () => {

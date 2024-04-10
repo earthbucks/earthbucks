@@ -4,6 +4,7 @@ import VarInt from './var-int'
 import BufferWriter from './buffer-writer'
 import BufferReader from './buffer-reader'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
+import { Buffer } from 'buffer'
 
 export default class Block {
   public header: BlockHeader

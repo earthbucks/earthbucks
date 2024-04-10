@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 // big integers, positive or negative, encoded as big endian, two's complement
 
 export default class ScriptNum {

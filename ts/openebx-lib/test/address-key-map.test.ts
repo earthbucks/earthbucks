@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import AddressKeyMap from '../src/address-key-map'
 import Address from '../src/address'
 import Key from '../src/key'
+import { Buffer } from 'buffer'
 
 describe('AddressKeyMap', () => {
   let addressKeyMap: AddressKeyMap

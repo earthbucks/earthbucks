@@ -2,6 +2,7 @@ import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
 import VarInt from './var-int'
 import Script from './script'
+import { Buffer } from 'buffer'
 
 export default class TxOutput {
   public value: bigint

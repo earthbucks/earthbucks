@@ -5,6 +5,7 @@ import MerkleTxs from './merkle-txs'
 import Script from './script'
 import TxInput from './tx-input'
 import TxOutput from './tx-output'
+import { Buffer } from 'buffer'
 
 export default class BlockBuilder {
   public header: BlockHeader

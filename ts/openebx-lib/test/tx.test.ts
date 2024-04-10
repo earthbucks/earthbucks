@@ -8,6 +8,7 @@ import BufferWriter from '../src/buffer-writer'
 import { blake3Hash } from '../src/blake3'
 import TxSignature from '../src/tx-signature'
 import Key from '../src/key'
+import { Buffer } from 'buffer'
 
 describe('Tx', () => {
   describe('constructor', () => {

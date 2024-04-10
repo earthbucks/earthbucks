@@ -1,6 +1,7 @@
 import { doubleBlake3Hash } from './blake3'
 import BufferWriter from './buffer-writer'
 import BufferReader from './buffer-reader'
+import { Buffer } from 'buffer'
 
 export default class MerkleProof {
   public root: Uint8Array

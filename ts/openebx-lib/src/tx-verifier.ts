@@ -1,6 +1,7 @@
 import Tx, { HashCache } from './tx'
 import TxOutputMap from './tx-output-map'
 import ScriptInterpreter from './script-interpreter'
+import { Buffer } from 'buffer'
 
 export default class TxVerifier {
   public tx: Tx

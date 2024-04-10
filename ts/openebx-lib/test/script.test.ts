@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import Script from '../src/script'
+import { Buffer } from 'buffer'
 
 describe('Script', () => {
   test('constructor', () => {

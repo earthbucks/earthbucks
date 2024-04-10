@@ -9,6 +9,7 @@ import AddressKeyMap from '../src/address-key-map'
 import TxSigner from '../src/tx-signer'
 import ScriptInterpreter from '../src/script-interpreter'
 import { HashCache } from '../src/tx'
+import { Buffer } from 'buffer'
 
 describe('TxSigner', () => {
   let txBuilder: TxBuilder

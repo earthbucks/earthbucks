@@ -1,4 +1,5 @@
 import { Blake3Hasher } from '@napi-rs/blake-hash'
+import { Buffer } from 'buffer'
 
 export function blake3Hash(data: Uint8Array): Uint8Array {
   const hasher = new Blake3Hasher()

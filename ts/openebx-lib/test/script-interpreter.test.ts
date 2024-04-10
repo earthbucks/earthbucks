@@ -9,6 +9,7 @@ import path from 'path'
 import Key from '../src/key'
 import Address from '../src/address'
 import TxSignature from '../src/tx-signature'
+import { Buffer } from 'buffer'
 
 describe('ScriptInterpreter', () => {
   let tx: Tx

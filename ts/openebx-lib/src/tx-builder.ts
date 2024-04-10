@@ -3,6 +3,7 @@ import TxInput from './tx-input'
 import TxOutput from './tx-output'
 import TxOutputMap from './tx-output-map'
 import Script from './script'
+import { Buffer } from 'buffer'
 
 export default class TxBuilder {
   public txOutMap: TxOutputMap

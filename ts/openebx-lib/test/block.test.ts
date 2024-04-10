@@ -4,6 +4,7 @@ import Block from '../src/block'
 import Tx from '../src/tx'
 import BufferWriter from '../src/buffer-writer'
 import BufferReader from '../src/buffer-reader'
+import { Buffer } from 'buffer'
 
 describe('Block', () => {
   test('toBufferWriter', () => {

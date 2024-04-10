@@ -4,6 +4,7 @@ import Tx, { HashCache } from './tx'
 import ScriptNum from './script-num'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
 import TxSignature from './tx-signature'
+import { Buffer } from 'buffer'
 
 export default class ScriptInterpreter {
   public script: Script

@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import { blake3Hash, doubleBlake3Hash } from '../src/blake3'
+import { Buffer } from 'buffer'
 
 describe('blake3', () => {
   test('hash', () => {

@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export default class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001
   static readonly SIGHASH_NONE = 0x00000002

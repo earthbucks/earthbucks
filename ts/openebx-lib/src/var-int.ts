@@ -1,5 +1,6 @@
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
+import { Buffer } from 'buffer'
 
 export default class VarInt {
   private buf: Buffer

@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import BufferReader from '../src/buffer-reader'
+import { Buffer } from 'buffer'
 
 describe('TxOutput', () => {
   describe('fromBufferReader', () => {

@@ -8,6 +8,7 @@ import Address from '../src/address'
 import AddressKeyMap from '../src/address-key-map'
 import TxSigner from '../src/tx-signer'
 import TxVerifier from '../src/tx-verifier'
+import { Buffer } from 'buffer'
 
 describe('TxVerifier', () => {
   let txBuilder: TxBuilder

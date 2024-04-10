@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import MerkleNode from '../src/merkle-node'
 import { doubleBlake3Hash } from '../src/blake3'
+import { Buffer } from 'buffer'
 
 describe('MerkleNode', () => {
   test('fromU8Vecs with 1 data', () => {

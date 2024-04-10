@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import VarInt from '../src/var-int'
+import { Buffer } from 'buffer'
 
 describe('VarInt', () => {
   let varInt: VarInt

@@ -14,15 +14,13 @@
   "dependencies": {
     "@napi-rs/blake-hash": "^1.3.4",
     "@types/secp256k1": "^4.0.6",
+    "buffer": "^6.0.3",
     "secp256k1": "^5.0.0",
     "tsx": "^4.7.1"
   },
   "prettier": {
     "semi": false,
-    "singleQuote": true,
-    "plugins": [
-      "prettier-plugin-tailwindcss"
-    ]
+    "singleQuote": true
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

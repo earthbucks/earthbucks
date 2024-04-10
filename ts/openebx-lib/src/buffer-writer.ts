@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export default class BufferWriter {
   bufs: Buffer[]
 

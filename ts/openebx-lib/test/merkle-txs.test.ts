@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import MerkleTxs from '../src/merkle-txs'
 import Tx from '../src/tx'
+import { Buffer } from 'buffer'
 
 describe('MerkleTxs', () => {
   test('verify with 1 tx', () => {

@@ -3,6 +3,7 @@ import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
 import Address from '../src/address'
+import { Buffer } from 'buffer'
 
 describe('Address', () => {
   test('Address', () => {

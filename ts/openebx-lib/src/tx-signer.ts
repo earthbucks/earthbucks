@@ -4,6 +4,7 @@ import Address from './address'
 import AddressKeyMap from './address-key-map'
 import TxOutputMap from './tx-output-map'
 import TxSignature from './tx-signature'
+import { Buffer } from 'buffer'
 
 export default class TxSigner {
   public tx: Tx

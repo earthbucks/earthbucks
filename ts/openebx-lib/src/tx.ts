@@ -7,6 +7,7 @@ import { blake3Hash, doubleBlake3Hash } from './blake3'
 import { ecdsaSign, ecdsaVerify } from 'secp256k1'
 import TxSignature from './tx-signature'
 import Script from './script'
+import { Buffer } from 'buffer'
 
 export class HashCache {
   public hashPrevouts?: Uint8Array

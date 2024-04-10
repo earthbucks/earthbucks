@@ -1,6 +1,7 @@
 import BufferReader from './buffer-reader'
 import BufferWriter from './buffer-writer'
 import { blake3Hash, doubleBlake3Hash } from './blake3'
+import { Buffer } from 'buffer'
 
 export default class BlockHeader {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n

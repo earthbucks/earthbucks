@@ -6,6 +6,7 @@ import BufferWriter from '../src/buffer-writer'
 import BufferReader from '../src/buffer-reader'
 import BlockBuilder from '../src/block-builder'
 import Script from '../src/script'
+import { Buffer } from 'buffer'
 
 describe('BlockBuilder', () => {
   test('fromBlock', () => {

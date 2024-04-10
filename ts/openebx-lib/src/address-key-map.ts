@@ -1,4 +1,5 @@
 import Key from './key'
+import { Buffer } from 'buffer'
 
 export default class AddressKeyMap {
   public map: Map<string, Key>

@@ -1,5 +1,6 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import ScriptNum from '../src/script-num'
+import { Buffer } from 'buffer'
 
 describe('ScriptNum', () => {
   const testCases = [

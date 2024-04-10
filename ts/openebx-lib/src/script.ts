@@ -1,6 +1,7 @@
 import { OP } from './opcode'
 import ScriptChunk from './script-chunk'
 import BufferReader from './buffer-reader'
+import { Buffer } from 'buffer'
 
 export default class Script {
   chunks: ScriptChunk[] = []

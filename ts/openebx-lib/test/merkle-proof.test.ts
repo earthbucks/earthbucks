@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import MerkleProof from '../src/merkle-proof'
 import { doubleBlake3Hash } from '../src/blake3'
+import { Buffer } from 'buffer'
 
 describe('MerkleProof', () => {
   test('generateProofsAndRoot with 1 data', () => {

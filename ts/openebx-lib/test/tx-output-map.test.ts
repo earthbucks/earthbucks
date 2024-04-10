@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach, it } from '@jest/globals'
 import TxOutputMap from '../src/tx-output-map'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
+import { Buffer } from 'buffer'
 
 describe('TxOutputMap', () => {
   let txOutputMap: TxOutputMap

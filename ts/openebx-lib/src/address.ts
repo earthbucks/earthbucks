@@ -1,4 +1,5 @@
 import { doubleBlake3Hash } from './blake3'
+import { Buffer } from 'buffer'
 
 export default class Address {
   private _address: Uint8Array
