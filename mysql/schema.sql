@@ -6,9 +6,9 @@ CREATE TABLE `block_header` (
   `timestamp` bigint UNSIGNED,
   `target` binary(32),
   `nonce` binary(32),
-  `block_index` bigint UNSIGNED,
+  `block_number` bigint UNSIGNED,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
 )
 
-CREATE INDEX idx_block_header_block_index ON block_header(`block_index`);
+CREATE INDEX idx_block_header_block_number ON block_header(`block_number`);
