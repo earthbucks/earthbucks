@@ -52,7 +52,7 @@ describe('TxSigner', () => {
     expect(signed).toBe(true)
 
     const txInput = tx.inputs[0]
-    const txOutput = txOutMap.get(txInput.inputTxId, txInput.inputTxIndex)
+    const txOutput = txOutMap.get(txInput.inputTxId, txInput.inputTxOutNum)
     const execScript = txOutput?.script as Script
     const sigBuf = txInput.script.chunks[0].buffer as Uint8Array
     expect(sigBuf?.length).toBe(65)
@@ -97,7 +97,7 @@ describe('TxSigner', () => {
     expect(signed2).toBe(true)
 
     const txInput1 = tx.inputs[0]
-    const txOutput1 = txOutMap.get(txInput1.inputTxId, txInput1.inputTxIndex)
+    const txOutput1 = txOutMap.get(txInput1.inputTxId, txInput1.inputTxOutNum)
     const execScript1 = txOutput1?.script as Script
     const sigBuf1 = txInput1.script.chunks[0].buffer as Uint8Array
     expect(sigBuf1?.length).toBe(65)
@@ -120,7 +120,7 @@ describe('TxSigner', () => {
     expect(result1).toBe(true)
 
     const txInput2 = tx.inputs[1]
-    const txOutput2 = txOutMap.get(txInput2.inputTxId, txInput2.inputTxIndex)
+    const txOutput2 = txOutMap.get(txInput2.inputTxId, txInput2.inputTxOutNum)
     const execScript2 = txOutput2?.script as Script
     const sigBuf2 = txInput2.script.chunks[0].buffer as Uint8Array
     expect(sigBuf2?.length).toBe(65)

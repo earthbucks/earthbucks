@@ -119,7 +119,7 @@ impl Tx {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.input_tx_id);
-            data.extend(&input.input_tx_index.to_be_bytes());
+            data.extend(&input.input_tx_out_num.to_be_bytes());
         }
         double_blake3_hash(&data).to_vec()
     }
@@ -196,7 +196,7 @@ impl Tx {
         bw.write_u8_vec(prevouts_hash);
         bw.write_u8_vec(sequence_hash);
         bw.write_u8_vec(self.inputs[input_index].input_tx_id.clone());
-        bw.write_u32_be(self.inputs[input_index].input_tx_index);
+        bw.write_u32_be(self.inputs[input_index].input_tx_out_num);
         bw.write_var_int(script_u8_vec.len() as u64);
         bw.write_u8_vec(script_u8_vec);
         bw.write_u64_be(amount);

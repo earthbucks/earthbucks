@@ -20,7 +20,7 @@ export default class TxSigner {
   sign(nIn: number): boolean {
     const txInput = this.tx.inputs[nIn]
     const txOutHash = txInput.inputTxId
-    const outputIndex = txInput.inputTxIndex
+    const outputIndex = txInput.inputTxOutNum
     const txOut = this.txOutMap.get(txOutHash, outputIndex)
     if (!txOut) {
       return false
