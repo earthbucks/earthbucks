@@ -1,7 +1,7 @@
 {
   "name": "openspv-web",
   "license": "UNLICENSED",
-  "private": true,
+  "private": false,
   "sideEffects": false,
   "type": "module",
   "scripts": {
