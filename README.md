@@ -1,6 +1,6 @@
 # OpenEBX
 
-Open-source implementation of EBX blockchain.
+Open-source implementation of EarthBucks (EBX) blockchain.
 
 Website: [openebx.com](https://openebx.com)
 
@@ -17,20 +17,19 @@ Website: [earthbucks.com](https://earthbucks.com)
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
+- db (mysql, blocks, transactions, addresses, wallets, users)
 - sdk (client for full node and spv node)
 
 rs only:
 
-- node (merkler, validator, mempool, p2p web API, wallets, auth, mysql)
-  - block-listener (p2p listener, rpc listener)
-  - block-builder (block generator, miner, gets blocks, builds merkle trees)
-  - spv-builder (build chain of block headers)
-  - spv-listener (listen for block headers and txs)
+- chain-builder (full node, validate txs, validate blocks, build merkle trees)
+- chain-follower (spv node, validate headers, validate txs + merkle proofs)
 - server-pow (CUDA, CPU, OpenCL)
 - cli (command-line interface)
 
 ts only:
 
+- api (rest, auth, wallet, explorer, mining pool)
 - gui (auth, wallet, explorer, mining pool, button)
 - browser-pow (WebGL, WebGPU, WASM)
 
