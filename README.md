@@ -22,8 +22,8 @@ rs/ts:
 
 rs only:
 
-- chain-builder (full node, validate txs, validate blocks, build merkle trees)
-- chain-follower (spv node, validate headers, validate txs + merkle proofs)
+- builder (build blocks, validate txs, validate blocks, build merkle trees)
+- follower (follow block headers, validate txs + merkle proofs)
 - server-pow (CUDA, CPU, OpenCL)
 - cli (command-line interface)
 
