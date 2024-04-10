@@ -13,7 +13,7 @@ describe('Key', () => {
 
   describe('standard test vectors: key.json', () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, '../../../json/key.json'),
+      path.resolve(__dirname, '../../../../json/key.json'),
       'utf-8',
     )
 

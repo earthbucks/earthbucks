@@ -1,0 +1,5 @@
+packages:
+  - 'openebx-db'
+  - 'openebx-gui'
+  - 'openebx-lib'
+  - 'openebx-sdk'

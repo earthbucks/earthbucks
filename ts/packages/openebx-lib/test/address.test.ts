@@ -14,7 +14,7 @@ describe('Address', () => {
 
   describe('standard test vectors: address.json', () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, '../../../json/address.json'),
+      path.resolve(__dirname, '../../../../json/address.json'),
       'utf-8',
     )
 
