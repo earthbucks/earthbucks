@@ -26,8 +26,9 @@ rs only:
 
 - node (merkler, validator, mempool, p2p web API, wallets, auth, mysql)
   - block-listener (p2p listener, rpc listener)
-  - block-builder (block generator, miner)
-  - spv (blockheaders only - same database as full node)
+  - block-builder (block generator, miner, gets blocks, builds merkle trees)
+  - spv-builder (build chain of block headers)
+  - spv-listener (listen for block headers and txs)
 - server-pow (CUDA, CPU, OpenCL)
 - cli (command-line interface)
 
@@ -39,11 +40,13 @@ ts only:
 ## Initial Nodes
 
 Primary full nodes:
+
 - earthbucks.com: mining pool (rs full node + gui)
 - impstack.com: mining pool (rs full node + gui)
 - satored.com: mining pool (rs full node + gui)
 
 Additional nodes:
+
 - buttonbucks.com: mining pool (rs full node + gui)
 - impulsecash.com: mining pool (ts full node + gui)
 - compubutton.com: spv wallet (ts spv node + gui)
