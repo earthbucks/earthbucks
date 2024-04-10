@@ -13,7 +13,7 @@ export default class BlockHeader {
   timestamp: bigint // uint64
   target: Uint8Array // 256 bits
   nonce: Uint8Array // 256 bits
-  index: bigint // uint64
+  blockIndex: bigint // uint64
 
   constructor(
     version: number,
@@ -22,7 +22,7 @@ export default class BlockHeader {
     timestamp: bigint,
     target: Uint8Array,
     nonce: Uint8Array,
-    index: bigint,
+    blockIndex: bigint,
   ) {
     this.version = version
     this.prevBlockId = prevBlockId
@@ -30,7 +30,7 @@ export default class BlockHeader {
     this.timestamp = timestamp
     this.target = target
     this.nonce = nonce
-    this.index = index
+    this.blockIndex = blockIndex
   }
 
   toU8Vec(): Uint8Array {
@@ -41,7 +41,7 @@ export default class BlockHeader {
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
     bw.writeU8Vec(this.nonce)
-    bw.writeUInt64BEBigInt(this.index)
+    bw.writeUInt64BEBigInt(this.blockIndex)
     return bw.toU8Vec()
   }
 
@@ -99,7 +99,7 @@ export default class BlockHeader {
     bw.writeUInt64BEBigInt(this.timestamp)
     bw.writeU8Vec(this.target)
     bw.writeU8Vec(this.nonce)
-    bw.writeUInt64BEBigInt(this.index)
+    bw.writeUInt64BEBigInt(this.blockIndex)
     return bw
   }
 
@@ -129,11 +129,11 @@ export default class BlockHeader {
     prevAdjustmentBlockHeader: BlockHeader | null,
   ): BlockHeader {
     let target = null
-    const index = prevBlockHeader.index + 1n
+    const index = prevBlockHeader.blockIndex + 1n
     if (index % BlockHeader.BLOCKS_PER_ADJUSTMENT === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.index + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
+        prevAdjustmentBlockHeader.blockIndex + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
           index
       ) {
         throw new Error(
@@ -196,7 +196,7 @@ export default class BlockHeader {
   }
 
   isGenesis(): boolean {
-    return this.index === 0n && this.prevBlockId.every((byte) => byte === 0)
+    return this.blockIndex === 0n && this.prevBlockId.every((byte) => byte === 0)
   }
 
   hash(): Uint8Array {

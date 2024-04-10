@@ -17,8 +17,8 @@ Website: [earthbucks.com](https://earthbucks.com)
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
-- db (mysql, blocks, transactions, addresses, wallets, users)
 - sdk (client for full node and spv node)
+- db (mysql, blocks, transactions, addresses, wallets, users)
 
 rs only:
 
@@ -29,9 +29,9 @@ rs only:
 
 ts only:
 
-- api (rest, auth, wallet, explorer, mining pool)
 - gui (auth, wallet, explorer, mining pool, button)
-- browser-pow (WebGL, WebGPU, WASM)
+  - api (rest, auth, wallet, explorer, mining pool)
+  - browser-pow (WebGL, WebGPU, WASM)
 
 ## Initial Nodes
 

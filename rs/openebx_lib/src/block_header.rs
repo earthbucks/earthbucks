@@ -13,7 +13,7 @@ pub struct BlockHeader {
     pub timestamp: u64,         // uint32
     pub target: Vec<u8>,        // 32 bits
     pub nonce: Vec<u8>,         // 256 bits
-    pub index: u64,             // uint64
+    pub block_index: u64,             // uint64
 }
 
 impl BlockHeader {
@@ -27,7 +27,7 @@ impl BlockHeader {
         timestamp: u64,
         target: Vec<u8>,
         nonce: Vec<u8>,
-        index: u64,
+        block_index: u64,
     ) -> BlockHeader {
         BlockHeader {
             version,
@@ -36,7 +36,7 @@ impl BlockHeader {
             timestamp,
             target,
             nonce,
-            index,
+            block_index,
         }
     }
 
@@ -48,7 +48,7 @@ impl BlockHeader {
         bw.write_u64_be(self.timestamp);
         bw.write_u8_vec(self.target.clone());
         bw.write_u8_vec(self.nonce.clone());
-        bw.write_u64_be(self.index);
+        bw.write_u64_be(self.block_index);
         bw.to_u8_vec()
     }
 
@@ -99,7 +99,7 @@ impl BlockHeader {
         bw.write_u64_be(self.timestamp);
         bw.write_u8_vec(self.target.clone());
         bw.write_u8_vec(self.nonce.clone());
-        bw.write_u64_be(self.index);
+        bw.write_u64_be(self.block_index);
         bw
     }
 
@@ -144,7 +144,7 @@ impl BlockHeader {
     }
 
     pub fn is_genesis(&self) -> bool {
-        self.index == 0 && self.prev_block_id.iter().all(|&x| x == 0)
+        self.block_index == 0 && self.prev_block_id.iter().all(|&x| x == 0)
     }
 
     pub fn from_genesis(initial_target: [u8; 32]) -> Self {
@@ -159,7 +159,7 @@ impl BlockHeader {
             timestamp,
             target: initial_target.to_vec(),
             nonce: [0; 32].to_vec(),
-            index: 0,
+            block_index: 0,
         }
     }
 
@@ -168,11 +168,11 @@ impl BlockHeader {
         prev_adjustment_block_header: Option<BlockHeader>,
     ) -> Result<Self, &'static str> {
         let prev_block_id = prev_block_header.id();
-        let index = prev_block_header.index + 1;
+        let index = prev_block_header.block_index + 1;
         let mut target = prev_block_header.target.clone();
         if index % BlockHeader::BLOCKS_PER_ADJUSTMENT == 0 {
             match prev_adjustment_block_header {
-                Some(pabh) if pabh.index + BlockHeader::BLOCKS_PER_ADJUSTMENT == index => {
+                Some(pabh) if pabh.block_index + BlockHeader::BLOCKS_PER_ADJUSTMENT == index => {
                     let time_diff = prev_block_header.timestamp - pabh.timestamp;
                     target = BlockHeader::adjust_target(prev_block_header.target, time_diff);
                 }
@@ -240,7 +240,7 @@ mod tests {
         assert_eq!(bh1.timestamp, bh2.timestamp);
         assert_eq!(bh1.target, bh2.target);
         assert_eq!(bh1.nonce, bh2.nonce);
-        assert_eq!(bh1.index, bh2.index);
+        assert_eq!(bh1.block_index, bh2.block_index);
     }
 
     #[test]
@@ -254,7 +254,7 @@ mod tests {
         assert_eq!(bh1.timestamp, bh2.timestamp);
         assert_eq!(bh1.target, bh2.target);
         assert_eq!(bh1.nonce, bh2.nonce);
-        assert_eq!(bh1.index, bh2.index);
+        assert_eq!(bh1.block_index, bh2.block_index);
     }
 
     #[test]
@@ -341,7 +341,7 @@ mod tests {
             Some(prev_adjustment_block_header),
         )
         .unwrap();
-        assert_eq!(bh.index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
+        assert_eq!(bh.block_index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
         assert_eq!(bh.target, BlockHeader::adjust_target([0u8; 32].to_vec(), 0));
     }
 
@@ -374,7 +374,7 @@ mod tests {
             Some(prev_adjustment_block_header),
         )
         .unwrap();
-        assert_eq!(bh.index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
+        assert_eq!(bh.block_index, BlockHeader::BLOCKS_PER_ADJUSTMENT);
         let new_target_hex = "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         let new_target = hex::decode(new_target_hex).unwrap();
         assert_eq!(bh.target, new_target);

@@ -6,6 +6,7 @@
         "prisma.prisma",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "stkb.rewrap"
+        "stkb.rewrap",
+        "adpyke.vscode-sql-formatter"
     ]
 }
