@@ -38,15 +38,19 @@ ts only:
 Primary full nodes:
 
 - earthbucks.com: mining pool (rs full node + gui)
-- impstack.com: mining pool (rs full node + gui)
-- satored.com: mining pool (rs full node + gui)
+- openebx.com: spv wallet (rs full node + gui)
+- ebxbutton.com: mining pool (rs full node + gui)
+- ebxpay.com: mining pool (rs full node + gui)
+- ebxexchange.com: mining pool (rs full node + gui)
+- ebxex.com: mining pool (rs full node + gui)
 
 Additional nodes:
 
 - buttonbucks.com: mining pool (rs full node + gui)
-- impulsecash.com: mining pool (ts full node + gui)
 - compubutton.com: spv wallet (ts spv node + gui)
-- openspv.com: spv wallet (rs spv node + gui)
+- impulsecash.com: mining pool (rs full node + gui)
+- impstack.com: mining pool (rs full node + gui)
+- satored.com: mining pool (rs full node + gui)
 
 ## License
 

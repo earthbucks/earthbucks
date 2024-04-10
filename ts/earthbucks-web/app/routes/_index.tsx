@@ -58,16 +58,14 @@ export default function Index() {
                 className="underline"
               >
                 X (Twitter)
-              </a>
-              <br />
-              <br />
-              Powered by{' '}
+              </a>{' '}
+              &middot;{' '}
               <a
-                href="https://openspv.com"
+                href="https://github.com/earthbucks/openebx"
                 target="_blank"
                 className="underline"
               >
-                OpenSPV
+                GitHub
               </a>
             </div>
             <br />
