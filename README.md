@@ -1,6 +1,6 @@
 # OpenEBX
 
-Open-source implementation of EarthBucks (EBX) blockchain.
+Open-source implementation of EBX blockchain.
 
 Website: [openebx.com](https://openebx.com)
 

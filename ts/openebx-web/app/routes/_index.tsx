@@ -2,8 +2,8 @@ import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'OpenSPV' },
-    { name: 'description', content: 'Welcome to OpenSPV!' },
+    { title: 'OpenEBX' },
+    { name: 'description', content: 'Welcome to OpenEBX!' },
   ]
 }
 
@@ -14,30 +14,30 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/openspv-logo.png"
+              src="/openebx-logo.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/openspv-text-white.png"
-                alt="OpenSPV"
+                src="/openebx-text-white.png"
+                alt="OpenEBX"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/openspv-text-black.png"
-                alt="OpenSPV"
+                src="/openebx-text-black.png"
+                alt="OpenEBX"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Simplified Payment Verification
+            Open-source implementation of EBX blockchain.
               <br />
               <br />
               <a
-                href="https://github.com/openspv/openspv"
+                href="https://github.com/openebx/openebx"
                 target="_blank"
                 className="underline"
               >
@@ -45,7 +45,7 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://x.com/openspv"
+                href="https://x.com/openebx"
                 target="_blank"
                 className="underline"
               >
