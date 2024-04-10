@@ -4,6 +4,7 @@ pub mod blake3;
 pub mod block;
 pub mod block_builder;
 pub mod block_header;
+pub mod buffer;
 pub mod buffer_reader;
 pub mod buffer_writer;
 pub mod key;
