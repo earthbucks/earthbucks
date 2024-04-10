@@ -19,7 +19,7 @@ Website: [earthbucks.com](https://earthbucks.com)
 
 rs/ts:
 
-- lib (transactions, blocks, data structures, algorithms)
+- lib (transactions, blocks, data structures, algorithms, standardized tests)
 - sdk (client for full node and spv node)
 
 rs only:
@@ -29,11 +29,12 @@ rs only:
   - block-builder (block generator, miner)
   - spv (blockheaders only - same database as full node)
 - server-pow (CUDA, CPU, OpenCL)
+- cli (command-line interface)
 
 ts only:
 
 - gui (auth, wallet, explorer, mining pool, button)
-- browser-pow (WebGL, WebGPU)
+- browser-pow (WebGL, WebGPU, WASM)
 
 ## Initial Nodes
 
