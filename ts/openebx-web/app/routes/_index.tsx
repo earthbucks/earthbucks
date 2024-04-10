@@ -2,8 +2,8 @@ import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'EarthBucks' },
-    { name: 'description', content: 'Welcome to EarthBucks!' },
+    { title: 'OpenSPV' },
+    { name: 'description', content: 'Welcome to OpenSPV!' },
   ]
 }
 
@@ -14,46 +14,38 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/earthbucks-logo.png"
+              src="/openspv-logo.png"
               alt=""
-              className="mx-auto mb-4 block w-[200px]"
+              className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/earthbucks-text-white.png"
-                alt="EarthBucks"
+                src="/openspv-text-white.png"
+                alt="OpenSPV"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/earthbucks-text-black.png"
-                alt="EarthBucks"
+                src="/openspv-text-black.png"
+                alt="OpenSPV"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Transactions for everybody on Planet Earth.
+              Simplified Payment Verification
               <br />
               <br />
               <a
-                href="https://t.me/+e-PoBNNgdDU3MDUx"
+                href="https://github.com/openspv/openspv"
                 target="_blank"
                 className="underline"
               >
-                Telegram
+                GitHub
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://discord.gg/dZfyrFk6uh"
-                target="_blank"
-                className="underline"
-              >
-                Discord
-              </a>{' '}
-              &middot;{' '}
-              <a
-                href="https://x.com/earthbucks_com"
+                href="https://x.com/openspv"
                 target="_blank"
                 className="underline"
               >
@@ -61,21 +53,15 @@ export default function Index() {
               </a>
               <br />
               <br />
-              Powered by{' '}
+              Sponsored by{' '}
               <a
-                href="https://openspv.com"
+                href="https://earthbucks.com"
                 target="_blank"
                 className="underline"
               >
-                OpenSPV
+                EarthBucks
               </a>
             </div>
-            <br />
-            <img
-              src="/earthbucks-note-small.png"
-              alt=""
-              className="mx-auto mb-4 block w-[80px]"
-            />
           </div>
         </div>
       </div>

@@ -1,0 +1,11 @@
+[package]
+name = "openebx_node"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+"openebx_lib" = { path = "../openebx_lib" }
+hex = "0.4.3"
+actix-web = "3.3.2"
+tokio = { version = "1", features = ["full"] }

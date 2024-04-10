@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "earthbucks_lib",
-    "earthbucks_node",
+    "openebx_lib",
+    "openebx_node",
 ]
 resolver = "2"

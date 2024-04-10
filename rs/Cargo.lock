@@ -564,33 +564,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 
 [[package]]
-name = "earthbucks_lib"
-version = "0.1.0"
-dependencies = [
- "blake3",
- "byteorder",
- "hex",
- "lazy_static",
- "num-bigint",
- "num-integer",
- "num-traits",
- "rand 0.8.5",
- "secp256k1",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "earthbucks_node"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "earthbucks_lib",
- "hex",
- "tokio 1.37.0",
-]
-
-[[package]]
 name = "either"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1142,6 +1115,33 @@ name = "opaque-debug"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
+
+[[package]]
+name = "openebx_lib"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "byteorder",
+ "hex",
+ "lazy_static",
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "rand 0.8.5",
+ "secp256k1",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "openebx_node"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "hex",
+ "openebx_lib",
+ "tokio 1.37.0",
+]
 
 [[package]]
 name = "parking_lot"

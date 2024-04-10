@@ -1,11 +1,8 @@
-# OpenSPV
+# OpenEBX
 
-Simplified Payment Verification.
+Open-source implementation of EarthBucks (EBX) blockchain.
 
-Website: [openspv.com](https://openspv.com)
-
-OpenSPV theoretically supports many blockchains, but for now we are focused on
-the new blockchain EarthBucks (EBX).
+Website: [openebx.com](https://openebx.com)
 
 ## EarthBucks (EBX)
 
@@ -54,9 +51,9 @@ Additional nodes:
 
 ## License
 
-All software is copyright Ryan X. Charles LLC and is not open-source unless
+All software is copyright Ryan X. Charles and is not open-source unless
 otherwise specified. Some software is open-source and is licensed under the MIT
 license. See the LICENSE file in each directory for details. Some software that
 is not open-source is included for educational purposes only.
 
-Copyright (c) 2024 Ryan X. Charles LLC
+Copyright (c) 2024 Ryan X. Charles
