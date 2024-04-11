@@ -2,4 +2,4 @@ packages:
   - 'ebx-db'
   - 'ebx-gui'
   - 'ebx-lib'
-  - 'ebx-sdk'
+  - 'ebx-client'

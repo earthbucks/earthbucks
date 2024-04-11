@@ -177,7 +177,7 @@ importers:
         specifier: ^29.1.2
         version: 29.1.2(@babel/core@7.24.4)(jest@29.7.0)(typescript@5.4.4)
 
-  ebx-sdk:
+  ebx-client:
     dependencies:
       '@jest/globals':
         specifier: ^29.7.0

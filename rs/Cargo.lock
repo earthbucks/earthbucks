@@ -570,17 +570,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
-name = "ebx_builder"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "dotenv",
- "ebx_lib",
- "hex",
- "tokio 1.37.0",
-]
-
-[[package]]
 name = "ebx_lib"
 version = "0.1.0"
 dependencies = [
@@ -595,6 +584,17 @@ dependencies = [
  "secp256k1",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "ebx_server"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "dotenv",
+ "ebx_lib",
+ "hex",
+ "tokio 1.37.0",
 ]
 
 [[package]]

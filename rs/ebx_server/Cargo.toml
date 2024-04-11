@@ -1,5 +1,5 @@
 [package]
-name = "ebx_builder"
+name = "ebx_server"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"

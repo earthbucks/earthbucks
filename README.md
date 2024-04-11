@@ -17,21 +17,21 @@ Website: [earthbucks.com](https://earthbucks.com)
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
-- sdk (client for full node and spv node)
-- db (mysql, blocks, transactions, addresses, wallets, users)
 
 rs only:
 
-- builder (build blocks, validate txs, validate blocks, build merkle trees)
-- follower (follow block headers, validate txs + merkle proofs)
+- server
+  - builder (build blocks, validate txs, validate blocks, build merkle trees)
+  - follower (follow block headers, validate txs + merkle proofs)
+  - listener (API, listen for txs, listen for blocks)
 - server-pow (CUDA, CPU, OpenCL)
 - cli (command-line interface)
 
 ts only:
 
+- client (private/public interface to server)
+- browser-pow (WebGL, WebGPU, WASM)
 - gui (auth, wallet, explorer, mining pool, button)
-  - api (rest, auth, wallet, explorer, mining pool)
-  - browser-pow (WebGL, WebGPU, WASM)
 
 ## Initial Nodes
 
