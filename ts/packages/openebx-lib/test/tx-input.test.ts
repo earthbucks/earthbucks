@@ -14,7 +14,7 @@ describe('TxInput', () => {
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence)
     expect(txInput).toBeInstanceOf(TxInput)
     expect(txInput.inputTxId).toBe(inputTxHash)
-    expect(txInput.inputTxOutNum).toBe(inputTxIndex)
+    expect(txInput.inputTxNOut).toBe(inputTxIndex)
     expect(txInput.script).toBe(script)
     expect(txInput.sequence).toBe(sequence)
   })
@@ -34,7 +34,7 @@ describe('TxInput', () => {
       expect(Buffer.from(result.inputTxId).toString('hex')).toEqual(
         Buffer.from(inputTxHash).toString('hex'),
       )
-      expect(result.inputTxOutNum).toEqual(inputTxIndex)
+      expect(result.inputTxNOut).toEqual(inputTxIndex)
       expect(result.script.toString()).toEqual(script.toString())
       expect(result.sequence).toEqual(sequence)
     })

@@ -5,18 +5,18 @@ import VarInt from './var-int'
 
 export default class TxInput {
   public inputTxId: Uint8Array
-  public inputTxOutNum: number
+  public inputTxNOut: number
   public script: Script
   public sequence: number
 
   constructor(
     inputTxId: Uint8Array,
-    inputTxOutNum: number,
+    inputTxNOut: number,
     script: Script,
     sequence: number,
   ) {
     this.inputTxId = inputTxId
-    this.inputTxOutNum = inputTxOutNum
+    this.inputTxNOut = inputTxNOut
     this.script = script
     this.sequence = sequence
   }
@@ -43,7 +43,7 @@ export default class TxInput {
   toU8Vec(): Uint8Array {
     const writer = new BufferWriter()
     writer.writeU8Vec(this.inputTxId)
-    writer.writeUInt32LE(this.inputTxOutNum)
+    writer.writeUInt32LE(this.inputTxNOut)
     const scriptBuf = this.script.toU8Vec()
     writer.writeU8Vec(VarInt.fromNumber(scriptBuf.length).toU8Vec())
     writer.writeU8Vec(scriptBuf)
@@ -58,7 +58,7 @@ export default class TxInput {
   isNull(): boolean {
     return (
       this.inputTxId.every((byte) => byte === 0) &&
-      this.inputTxOutNum === 0xffffffff
+      this.inputTxNOut === 0xffffffff
     )
   }
 

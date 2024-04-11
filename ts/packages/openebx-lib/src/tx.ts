@@ -121,7 +121,7 @@ export default class Tx {
     const writer = new BufferWriter()
     for (const input of this.inputs) {
       writer.writeU8Vec(input.inputTxId)
-      writer.writeUInt32BE(input.inputTxOutNum)
+      writer.writeUInt32BE(input.inputTxNOut)
     }
     return doubleBlake3Hash(writer.toU8Vec())
   }
@@ -195,7 +195,7 @@ export default class Tx {
     writer.writeU8Vec(prevoutsHash)
     writer.writeU8Vec(sequenceHash)
     writer.writeU8Vec(this.inputs[inputIndex].inputTxId)
-    writer.writeUInt32BE(this.inputs[inputIndex].inputTxOutNum)
+    writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut)
     writer.writeVarIntNum(script.length)
     writer.writeU8Vec(script)
     writer.writeUInt64BEBigInt(amount)

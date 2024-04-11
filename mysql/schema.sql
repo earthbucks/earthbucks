@@ -1,3 +1,23 @@
+CREATE TABLE `block_buf` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- block_buf
+  `block_buf` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tx_buf` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- tx_buf
+  `tx_buf` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `block_header` (
   -- id
   `id` binary(32) NOT NULL,

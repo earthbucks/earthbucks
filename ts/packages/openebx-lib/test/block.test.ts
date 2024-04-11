@@ -60,7 +60,7 @@ describe('Block', () => {
     expect(block2.header.timestamp).toBe(bh.timestamp)
     expect(block2.header.target).toEqual(bh.target)
     expect(block2.header.nonce).toEqual(bh.nonce)
-    expect(block2.header.blockNumber).toBe(bh.blockNumber)
+    expect(block2.header.nBlock).toBe(bh.nBlock)
   })
 
   test('isGenesis', () => {

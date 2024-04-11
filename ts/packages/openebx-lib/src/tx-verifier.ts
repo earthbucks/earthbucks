@@ -17,7 +17,7 @@ export default class TxVerifier {
   verifyInputScript(nIn: number): boolean {
     const txInput = this.tx.inputs[nIn]
     const txOutHash = txInput.inputTxId
-    const outputIndex = txInput.inputTxOutNum
+    const outputIndex = txInput.inputTxNOut
     const txOut = this.txOutMap.get(txOutHash, outputIndex)
     if (!txOut) {
       return false
@@ -58,7 +58,7 @@ export default class TxVerifier {
       totalOutputValue += output.value
     }
     for (const input of this.tx.inputs) {
-      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxOutNum)
+      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxNOut)
       if (!txOut) {
         return false
       }

@@ -3,6 +3,7 @@ name = "openebx_lib"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
 secp256k1 = "0.29.0"

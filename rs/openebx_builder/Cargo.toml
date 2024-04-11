@@ -3,6 +3,7 @@ name = "openebx_builder"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
 "openebx_lib" = { path = "../openebx_lib" }

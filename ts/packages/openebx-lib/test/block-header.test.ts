@@ -21,7 +21,7 @@ describe('BlockHeader', () => {
     expect(bh1.timestamp).toBe(bh2.timestamp)
     expect(bh1.target).toEqual(bh2.target)
     expect(bh1.nonce).toEqual(bh2.nonce)
-    expect(bh1.blockNumber).toBe(bh2.blockNumber)
+    expect(bh1.nBlock).toBe(bh2.nBlock)
   })
 
   test('toBuffer', () => {
@@ -42,7 +42,7 @@ describe('BlockHeader', () => {
     expect(bh1.timestamp).toBe(bh2.timestamp)
     expect(bh1.target).toEqual(bh2.target)
     expect(bh1.nonce).toEqual(bh2.nonce)
-    expect(bh1.blockNumber).toBe(bh2.blockNumber)
+    expect(bh1.nBlock).toBe(bh2.nBlock)
   })
 
   test('isValid', () => {
@@ -147,7 +147,7 @@ describe('BlockHeader', () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       )
-      expect(bh.blockNumber).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
+      expect(bh.nBlock).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
       expect(bh.target).toEqual(
         BlockHeader.adjustTarget(new Uint8Array(32), 0n),
       )
@@ -183,7 +183,7 @@ describe('BlockHeader', () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       )
-      expect(bh.blockNumber).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
+      expect(bh.nBlock).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT)
       expect(Buffer.from(bh.target).toString('hex')).toEqual(
         '000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff',
       )

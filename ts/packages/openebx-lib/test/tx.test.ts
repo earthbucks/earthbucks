@@ -109,7 +109,7 @@ describe('Tx', () => {
       const txInput = TxInput.fromCoinbase(script)
       expect(txInput).toBeInstanceOf(TxInput)
       expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true)
-      expect(txInput.inputTxOutNum).toBe(0xffffffff)
+      expect(txInput.inputTxNOut).toBe(0xffffffff)
       expect(txInput.script.toString()).toEqual(script.toString())
       expect(txInput.sequence).toBe(0xffffffff)
     })

@@ -7,16 +7,16 @@ use crate::var_int::VarInt;
 #[derive(Clone)]
 pub struct TxInput {
     pub input_tx_id: Vec<u8>,
-    pub input_tx_out_num: u32,
+    pub input_tx_n_out: u32,
     pub script: Script,
     pub sequence: u32,
 }
 
 impl TxInput {
-    pub fn new(input_tx_id: Vec<u8>, input_tx_out_num: u32, script: Script, sequence: u32) -> Self {
+    pub fn new(input_tx_id: Vec<u8>, input_tx_n_out: u32, script: Script, sequence: u32) -> Self {
         Self {
             input_tx_id,
-            input_tx_out_num,
+            input_tx_n_out,
             script,
             sequence,
         }
@@ -46,7 +46,7 @@ impl TxInput {
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut writer = BufferWriter::new();
         writer.write_u8_vec(self.input_tx_id.clone());
-        writer.write_u32_be(self.input_tx_out_num);
+        writer.write_u32_be(self.input_tx_n_out);
         let script_buf = self.script.to_u8_vec();
         writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_u8_vec());
         writer.write_u8_vec(script_buf);
@@ -55,7 +55,7 @@ impl TxInput {
     }
 
     pub fn is_null(&self) -> bool {
-        self.input_tx_id.iter().all(|&byte| byte == 0) && self.input_tx_out_num == 0xffffffff
+        self.input_tx_id.iter().all(|&byte| byte == 0) && self.input_tx_n_out == 0xffffffff
     }
 
     pub fn is_final(&self) -> bool {
@@ -69,7 +69,7 @@ impl TxInput {
     pub fn from_coinbase(script: Script) -> Self {
         Self {
             input_tx_id: vec![0; 32],
-            input_tx_out_num: 0xffffffff,
+            input_tx_n_out: 0xffffffff,
             script,
             sequence: 0xffffffff,
         }
@@ -101,7 +101,7 @@ mod tests {
         // Test from_u8_vec
         let tx_input2 = TxInput::from_u8_vec(buf).map_err(|e| e.to_string())?;
         assert_eq!(tx_input2.input_tx_id, input_tx_id);
-        assert_eq!(tx_input2.input_tx_out_num, input_tx_index);
+        assert_eq!(tx_input2.input_tx_n_out, input_tx_index);
         match (tx_input.script.to_string(), tx_input2.script.to_string()) {
             (Ok(script_str), Ok(expected_script_str)) => {
                 assert_eq!(script_str, expected_script_str)
@@ -142,7 +142,7 @@ mod tests {
         };
 
         assert_eq!(tx_input.input_tx_id, input_tx_id);
-        assert_eq!(tx_input.input_tx_out_num, input_tx_index);
+        assert_eq!(tx_input.input_tx_n_out, input_tx_index);
         assert_eq!(script2_hex, script_hex);
         assert_eq!(tx_input.sequence, sequence);
     }
@@ -151,7 +151,7 @@ mod tests {
     fn test_is_null() {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0,
+            input_tx_n_out: 0,
             script: Script::from_string("0x121212").unwrap(),
             sequence: 0,
         };
@@ -159,7 +159,7 @@ mod tests {
 
         let null_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0xffffffff,
+            input_tx_n_out: 0xffffffff,
             script: Script::from_string("").unwrap(),
             sequence: 0xffffffff,
         };
@@ -170,7 +170,7 @@ mod tests {
     fn test_is_final() {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0,
+            input_tx_n_out: 0,
             script: Script::from_string("0x121212").unwrap(),
             sequence: 0,
         };
@@ -178,7 +178,7 @@ mod tests {
 
         let final_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0xffffffff,
+            input_tx_n_out: 0xffffffff,
             script: Script::from_string("").unwrap(),
             sequence: 0xffffffff,
         };
@@ -189,7 +189,7 @@ mod tests {
     fn test_is_coinbase() {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0,
+            input_tx_n_out: 0,
             script: Script::from_string("0x121212").unwrap(),
             sequence: 0,
         };
@@ -197,7 +197,7 @@ mod tests {
 
         let coinbase_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
-            input_tx_out_num: 0xffffffff,
+            input_tx_n_out: 0xffffffff,
             script: Script::from_string("").unwrap(),
             sequence: 0xffffffff,
         };
@@ -210,7 +210,7 @@ mod tests {
         let tx_input = TxInput::from_coinbase(script);
 
         assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
-        assert_eq!(tx_input.input_tx_out_num, 0xffffffff);
+        assert_eq!(tx_input.input_tx_n_out, 0xffffffff);
         assert_eq!(tx_input.script.to_string().unwrap(), "0x121212");
         assert_eq!(tx_input.sequence, 0xffffffff);
     }
