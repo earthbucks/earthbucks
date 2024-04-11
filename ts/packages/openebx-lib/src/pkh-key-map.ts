@@ -8,19 +8,19 @@ export default class PkhKeyMap {
     this.map = new Map<string, Key>()
   }
 
-  add(key: Key, addressU8Vec: Uint8Array): void {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    this.map.set(addressHex, key)
+  add(key: Key, pkhU8Vec: Uint8Array): void {
+    const pkhHex = Buffer.from(pkhU8Vec).toString('hex')
+    this.map.set(pkhHex, key)
   }
 
-  remove(addressU8Vec: Uint8Array): void {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    this.map.delete(addressHex)
+  remove(pkhU8Vec: Uint8Array): void {
+    const pkhHex = Buffer.from(pkhU8Vec).toString('hex')
+    this.map.delete(pkhHex)
   }
 
-  get(addressU8Vec: Uint8Array): Key | undefined {
-    const addressHex = Buffer.from(addressU8Vec).toString('hex')
-    return this.map.get(addressHex)
+  get(pkhU8Vec: Uint8Array): Key | undefined {
+    const pkhHex = Buffer.from(pkhU8Vec).toString('hex')
+    return this.map.get(pkhHex)
   }
 
   values(): IterableIterator<Key> {

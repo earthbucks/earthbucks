@@ -1,5 +1,3 @@
-pub mod pkh;
-pub mod pkh_key_map;
 pub mod blake3;
 pub mod block;
 pub mod block_builder;
@@ -12,6 +10,8 @@ pub mod merkle_node;
 pub mod merkle_proof;
 pub mod merkle_txs;
 pub mod opcode;
+pub mod pkh;
+pub mod pkh_key_map;
 pub mod script;
 pub mod script_chunk;
 pub mod script_interpreter;

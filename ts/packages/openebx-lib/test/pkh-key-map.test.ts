@@ -7,51 +7,45 @@ import { Buffer } from 'buffer'
 describe('PkhKeyMap', () => {
   let pkhKeyMap: PkhKeyMap
   let key: Key
-  let address: Pkh
-  let addressU8Vec: Uint8Array
+  let pkh: Pkh
+  let pkhU8Vec: Uint8Array
 
   beforeEach(() => {
     pkhKeyMap = new PkhKeyMap()
     key = Key.fromRandom()
-    address = new Pkh(key.publicKey)
-    addressU8Vec = address.pkh
+    pkh = new Pkh(key.publicKey)
+    pkhU8Vec = pkh.pkh
   })
 
   test('add', () => {
-    pkhKeyMap.add(key, addressU8Vec)
+    pkhKeyMap.add(key, pkhU8Vec)
     expect(
-      Buffer.from(pkhKeyMap.get(addressU8Vec)?.privateKey || '').toString(
-        'hex',
-      ),
+      Buffer.from(pkhKeyMap.get(pkhU8Vec)?.privateKey || '').toString('hex'),
     ).toEqual(Buffer.from(key.privateKey).toString('hex'))
   })
 
   test('remove', () => {
-    pkhKeyMap.add(key, addressU8Vec)
-    pkhKeyMap.remove(addressU8Vec)
+    pkhKeyMap.add(key, pkhU8Vec)
+    pkhKeyMap.remove(pkhU8Vec)
     expect(
-      Buffer.from(pkhKeyMap.get(addressU8Vec)?.privateKey || '').toString(
-        'hex',
-      ),
+      Buffer.from(pkhKeyMap.get(pkhU8Vec)?.privateKey || '').toString('hex'),
     ).toEqual('')
   })
 
   test('get', () => {
-    pkhKeyMap.add(key, addressU8Vec)
+    pkhKeyMap.add(key, pkhU8Vec)
     expect(
-      Buffer.from(pkhKeyMap.get(addressU8Vec)?.privateKey || '').toString(
-        'hex',
-      ),
+      Buffer.from(pkhKeyMap.get(pkhU8Vec)?.privateKey || '').toString('hex'),
     ).toEqual(Buffer.from(key.privateKey).toString('hex'))
   })
 
   test('values method should return all Key values', () => {
     const key1 = key
     const key2 = Key.fromRandom()
-    const address2 = new Pkh(key2.publicKey)
-    const addressU8Vec2 = address2.pkh
-    pkhKeyMap.add(key1, addressU8Vec)
-    pkhKeyMap.add(key2, addressU8Vec2)
+    const pkh2 = new Pkh(key2.publicKey)
+    const pkhU8Vec2 = pkh2.pkh
+    pkhKeyMap.add(key1, pkhU8Vec)
+    pkhKeyMap.add(key2, pkhU8Vec2)
 
     const values = Array.from(pkhKeyMap.values())
 

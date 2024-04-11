@@ -13,7 +13,7 @@ pub struct BlockHeader {
     pub timestamp: u64,         // uint32
     pub target: Vec<u8>,        // 32 bits
     pub nonce: Vec<u8>,         // 256 bits
-    pub n_block: u64,      // uint64
+    pub n_block: u64,           // uint64
 }
 
 impl BlockHeader {

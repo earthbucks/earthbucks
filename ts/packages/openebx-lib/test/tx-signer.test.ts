@@ -23,9 +23,9 @@ describe('TxSigner', () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = Key.fromRandom()
-      const address = new Pkh(key.publicKey)
-      pkhKeyMap.add(key, address.pkh)
-      const script = Script.fromAddressOutput(address.pkh)
+      const pkh = new Pkh(key.publicKey)
+      pkhKeyMap.add(key, pkh.pkh)
+      const script = Script.fromAddressOutput(pkh.pkh)
       const output = new TxOutput(BigInt(100), script)
       txOutMap.add(output, Buffer.from('00'.repeat(32), 'hex'), i)
     }
@@ -36,8 +36,8 @@ describe('TxSigner', () => {
 
   test('should sign a tx', () => {
     const key = Key.fromRandom()
-    const address = new Pkh(key.publicKey)
-    const script = Script.fromAddressOutput(address.pkh)
+    const pkh = new Pkh(key.publicKey)
+    const script = Script.fromAddressOutput(pkh.pkh)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(50), Script.fromString(''))
 
@@ -77,8 +77,8 @@ describe('TxSigner', () => {
 
   test('should sign two inputs', () => {
     const key = Key.fromRandom()
-    const address = new Pkh(key.publicKey)
-    const script = Script.fromAddressOutput(address.pkh)
+    const pkh = new Pkh(key.publicKey)
+    const script = Script.fromAddressOutput(pkh.pkh)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
     txBuilder.addOutput(BigInt(100), Script.fromString(''))

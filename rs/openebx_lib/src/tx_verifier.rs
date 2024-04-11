@@ -90,9 +90,9 @@ impl TxVerifier {
 
 #[cfg(test)]
 mod tests {
+    use crate::key::Key;
     use crate::pkh::Pkh;
     use crate::pkh_key_map::PkhKeyMap;
-    use crate::key::Key;
     use crate::script::Script;
     use crate::tx_builder::TxBuilder;
     use crate::tx_output::TxOutput;
@@ -108,9 +108,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Pkh::new(key.clone().public_key);
-            pkh_key_map.add(key, &address.pkh);
-            let script = Script::from_address_output(&address.pkh);
+            let pkh = Pkh::new(key.clone().public_key);
+            pkh_key_map.add(key, &pkh.pkh);
+            let script = Script::from_pkh_output(&pkh.pkh);
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, &vec![0; 32], i);
         }
@@ -153,9 +153,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Pkh::new(key.clone().public_key);
-            pkh_key_map.add(key, &address.pkh);
-            let script = Script::from_address_output(&address.pkh);
+            let pkh = Pkh::new(key.clone().public_key);
+            pkh_key_map.add(key, &pkh.pkh);
+            let script = Script::from_pkh_output(&pkh.pkh);
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, &vec![0; 32], i);
         }

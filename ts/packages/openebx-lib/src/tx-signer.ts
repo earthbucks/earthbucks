@@ -28,12 +28,12 @@ export default class TxSigner {
     if (!txOut.script.isAddressOutput()) {
       return false
     }
-    const address = txOut.script.chunks[2].buffer as Uint8Array
+    const pkh = txOut.script.chunks[2].buffer as Uint8Array
     const inputScript = txInput.script
     if (!inputScript.isAddressInput()) {
       return false
     }
-    const key = this.pkhKeyMap.get(address)
+    const key = this.pkhKeyMap.get(pkh)
     if (!key) {
       return false
     }

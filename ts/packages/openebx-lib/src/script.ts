@@ -60,11 +60,11 @@ export default class Script {
     return new Script().fromU8Vec(arr)
   }
 
-  static fromAddressOutput(address: Uint8Array): Script {
+  static fromAddressOutput(pkh: Uint8Array): Script {
     return new Script([
       new ScriptChunk(OP.DUP),
       new ScriptChunk(OP.DOUBLEBLAKE3),
-      ScriptChunk.fromData(address),
+      ScriptChunk.fromData(pkh),
       new ScriptChunk(OP.EQUALVERIFY),
       new ScriptChunk(OP.CHECKSIG),
     ])

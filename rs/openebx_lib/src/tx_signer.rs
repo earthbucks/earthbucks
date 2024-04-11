@@ -27,18 +27,18 @@ impl TxSigner {
             Some(tx_out) => tx_out,
             None => return false,
         };
-        if !tx_out.script.is_address_output() {
+        if !tx_out.script.is_pkh_output() {
             return false;
         }
-        let address = match &tx_out.script.chunks[2].buffer {
-            Some(address) => address,
+        let pkh = match &tx_out.script.chunks[2].buffer {
+            Some(pkh) => pkh,
             None => return false,
         };
         let input_script = &mut tx_input.script;
-        if !input_script.is_address_input() {
+        if !input_script.is_pkh_input() {
             return false;
         }
-        let key = match self.pkh_key_map.get(address) {
+        let key = match self.pkh_key_map.get(pkh) {
             Some(key) => key,
             None => return false,
         };
@@ -83,9 +83,9 @@ impl TxSigner {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::key::Key;
     use crate::pkh::Pkh;
     use crate::pkh_key_map::PkhKeyMap;
-    use crate::key::Key;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
     use crate::tx::HashCache;
@@ -101,9 +101,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Pkh::new(key.public_key.clone());
-            pkh_key_map.add(key.clone(), &address.pkh.clone());
-            let script = Script::from_address_output(&address.pkh.clone());
+            let pkh = Pkh::new(key.public_key.clone());
+            pkh_key_map.add(key.clone(), &pkh.pkh.clone());
+            let script = Script::from_pkh_output(&pkh.pkh.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -156,9 +156,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Pkh::new(key.public_key.clone());
-            pkh_key_map.add(key.clone(), &address.pkh.clone());
-            let script = Script::from_address_output(&address.pkh.clone());
+            let pkh = Pkh::new(key.public_key.clone());
+            pkh_key_map.add(key.clone(), &pkh.pkh.clone());
+            let script = Script::from_pkh_output(&pkh.pkh.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
