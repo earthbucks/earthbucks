@@ -51,6 +51,32 @@ CREATE TABLE `block_header` (
   PRIMARY KEY (`id`)
 );
 
+-- longest chain where all blocks are validated
+CREATE TABLE `longest_validated_chain` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `prev_id` binary(32) NOT NULL,
+  `block_number` bigint UNSIGNED NOT NULL UNIQUE,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  -- primary key
+  PRIMARY KEY (`id`).
+);
+
+-- longest chain where all blocks are not validated (SPV)
+CREATE TABLE `longest_header_chain` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `prev_id` binary(32) NOT NULL,
+  `block_number` bigint UNSIGNED NOT NULL UNIQUE,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  -- primary key
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `tx_input` (
   -- id
   `tx_id` binary(32) NOT NULL,
@@ -108,7 +134,7 @@ CREATE TABLE `user` (
   `id` bigint UNSIGNED AUTO_INCREMENT NOT NULL,
   -- data structure
   `pkh_id` binary(32) NOT NULL,
-  `ebx_address` varchar(255) NOT NULL,
+  `ebx_address` varchar(255) NOT NULL UNIQUE,
   -- database metadata
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)
@@ -116,7 +142,7 @@ CREATE TABLE `user` (
 
 CREATE TABLE `ebx_address` (
   -- id
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) NOT NULL UNIQUE,
   -- data structure
   `username` varchar(255),
   -- domain may have null username
