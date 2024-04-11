@@ -17,6 +17,7 @@ Website: [earthbucks.com](https://earthbucks.com)
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
+- client (private/public interface to server)
 
 rs only:
 
@@ -24,14 +25,13 @@ rs only:
   - builder (build blocks, validate txs, validate blocks, build merkle trees)
   - follower (follow block headers, validate txs + merkle proofs)
   - listener (API, listen for txs, listen for blocks)
-- server-pow (CUDA, CPU, OpenCL)
-- cli (command-line interface)
+- system-pow (CUDA, CPU, OpenCL, uses client)
+- cli (command-line interface, uses client)
 
 ts only:
 
-- client (private/public interface to server)
-- browser-pow (WebGL, WebGPU, WASM)
-- gui (auth, wallet, explorer, mining pool, button)
+- browser-pow (WebGL, WebGPU, WASM, uses client)
+- gui (auth, wallet, explorer, mining pool, button, uses client)
 
 ## Initial Nodes
 

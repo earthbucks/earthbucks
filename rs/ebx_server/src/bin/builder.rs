@@ -1,6 +1,6 @@
 use dotenv::dotenv;
-use std::env;
 use ebx_lib::key::Key;
+use std::env;
 
 fn main() {
     dotenv().ok();
