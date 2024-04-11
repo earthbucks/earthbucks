@@ -1,21 +1,21 @@
 use crate::blake3::double_blake3_hash;
 
-pub struct Address {
-    pub address: [u8; 32],
+pub struct Pkh {
+    pub pkh: [u8; 32],
 }
 
-impl Address {
+impl Pkh {
     pub fn new(public_key: Vec<u8>) -> Self {
-        let address = double_blake3_hash(&public_key);
-        Self { address }
+        let pkh = double_blake3_hash(&public_key);
+        Self { pkh }
     }
 
     pub fn from_public_key(public_key: Vec<u8>) -> Self {
         Self::new(public_key)
     }
 
-    pub fn address(&self) -> &[u8; 32] {
-        &self.address
+    pub fn pkh(&self) -> &[u8; 32] {
+        &self.pkh
     }
 }
 
@@ -41,10 +41,10 @@ mod tests {
         expected_address.copy_from_slice(&expected_address_vec[..]);
 
         // Create a new Address instance
-        let address = Address::new(pub_key);
+        let address = Pkh::new(pub_key);
 
         // Check that the address matches the expected address
-        assert_eq!(address.address(), &expected_address);
+        assert_eq!(address.pkh(), &expected_address);
     }
 
     #[derive(Deserialize)]
@@ -76,10 +76,10 @@ mod tests {
             expected_address.copy_from_slice(&expected_address_vec[..]);
 
             // Create a new Address instance
-            let address = Address::new(pub_key);
+            let address = Pkh::new(pub_key);
 
             // Check that the address matches the expected address
-            assert_eq!(address.address(), &expected_address);
+            assert_eq!(address.pkh(), &expected_address);
         }
     }
 }

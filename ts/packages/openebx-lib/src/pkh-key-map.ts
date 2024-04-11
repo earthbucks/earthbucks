@@ -1,7 +1,7 @@
 import Key from './key'
 import { Buffer } from 'buffer'
 
-export default class AddressKeyMap {
+export default class PkhKeyMap {
   public map: Map<string, Key>
 
   constructor() {

@@ -70,7 +70,7 @@ impl TxBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::address::Address;
+    use crate::pkh::Pkh;
     use crate::key::Key;
     use crate::script::Script;
 
@@ -80,8 +80,8 @@ mod tests {
 
         for i in 0..5 as u32 {
             let key = Key::from_random();
-            let address = Address::new(key.public_key().to_vec());
-            let script = Script::from_address_output(address.address());
+            let address = Pkh::new(key.public_key().to_vec());
+            let script = Script::from_address_output(address.pkh());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, &vec![0; 32], i);
         }

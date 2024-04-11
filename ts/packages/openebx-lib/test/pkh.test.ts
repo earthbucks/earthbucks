@@ -2,14 +2,14 @@ import { describe, expect, test } from '@jest/globals'
 import Key from '../src/key'
 import fs from 'fs'
 import path from 'path'
-import Address from '../src/address'
+import Pkh from '../src/pkh'
 import { Buffer } from 'buffer'
 
-describe('Address', () => {
-  test('Address', () => {
+describe('Pkh', () => {
+  test('Pkh', () => {
     const key = Key.fromRandom()
-    const address = new Address(key.publicKey)
-    expect(address.address).toBeDefined()
+    const address = new Pkh(key.publicKey)
+    expect(address.pkh).toBeDefined()
   })
 
   describe('standard test vectors: address.json', () => {
@@ -28,8 +28,8 @@ describe('Address', () => {
       for (const pair of addressPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, 'hex')
         const pubKey = new Uint8Array(pubKeyBuf)
-        const address = new Address(pubKey)
-        expect(Buffer.from(address.address).toString('hex')).toBe(pair.address)
+        const address = new Pkh(pubKey)
+        expect(Buffer.from(address.pkh).toString('hex')).toBe(pair.address)
       }
     })
   })

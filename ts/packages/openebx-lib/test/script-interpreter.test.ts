@@ -7,7 +7,7 @@ import TxOutput from '../src/tx-output'
 import fs from 'fs'
 import path from 'path'
 import Key from '../src/key'
-import Address from '../src/address'
+import Pkh from '../src/pkh'
 import TxSignature from '../src/tx-signature'
 import { Buffer } from 'buffer'
 
@@ -141,8 +141,8 @@ describe('ScriptInterpreter', () => {
       expect(Buffer.from(outputPubKey).toString('hex')).toEqual(
         '0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987',
       )
-      const outputAddress = new Address(outputPubKey)
-      const outputScript = Script.fromAddressOutput(outputAddress.address)
+      const outputAddress = new Pkh(outputPubKey)
+      const outputScript = Script.fromAddressOutput(outputAddress.pkh)
       const outputAmount = BigInt(100)
       const outputTxId = Buffer.from('00'.repeat(32), 'hex')
       const outputTxIndex = 0

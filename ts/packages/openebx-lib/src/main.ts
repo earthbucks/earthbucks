@@ -1,5 +1,5 @@
 import Key from './key'
-import Address from './address'
+import Pkh from './pkh'
 import { Buffer } from 'buffer'
 
 function main() {
@@ -28,12 +28,12 @@ function main() {
         const publicKey = key.publicKey
 
         // Get the corresponding address
-        const address = new Address(publicKey)
+        const address = new Pkh(publicKey)
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privateKey).toString('hex')
         const publicKeyHex = Buffer.from(publicKey).toString('hex')
-        const addressHex = Buffer.from(address.address).toString('hex')
+        const addressHex = Buffer.from(address.pkh).toString('hex')
         console.log(`Private key: ${privateKeyHex}`)
         console.log(`Public key: ${publicKeyHex}`)
         console.log(`Address: ${addressHex}`)

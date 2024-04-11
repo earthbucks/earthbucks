@@ -4,24 +4,24 @@ import TxOutputMap from '../src/tx-output-map'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import Key from '../src/key'
-import Address from '../src/address'
-import AddressKeyMap from '../src/address-key-map'
+import Pkh from '../src/pkh'
+import PkhKeyMap from '../src/pkh-key-map'
 import { Buffer } from 'buffer'
 
 describe('TxBuilder', () => {
   let txBuilder: TxBuilder
   let txOutMap: TxOutputMap
-  let addressKeyMap: AddressKeyMap
+  let pkhKeyMap: PkhKeyMap
 
   beforeEach(() => {
     txOutMap = new TxOutputMap()
-    addressKeyMap = new AddressKeyMap()
+    pkhKeyMap = new PkhKeyMap()
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = Key.fromRandom()
-      const address = new Address(key.publicKey)
-      addressKeyMap.add(key, address.address)
-      const script = Script.fromAddressOutput(address.address)
+      const address = new Pkh(key.publicKey)
+      pkhKeyMap.add(key, address.pkh)
+      const script = Script.fromAddressOutput(address.pkh)
       const output = new TxOutput(BigInt(100), script)
       txOutMap.add(output, Buffer.from('00'.repeat(32), 'hex'), i)
     }
@@ -32,8 +32,8 @@ describe('TxBuilder', () => {
 
   test('should build a valid tx when input is enough to cover the output', () => {
     const key = Key.fromRandom()
-    const address = new Address(key.publicKey)
-    const script = Script.fromAddressOutput(address.address)
+    const address = new Pkh(key.publicKey)
+    const script = Script.fromAddressOutput(address.pkh)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(50), Script.fromString(''))
 

@@ -1010,7 +1010,7 @@ impl<'a> ScriptInterpreter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::address::Address;
+    use crate::pkh::Pkh;
     use crate::key::Key;
     use crate::tx_input::TxInput;
     use crate::tx_output::TxOutput;
@@ -1101,8 +1101,8 @@ mod tests {
                 hex::encode(&output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
-            let output_address = Address::new(output_pub_key.to_vec());
-            let output_script = Script::from_address_output(output_address.address());
+            let output_address = Pkh::new(output_pub_key.to_vec());
+            let output_script = Script::from_address_output(output_address.pkh());
             let output_amount = 100;
             let output_tx_id = vec![0; 32];
             let output_tx_index = 0;

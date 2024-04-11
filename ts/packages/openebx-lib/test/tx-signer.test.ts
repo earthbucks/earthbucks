@@ -4,8 +4,8 @@ import TxOutputMap from '../src/tx-output-map'
 import TxOutput from '../src/tx-output'
 import Script from '../src/script'
 import Key from '../src/key'
-import Address from '../src/address'
-import AddressKeyMap from '../src/address-key-map'
+import Pkh from '../src/pkh'
+import PkhKeyMap from '../src/pkh-key-map'
 import TxSigner from '../src/tx-signer'
 import ScriptInterpreter from '../src/script-interpreter'
 import { HashCache } from '../src/tx'
@@ -15,17 +15,17 @@ describe('TxSigner', () => {
   let txBuilder: TxBuilder
   let txSigner: TxSigner
   let txOutMap: TxOutputMap
-  let addressKeyMap: AddressKeyMap
+  let pkhKeyMap: PkhKeyMap
 
   beforeEach(() => {
     txOutMap = new TxOutputMap()
-    addressKeyMap = new AddressKeyMap()
+    pkhKeyMap = new PkhKeyMap()
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = Key.fromRandom()
-      const address = new Address(key.publicKey)
-      addressKeyMap.add(key, address.address)
-      const script = Script.fromAddressOutput(address.address)
+      const address = new Pkh(key.publicKey)
+      pkhKeyMap.add(key, address.pkh)
+      const script = Script.fromAddressOutput(address.pkh)
       const output = new TxOutput(BigInt(100), script)
       txOutMap.add(output, Buffer.from('00'.repeat(32), 'hex'), i)
     }
@@ -36,8 +36,8 @@ describe('TxSigner', () => {
 
   test('should sign a tx', () => {
     const key = Key.fromRandom()
-    const address = new Address(key.publicKey)
-    const script = Script.fromAddressOutput(address.address)
+    const address = new Pkh(key.publicKey)
+    const script = Script.fromAddressOutput(address.pkh)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(50), Script.fromString(''))
 
@@ -47,7 +47,7 @@ describe('TxSigner', () => {
     expect(tx.outputs.length).toBe(2)
     expect(tx.outputs[0].value).toBe(BigInt(50))
 
-    txSigner = new TxSigner(tx, txOutMap, addressKeyMap)
+    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap)
     const signed = txSigner.sign(0)
     expect(signed).toBe(true)
 
@@ -77,8 +77,8 @@ describe('TxSigner', () => {
 
   test('should sign two inputs', () => {
     const key = Key.fromRandom()
-    const address = new Address(key.publicKey)
-    const script = Script.fromAddressOutput(address.address)
+    const address = new Pkh(key.publicKey)
+    const script = Script.fromAddressOutput(address.pkh)
     const output = new TxOutput(BigInt(50), script)
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
     txBuilder.addOutput(BigInt(100), Script.fromString(''))
@@ -90,7 +90,7 @@ describe('TxSigner', () => {
     expect(tx.outputs[0].value).toBe(BigInt(100))
     expect(tx.outputs[1].value).toBe(BigInt(100))
 
-    txSigner = new TxSigner(tx, txOutMap, addressKeyMap)
+    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap)
     const signed1 = txSigner.sign(0)
     expect(signed1).toBe(true)
     const signed2 = txSigner.sign(1)

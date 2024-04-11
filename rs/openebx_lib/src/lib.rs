@@ -1,5 +1,5 @@
-pub mod address;
-pub mod address_key_map;
+pub mod pkh;
+pub mod pkh_key_map;
 pub mod blake3;
 pub mod block;
 pub mod block_builder;

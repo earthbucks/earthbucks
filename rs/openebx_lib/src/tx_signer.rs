@@ -1,20 +1,20 @@
-use crate::address_key_map::AddressKeyMap;
+use crate::pkh_key_map::PkhKeyMap;
 use crate::tx::Tx;
 use crate::tx_output_map::TxOutputMap;
 use crate::tx_signature::TxSignature;
 
 pub struct TxSigner {
     pub tx: Tx,
-    pub address_key_map: AddressKeyMap,
+    pub pkh_key_map: PkhKeyMap,
     pub tx_out_map: TxOutputMap,
 }
 
 impl TxSigner {
-    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, address_key_map: &AddressKeyMap) -> Self {
+    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, pkh_key_map: &PkhKeyMap) -> Self {
         Self {
             tx,
             tx_out_map: tx_out_map.clone(),
-            address_key_map: address_key_map.clone(),
+            pkh_key_map: pkh_key_map.clone(),
         }
     }
 
@@ -38,7 +38,7 @@ impl TxSigner {
         if !input_script.is_address_input() {
             return false;
         }
-        let key = match self.address_key_map.get(address) {
+        let key = match self.pkh_key_map.get(address) {
             Some(key) => key,
             None => return false,
         };
@@ -83,8 +83,8 @@ impl TxSigner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::address::Address;
-    use crate::address_key_map::AddressKeyMap;
+    use crate::pkh::Pkh;
+    use crate::pkh_key_map::PkhKeyMap;
     use crate::key::Key;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
@@ -96,14 +96,14 @@ mod tests {
     #[test]
     fn should_sign_a_tx() {
         let mut tx_out_map = TxOutputMap::new();
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Address::new(key.public_key.clone());
-            address_key_map.add(key.clone(), &address.address.clone());
-            let script = Script::from_address_output(&address.address.clone());
+            let address = Pkh::new(key.public_key.clone());
+            pkh_key_map.add(key.clone(), &address.pkh.clone());
+            let script = Script::from_address_output(&address.pkh.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -117,7 +117,7 @@ mod tests {
         assert_eq!(tx.outputs.len(), 2);
         assert_eq!(tx.outputs[0].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
         assert_eq!(signed, true);
@@ -151,14 +151,14 @@ mod tests {
     #[test]
     fn should_sign_two_inputs() {
         let mut tx_out_map = TxOutputMap::new();
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = Key::from_random();
-            let address = Address::new(key.public_key.clone());
-            address_key_map.add(key.clone(), &address.address.clone());
-            let script = Script::from_address_output(&address.address.clone());
+            let address = Pkh::new(key.public_key.clone());
+            pkh_key_map.add(key.clone(), &address.pkh.clone());
+            let script = Script::from_address_output(&address.pkh.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -174,7 +174,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 100);
         assert_eq!(tx.outputs[1].value, 100);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &address_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed1 = tx_signer.sign(0);
         let signed2 = tx_signer.sign(1);
         let signed_tx = tx_signer.tx;

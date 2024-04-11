@@ -2,11 +2,11 @@ use crate::key::Key;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-pub struct AddressKeyMap {
+pub struct PkhKeyMap {
     map: HashMap<String, Key>,
 }
 
-impl AddressKeyMap {
+impl PkhKeyMap {
     pub fn new() -> Self {
         Self {
             map: HashMap::new(),
@@ -36,19 +36,19 @@ impl AddressKeyMap {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::address::Address;
+    use crate::pkh::Pkh;
     use crate::key::Key;
     use hex;
 
     #[test]
     fn test_add() {
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
         let key = Key::from_random();
         let key_clone = key.clone();
-        let address = Address::new(key_clone.public_key);
-        let address_u8_vec = address.address;
-        address_key_map.add(key.clone(), &address_u8_vec);
-        let retrieved_key = address_key_map.get(&address_u8_vec).unwrap();
+        let address = Pkh::new(key_clone.public_key);
+        let address_u8_vec = address.pkh;
+        pkh_key_map.add(key.clone(), &address_u8_vec);
+        let retrieved_key = pkh_key_map.get(&address_u8_vec).unwrap();
         assert_eq!(
             hex::encode(&retrieved_key.private_key),
             hex::encode(&key.private_key)
@@ -57,25 +57,25 @@ mod tests {
 
     #[test]
     fn test_remove() {
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
         let key = Key::from_random();
         let key_clone = key.clone();
-        let address = Address::new(key_clone.public_key);
-        let address_u8_vec = address.address;
-        address_key_map.add(key.clone(), &address_u8_vec);
-        address_key_map.remove(&address_u8_vec);
-        assert!(address_key_map.get(&address_u8_vec).is_none());
+        let address = Pkh::new(key_clone.public_key);
+        let address_u8_vec = address.pkh;
+        pkh_key_map.add(key.clone(), &address_u8_vec);
+        pkh_key_map.remove(&address_u8_vec);
+        assert!(pkh_key_map.get(&address_u8_vec).is_none());
     }
 
     #[test]
     fn test_get() {
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
         let key = Key::from_random();
         let key_clone = key.clone();
-        let address = Address::new(key_clone.public_key);
-        let address_u8_vec = address.address;
-        address_key_map.add(key.clone(), &address_u8_vec);
-        let retrieved_key = address_key_map.get(&address_u8_vec).unwrap();
+        let address = Pkh::new(key_clone.public_key);
+        let address_u8_vec = address.pkh;
+        pkh_key_map.add(key.clone(), &address_u8_vec);
+        let retrieved_key = pkh_key_map.get(&address_u8_vec).unwrap();
         assert_eq!(
             hex::encode(&retrieved_key.private_key),
             hex::encode(&key.private_key)
@@ -84,18 +84,18 @@ mod tests {
 
     #[test]
     fn test_values() {
-        let mut address_key_map = AddressKeyMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
         let key1 = Key::from_random();
         let key1_clone = key1.clone();
-        let address1 = Address::new(key1_clone.public_key);
-        let address_u8_vec1 = address1.address;
+        let address1 = Pkh::new(key1_clone.public_key);
+        let address_u8_vec1 = address1.pkh;
         let key2 = Key::from_random();
         let key2_clone = key2.clone();
-        let address2 = Address::new(key2_clone.public_key);
-        let address_u8_vec2 = address2.address;
-        address_key_map.add(key1.clone(), &address_u8_vec1);
-        address_key_map.add(key2.clone(), &address_u8_vec2);
-        let values: Vec<&Key> = address_key_map.values().collect();
+        let address2 = Pkh::new(key2_clone.public_key);
+        let address_u8_vec2 = address2.pkh;
+        pkh_key_map.add(key1.clone(), &address_u8_vec1);
+        pkh_key_map.add(key2.clone(), &address_u8_vec2);
+        let values: Vec<&Key> = pkh_key_map.values().collect();
         assert_eq!(values.len(), 2);
 
         let key1_encoded = hex::encode(&key1.private_key);

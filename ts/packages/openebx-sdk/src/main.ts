@@ -1,5 +1,5 @@
 import Key from 'openebx-lib/src/key'
-import Address from 'openebx-lib/src/address'
+import Pkh from 'openebx-lib/src/address'
 
 function main() {
   const args = process.argv.slice(2)
@@ -27,7 +27,7 @@ function main() {
         const publicKey = key.publicKey
 
         // Get the corresponding address
-        const address = new Address(publicKey)
+        const address = new Pkh(publicKey)
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privateKey).toString('hex')

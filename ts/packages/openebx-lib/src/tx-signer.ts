@@ -1,20 +1,20 @@
 import Tx from './tx'
 import Key from './key'
-import Address from './address'
-import AddressKeyMap from './address-key-map'
+import Pkh from './pkh'
+import PkhKeyMap from './pkh-key-map'
 import TxOutputMap from './tx-output-map'
 import TxSignature from './tx-signature'
 import { Buffer } from 'buffer'
 
 export default class TxSigner {
   public tx: Tx
-  public addressKeyMap: AddressKeyMap
+  public pkhKeyMap: PkhKeyMap
   public txOutMap: TxOutputMap
 
-  constructor(tx: Tx, txOutMap: TxOutputMap, addressKeyMap: AddressKeyMap) {
+  constructor(tx: Tx, txOutMap: TxOutputMap, pkhKeyMap: PkhKeyMap) {
     this.tx = tx
     this.txOutMap = txOutMap
-    this.addressKeyMap = addressKeyMap
+    this.pkhKeyMap = pkhKeyMap
   }
 
   sign(nIn: number): boolean {
@@ -33,7 +33,7 @@ export default class TxSigner {
     if (!inputScript.isAddressInput()) {
       return false
     }
-    const key = this.addressKeyMap.get(address)
+    const key = this.pkhKeyMap.get(address)
     if (!key) {
       return false
     }
