@@ -1,27 +1,7 @@
-CREATE TABLE `block_buf` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- block_buf
-  `block_buf` BLOB,
-  -- database metadata
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE `tx_buf` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- tx_buf
-  `tx_buf` BLOB,
-  -- database metadata
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-);
-
 CREATE TABLE `block_header` (
   -- id
   `id` binary(32) NOT NULL,
-  -- block_header
+  -- data structure
   `version` int UNSIGNED,
   `prev_block_id` binary(32),
   `merkle_root` binary(32),
@@ -54,7 +34,7 @@ CREATE TABLE `tx_output` (
   -- id
   `tx_id` binary(32),
   `tx_out_num` int UNSIGNED,
-  -- tx_output
+  -- data structure
   `value` bigint UNSIGNED,
   `script` BLOB,
   -- database metadata
@@ -66,7 +46,7 @@ CREATE TABLE `tx_output` (
 CREATE TABLE `tx` (
   -- id
   `id` binary(32) NOT NULL,
-  -- transaction
+  -- data structure
   `version` int UNSIGNED,
   `tx_in_count` int UNSIGNED,
   `tx_out_count` int UNSIGNED,
@@ -74,5 +54,47 @@ CREATE TABLE `tx` (
   -- database metadata
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   -- primary key
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE merkle_proof (
+  -- id
+  `block_id` binary(32),
+  `tx_id` binary(32),
+  -- data structure
+  `merkle_proof` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- primary key
+  PRIMARY KEY (`block_id`, `tx_id`)
+);
+
+CREATE TABLE `block_buf` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `block_buf` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `tx_buf` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `tx_buf` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `pkh` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `pub_key` BLOB,
+  -- database metadata
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
