@@ -1,4 +1,4 @@
-use openebx_lib::key::Key;
+use ebx_lib::key::Key;
 
 fn main() {
     let key = Key::from_random();

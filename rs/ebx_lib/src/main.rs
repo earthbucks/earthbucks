@@ -1,5 +1,5 @@
-use openebx_lib::key::Key;
-use openebx_lib::pkh;
+use ebx_lib::key::Key;
+use ebx_lib::pkh;
 use std::env;
 
 fn main() {

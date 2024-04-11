@@ -1,5 +1,5 @@
-import Key from 'openebx-lib/src/key'
-import Pkh from 'openebx-lib/src/address'
+import Key from 'ebx-lib/src/key'
+import Pkh from 'ebx-lib/src/address'
 
 function main() {
   const args = process.argv.slice(2)

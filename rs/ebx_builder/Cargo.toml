@@ -1,12 +1,12 @@
 [package]
-name = "openebx_builder"
+name = "ebx_builder"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
-"openebx_lib" = { path = "../openebx_lib" }
+"ebx_lib" = { path = "../ebx_lib" }
 hex = "0.4.3"
 actix-web = "3.3.2"
 tokio = { version = "1", features = ["full"] }

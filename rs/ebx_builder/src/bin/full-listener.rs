@@ -1,5 +1,5 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use openebx_lib::key::Key;
+use ebx_lib::key::Key;
 use hex;
 
 async fn generate_key() -> impl Responder {

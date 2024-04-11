@@ -1,5 +1,5 @@
 {
-  "name": "openebx-lib",
+  "name": "earthbucks-sdk",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,21 +11,17 @@
   "keywords": [],
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "license": "MIT",
-  "dependencies": {
-    "@napi-rs/blake-hash": "^1.3.4",
-    "@types/secp256k1": "^4.0.6",
-    "buffer": "^6.0.3",
-    "secp256k1": "^5.0.0",
-    "tsx": "^4.7.1"
-  },
   "prettier": {
     "semi": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   },
-  "devDependencies": {
+  "dependencies": {
     "@jest/globals": "^29.7.0",
+    "ebx-lib": "workspace:*",
     "jest": "^29.7.0",
-    "prettier": "^3.2.5",
-    "ts-jest": "^29.1.2"
+    "prettier": "^3.2.5"
   }
 }
