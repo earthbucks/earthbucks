@@ -46,6 +46,7 @@ CREATE TABLE `block_header` (
   `nonce` binary(32) NOT NULL,
   `block_number` bigint UNSIGNED NOT NULL,
   -- database metadata
+  `n_txs` int UNSIGNED NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)
