@@ -2,16 +2,6 @@
 --
 -- Goal: Planet Scale-compatible schema (no foreign key constraints)
 --
-CREATE TABLE `block_buf` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- data structure
-  `block_buf` BLOB,
-  -- database metadata
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (`id`)
-);
-
 CREATE TABLE `tx_buf` (
   -- id
   `id` binary(32) NOT NULL,
@@ -47,32 +37,6 @@ CREATE TABLE `block_header` (
   `block_number` bigint UNSIGNED NOT NULL,
   -- database metadata
   `n_txs` int UNSIGNED NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  -- primary key
-  PRIMARY KEY (`id`)
-);
-
--- longest chain where all blocks are validated
-CREATE TABLE `longest_validated_chain` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- data structure
-  `prev_id` binary(32) NOT NULL,
-  `block_number` bigint UNSIGNED NOT NULL UNIQUE,
-  -- database metadata
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  -- primary key
-  PRIMARY KEY (`id`).
-);
-
--- longest chain where all blocks are not validated (SPV)
-CREATE TABLE `longest_header_chain` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- data structure
-  `prev_id` binary(32) NOT NULL,
-  `block_number` bigint UNSIGNED NOT NULL UNIQUE,
-  -- database metadata
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)

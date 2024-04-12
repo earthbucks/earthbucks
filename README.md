@@ -23,14 +23,17 @@ rs only:
 
 - server
   - builder (build blocks, validate txs, validate blocks, build merkle trees)
+  - builder-api (horizontally scalable REST API)
+  - validator (validates all blocks, but does not build them)
+  - validator-api (horizontally scalable REST API)
   - follower (follow block headers, validate txs + merkle proofs)
-  - listener (API, listen for txs, listen for blocks)
-- system-pow (CUDA, CPU, OpenCL, uses client)
+  - follower-api (horizontally scalable REST API)
+- system-work (CUDA, CPU, OpenCL, uses client)
 - cli (command-line interface, uses client)
 
 ts only:
 
-- browser-pow (WebGL, WebGPU, WASM, uses client)
+- browser-work (WebGL, WebGPU, WASM, uses client)
 - gui (auth, wallet, explorer, mining pool, button, uses client)
 
 ## Initial Nodes
