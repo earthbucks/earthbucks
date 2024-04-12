@@ -581,6 +581,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "rand 0.8.5",
+ "regex",
  "secp256k1",
  "serde",
  "serde_json",

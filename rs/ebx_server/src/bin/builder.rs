@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use ebx_lib::domain::Domain;
 use std::{env, error::Error};
 
 struct EnvConfig {
@@ -12,10 +13,12 @@ impl EnvConfig {
         dotenv().ok();
 
         let domain = env::var("EBX_DOMAIN")?;
+        if !Domain::is_valid_domain(&domain) {
+            return Err("Invalid domain".into());
+        }
+
         let domain_priv_key = env::var("EBX_DOMAIN_PRIV_KEY")?;
         let admin_pub_key = env::var("EBX_ADMIN_PUB_KEY")?;
-
-        // Add validation code here. If a variable is invalid, return an error.
 
         Ok(Self {
             domain,
