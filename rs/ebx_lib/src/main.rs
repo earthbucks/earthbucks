@@ -1,4 +1,4 @@
-use ebx_lib::key::Key;
+use ebx_lib::key_pair::KeyPair;
 use ebx_lib::pkh;
 use std::env;
 
@@ -11,20 +11,20 @@ fn main() {
         }
         2 => match args[1].as_str() {
             "key" => {
-                let key = Key::from_random();
-                let private_key_hex = hex::encode(key.private_key());
-                let public_key_hex = hex::encode(key.public_key());
+                let key = KeyPair::from_random();
+                let private_key_hex = key.priv_key.to_hex();
+                let public_key_hex = key.pub_key.to_hex();
 
                 println!("Private key: {}", private_key_hex);
                 println!("Public key: {}", public_key_hex);
             }
             "pkh" => {
-                let key = Key::from_random();
-                let public_key = key.public_key();
-                let pkh = pkh::Pkh::from_public_key(public_key.to_vec());
+                let key = KeyPair::from_random();
+                let public_key = key.pub_key.buf;
+                let pkh = pkh::Pkh::from_pub_key_buf(public_key.to_vec());
 
-                let private_key_hex = hex::encode(key.private_key());
-                let public_key_hex = hex::encode(key.public_key());
+                let private_key_hex = key.priv_key.to_hex();
+                let public_key_hex = key.pub_key.to_hex();
                 let pkh_hex = hex::encode(pkh.pkh());
 
                 println!("Private key: {}", private_key_hex);

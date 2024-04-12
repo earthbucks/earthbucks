@@ -10,7 +10,7 @@ impl Pkh {
         Self { pkh }
     }
 
-    pub fn from_public_key(public_key: Vec<u8>) -> Self {
+    pub fn from_pub_key_buf(public_key: Vec<u8>) -> Self {
         Self::new(public_key)
     }
 

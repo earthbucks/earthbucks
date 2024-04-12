@@ -5,7 +5,7 @@ pub mod block_header;
 pub mod buffer;
 pub mod buffer_reader;
 pub mod buffer_writer;
-pub mod key;
+pub mod key_pair;
 pub mod merkle_node;
 pub mod merkle_proof;
 pub mod merkle_txs;

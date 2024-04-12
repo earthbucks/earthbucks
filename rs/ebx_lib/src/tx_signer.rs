@@ -42,17 +42,14 @@ impl TxSigner {
             Some(key) => key,
             None => return false,
         };
-        let pub_key = &key.public_key;
+        let pub_key = &key.pub_key.buf.to_vec();
         if pub_key.len() != 33 {
             return false;
         }
         input_script.chunks[1].buffer = Some(pub_key.clone());
         let output_script_buf = tx_out.script.to_u8_vec();
         let output_amount = tx_out.value;
-        let private_key_array = match key.private_key.as_slice().try_into() {
-            Ok(array) => array,
-            Err(_e) => return false,
-        };
+        let private_key_array = key.priv_key.buf;
         let sig = self.tx.sign_no_cache(
             n_in,
             private_key_array,
@@ -83,7 +80,7 @@ impl TxSigner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::key::Key;
+    use crate::key_pair::KeyPair;
     use crate::pkh::Pkh;
     use crate::pkh_key_map::PkhKeyMap;
     use crate::script::Script;
@@ -100,8 +97,8 @@ mod tests {
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
-            let key = Key::from_random();
-            let pkh = Pkh::new(key.public_key.clone());
+            let key = KeyPair::from_random();
+            let pkh = Pkh::new(key.pub_key.buf.to_vec());
             pkh_key_map.add(key.clone(), &pkh.pkh.clone());
             let script = Script::from_pkh_output(&pkh.pkh.clone());
             let output = TxOutput::new(100, script);
@@ -155,8 +152,8 @@ mod tests {
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
-            let key = Key::from_random();
-            let pkh = Pkh::new(key.public_key.clone());
+            let key = KeyPair::from_random();
+            let pkh = Pkh::new(key.pub_key.buf.to_vec());
             pkh_key_map.add(key.clone(), &pkh.pkh.clone());
             let script = Script::from_pkh_output(&pkh.pkh.clone());
             let output = TxOutput::new(100, script);

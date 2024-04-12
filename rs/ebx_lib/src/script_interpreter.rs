@@ -1010,13 +1010,14 @@ impl<'a> ScriptInterpreter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::key::Key;
     use crate::pkh::Pkh;
     use crate::tx_input::TxInput;
     use crate::tx_output::TxOutput;
     use hex;
 
     mod sanity_tests {
+        use crate::{priv_key::PrivKey, pub_key::PubKey};
+
         use super::*;
 
         #[test]
@@ -1094,9 +1095,10 @@ mod tests {
         fn checksig() {
             let output_priv_key_hex =
                 "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-            let output_priv_key_buf = hex::decode(output_priv_key_hex).unwrap();
-            let output_key = Key::new(output_priv_key_buf.clone());
-            let output_pub_key = output_key.public_key();
+            let output_priv_key_buf = PrivKey::from_hex(output_priv_key_hex).unwrap().buf;
+            // let output_key = KeyPair::new(output_priv_key_buf.clone());
+            let output_pub_key =
+                PubKey::from_priv_key(&PrivKey::from_hex(output_priv_key_hex).unwrap()).buf;
             assert_eq!(
                 hex::encode(&output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
@@ -1119,14 +1121,9 @@ mod tests {
                 0,
             );
 
-            let output_priv_key_arr: [u8; 32] =
-                output_priv_key_buf.try_into().unwrap_or_else(|v: Vec<u8>| {
-                    panic!("Expected a Vec of length {} but it was {}", 32, v.len())
-                });
-
             let sig = tx.sign_no_cache(
                 0,
-                output_priv_key_arr,
+                output_priv_key_buf,
                 output_script.to_u8_vec(),
                 output_amount,
                 TxSignature::SIGHASH_ALL,
@@ -1168,7 +1165,13 @@ mod tests {
             // Generate public keys
             let pub_keys: Vec<Vec<u8>> = priv_keys_u8_vec
                 .iter()
-                .map(|priv_key| Key::new(priv_key.clone()).public_key().clone())
+                .map(|priv_key| {
+                    PrivKey::from_u8_vec(priv_key.clone())
+                        .unwrap()
+                        .to_pub_key_buf()
+                        .clone()
+                        .to_vec()
+                })
                 .collect();
 
             // Create a multisig output script

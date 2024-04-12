@@ -338,7 +338,7 @@ impl Tx {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::key::Key;
+    use crate::priv_key::PrivKey;
     use crate::script::Script;
 
     #[test]
@@ -660,17 +660,15 @@ mod tests {
         assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
 
         // Arrange
-        let key = Key::new(private_key);
-        let public_key = key.public_key();
+        // let key = KeyPair::new(private_key);
+        // let public_key = key.public_key();
+
+        let priv_key = PrivKey::from_u8_vec(private_key).unwrap();
+        let pub_key_buf = priv_key.to_pub_key_buf();
 
         // Act
-        let result = tx.verify_no_cache(
-            input_index,
-            public_key.as_slice().try_into().unwrap(),
-            signature,
-            script.clone(),
-            amount,
-        );
+        let result =
+            tx.verify_no_cache(input_index, pub_key_buf, signature, script.clone(), amount);
 
         // Assert
         assert!(result);
@@ -717,14 +715,15 @@ mod tests {
         assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
 
         // Arrange
-        let key = Key::new(private_key);
-        let public_key = key.public_key();
+        // let key = KeyPair::new(private_key);
+        // let public_key = key.public_key();
         let hash_cache_2 = &mut HashCache::new();
+        let pub_key_buf = PrivKey::from_u8_vec(private_key).unwrap().to_pub_key_buf();
 
         // Act
         let result = tx.verify_with_cache(
             input_index,
-            public_key.as_slice().try_into().unwrap(),
+            pub_key_buf,
             signature,
             script.clone(),
             amount,
