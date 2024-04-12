@@ -1,19 +1,31 @@
 use dotenv::dotenv;
-use ebx_lib::key::Key;
-use std::env;
+use std::{env, error::Error};
+
+struct EnvConfig {
+    domain: String,
+    domain_priv_key: String,
+    admin_pub_key: String,
+}
+
+impl EnvConfig {
+    fn new() -> Result<Self, Box<dyn Error>> {
+        dotenv().ok();
+
+        let domain = env::var("EBX_DOMAIN")?;
+        let domain_priv_key = env::var("EBX_DOMAIN_PRIV_KEY")?;
+        let admin_pub_key = env::var("EBX_ADMIN_PUB_KEY")?;
+
+        // Add validation code here. If a variable is invalid, return an error.
+
+        Ok(Self {
+            domain,
+            domain_priv_key,
+            admin_pub_key,
+        })
+    }
+}
 
 fn main() {
-    dotenv().ok();
-
-    for (key, value) in env::vars() {
-        println!("{}: {}", key, value);
-    }
-
-    let key = Key::from_random();
-    let priv_key = key.private_key;
-    let priv_key_hex = hex::encode(priv_key);
-    println!("Private key: {}", priv_key_hex);
-
     // load config
     // memory: longest chain (headers of validated blocks)
     // memory: longest chain tip ("chain tip")
@@ -44,4 +56,8 @@ fn main() {
     //       - continue
     //     - else:
     //       - continue
+    let config = EnvConfig::new().unwrap();
+    println!("EBX_DOMAIN: {}", config.domain);
+    println!("EBX_DOMAIN_PRIV_KEY: {}", config.domain_priv_key);
+    println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key);
 }
