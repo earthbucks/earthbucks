@@ -73,6 +73,10 @@ impl KeyPair {
     pub fn from_string(s: &str) -> Result<Self, String> {
         KeyPair::from_hex(s)
     }
+
+    pub fn is_valid(&self) -> bool {
+        self.pub_key.is_valid() && PubKey::from_priv_key(&self.priv_key).buf == self.pub_key.buf
+    }
 }
 
 // standard test vectors: key.json
@@ -108,5 +112,11 @@ mod tests {
 
             assert_eq!(expected_public_key, &actual_public_key);
         }
+    }
+
+    #[test]
+    fn test_is_valid() {
+        let key_pair = KeyPair::from_random();
+        assert!(key_pair.is_valid());
     }
 }
