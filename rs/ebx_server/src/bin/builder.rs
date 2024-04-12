@@ -4,6 +4,7 @@ use ebx_lib::{domain::Domain, key_pair::KeyPair, priv_key::PrivKey, pub_key::Pub
 //     block_header::BlockHeader, domain::Domain, key_pair::KeyPair, priv_key::PrivKey, header_chain::HeaderChain,
 //     pub_key::PubKey, tx::Tx,
 // };
+use sqlx::mysql::MySqlPool;
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
 
@@ -12,6 +13,7 @@ struct EnvConfig {
     domain_priv_key: PrivKey,
     domain_key_pair: KeyPair,
     admin_pub_key: PubKey,
+    database_url: String,
 }
 
 impl EnvConfig {
@@ -36,17 +38,21 @@ impl EnvConfig {
         let admin_pub_key: PubKey = PubKey::from_string(&admin_pub_key_str)
             .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
+        let database_url =
+            env::var("EBX_DATABASE_URL").map_err(|_| "Missing database URL".to_string())?;
+
         Ok(Self {
             domain,
             domain_priv_key,
             domain_key_pair,
             admin_pub_key,
+            database_url,
         })
     }
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), sqlx::Error> {
     let config = EnvConfig::new().unwrap();
     println!("EBX_DOMAIN: {}", config.domain);
     println!(
@@ -58,6 +64,9 @@ async fn main() {
         config.domain_key_pair.to_string()
     );
     println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
+
+    // let pool = MySqlPool::connect(&config.database_url).await?;
+    MySqlPool::connect(&config.database_url).await?;
 
     // let longest_chain: HeaderChain = HeaderChain::new();
     // let chain_tip_buf: Option<[u8; 32]> = None;
