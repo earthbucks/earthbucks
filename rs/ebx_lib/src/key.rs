@@ -1,7 +1,6 @@
-extern crate rand;
 extern crate secp256k1;
 
-use rand::{rngs::OsRng, Rng};
+use rand::Rng;
 use secp256k1::{PublicKey, SecretKey};
 
 // enable clone
@@ -33,7 +32,7 @@ impl Key {
     }
 
     pub fn from_random() -> Self {
-        let mut rng = OsRng;
+        let mut rng = rand::thread_rng();
         let mut key_data = [0u8; 32];
         loop {
             rng.fill(&mut key_data);
