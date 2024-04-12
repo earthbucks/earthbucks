@@ -13,6 +13,7 @@ pub mod opcode;
 pub mod pkh;
 pub mod pkh_key_map;
 pub mod priv_key;
+pub mod pub_key;
 pub mod script;
 pub mod script_chunk;
 pub mod script_interpreter;
