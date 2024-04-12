@@ -74,6 +74,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let mut interval = interval(Duration::from_secs(1));
 
+    println!("OpenEBX Builder started.");
     loop {
         println!("...awaiting...");
         interval.tick().await;
