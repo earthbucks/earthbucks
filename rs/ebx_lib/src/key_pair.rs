@@ -10,23 +10,29 @@ pub struct KeyPair {
 }
 
 impl KeyPair {
-    pub fn new(priv_key: [u8; 32]) -> Self {
+    pub fn new(priv_key: [u8; 32]) -> Result<Self, String> {
         let priv_key = PrivKey::new(priv_key);
         let pub_key = PubKey::from_priv_key(&priv_key);
-        KeyPair { priv_key, pub_key }
+        if pub_key.is_err() {
+            return Err(pub_key.err().unwrap());
+        }
+        Ok(KeyPair { priv_key, pub_key: pub_key.unwrap() })
     }
 
-    pub fn from_priv_key(priv_key: &PrivKey) -> Self {
+    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
         let pub_key = PubKey::from_priv_key(priv_key);
-        KeyPair {
-            priv_key: priv_key.clone(),
-            pub_key,
+        if pub_key.is_err() {
+            return Err(pub_key.err().unwrap());
         }
+        Ok(KeyPair {
+            priv_key: priv_key.clone(),
+            pub_key: pub_key.unwrap(),
+        })
     }
 
     pub fn from_random() -> Self {
         let priv_key = PrivKey::from_random();
-        KeyPair::from_priv_key(&priv_key)
+        KeyPair::from_priv_key(&priv_key).unwrap()
     }
 
     pub fn to_buffer(&self) -> Vec<u8> {
@@ -75,7 +81,11 @@ impl KeyPair {
     }
 
     pub fn is_valid(&self) -> bool {
-        self.pub_key.is_valid() && PubKey::from_priv_key(&self.priv_key).buf == self.pub_key.buf
+        let pub_key = PubKey::from_priv_key(&self.priv_key);
+        if pub_key.is_err() {
+            return false;
+        }
+        self.pub_key.is_valid() && pub_key.unwrap().buf == self.pub_key.buf
     }
 }
 
@@ -105,7 +115,7 @@ mod tests {
         for pair in key_pairs.key_pair {
             let priv_key: PrivKey = PrivKey::from_string(&pair.priv_key).unwrap();
             let key_pair = KeyPair::from_priv_key(&priv_key);
-            let pub_key = key_pair.pub_key;
+            let pub_key = key_pair.unwrap().pub_key;
 
             let expected_public_key = &pair.pub_key;
             let actual_public_key = pub_key.to_hex();

@@ -1,11 +1,12 @@
 use dotenv::dotenv;
-use ebx_lib::domain::Domain;
+use ebx_lib::{domain::Domain, key_pair::KeyPair, priv_key::PrivKey, pub_key::PubKey};
 use std::{env, error::Error};
 
 struct EnvConfig {
     domain: String,
-    domain_priv_key: String,
-    admin_pub_key: String,
+    domain_priv_key: PrivKey,
+    domain_key_pair: KeyPair,
+    admin_pub_key: PubKey,
 }
 
 impl EnvConfig {
@@ -17,12 +18,23 @@ impl EnvConfig {
             return Err("Invalid domain".into());
         }
 
-        let domain_priv_key = env::var("EBX_DOMAIN_PRIV_KEY")?;
-        let admin_pub_key = env::var("EBX_ADMIN_PUB_KEY")?;
+        let domain_priv_key_str =
+            env::var("EBX_DOMAIN_PRIV_KEY").map_err(|_| "Missing domain priv key".to_string())?;
+        let domain_priv_key: PrivKey = PrivKey::from_string(&domain_priv_key_str)
+            .map_err(|e| format!("Invalid domain priv key: {}", e))?;
+
+        let domain_key_pair: KeyPair = KeyPair::from_priv_key(&domain_priv_key)
+            .map_err(|e| format!("Invalid domain key pair: {}", e))?;
+
+        let admin_pub_key_str =
+            env::var("EBX_ADMIN_PUB_KEY").map_err(|_| "Missing admin pub key".to_string())?;
+        let admin_pub_key: PubKey = PubKey::from_string(&admin_pub_key_str)
+            .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
         Ok(Self {
             domain,
             domain_priv_key,
+            domain_key_pair,
             admin_pub_key,
         })
     }
@@ -61,6 +73,13 @@ fn main() {
     //       - continue
     let config = EnvConfig::new().unwrap();
     println!("EBX_DOMAIN: {}", config.domain);
-    println!("EBX_DOMAIN_PRIV_KEY: {}", config.domain_priv_key);
-    println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key);
+    println!(
+        "EBX_DOMAIN_PRIV_KEY: {}",
+        config.domain_priv_key.to_string()
+    );
+    println!(
+        "EBX_DOMAIN_PRIV_KEY: {}",
+        config.domain_key_pair.to_string()
+    );
+    println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 }

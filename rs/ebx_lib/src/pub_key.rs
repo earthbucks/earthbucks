@@ -21,9 +21,12 @@ impl PubKey {
         Ok(PubKey::new(pub_key))
     }
 
-    pub fn from_priv_key(priv_key: &PrivKey) -> Self {
+    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
         let pub_key_buf = priv_key.to_pub_key_buf();
-        PubKey::new(pub_key_buf)
+        if pub_key_buf.is_err() {
+            return Err(pub_key_buf.err().unwrap());
+        }
+        Ok(PubKey::new(pub_key_buf.unwrap()))
     }
 
     pub fn to_hex(&self) -> String {
@@ -56,7 +59,7 @@ mod tests {
     #[test]
     fn test_from_priv_key() {
         let priv_key = PrivKey::from_random();
-        let pub_key = PubKey::from_priv_key(&priv_key);
+        let pub_key = PubKey::from_priv_key(&priv_key).unwrap();
         println!("priv_key: {}", priv_key.to_hex());
         println!("pub_key: {}", pub_key.to_hex());
     }
@@ -65,7 +68,7 @@ mod tests {
     fn test_is_valid() {
         let priv_key = PrivKey::from_random();
         let pub_key = PubKey::from_priv_key(&priv_key);
-        assert!(pub_key.is_valid());
+        assert!(pub_key.unwrap().is_valid());
     }
 
     #[test]

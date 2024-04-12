@@ -23,11 +23,14 @@ impl PrivKey {
         }
     }
 
-    pub fn to_pub_key_buf(&self) -> [u8; 33] {
-        let secret_key = SecretKey::from_slice(&self.buf).unwrap();
+    pub fn to_pub_key_buf(&self) -> Result<[u8; 33], String> {
+        let secret_key = SecretKey::from_slice(&self.buf);
+        if secret_key.is_err() {
+            return Err("Invalid secret key".to_string());
+        }
         let secp = Secp256k1::new();
-        let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key);
-        public_key_obj.serialize().to_vec().try_into().unwrap()
+        let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key.unwrap());
+        Ok(public_key_obj.serialize())
     }
 
     pub fn from_buffer(buffer: &[u8; 32]) -> Self {
@@ -76,7 +79,7 @@ mod tests {
     #[test]
     fn test_to_pub_key_buf() {
         let priv_key = PrivKey::from_random();
-        let pub_key_buf = priv_key.to_pub_key_buf();
+        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
         println!("pub_key_buf: {}", hex::encode(&pub_key_buf));
     }
 
@@ -130,7 +133,7 @@ mod tests {
         let priv_key =
             PrivKey::from_hex("2ef930fed143c0b92b485c29aaaba97d09cab882baafdb9ea1e55dec252cd09f")
                 .unwrap();
-        let pub_key_buf = priv_key.to_pub_key_buf();
+        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
         let pub_key_hex = Buffer::from(pub_key_buf.to_vec()).to_hex();
         assert_eq!(
             pub_key_hex,

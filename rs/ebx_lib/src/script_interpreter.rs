@@ -1098,7 +1098,7 @@ mod tests {
             let output_priv_key_buf = PrivKey::from_hex(output_priv_key_hex).unwrap().buf;
             // let output_key = KeyPair::new(output_priv_key_buf.clone());
             let output_pub_key =
-                PubKey::from_priv_key(&PrivKey::from_hex(output_priv_key_hex).unwrap()).buf;
+                PubKey::from_priv_key(&PrivKey::from_hex(output_priv_key_hex).unwrap()).unwrap().buf;
             assert_eq!(
                 hex::encode(&output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
@@ -1169,6 +1169,7 @@ mod tests {
                     PrivKey::from_u8_vec(priv_key.clone())
                         .unwrap()
                         .to_pub_key_buf()
+                        .unwrap()
                         .clone()
                         .to_vec()
                 })

@@ -664,7 +664,7 @@ mod tests {
         // let public_key = key.public_key();
 
         let priv_key = PrivKey::from_u8_vec(private_key).unwrap();
-        let pub_key_buf = priv_key.to_pub_key_buf();
+        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
 
         // Act
         let result =
@@ -718,7 +718,7 @@ mod tests {
         // let key = KeyPair::new(private_key);
         // let public_key = key.public_key();
         let hash_cache_2 = &mut HashCache::new();
-        let pub_key_buf = PrivKey::from_u8_vec(private_key).unwrap().to_pub_key_buf();
+        let pub_key_buf = PrivKey::from_u8_vec(private_key).unwrap().to_pub_key_buf().unwrap();
 
         // Act
         let result = tx.verify_with_cache(
