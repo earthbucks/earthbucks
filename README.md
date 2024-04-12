@@ -17,17 +17,16 @@ Website: [earthbucks.com](https://earthbucks.com)
 rs/ts:
 
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
-- client (private/public interface to server)
+- client (private/public interface to full node or spv node)
 
 rs only:
 
-- server
+- full_node
   - builder (build blocks, validate txs, validate blocks, build merkle trees)
-  - builder-api (horizontally scalable REST API)
-  - validator (validates all blocks, but does not build them)
-  - validator-api (horizontally scalable REST API)
+  - api (horizontally scalable REST API)
+- spv_node
   - follower (follow block headers, validate txs + merkle proofs)
-  - follower-api (horizontally scalable REST API)
+  - api (horizontally scalable REST API)
 - system-work (CUDA, CPU, OpenCL, uses client)
 - cli (command-line interface, uses client)
 

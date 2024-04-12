@@ -39,7 +39,7 @@ impl EnvConfig {
             .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
         let database_url =
-            env::var("EBX_DATABASE_URL").map_err(|_| "Missing database URL".to_string())?;
+            env::var("DATABASE_URL").map_err(|_| "Missing database URL".to_string())?;
 
         Ok(Self {
             domain,
