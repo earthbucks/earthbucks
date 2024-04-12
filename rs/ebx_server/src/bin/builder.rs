@@ -1,8 +1,9 @@
 use dotenv::dotenv;
-use ebx_lib::{
-    block_header::BlockHeader, domain::Domain, key_pair::KeyPair, priv_key::PrivKey,
-    pub_key::PubKey, tx::Tx,
-};
+use ebx_lib::{domain::Domain, key_pair::KeyPair, priv_key::PrivKey, pub_key::PubKey};
+// use ebx_lib::{
+//     block_header::BlockHeader, domain::Domain, key_pair::KeyPair, priv_key::PrivKey, header_chain::HeaderChain,
+//     pub_key::PubKey, tx::Tx,
+// };
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
 
@@ -58,9 +59,9 @@ async fn main() {
     );
     println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 
-    let longest_chain: Vec<BlockHeader> = Vec::new();
-    let chain_tip_buf: Option<[u8; 32]> = None;
-    let mempool: Vec<Tx> = Vec::new();
+    // let longest_chain: HeaderChain = HeaderChain::new();
+    // let chain_tip_buf: Option<[u8; 32]> = None;
+    // let mempool: Vec<Tx> = Vec::new();
 
     let mut interval = interval(Duration::from_secs(1));
 
