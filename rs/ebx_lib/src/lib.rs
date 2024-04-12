@@ -6,6 +6,7 @@ pub mod buffer;
 pub mod buffer_reader;
 pub mod buffer_writer;
 pub mod domain;
+pub mod header_chain;
 pub mod key_pair;
 pub mod merkle_node;
 pub mod merkle_proof;

@@ -16,6 +16,10 @@ impl BufferReader {
         self.buf.position() as usize >= self.buf.get_ref().len()
     }
 
+    pub fn remainder_len(&self) -> usize {
+        self.buf.get_ref().len() - self.buf.position() as usize
+    }
+
     pub fn read_u8_vec(&mut self, len: usize) -> Vec<u8> {
         let pos = self.buf.position() as usize;
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();

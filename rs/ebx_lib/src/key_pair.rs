@@ -16,7 +16,10 @@ impl KeyPair {
         if pub_key.is_err() {
             return Err(pub_key.err().unwrap());
         }
-        Ok(KeyPair { priv_key, pub_key: pub_key.unwrap() })
+        Ok(KeyPair {
+            priv_key,
+            pub_key: pub_key.unwrap(),
+        })
     }
 
     pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {

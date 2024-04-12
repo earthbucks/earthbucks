@@ -1,6 +1,10 @@
 use dotenv::dotenv;
-use ebx_lib::{domain::Domain, key_pair::KeyPair, priv_key::PrivKey, pub_key::PubKey};
+use ebx_lib::{
+    block_header::BlockHeader, domain::Domain, key_pair::KeyPair, priv_key::PrivKey,
+    pub_key::PubKey, tx::Tx,
+};
 use std::{env, error::Error};
+use tokio::time::{interval, Duration};
 
 struct EnvConfig {
     domain: String,
@@ -40,37 +44,8 @@ impl EnvConfig {
     }
 }
 
-fn main() {
-    // load config
-    // memory: longest chain (headers of validated blocks)
-    // memory: longest chain tip ("chain tip")
-    // memory: unconfirmed transactions ("mempool")
-    // poll db every 1 second
-    //   - get the longest (validated) chain
-    //   - if chain tip has changed:
-    //     - validate new chain
-    //     - if new chain is valid:
-    //       - broadcast new chain
-    //       - if reorg:
-    //         - perform reorg
-    //       - continue
-    //     - else:
-    //       - penalize nodes that broadcasted invalid chain
-    //       - continue
-    //   - else (chain tip hasn't changed):
-    //     - if valid PoW has been found:
-    //       - add block to chain and broadcast
-    //       - continue
-    //     - else if unconfirmed transaction set is changed:
-    //       - get all transactions not in the longest chain (unconfirmed transactions)
-    //       - compute merkle root of unconfirmed transactions
-    //       - build block header with correct merkle root - but (probably) insufficient difficulty
-    //       - await new PoW from users
-    //       - build block with PoW
-    //       - broadcast block
-    //       - continue
-    //     - else:
-    //       - continue
+#[tokio::main]
+async fn main() {
     let config = EnvConfig::new().unwrap();
     println!("EBX_DOMAIN: {}", config.domain);
     println!(
@@ -82,4 +57,40 @@ fn main() {
         config.domain_key_pair.to_string()
     );
     println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
+
+    let longest_chain: Vec<BlockHeader> = Vec::new();
+    let chain_tip_buf: Option<[u8; 32]> = None;
+    let mempool: Vec<Tx> = Vec::new();
+
+    let mut interval = interval(Duration::from_secs(1));
+
+    loop {
+        println!("...awaiting...");
+        interval.tick().await;
+        // - get the longest (validated) chain
+        // - if chain tip has changed:
+        //   - validate new chain
+        //   - if new chain is valid:
+        //     - broadcast new chain
+        //     - if reorg:
+        //       - perform reorg
+        //     - continue
+        //   - else:
+        //     - penalize nodes that broadcasted invalid chain
+        //     - continue
+        // - else (chain tip hasn't changed):
+        //   - if valid PoW has been found:
+        //     - add block to chain and broadcast
+        //     - continue
+        //   - else if unconfirmed transaction set is changed:
+        //     - get all transactions not in the longest chain (unconfirmed transactions)
+        //     - compute merkle root of unconfirmed transactions
+        //     - build block header with correct merkle root - but (probably) insufficient difficulty
+        //     - await new PoW from users
+        //     - build block with PoW
+        //     - broadcast block
+        //     - continue
+        //   - else:
+        //     - continue
+    }
 }

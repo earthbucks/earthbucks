@@ -7,26 +7,27 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone)]
 pub struct BlockHeader {
-    pub version: u32,           // uint32
-    pub prev_block_id: Vec<u8>, // 256 bits
-    pub merkle_root: Vec<u8>,   // 256 bits
-    pub timestamp: u64,         // uint32
-    pub target: Vec<u8>,        // 32 bits
-    pub nonce: Vec<u8>,         // 256 bits
-    pub n_block: u64,           // uint64
+    pub version: u32,            // uint32
+    pub prev_block_id: [u8; 32], // 256 bits
+    pub merkle_root: [u8; 32],   // 256 bits
+    pub timestamp: u64,          // uint32
+    pub target: [u8; 32],        // 32 bits
+    pub nonce: [u8; 32],         // 256 bits
+    pub n_block: u64,            // uint64
 }
 
 impl BlockHeader {
     pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
     pub const BLOCK_INTERVAL: u64 = 600;
+    pub const BLOCK_HEADER_SIZE: usize = 148;
 
     pub fn new(
         version: u32,
-        prev_block_id: Vec<u8>,
-        merkle_root: Vec<u8>,
+        prev_block_id: [u8; 32],
+        merkle_root: [u8; 32],
         timestamp: u64,
-        target: Vec<u8>,
-        nonce: Vec<u8>,
+        target: [u8; 32],
+        nonce: [u8; 32],
         n_block: u64,
     ) -> BlockHeader {
         BlockHeader {
@@ -43,23 +44,26 @@ impl BlockHeader {
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut bw = BufferWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_u8_vec(self.prev_block_id.clone());
-        bw.write_u8_vec(self.merkle_root.clone());
+        bw.write_u8_vec(self.prev_block_id.to_vec());
+        bw.write_u8_vec(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
-        bw.write_u8_vec(self.target.clone());
-        bw.write_u8_vec(self.nonce.clone());
+        bw.write_u8_vec(self.target.to_vec());
+        bw.write_u8_vec(self.nonce.to_vec());
         bw.write_u64_be(self.n_block);
         bw.to_u8_vec()
     }
 
     pub fn from_u8_vec(buf: Vec<u8>) -> Result<BlockHeader, &'static str> {
+        if buf.len() != BlockHeader::BLOCK_HEADER_SIZE {
+            return Err("Invalid block header size");
+        }
         let mut br = BufferReader::new(buf);
         let version = br.read_u32_be();
-        let previous_block_hash = br.read_u8_vec(32);
-        let merkle_root = br.read_u8_vec(32);
+        let previous_block_hash: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let timestamp = br.read_u64_be();
-        let target = br.read_u8_vec(32);
-        let nonce = br.read_u8_vec(32);
+        let target: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let nonce: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let index = br.read_u64_be();
         Ok(BlockHeader::new(
             version,
@@ -72,15 +76,18 @@ impl BlockHeader {
         ))
     }
 
-    pub fn from_buffer_reader(br: &mut BufferReader) -> BlockHeader {
+    pub fn from_buffer_reader(br: &mut BufferReader) -> Result<BlockHeader, &'static str> {
+        if br.remainder_len() < BlockHeader::BLOCK_HEADER_SIZE {
+            panic!("Invalid block header size");
+        }
         let version = br.read_u32_be();
-        let previous_block_hash = br.read_u8_vec(32);
-        let merkle_root = br.read_u8_vec(32);
+        let previous_block_hash: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let timestamp = br.read_u64_be();
-        let target = br.read_u8_vec(32);
-        let nonce = br.read_u8_vec(32);
+        let target: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let nonce: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let index = br.read_u64_be();
-        BlockHeader::new(
+        Ok(BlockHeader::new(
             version,
             previous_block_hash,
             merkle_root,
@@ -88,17 +95,17 @@ impl BlockHeader {
             target,
             nonce,
             index,
-        )
+        ))
     }
 
     pub fn to_buffer_writer(&self) -> BufferWriter {
         let mut bw = BufferWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_u8_vec(self.prev_block_id.clone());
-        bw.write_u8_vec(self.merkle_root.clone());
+        bw.write_u8_vec(self.prev_block_id.to_vec());
+        bw.write_u8_vec(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
-        bw.write_u8_vec(self.target.clone());
-        bw.write_u8_vec(self.nonce.clone());
+        bw.write_u8_vec(self.target.to_vec());
+        bw.write_u8_vec(self.nonce.to_vec());
         bw.write_u64_be(self.n_block);
         bw
     }
@@ -116,31 +123,12 @@ impl BlockHeader {
         version == 1
     }
 
-    pub fn is_valid_previous_block_hash(previous_block_hash: Vec<u8>) -> bool {
-        previous_block_hash.len() == 32
-    }
-
-    pub fn is_valid_merkle_root(merkle_root: Vec<u8>) -> bool {
-        merkle_root.len() == 32
-    }
-    pub fn is_valid_nonce(nonce: Vec<u8>) -> bool {
-        nonce.len() == 32
-    }
-
-    pub fn is_valid_target(target: Vec<u8>) -> bool {
-        target.len() == 32
-    }
-
     pub fn is_valid(&self) -> bool {
         let len = self.to_u8_vec().len();
-        if len != 148 {
+        if len != BlockHeader::BLOCK_HEADER_SIZE {
             return false;
         }
-        return BlockHeader::is_valid_version(self.version)
-            && BlockHeader::is_valid_previous_block_hash(self.prev_block_id.clone())
-            && BlockHeader::is_valid_merkle_root(self.merkle_root.clone())
-            && BlockHeader::is_valid_nonce(self.nonce.clone())
-            && BlockHeader::is_valid_target(self.target.clone());
+        return BlockHeader::is_valid_version(self.version);
     }
 
     pub fn is_genesis(&self) -> bool {
@@ -154,11 +142,11 @@ impl BlockHeader {
             .as_secs();
         Self {
             version: 1,
-            prev_block_id: [0; 32].to_vec(),
-            merkle_root: [0; 32].to_vec(),
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
             timestamp,
-            target: initial_target.to_vec(),
-            nonce: [0; 32].to_vec(),
+            target: initial_target,
+            nonce: [0; 32],
             n_block: 0,
         }
     }
@@ -185,11 +173,11 @@ impl BlockHeader {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        let nonce = [0u8; 32].to_vec();
+        let nonce = [0u8; 32];
         Ok(Self::new(
             1,
-            prev_block_id.to_vec(),
-            [0u8; 32].to_vec(),
+            prev_block_id,
+            [0u8; 32],
             timestamp,
             target,
             nonce,
@@ -205,7 +193,7 @@ impl BlockHeader {
         double_blake3_hash(&self.to_u8_vec())
     }
 
-    pub fn adjust_target(target_buf: Vec<u8>, time_diff: u64) -> Vec<u8> {
+    pub fn adjust_target(target_buf: [u8; 32], time_diff: u64) -> [u8; 32] {
         let target = BigUint::from_bytes_be(&target_buf);
         let two_weeks = BlockHeader::BLOCKS_PER_ADJUSTMENT * BlockHeader::BLOCK_INTERVAL;
         let time_diff = time_diff as u64;
@@ -221,7 +209,7 @@ impl BlockHeader {
         while new_target_bytes.len() < 32 {
             new_target_bytes.insert(0, 0);
         }
-        new_target_bytes
+        new_target_bytes.try_into().unwrap()
     }
 }
 
@@ -231,7 +219,7 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_and_from_u8_vec() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let buf = bh1.to_u8_vec();
         let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
@@ -245,7 +233,7 @@ mod tests {
 
     #[test]
     fn test_to_buffer() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let buf = bh1.to_u8_vec();
         let bh2 = BlockHeader::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
@@ -259,19 +247,19 @@ mod tests {
 
     #[test]
     fn test_is_valid() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         assert!(bh1.is_valid());
     }
 
     #[test]
     fn test_is_genesis() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         assert!(bh1.is_genesis());
     }
 
     #[test]
     fn test_hash() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let hash = bh1.hash();
         let hex = hex::encode(hash);
         assert_eq!(
@@ -282,7 +270,7 @@ mod tests {
 
     #[test]
     fn test_id() {
-        let bh1 = BlockHeader::new(1, vec![0; 32], vec![0; 32], 0, vec![0; 32], vec![0; 32], 0);
+        let bh1 = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let id = bh1.id();
         let hex = hex::encode(id);
         assert_eq!(
@@ -293,15 +281,8 @@ mod tests {
 
     #[test]
     fn test_from_prev_block_header() {
-        let prev_block_header = BlockHeader::new(
-            1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-        );
+        let prev_block_header =
+            BlockHeader::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
         let bh = BlockHeader::from_prev_block_header(prev_block_header.clone(), None).unwrap();
         assert_eq!(bh.version, 1);
         assert_eq!(bh.prev_block_id, prev_block_header.id());
@@ -320,55 +301,41 @@ mod tests {
     fn test_from_prev_block_header_adjustment() {
         let prev_block_header = BlockHeader::new(
             1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
+            [0u8; 32],
+            [0u8; 32],
             BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
+            [0u8; 32],
+            [0u8; 32],
             BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
         );
-        let prev_adjustment_block_header = BlockHeader::new(
-            1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-        );
+        let prev_adjustment_block_header =
+            BlockHeader::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
         let bh = BlockHeader::from_prev_block_header(
             prev_block_header,
             Some(prev_adjustment_block_header),
         )
         .unwrap();
         assert_eq!(bh.n_block, BlockHeader::BLOCKS_PER_ADJUSTMENT);
-        assert_eq!(bh.target, BlockHeader::adjust_target([0u8; 32].to_vec(), 0));
+        assert_eq!(bh.target, BlockHeader::adjust_target([0u8; 32], 0));
     }
 
     #[test]
     fn test_from_prev_block_header_non_trivial_adjustment() {
         // 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
         let initial_target_hex = "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let initial_target = hex::decode(initial_target_hex).unwrap();
+        let initial_target: [u8; 32] = hex::decode(initial_target_hex).unwrap().try_into().unwrap();
         let time_diff = (2016 * 600) / 2; // One week
         let prev_block_header = BlockHeader::new(
             1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
+            [0u8; 32],
+            [0u8; 32],
             time_diff - 1,
-            initial_target.to_vec(),
-            [0u8; 32].to_vec(),
+            initial_target,
+            [0u8; 32],
             BlockHeader::BLOCKS_PER_ADJUSTMENT - 1,
         );
-        let prev_adjustment_block_header = BlockHeader::new(
-            1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-            initial_target.to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-        );
+        let prev_adjustment_block_header =
+            BlockHeader::new(1, [0u8; 32], [0u8; 32], 0, initial_target, [0u8; 32], 0);
         let bh = BlockHeader::from_prev_block_header(
             prev_block_header,
             Some(prev_adjustment_block_header),
@@ -376,24 +343,26 @@ mod tests {
         .unwrap();
         assert_eq!(bh.n_block, BlockHeader::BLOCKS_PER_ADJUSTMENT);
         let new_target_hex = "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let new_target = hex::decode(new_target_hex).unwrap();
+        let new_target: [u8; 32] = hex::decode(new_target_hex).unwrap().try_into().unwrap();
         assert_eq!(bh.target, new_target);
     }
 
     #[test]
     fn test_adjust_target() {
-        let prev_target = vec![0u8; 32];
+        let prev_target = [0u8; 32];
         let time_diff = 0;
         assert_eq!(
             BlockHeader::adjust_target(prev_target, time_diff),
-            vec![0u8; 32]
+            [0u8; 32]
         );
     }
 
     #[test]
     fn test_adjust_target_less_than_one_week() {
-        let target_buf =
+        let target_buf: [u8; 32] =
             hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap()
+                .try_into()
                 .unwrap();
         let time_diff = 2016 * 200;
         let new_target = BlockHeader::adjust_target(target_buf, time_diff);
@@ -405,8 +374,10 @@ mod tests {
 
     #[test]
     fn test_adjust_target_more_than_eight_weeks() {
-        let target_buf =
+        let target_buf: [u8; 32] =
             hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap()
+                .try_into()
                 .unwrap();
         let time_diff = 2016 * 600 * 3;
         let new_target = BlockHeader::adjust_target(target_buf, time_diff);
@@ -418,8 +389,10 @@ mod tests {
 
     #[test]
     fn test_adjust_target_exactly_two_weeks() {
-        let target_buf =
+        let target_buf: [u8; 32] =
             hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .unwrap()
+                .try_into()
                 .unwrap();
         let time_diff = 2016 * 600;
         let new_target = BlockHeader::adjust_target(target_buf, time_diff);

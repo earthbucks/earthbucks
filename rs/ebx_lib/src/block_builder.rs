@@ -39,7 +39,7 @@ impl BlockBuilder {
         let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
         let txs = vec![coinbase_tx];
         let merkle_txs = MerkleTxs::new(txs.clone());
-        let root = merkle_txs.root.clone();
+        let root: [u8; 32] = merkle_txs.root.clone().try_into().unwrap();
         header.merkle_root = root;
         Self::new(header, txs, merkle_txs)
     }
@@ -60,8 +60,8 @@ impl BlockBuilder {
         let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
         let txs = vec![coinbase_tx];
         let merkle_txs = MerkleTxs::new(txs.clone());
-        let root = merkle_txs.root.clone();
-        header.merkle_root = root.clone();
+        let root: [u8; 32] = merkle_txs.root.clone().try_into().unwrap();
+        header.merkle_root = root;
         Ok(Self::new(header, txs, merkle_txs))
     }
 }
@@ -76,15 +76,7 @@ mod tests {
 
     #[test]
     fn test_from_block() {
-        let bh = BlockHeader::new(
-            1,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-            [0u8; 32].to_vec(),
-            [0u8; 32].to_vec(),
-            0,
-        );
+        let bh = BlockHeader::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
         let tx = Tx::new(1, vec![], vec![], 0);
         let block = Block::new(bh.clone(), vec![tx]);
         let bb = BlockBuilder::from_block(block);
@@ -103,7 +95,8 @@ mod tests {
         let bb = BlockBuilder::from_genesis(target, output_script.clone(), output_amount);
         assert_eq!(bb.header.version, 1);
         assert_eq!(bb.header.prev_block_id, [0u8; 32]);
-        assert_eq!(bb.header.merkle_root, bb.merkle_txs.root);
+        let merkle_txs_root: [u8; 32] = bb.merkle_txs.root.clone().try_into().unwrap();
+        assert_eq!(bb.header.merkle_root, merkle_txs_root);
         assert!(
             bb.header.timestamp
                 <= SystemTime::now()
