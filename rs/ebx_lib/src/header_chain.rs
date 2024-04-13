@@ -11,9 +11,9 @@ impl HeaderChain {
         }
     }
 
-    pub fn add(&mut self, header: BlockHeader) -> Result<&mut Self, String> {
+    pub fn add(&mut self, header: BlockHeader) -> &mut Self {
         self.headers.push(header);
-        Ok(self)
+        self
     }
 
     pub fn get_tip(&self) -> Option<&BlockHeader> {
@@ -39,7 +39,7 @@ mod tests {
     fn test_add() {
         let mut chain = HeaderChain::new();
         let header = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
-        chain.add(header).unwrap();
+        chain.add(header);
         assert_eq!(chain.headers.len(), 1);
     }
 
@@ -47,7 +47,7 @@ mod tests {
     fn test_get_tip() {
         let mut chain = HeaderChain::new();
         let header = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
-        chain.add(header).unwrap();
+        chain.add(header);
         assert_eq!(chain.get_tip().unwrap().version, 1);
     }
 
@@ -56,7 +56,7 @@ mod tests {
         let mut chain = HeaderChain::new();
         let header1 = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
         let header2 = BlockHeader::new(2, header1.id(), [0; 32], 1, [0; 32], [0; 32], 1);
-        chain.add(header1).unwrap();
+        chain.add(header1);
         assert_eq!(chain.header_is_valid(&header2), true);
     }
 }

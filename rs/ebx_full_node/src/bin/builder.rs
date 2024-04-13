@@ -1,9 +1,10 @@
+use anyhow::Result;
 use dotenv::dotenv;
-use ebx_lib::{domain::Domain, key_pair::KeyPair, priv_key::PrivKey, pub_key::PubKey};
-// use ebx_lib::{
-//     block_header::BlockHeader, domain::Domain, key_pair::KeyPair, priv_key::PrivKey, header_chain::HeaderChain,
-//     pub_key::PubKey, tx::Tx,
-// };
+use ebx_full_node::models::model_longest_chain_bh::ModelLongestChainBh;
+use ebx_lib::{
+    domain::Domain, header_chain::HeaderChain, key_pair::KeyPair, priv_key::PrivKey,
+    pub_key::PubKey,
+};
 use sqlx::mysql::MySqlPool;
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
@@ -52,23 +53,20 @@ impl EnvConfig {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
+async fn main() -> Result<()> {
     let config = EnvConfig::new().unwrap();
     println!("DOMAIN: {}", config.domain);
-    println!(
-        "DOMAIN_PRIV_KEY: {}",
-        config.domain_priv_key.to_string()
-    );
-    println!(
-        "DOMAIN_PRIV_KEY: {}",
-        config.domain_key_pair.to_string()
-    );
+    println!("DOMAIN_PRIV_KEY: {}", config.domain_priv_key.to_string());
+    println!("DOMAIN_PRIV_KEY: {}", config.domain_key_pair.to_string());
     println!("ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 
-    // let pool = MySqlPool::connect(&config.database_url).await?;
-    MySqlPool::connect(&config.database_url).await?;
+    let pool = MySqlPool::connect(&config.database_url)
+        .await
+        .map_err(|e| anyhow::Error::msg(format!("Failed to connect to database: {}", e)))?;
 
-    // let longest_chain: HeaderChain = HeaderChain::new();
+    let longest_chain: HeaderChain = ModelLongestChainBh::get_longest_chain(&pool)
+        .await
+        .unwrap_or_else(|_| HeaderChain::new());
     // let chain_tip_buf: Option<[u8; 32]> = None;
     // let mempool: Vec<Tx> = Vec::new();
 
@@ -78,6 +76,8 @@ async fn main() -> Result<(), sqlx::Error> {
     loop {
         println!("...awaiting...");
         interval.tick().await;
+        let chain_length = longest_chain.headers.len();
+        println!("Chain length: {}", chain_length);
         // - get the longest (validated) chain
         // - if chain tip has changed:
         //   - validate new chain

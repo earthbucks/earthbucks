@@ -4,6 +4,7 @@ use crate::buffer_writer::BufferWriter;
 use num_bigint::BigUint;
 use num_integer::Integer;
 use std::time::{SystemTime, UNIX_EPOCH};
+use crate::buffer::Buffer;
 
 #[derive(Debug, Clone)]
 pub struct BlockHeader {
@@ -110,13 +111,21 @@ impl BlockHeader {
         bw
     }
 
-    pub fn to_string(&self) -> String {
-        hex::encode(&self.to_u8_vec())
+    pub fn to_hex(&self) -> String {
+        Buffer::from(self.to_u8_vec()).to_hex()
     }
 
-    pub fn from_string(str: String) -> Result<BlockHeader, &'static str> {
-        let buf = hex::decode(str).map_err(|_| "Invalid hex string")?;
+    pub fn from_hex(hex: &str) -> Result<BlockHeader, &'static str> {
+        let buf = Buffer::from_hex(hex).data;
         BlockHeader::from_u8_vec(buf)
+    }
+
+    pub fn to_string(&self) -> String {
+        self.to_hex()
+    }
+
+    pub fn from_string(hex: &str) -> Result<BlockHeader, &'static str> {
+        BlockHeader::from_hex(hex)
     }
 
     pub fn is_valid_version(version: u32) -> bool {
