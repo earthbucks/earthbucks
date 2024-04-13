@@ -5,10 +5,22 @@ use ebx_lib::{
     domain::Domain, header_chain::HeaderChain, key_pair::KeyPair, priv_key::PrivKey,
     pub_key::PubKey,
 };
-use sqlx::mysql::MySqlPool;
+use sqlx::{
+    mysql::MySqlPool,
+    types::chrono::{self},
+};
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
 
+#[macro_export]
+macro_rules! log {
+    ($($arg:tt)*) => ({
+        let now = chrono::Utc::now().format("%Y-%m-%d");
+        println!("[{}] {}", now, format!($($arg)*));
+    })
+}
+
+#[allow(dead_code)] // TODO: remove before launch
 struct EnvConfig {
     domain: String,
     domain_priv_key: PrivKey,
@@ -55,10 +67,10 @@ impl EnvConfig {
 #[tokio::main]
 async fn main() -> Result<()> {
     let config = EnvConfig::new().unwrap();
-    println!("DOMAIN: {}", config.domain);
-    println!("DOMAIN_PRIV_KEY: {}", config.domain_priv_key.to_string());
-    println!("DOMAIN_PRIV_KEY: {}", config.domain_key_pair.to_string());
-    println!("ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
+    // log!("DOMAIN: {}", config.domain);
+    // log!("DOMAIN_PRIV_KEY: {}", config.domain_priv_key.to_string());
+    // log!("DOMAIN_PRIV_KEY: {}", config.domain_key_pair.to_string());
+    // log!("ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 
     let pool = MySqlPool::connect(&config.database_url)
         .await
@@ -72,12 +84,13 @@ async fn main() -> Result<()> {
 
     let mut interval = interval(Duration::from_secs(1));
 
-    println!("OpenEBX Full Node Builder started.");
+    log!("OpenEBX Full Node Builder started for {}", config.domain);
+
     loop {
-        println!("...awaiting...");
+        log!("...awaiting...");
         interval.tick().await;
         let chain_length = longest_chain.headers.len();
-        println!("Chain length: {}", chain_length);
+        log!("Chain length: {}", chain_length);
         // - get the longest (validated) chain
         // - if chain tip has changed:
         //   - validate new chain
