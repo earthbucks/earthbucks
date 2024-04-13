@@ -24,7 +24,7 @@ rs only:
 - full_node
   - builder (build blocks, validate txs, validate blocks, build merkle trees)
   - api (horizontally scalable REST API)
-- spv_node
+- light_node
   - follower (follow block headers, validate txs + merkle proofs)
   - api (horizontally scalable REST API)
 - system-work (CUDA, CPU, OpenCL, uses client)

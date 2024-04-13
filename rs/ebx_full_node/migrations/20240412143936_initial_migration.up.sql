@@ -31,7 +31,7 @@ CREATE TABLE `longest_chain_bh` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_n_block` (`id`, `n_block`)
+  UNIQUE KEY `id_n_block` (`n_block`, `id`)
 );
 
 -- CREATE TABLE `tx_input` (

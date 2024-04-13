@@ -20,13 +20,13 @@ impl EnvConfig {
     fn new() -> Result<Self, Box<dyn Error>> {
         dotenv().ok();
 
-        let domain = env::var("EBX_DOMAIN")?;
+        let domain = env::var("DOMAIN")?;
         if !Domain::is_valid_domain(&domain) {
             return Err("Invalid domain".into());
         }
 
         let domain_priv_key_str =
-            env::var("EBX_DOMAIN_PRIV_KEY").map_err(|_| "Missing domain priv key".to_string())?;
+            env::var("DOMAIN_PRIV_KEY").map_err(|_| "Missing domain priv key".to_string())?;
         let domain_priv_key: PrivKey = PrivKey::from_string(&domain_priv_key_str)
             .map_err(|e| format!("Invalid domain priv key: {}", e))?;
 
@@ -34,7 +34,7 @@ impl EnvConfig {
             .map_err(|e| format!("Invalid domain key pair: {}", e))?;
 
         let admin_pub_key_str =
-            env::var("EBX_ADMIN_PUB_KEY").map_err(|_| "Missing admin pub key".to_string())?;
+            env::var("ADMIN_PUB_KEY").map_err(|_| "Missing admin pub key".to_string())?;
         let admin_pub_key: PubKey = PubKey::from_string(&admin_pub_key_str)
             .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
@@ -54,16 +54,16 @@ impl EnvConfig {
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     let config = EnvConfig::new().unwrap();
-    println!("EBX_DOMAIN: {}", config.domain);
+    println!("DOMAIN: {}", config.domain);
     println!(
-        "EBX_DOMAIN_PRIV_KEY: {}",
+        "DOMAIN_PRIV_KEY: {}",
         config.domain_priv_key.to_string()
     );
     println!(
-        "EBX_DOMAIN_PRIV_KEY: {}",
+        "DOMAIN_PRIV_KEY: {}",
         config.domain_key_pair.to_string()
     );
-    println!("EBX_ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
+    println!("ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 
     // let pool = MySqlPool::connect(&config.database_url).await?;
     MySqlPool::connect(&config.database_url).await?;
@@ -74,7 +74,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let mut interval = interval(Duration::from_secs(1));
 
-    println!("OpenEBX Builder started.");
+    println!("OpenEBX Full Node Builder started.");
     loop {
         println!("...awaiting...");
         interval.tick().await;
