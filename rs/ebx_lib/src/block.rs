@@ -1,21 +1,21 @@
-use crate::block_header::BlockHeader;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
+use crate::header::Header;
 use crate::tx::Tx;
 use crate::var_int::VarInt;
 
 pub struct Block {
-    pub header: BlockHeader,
+    pub header: Header,
     pub txs: Vec<Tx>,
 }
 
 impl Block {
-    pub fn new(header: BlockHeader, txs: Vec<Tx>) -> Self {
+    pub fn new(header: Header, txs: Vec<Tx>) -> Self {
         Self { header, txs }
     }
 
     pub fn from_buffer_reader(br: &mut BufferReader) -> Result<Self, Box<dyn std::error::Error>> {
-        let header = BlockHeader::from_buffer_reader(br)?;
+        let header = Header::from_buffer_reader(br)?;
         let tx_count_varint = VarInt::from_buffer_reader(br);
         if !tx_count_varint.is_minimal() {
             return Err("non-minimally encoded varint".into());
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn test_to_buffer_writer() {
-        let header = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
+        let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
         let tx = Tx::new(1, vec![], vec![], 1);
         let block = Block::new(header, vec![tx]);
         let bw = block.to_buffer_writer();
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_and_from_u8_vec() {
-        let header = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
+        let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_u8_vec();
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_from_buffer_reader() {
-        let header = BlockHeader::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
+        let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_u8_vec();
@@ -87,7 +87,7 @@ mod tests {
 
     #[test]
     fn test_is_genesis() {
-        let header = BlockHeader::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let header = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let tx = Tx::new(1, vec![], vec![], 0);
         let block = Block::new(header, vec![tx]);
         assert_eq!(block.header.is_genesis(), true);

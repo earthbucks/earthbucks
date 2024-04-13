@@ -1,8 +1,8 @@
-use ebx_lib::block_header::BlockHeader;
+use ebx_lib::header::Header;
 use sqlx::{types::chrono, Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct ModelBlockHeader {
+pub struct ModelHeader {
     pub id: Vec<u8>,
     pub version: u32,
     pub prev_block_id: Vec<u8>,
@@ -10,11 +10,11 @@ pub struct ModelBlockHeader {
     pub timestamp: u64,
     pub target: Vec<u8>,
     pub nonce: Vec<u8>,
-    pub n_block: u64,
+    pub block_num: u64,
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl ModelBlockHeader {
+impl ModelHeader {
     pub fn new(
         id: Vec<u8>,
         version: u32,
@@ -23,7 +23,7 @@ impl ModelBlockHeader {
         timestamp: u64,
         target: Vec<u8>,
         nonce: Vec<u8>,
-        n_block: u64,
+        block_num: u64,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -34,12 +34,12 @@ impl ModelBlockHeader {
             timestamp,
             target,
             nonce,
-            n_block,
+            block_num,
             created_at,
         }
     }
 
-    pub fn from_block_header(header: &BlockHeader) -> Self {
+    pub fn from_block_header(header: &Header) -> Self {
         Self {
             id: header.id().try_into().unwrap(),
             version: header.version,
@@ -48,28 +48,28 @@ impl ModelBlockHeader {
             timestamp: header.timestamp,
             target: header.target.try_into().unwrap(),
             nonce: header.nonce.try_into().unwrap(),
-            n_block: header.n_block,
+            block_num: header.block_num,
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
-    pub fn to_block_header(&self) -> BlockHeader {
-        BlockHeader::new(
+    pub fn to_block_header(&self) -> Header {
+        Header::new(
             self.version,
             self.prev_block_id.clone().try_into().unwrap(),
             self.merkle_root.clone().try_into().unwrap(),
             self.timestamp,
             self.target.clone().try_into().unwrap(),
             self.nonce.clone().try_into().unwrap(),
-            self.n_block,
+            self.block_num,
         )
     }
 
-    pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<ModelBlockHeader>, Error> {
+    pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<ModelHeader>, Error> {
         // fetch all model_block_header
-        let rows: Vec<ModelBlockHeader> = sqlx::query_as(
+        let rows: Vec<ModelHeader> = sqlx::query_as(
             r#"
-            SELECT * FROM block_header
+            SELECT * FROM header
             ORDER BY created_at DESC
             LIMIT 10
             "#,

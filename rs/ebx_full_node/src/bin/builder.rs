@@ -1,7 +1,7 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_full_node::models::{
-    model_block_header::ModelBlockHeader, model_longest_chain_bh::ModelLongestChainBh,
+    model_header::ModelHeader, model_longest_chain_header::ModelLongestChainHeader,
 };
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header_chain::HeaderChain, key_pair::KeyPair,
@@ -81,24 +81,24 @@ async fn main() -> Result<()> {
         .await
         .map_err(|e| anyhow::Error::msg(format!("Failed to connect to database: {}", e)))?;
 
-    let mut longest_chain: HeaderChain = ModelLongestChainBh::get_longest_chain(&pool).await?;
-    let mut building_block_n = longest_chain.headers.len();
+    let mut longest_chain: HeaderChain = ModelLongestChainHeader::get_longest_chain(&pool).await?;
+    let mut building_block_num = longest_chain.headers.len();
 
     let mut interval = interval(Duration::from_secs(1));
 
     log!("OpenEBX Full Node Builder for {}", config.domain);
-    log!("Building block: {}", building_block_n);
+    log!("Building block: {}", building_block_num);
 
     loop {
         interval.tick().await;
 
         // TODO: Replace with synchronize, not re-load
-        longest_chain = ModelLongestChainBh::get_longest_chain(&pool).await?;
+        longest_chain = ModelLongestChainHeader::get_longest_chain(&pool).await?;
 
         let chain_length = longest_chain.headers.len();
-        if chain_length != building_block_n {
-            building_block_n = chain_length;
-            log!("Building block: {}", building_block_n);
+        if chain_length != building_block_num {
+            building_block_num = chain_length;
+            log!("Building block: {}", building_block_num);
         }
 
         // TODO: Verify block
@@ -107,7 +107,7 @@ async fn main() -> Result<()> {
         //   validate transactions
         //   add block to longest chain or reorg
         //   broadcast block
-        let new_block_headers = ModelBlockHeader::get_candidate_headers(&pool).await?;
+        let new_block_headers = ModelHeader::get_candidate_headers(&pool).await?;
         if !new_block_headers.is_empty() {
             log!("New block headers: {}", new_block_headers.len());
             anyhow::bail!("Not yet implemented");

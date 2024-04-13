@@ -1,5 +1,5 @@
 -- Add up migration script here
-CREATE TABLE `block_header` (
+CREATE TABLE `header` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
@@ -9,8 +9,9 @@ CREATE TABLE `block_header` (
   `timestamp` bigint UNSIGNED NOT NULL,
   `target` binary(32) NOT NULL,
   `nonce` binary(32) NOT NULL,
-  `n_block` bigint UNSIGNED NOT NULL,
+  `block_num` bigint UNSIGNED NOT NULL,
   -- database metadata
+  `n_txs` int UNSIGNED NOT NULL,
   `is_work_valid` BOOLEAN,
   `is_block_valid` BOOLEAN,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE `block_header` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `longest_chain_bh` (
+CREATE TABLE `longest_chain_header` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
@@ -28,12 +29,12 @@ CREATE TABLE `longest_chain_bh` (
   `timestamp` bigint UNSIGNED NOT NULL,
   `target` binary(32) NOT NULL,
   `nonce` binary(32) NOT NULL,
-  `n_block` bigint UNSIGNED NOT NULL,
+  `block_num` bigint UNSIGNED NOT NULL,
   -- database metadata
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_n_block` (`n_block`, `id`)
+  UNIQUE KEY `id_block_num` (`block_num`, `id`)
 );
 
 -- CREATE TABLE `tx_input` (
