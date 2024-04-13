@@ -1,6 +1,7 @@
 use crate::blake3::double_blake3_hash;
 use crate::buffer::Buffer;
 
+#[derive(Debug, Clone)]
 pub struct Pkh {
     pub pkh: [u8; 32],
 }

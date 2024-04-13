@@ -84,7 +84,7 @@ impl Script {
         Result::Ok(script)
     }
 
-    pub fn from_pkh_output(pkh: &[u8]) -> Self {
+    pub fn from_pkh_output(pkh: &[u8; 32]) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(OP["DUP"], None));
         script

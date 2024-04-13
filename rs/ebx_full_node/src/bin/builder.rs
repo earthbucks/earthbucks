@@ -4,9 +4,8 @@ use ebx_full_node::models::{
     model_block_header::ModelBlockHeader, model_longest_chain_bh::ModelLongestChainBh,
 };
 use ebx_lib::{
-    block_header::BlockHeader, buffer::Buffer, domain::Domain, header_chain::HeaderChain,
-    key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey,
-    script::Script, script_chunk::ScriptChunk, script_num::ScriptNum, tx::Tx,
+    buffer::Buffer, domain::Domain, header_chain::HeaderChain, key_pair::KeyPair,
+    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey,
 };
 use sqlx::{
     mysql::MySqlPool,
@@ -115,19 +114,13 @@ async fn main() -> Result<()> {
         }
 
         // produce coinbase transaction
-        let script_num = ScriptNum::from_usize(building_block_n);
-        let script_data = script_num.to_u8_vec();
-        let script_chunk = ScriptChunk::from_data(script_data);
-        let input_script = Script::new(vec![script_chunk]);
-        let output_script = Script::from_pkh_output(&config.coinbase_pkh.pkh);
-        let output_amount = BlockHeader::coinbase_amount(building_block_n as u64);
-        let coinbase_tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        let coinbase_tx = longest_chain.get_next_coinbase_tx(config.coinbase_pkh.clone());
 
         // produce candidate block header
         let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
         let merkle_root: [u8; 32] = merkle_txs.root.try_into().unwrap();
         let block_header = longest_chain
-            .get_new_block_header(merkle_root)
+            .get_next_bh(merkle_root)
             .map_err(|e| anyhow::Error::msg(format!("Failed to produce block header: {}", e)))?;
         let block_id = block_header.id();
 

@@ -1,4 +1,7 @@
-use crate::block_header::BlockHeader;
+use crate::{
+    block_header::BlockHeader, pkh::Pkh, script::Script, script_chunk::ScriptChunk,
+    script_num::ScriptNum, tx::Tx,
+};
 
 pub struct HeaderChain {
     pub headers: Vec<BlockHeader>,
@@ -29,7 +32,19 @@ impl HeaderChain {
         false
     }
 
-    pub fn get_new_block_header(&self, merkle_root: [u8; 32]) -> Result<BlockHeader, String> {
+    pub fn get_next_coinbase_tx(&self, pkh: Pkh) -> Tx {
+        let building_block_n = self.headers.len();
+        let script_num = ScriptNum::from_usize(building_block_n);
+        let script_data = script_num.to_u8_vec();
+        let script_chunk = ScriptChunk::from_data(script_data);
+        let input_script = Script::new(vec![script_chunk]);
+        let output_script = Script::from_pkh_output(&pkh.pkh);
+        let output_amount = BlockHeader::coinbase_amount(building_block_n as u64);
+        let coinbase_tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        coinbase_tx
+    }
+
+    pub fn get_next_bh(&self, merkle_root: [u8; 32]) -> Result<BlockHeader, String> {
         // valid block header, except for PoW
         let building_block_n = self.headers.len();
         let mut block_header: BlockHeader;
