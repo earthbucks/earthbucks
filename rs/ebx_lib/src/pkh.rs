@@ -1,4 +1,5 @@
 use crate::blake3::double_blake3_hash;
+use crate::buffer::Buffer;
 
 pub struct Pkh {
     pub pkh: [u8; 32],
@@ -12,6 +13,18 @@ impl Pkh {
 
     pub fn from_pub_key_buf(public_key: Vec<u8>) -> Self {
         Self::new(public_key)
+    }
+
+    pub fn from_hex(hex: &str) -> Result<Self, String> {
+        let pkh_buf = Buffer::from_hex(hex).to_u8_vec();
+        if pkh_buf.len() != 32 {
+            return Err("Invalid pkh length".to_string());
+        }
+        Ok(Self { pkh: pkh_buf.try_into().unwrap()})
+    }
+
+    pub fn from_string(hex: &str) -> Result<Self, String> {
+        Self::from_hex(hex)
     }
 
     pub fn pkh(&self) -> &[u8; 32] {

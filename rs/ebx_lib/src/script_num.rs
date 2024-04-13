@@ -16,6 +16,12 @@ impl ScriptNum {
         ScriptNum { num }
     }
 
+    pub fn from_usize(num: usize) -> Self {
+        ScriptNum {
+            num: BigInt::from(num),
+        }
+    }
+
     pub fn from_u8_vec(buffer: &[u8]) -> Self {
         let is_negative = buffer[0] & 0x80 != 0;
         let num = if is_negative {
