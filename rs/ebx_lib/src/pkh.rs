@@ -20,7 +20,9 @@ impl Pkh {
         if pkh_buf.len() != 32 {
             return Err("Invalid pkh length".to_string());
         }
-        Ok(Self { pkh: pkh_buf.try_into().unwrap()})
+        Ok(Self {
+            pkh: pkh_buf.try_into().unwrap(),
+        })
     }
 
     pub fn from_string(hex: &str) -> Result<Self, String> {

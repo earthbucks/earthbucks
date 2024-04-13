@@ -4,19 +4,9 @@ use ebx_full_node::models::{
     model_block_header::ModelBlockHeader, model_longest_chain_bh::ModelLongestChainBh,
 };
 use ebx_lib::{
-    block_header::BlockHeader,
-    buffer::Buffer,
-    domain::Domain,
-    header_chain::HeaderChain,
-    key_pair::KeyPair,
-    merkle_txs::{self, MerkleTxs},
-    pkh::Pkh,
-    priv_key::PrivKey,
-    pub_key::PubKey,
-    script::Script,
-    script_chunk::ScriptChunk,
-    script_num::ScriptNum,
-    tx::Tx,
+    block_header::BlockHeader, buffer::Buffer, domain::Domain, header_chain::HeaderChain,
+    key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey,
+    script::Script, script_chunk::ScriptChunk, script_num::ScriptNum, tx::Tx,
 };
 use sqlx::{
     mysql::MySqlPool,
@@ -101,6 +91,8 @@ async fn main() -> Result<()> {
     log!("Building block: {}", building_block_n);
 
     loop {
+        interval.tick().await;
+
         // TODO: Replace with synchronize, not re-load
         longest_chain = ModelLongestChainBh::get_longest_chain(&pool).await?;
 
@@ -128,7 +120,7 @@ async fn main() -> Result<()> {
         let script_chunk = ScriptChunk::from_data(script_data);
         let input_script = Script::new(vec![script_chunk]);
         let output_script = Script::from_pkh_output(&config.coinbase_pkh.pkh);
-        let output_amount = 100 * 100_000_000; // 100 EBX
+        let output_amount = BlockHeader::coinbase_amount(building_block_n as u64);
         let coinbase_tx = Tx::from_coinbase(input_script, output_script, output_amount);
 
         // produce candidate block header
@@ -140,7 +132,5 @@ async fn main() -> Result<()> {
 
         // log!("Block header: {:?}", block_header.to_string());
         log!("Block ID: {}", Buffer::from(block_id.to_vec()).to_hex());
-
-        interval.tick().await;
     }
 }

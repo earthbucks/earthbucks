@@ -220,6 +220,12 @@ impl BlockHeader {
         }
         new_target_bytes.try_into().unwrap()
     }
+
+    pub fn coinbase_amount(n_block: u64) -> u64 {
+        // shift every 210,000 blocks
+        let shift_by = n_block / 210_000;
+        100 * 100_000_000 >> shift_by
+    }
 }
 
 #[cfg(test)]
@@ -409,5 +415,22 @@ mod tests {
             hex::encode(new_target),
             "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
         );
+    }
+
+    #[test]
+    fn test_coinbase_amount() {
+        assert_eq!(BlockHeader::coinbase_amount(0), 10_000_000_000);
+        assert_eq!(BlockHeader::coinbase_amount(210_000), 5_000_000_000);
+        assert_eq!(BlockHeader::coinbase_amount(420_000), 2_500_000_000);
+        assert_eq!(BlockHeader::coinbase_amount(630_000), 1_250_000_000);
+        assert_eq!(BlockHeader::coinbase_amount(840_000), 625_000_000);
+        assert_eq!(BlockHeader::coinbase_amount(1_050_000), 312_500_000);
+        assert_eq!(BlockHeader::coinbase_amount(1_260_000), 156_250_000);
+
+        let mut sum = 0;
+        for i in 0..2_000_000 {
+            sum += BlockHeader::coinbase_amount(i);
+        }
+        assert_eq!(sum, 4193945312500000);
     }
 }
