@@ -28,12 +28,8 @@ impl BlockBuilder {
         Self::new(header, txs, merkle_txs)
     }
 
-    pub fn from_genesis(
-        initial_target: [u8; 32],
-        output_script: Script,
-        output_amount: u64,
-    ) -> Self {
-        let mut header = BlockHeader::from_genesis(initial_target);
+    pub fn from_genesis(output_script: Script, output_amount: u64) -> Self {
+        let mut header = BlockHeader::from_genesis();
         let tx_input = TxInput::from_coinbase(output_script.clone());
         let tx_output = TxOutput::new(output_amount, output_script.clone());
         let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
@@ -89,10 +85,10 @@ mod tests {
 
     #[test]
     fn test_from_genesis() {
-        let target = [0u8; 32];
+        let target = [0xffu8; 32];
         let output_script = Script::from_string("").unwrap();
         let output_amount = 0;
-        let bb = BlockBuilder::from_genesis(target, output_script.clone(), output_amount);
+        let bb = BlockBuilder::from_genesis(output_script.clone(), output_amount);
         assert_eq!(bb.header.version, 1);
         assert_eq!(bb.header.prev_block_id, [0u8; 32]);
         let merkle_txs_root: [u8; 32] = bb.merkle_txs.root.clone().try_into().unwrap();

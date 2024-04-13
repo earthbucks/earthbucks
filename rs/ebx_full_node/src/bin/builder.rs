@@ -125,8 +125,23 @@ async fn main() -> Result<()> {
 
         // produce candidate block header
         let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
-        let initial_target = [0xff; 32];
-        let mut block_header = BlockHeader::from_genesis(initial_target);
+        let mut block_header: BlockHeader;
+        if building_block_n == 0 {
+            block_header = BlockHeader::from_genesis();
+        } else {
+            let prev_header: BlockHeader = (*longest_chain.headers.last().unwrap()).clone();
+            let prev_adj_header: Option<BlockHeader>;
+            let adj_idx: i64 = building_block_n as i64 - BlockHeader::BLOCKS_PER_ADJUSTMENT as i64;
+            if adj_idx > 0 {
+                prev_adj_header = Some(longest_chain.headers[adj_idx as usize].clone());
+            } else {
+                prev_adj_header = None;
+            }
+            block_header = BlockHeader::from_prev_block_header(prev_header, prev_adj_header)
+                .map_err(|e| {
+                    anyhow::Error::msg(format!("Unable to produce block header: {}", e))
+                })?;
+        }
         block_header.merkle_root = merkle_txs.root.try_into().unwrap();
         let block_id = block_header.id();
 

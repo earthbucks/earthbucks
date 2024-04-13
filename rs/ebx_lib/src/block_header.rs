@@ -21,6 +21,7 @@ impl BlockHeader {
     pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
     pub const BLOCK_INTERVAL: u64 = 600;
     pub const BLOCK_HEADER_SIZE: usize = 148;
+    pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn new(
         version: u32,
@@ -144,7 +145,8 @@ impl BlockHeader {
         self.n_block == 0 && self.prev_block_id.iter().all(|&x| x == 0)
     }
 
-    pub fn from_genesis(initial_target: [u8; 32]) -> Self {
+    pub fn from_genesis() -> Self {
+        let initial_target = BlockHeader::INITIAL_TARGET;
         let timestamp = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .expect("Time went backwards")
