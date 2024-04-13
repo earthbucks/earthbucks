@@ -1,6 +1,8 @@
 use anyhow::Result;
 use dotenv::dotenv;
-use ebx_full_node::models::model_longest_chain_bh::ModelLongestChainBh;
+use ebx_full_node::models::{
+    model_block_header::ModelBlockHeader, model_longest_chain_bh::ModelLongestChainBh,
+};
 use ebx_lib::{
     domain::Domain, header_chain::HeaderChain, key_pair::KeyPair, priv_key::PrivKey,
     pub_key::PubKey,
@@ -67,54 +69,43 @@ impl EnvConfig {
 #[tokio::main]
 async fn main() -> Result<()> {
     let config = EnvConfig::new().unwrap();
-    // log!("DOMAIN: {}", config.domain);
-    // log!("DOMAIN_PRIV_KEY: {}", config.domain_priv_key.to_string());
-    // log!("DOMAIN_PRIV_KEY: {}", config.domain_key_pair.to_string());
-    // log!("ADMIN_PUB_KEY: {}", config.admin_pub_key.to_string());
 
     let pool = MySqlPool::connect(&config.database_url)
         .await
         .map_err(|e| anyhow::Error::msg(format!("Failed to connect to database: {}", e)))?;
 
-    let longest_chain: HeaderChain = ModelLongestChainBh::get_longest_chain(&pool)
-        .await
-        .unwrap_or_else(|_| HeaderChain::new());
-    // let chain_tip_buf: Option<[u8; 32]> = None;
-    // let mempool: Vec<Tx> = Vec::new();
+    let mut longest_chain: HeaderChain = ModelLongestChainBh::get_longest_chain(&pool).await?;
+    let mut building_block_n = longest_chain.headers.len();
 
     let mut interval = interval(Duration::from_secs(1));
 
-    log!("OpenEBX Full Node Builder started for {}", config.domain);
+    log!("OpenEBX Full Node Builder for {}", config.domain);
+    log!("Building block: {}", building_block_n);
 
     loop {
-        log!("...awaiting...");
-        interval.tick().await;
+        // TODO: Replace with synchronize, not re-load
+        longest_chain = ModelLongestChainBh::get_longest_chain(&pool).await?;
+
         let chain_length = longest_chain.headers.len();
-        log!("Chain length: {}", chain_length);
-        // - get the longest (validated) chain
-        // - if chain tip has changed:
-        //   - validate new chain
-        //   - if new chain is valid:
-        //     - broadcast new chain
-        //     - if reorg:
-        //       - perform reorg
-        //     - continue
-        //   - else:
-        //     - penalize nodes that broadcasted invalid chain
-        //     - continue
-        // - else (chain tip hasn't changed):
-        //   - if valid PoW has been found:
-        //     - add block to chain and broadcast
-        //     - continue
-        //   - else if unconfirmed transaction set is changed:
-        //     - get all transactions not in the longest chain (unconfirmed transactions)
-        //     - compute merkle root of unconfirmed transactions
-        //     - build block header with correct merkle root - but (probably) insufficient difficulty
-        //     - await new PoW from users
-        //     - build block with PoW
-        //     - broadcast block
-        //     - continue
-        //   - else:
-        //     - continue
+        if chain_length != building_block_n {
+            building_block_n = chain_length;
+            log!("Building block: {}", building_block_n);
+        }
+
+        let new_block_headers = ModelBlockHeader::get_candidate_headers(&pool).await?;
+        if !new_block_headers.is_empty() {
+            // new block?
+            //   validate work
+            //   validate transactions
+            //   add block to longest chain or reorg
+            //   broadcast block
+            log!("New block headers: {}", new_block_headers.len());
+            anyhow::bail!("Not yet implemented");
+        }
+
+        // produce coinbase transaction
+
+        // produce candidate block header
+        interval.tick().await;
     }
 }

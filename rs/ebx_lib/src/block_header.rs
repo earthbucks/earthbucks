@@ -1,10 +1,10 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
+use crate::buffer::Buffer;
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 use num_bigint::BigUint;
 use num_integer::Integer;
 use std::time::{SystemTime, UNIX_EPOCH};
-use crate::buffer::Buffer;
 
 #[derive(Debug, Clone)]
 pub struct BlockHeader {

@@ -11,6 +11,8 @@ CREATE TABLE `block_header` (
   `nonce` binary(32) NOT NULL,
   `n_block` bigint UNSIGNED NOT NULL,
   -- database metadata
+  `is_work_valid` BOOLEAN,
+  `is_block_valid` BOOLEAN,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)

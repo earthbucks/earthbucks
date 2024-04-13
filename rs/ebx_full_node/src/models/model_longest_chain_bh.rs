@@ -97,4 +97,21 @@ impl ModelLongestChainBh {
         }
         Ok(chain)
     }
+
+    pub async fn get_chain_tip(pool: &MySqlPool) -> Result<Option<BlockHeader>, Error> {
+        let row: Option<ModelLongestChainBh> = sqlx::query_as(
+            r#"
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, n_block, created_at
+            FROM longest_chain_bh
+            ORDER BY n_block DESC
+            LIMIT 1
+            "#,
+        )
+        .fetch_optional(pool)
+        .await?;
+        match row {
+            Some(row) => Ok(Some(row.to_block_header())),
+            None => Ok(None),
+        }
+    }
 }
