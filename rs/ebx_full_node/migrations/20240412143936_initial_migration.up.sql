@@ -1,4 +1,3 @@
--- Add up migration script here
 CREATE TABLE `header` (
   -- id
   `id` binary(32) NOT NULL,

@@ -32,7 +32,7 @@ impl HeaderChain {
         false
     }
 
-    pub fn get_next_coinbase_tx(&self, pkh: Pkh) -> Tx {
+    pub fn get_next_coinbase(&self, pkh: Pkh) -> Tx {
         let building_block_n = self.headers.len();
         let script_num = ScriptNum::from_usize(building_block_n);
         let script_data = script_num.to_u8_vec();
@@ -44,7 +44,7 @@ impl HeaderChain {
         coinbase_tx
     }
 
-    pub fn get_next_bh(&self, merkle_root: [u8; 32]) -> Result<Header, String> {
+    pub fn get_next_header(&self, merkle_root: [u8; 32]) -> Result<Header, String> {
         // valid block header, except for PoW
         let building_block_n = self.headers.len();
         let mut block_header: Header;

@@ -101,7 +101,7 @@ async fn main() -> Result<()> {
             log!("Building block: {}", building_block_num);
         }
 
-        // TODO: Verify block
+        // TODO: Verify new block
         // new block?
         //   validate work
         //   validate transactions
@@ -114,13 +114,15 @@ async fn main() -> Result<()> {
         }
 
         // produce coinbase transaction
-        let coinbase_tx = longest_chain.get_next_coinbase_tx(config.coinbase_pkh.clone());
+        let coinbase_tx = longest_chain.get_next_coinbase(config.coinbase_pkh.clone());
+
+        // TODO: Gather all unconfirmed transactions
 
         // produce candidate block header
         let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
         let merkle_root: [u8; 32] = merkle_txs.root.try_into().unwrap();
         let block_header = longest_chain
-            .get_next_bh(merkle_root)
+            .get_next_header(merkle_root)
             .map_err(|e| anyhow::Error::msg(format!("Failed to produce block header: {}", e)))?;
         let block_id = block_header.id();
 
