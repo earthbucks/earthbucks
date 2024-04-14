@@ -129,7 +129,14 @@ async fn main() -> Result<()> {
         };
         let block_id = block_header.id();
 
+        // save candidate block header
+        let db_header = DbHeader::from_block_header(&block_header);
+        db_header.save(&pool).await?;
+
         // log!("Block header: {:?}", block_header.to_string());
-        log!("Block ID: {}", Buffer::from(block_id.to_vec()).to_hex());
+        log!(
+            "Candidate block ID: {}",
+            Buffer::from(block_id.to_vec()).to_hex()
+        );
     }
 }

@@ -10,10 +10,9 @@ CREATE TABLE `header` (
   `nonce` binary(32) NOT NULL,
   `block_num` bigint UNSIGNED NOT NULL,
   -- database metadata
-  `n_txs` int UNSIGNED NOT NULL,
   `is_work_valid` BOOLEAN,
   `is_block_valid` BOOLEAN,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)
 );
@@ -31,7 +30,7 @@ CREATE TABLE `lch` (
   `nonce` binary(32) NOT NULL,
   `block_num` bigint UNSIGNED NOT NULL,
   -- database metadata
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_block_num` (`block_num`, `id`)

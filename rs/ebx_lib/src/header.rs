@@ -198,7 +198,7 @@ impl Header {
     }
 
     pub fn new_target_from_lch(lch: &Vec<Header>, new_timestamp: u64) -> Result<[u8; 32], String> {
-        // get slice of max length ADJUSTMENT_BLOCKS
+        // get slice of max length BLOCKS_PER_TARGET_ADJ
         let adjh: Vec<Header>;
         if lch.len() > Header::BLOCKS_PER_TARGET_ADJ as usize {
             adjh = lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ as usize..].to_vec();
@@ -210,9 +210,6 @@ impl Header {
         let len = adjh.len();
         if len == 0 {
             return Ok(Header::INITIAL_TARGET);
-        }
-        if len == 1 {
-            return Ok(adjh[0].target);
         }
         let first_header = adjh[0].clone();
         // let last_header = adjh[len - 1].clone();

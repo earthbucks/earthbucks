@@ -11,6 +11,8 @@ pub struct DbHeader {
     pub target: Vec<u8>,
     pub nonce: Vec<u8>,
     pub block_num: u64,
+    pub is_work_valid: Option<bool>,
+    pub is_block_valid: Option<bool>,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -24,6 +26,8 @@ impl DbHeader {
         target: Vec<u8>,
         nonce: Vec<u8>,
         block_num: u64,
+        is_work_valid: Option<bool>,
+        is_block_valid: Option<bool>,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -35,6 +39,8 @@ impl DbHeader {
             target,
             nonce,
             block_num,
+            is_work_valid,
+            is_block_valid,
             created_at,
         }
     }
@@ -49,6 +55,8 @@ impl DbHeader {
             target: header.target.try_into().unwrap(),
             nonce: header.nonce.try_into().unwrap(),
             block_num: header.block_num,
+            is_work_valid: None,
+            is_block_valid: None,
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -70,6 +78,7 @@ impl DbHeader {
         let rows: Vec<DbHeader> = sqlx::query_as(
             r#"
             SELECT * FROM header
+            WHERE is_work_valid IS NULL AND is_block_valid IS NULL
             ORDER BY created_at DESC
             LIMIT 10
             "#,
@@ -78,5 +87,29 @@ impl DbHeader {
         .await?;
 
         Ok(rows)
+    }
+
+    pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            INSERT INTO header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            "#,
+        )
+        .bind(&self.id)
+        .bind(self.version)
+        .bind(&self.prev_block_id)
+        .bind(&self.merkle_root)
+        .bind(self.timestamp)
+        .bind(&self.target)
+        .bind(&self.nonce)
+        .bind(self.block_num)
+        .bind(self.is_work_valid)
+        .bind(self.is_block_valid)
+        .bind(self.created_at)
+        .execute(pool)
+        .await?;
+
+        Ok(())
     }
 }
