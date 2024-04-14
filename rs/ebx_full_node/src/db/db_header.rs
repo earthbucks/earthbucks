@@ -13,6 +13,8 @@ pub struct DbHeader {
     pub block_num: u64,
     pub is_work_valid: Option<bool>,
     pub is_block_valid: Option<bool>,
+    pub is_vote_valid: Option<bool>,
+    pub domain: String,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -28,6 +30,8 @@ impl DbHeader {
         block_num: u64,
         is_work_valid: Option<bool>,
         is_block_valid: Option<bool>,
+        is_vote_valid: Option<bool>,
+        domain: String,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -41,11 +45,13 @@ impl DbHeader {
             block_num,
             is_work_valid,
             is_block_valid,
+            is_vote_valid,
+            domain,
             created_at,
         }
     }
 
-    pub fn from_block_header(header: &Header) -> Self {
+    pub fn from_block_header(header: &Header, domain: String) -> Self {
         Self {
             id: header.id().try_into().unwrap(),
             version: header.version,
@@ -57,6 +63,8 @@ impl DbHeader {
             block_num: header.block_num,
             is_work_valid: None,
             is_block_valid: None,
+            is_vote_valid: None,
+            domain,
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -78,7 +86,7 @@ impl DbHeader {
         let rows: Vec<DbHeader> = sqlx::query_as(
             r#"
             SELECT * FROM header
-            WHERE is_work_valid IS NULL AND is_block_valid IS NULL
+            WHERE is_work_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL
             ORDER BY created_at DESC
             LIMIT 10
             "#,
@@ -92,8 +100,8 @@ impl DbHeader {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, is_vote_valid, domain, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
         .bind(&self.id)
@@ -106,6 +114,8 @@ impl DbHeader {
         .bind(self.block_num)
         .bind(self.is_work_valid)
         .bind(self.is_block_valid)
+        .bind(self.is_vote_valid)
+        .bind(&self.domain)
         .bind(self.created_at)
         .execute(pool)
         .await?;

@@ -99,14 +99,14 @@ async fn main() -> Result<()> {
             log!("Building block: {}", building_block_num);
         }
 
-        // TODO: Verify new block
-        // new block?
-        //   validate work
-        //   validate transactions
-        //   add block to longest chain or reorg
-        //   broadcast block
         let new_block_headers = DbHeader::get_candidate_headers(&pool).await?;
         if !new_block_headers.is_empty() {
+            // TODO: Verify new block
+            // new block?
+            //   validate work
+            //   validate transactions
+            //   add block to longest chain or reorg
+            //   broadcast block
             log!("New block headers: {}", new_block_headers.len());
             anyhow::bail!("Not yet implemented");
         }
@@ -116,9 +116,11 @@ async fn main() -> Result<()> {
 
         // TODO: Gather all unconfirmed transactions
 
-        // produce candidate block header
+        // produce merkle root
         let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
         let merkle_root: [u8; 32] = merkle_txs.root.try_into().unwrap();
+
+        // produce candidate block header
         let new_timestamp = Header::get_new_timestamp();
         let block_header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
             Ok(header) => header,
@@ -130,7 +132,7 @@ async fn main() -> Result<()> {
         let block_id = block_header.id();
 
         // save candidate block header
-        let db_header = DbHeader::from_block_header(&block_header);
+        let db_header = DbHeader::from_block_header(&block_header, config.domain.clone());
         db_header.save(&pool).await?;
 
         // log!("Block header: {:?}", block_header.to_string());
