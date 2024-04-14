@@ -85,7 +85,7 @@ CREATE TABLE `tx` (
   -- data structure
   `tx` BLOB NOT NULL,
   -- database metadata
-  `version` int UNSIGNED NOT NULL,
+  `version` tinyint UNSIGNED NOT NULL,
   `lock_time` bigint UNSIGNED NOT NULL,
   `tx_in_count` int UNSIGNED NOT NULL,
   `tx_out_count` int UNSIGNED NOT NULL,
