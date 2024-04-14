@@ -17,8 +17,8 @@ pub struct Header {
 }
 
 impl Header {
-    pub const BLOCKS_PER_ADJUSTMENT: u64 = 2016;
-    pub const BLOCK_INTERVAL: u64 = 600;
+    pub const BLOCKS_PER_TARGET_ADJ: u64 = 2016; // exactly two weeks if block interval is 10 minutes
+    pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
     pub const BLOCK_HEADER_SIZE: usize = 148;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
@@ -200,8 +200,8 @@ impl Header {
     pub fn new_target_from_lch(lch: &Vec<Header>, new_timestamp: u64) -> Result<[u8; 32], String> {
         // get slice of max length ADJUSTMENT_BLOCKS
         let adjh: Vec<Header>;
-        if lch.len() > Header::BLOCKS_PER_ADJUSTMENT as usize {
-            adjh = lch[lch.len() - Header::BLOCKS_PER_ADJUSTMENT as usize..].to_vec();
+        if lch.len() > Header::BLOCKS_PER_TARGET_ADJ as usize {
+            adjh = lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ as usize..].to_vec();
         } else {
             adjh = lch.clone();
         }
