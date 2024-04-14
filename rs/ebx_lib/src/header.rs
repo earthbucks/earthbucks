@@ -158,40 +158,6 @@ impl Header {
         }
     }
 
-    // pub fn from_prev_block_header(
-    //     prev_block_header: Header,
-    //     prev_adjustment_block_header: Option<Header>,
-    // ) -> Result<Self, &'static str> {
-    //     let prev_block_id = prev_block_header.id();
-    //     let block_num = prev_block_header.block_num + 1;
-    //     let mut target = prev_block_header.target.clone();
-    //     if block_num % Header::BLOCKS_PER_ADJUSTMENT == 0 {
-    //         match prev_adjustment_block_header {
-    //             Some(pabh) if pabh.block_num + Header::BLOCKS_PER_ADJUSTMENT == block_num => {
-    //                 let time_diff = prev_block_header.timestamp - pabh.timestamp;
-    //                 target = Header::adjust_target_bitcoin(prev_block_header.target, time_diff);
-    //             }
-    //             _ => {
-    //                 return Err("must provide previous adjustment block header 2016 blocks before")
-    //             }
-    //         }
-    //     }
-    //     let timestamp = SystemTime::now()
-    //         .duration_since(UNIX_EPOCH)
-    //         .unwrap()
-    //         .as_secs();
-    //     let nonce = [0u8; 32];
-    //     Ok(Self::new(
-    //         1,
-    //         prev_block_id,
-    //         [0u8; 32],
-    //         timestamp,
-    //         target,
-    //         nonce,
-    //         block_num,
-    //     ))
-    // }
-
     pub fn hash(&self) -> [u8; 32] {
         blake3_hash(&self.to_u8_vec())
     }
@@ -269,25 +235,6 @@ impl Header {
         new_target_bytes.try_into().unwrap()
     }
 
-    // pub fn adjust_target_bitcoin(target_buf: [u8; 32], time_diff: u64) -> [u8; 32] {
-    //     let target = BigUint::from_bytes_be(&target_buf);
-    //     let two_weeks = Header::BLOCKS_PER_ADJUSTMENT * Header::BLOCK_INTERVAL;
-    //     let time_diff = time_diff as u64;
-    //     let time_diff = if time_diff < two_weeks / 2 {
-    //         two_weeks / 2
-    //     } else if time_diff > two_weeks * 2 {
-    //         two_weeks * 2
-    //     } else {
-    //         time_diff
-    //     };
-    //     let new_target = (target * time_diff).div_floor(&BigUint::from(two_weeks));
-    //     let mut new_target_bytes = new_target.to_bytes_be();
-    //     while new_target_bytes.len() < 32 {
-    //         new_target_bytes.insert(0, 0);
-    //     }
-    //     new_target_bytes.try_into().unwrap()
-    // }
-
     pub fn coinbase_amount(block_num: u64) -> u64 {
         // shift every 210,000 blocks
         let shift_by = block_num / 210_000;
@@ -360,124 +307,6 @@ mod tests {
             "8bbebda6265eb4265ff52f6e744d2859e6ef58c640e1df355072c4a9541b8aba"
         );
     }
-
-    // #[test]
-    // fn test_from_prev_block_header() {
-    //     let prev_block_header = Header::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
-    //     let bh = Header::from_prev_block_header(prev_block_header.clone(), None).unwrap();
-    //     assert_eq!(bh.version, 1);
-    //     assert_eq!(bh.prev_block_id, prev_block_header.id());
-    //     assert_eq!(bh.merkle_root, [0u8; 32]);
-    //     assert!(
-    //         bh.timestamp
-    //             <= SystemTime::now()
-    //                 .duration_since(UNIX_EPOCH)
-    //                 .unwrap()
-    //                 .as_secs()
-    //     );
-    //     assert_eq!(bh.target, [0u8; 32]);
-    // }
-
-    // #[test]
-    // fn test_from_prev_block_header_adjustment() {
-    //     let prev_block_header = Header::new(
-    //         1,
-    //         [0u8; 32],
-    //         [0u8; 32],
-    //         Header::BLOCKS_PER_ADJUSTMENT - 1,
-    //         [0u8; 32],
-    //         [0u8; 32],
-    //         Header::BLOCKS_PER_ADJUSTMENT - 1,
-    //     );
-    //     let prev_adjustment_block_header =
-    //         Header::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
-    //     let bh =
-    //         Header::from_prev_block_header(prev_block_header, Some(prev_adjustment_block_header))
-    //             .unwrap();
-    //     assert_eq!(bh.block_num, Header::BLOCKS_PER_ADJUSTMENT);
-    //     assert_eq!(bh.target, Header::adjust_target_bitcoin([0u8; 32], 0));
-    // }
-
-    // #[test]
-    // fn test_from_prev_block_header_non_trivial_adjustment() {
-    //     // 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-    //     let initial_target_hex = "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-    //     let initial_target: [u8; 32] = hex::decode(initial_target_hex).unwrap().try_into().unwrap();
-    //     let time_diff = (2016 * 600) / 2; // One week
-    //     let prev_block_header = Header::new(
-    //         1,
-    //         [0u8; 32],
-    //         [0u8; 32],
-    //         time_diff - 1,
-    //         initial_target,
-    //         [0u8; 32],
-    //         Header::BLOCKS_PER_ADJUSTMENT - 1,
-    //     );
-    //     let prev_adjustment_block_header =
-    //         Header::new(1, [0u8; 32], [0u8; 32], 0, initial_target, [0u8; 32], 0);
-    //     let bh =
-    //         Header::from_prev_block_header(prev_block_header, Some(prev_adjustment_block_header))
-    //             .unwrap();
-    //     assert_eq!(bh.block_num, Header::BLOCKS_PER_ADJUSTMENT);
-    //     let new_target_hex = "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-    //     let new_target: [u8; 32] = hex::decode(new_target_hex).unwrap().try_into().unwrap();
-    //     assert_eq!(bh.target, new_target);
-    // }
-
-    // #[test]
-    // fn test_adjust_target() {
-    //     let prev_target = [0u8; 32];
-    //     let time_diff = 0;
-    //     assert_eq!(
-    //         Header::adjust_target_bitcoin(prev_target, time_diff),
-    //         [0u8; 32]
-    //     );
-    // }
-
-    // #[test]
-    // fn test_adjust_target_less_than_one_week() {
-    //     let target_buf: [u8; 32] =
-    //         hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
-    //             .unwrap()
-    //             .try_into()
-    //             .unwrap();
-    //     let time_diff = 2016 * 200;
-    //     let new_target = Header::adjust_target_bitcoin(target_buf, time_diff);
-    //     assert_eq!(
-    //         hex::encode(new_target),
-    //         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-    //     );
-    // }
-
-    // #[test]
-    // fn test_adjust_target_more_than_eight_weeks() {
-    //     let target_buf: [u8; 32] =
-    //         hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
-    //             .unwrap()
-    //             .try_into()
-    //             .unwrap();
-    //     let time_diff = 2016 * 600 * 3;
-    //     let new_target = Header::adjust_target_bitcoin(target_buf, time_diff);
-    //     assert_eq!(
-    //         hex::encode(new_target),
-    //         "00000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
-    //     );
-    // }
-
-    // #[test]
-    // fn test_adjust_target_exactly_two_weeks() {
-    //     let target_buf: [u8; 32] =
-    //         hex::decode("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
-    //             .unwrap()
-    //             .try_into()
-    //             .unwrap();
-    //     let time_diff = 2016 * 600;
-    //     let new_target = Header::adjust_target_bitcoin(target_buf, time_diff);
-    //     assert_eq!(
-    //         hex::encode(new_target),
-    //         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-    //     );
-    // }
 
     #[test]
     fn test_coinbase_amount() {
