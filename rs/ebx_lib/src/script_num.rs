@@ -52,6 +52,14 @@ impl ScriptNum {
         }
     }
 
+    pub fn from_hex(hex: &str) -> Self {
+        ScriptNum::from_u8_vec(&hex::decode(hex).unwrap())
+    }
+
+    pub fn to_hex(&self) -> String {
+        hex::encode(self.to_u8_vec())
+    }
+
     pub fn to_string(&self) -> String {
         self.num.to_str_radix(10)
     }

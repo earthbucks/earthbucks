@@ -1,10 +1,9 @@
 use anyhow::Result;
 use dotenv::dotenv;
-use ebx_full_node::db::{
-    db_header::DbHeader, db_lch::DbLch,
-};
+use ebx_full_node::db::{db_header::DbHeader, db_lch::DbLch};
 use ebx_lib::{
-    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey
+    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
+    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey,
 };
 use sqlx::{
     mysql::MySqlPool,
@@ -121,9 +120,13 @@ async fn main() -> Result<()> {
         let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
         let merkle_root: [u8; 32] = merkle_txs.root.try_into().unwrap();
         let new_timestamp = Header::get_new_timestamp();
-        let block_header = longest_chain
-            .get_next_header(merkle_root, new_timestamp)
-            .map_err(|e| anyhow::Error::msg(format!("Failed to produce block header: {}", e)))?;
+        let block_header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
+            Ok(header) => header,
+            Err(e) => {
+                log!("Failed to produce block header: {}", e);
+                continue;
+            }
+        };
         let block_id = block_header.id();
 
         // log!("Block header: {:?}", block_header.to_string());

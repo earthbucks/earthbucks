@@ -177,7 +177,11 @@ impl Header {
         if lch.len() == 0 {
             return Ok(Header::from_genesis(new_timestamp));
         }
-        let new_target = Header::new_target_from_lch(lch, new_timestamp);
+        let new_target_res = Header::new_target_from_lch(lch, new_timestamp);
+        if new_target_res.is_err() {
+            return Err("new target error".to_string());
+        }
+        let new_target = new_target_res.unwrap();
         let prev_block_id = lch.last().unwrap().id();
         let block_num = lch.len() as u64;
         let timestamp = new_timestamp;
@@ -193,7 +197,7 @@ impl Header {
         ))
     }
 
-    pub fn new_target_from_lch(lch: &Vec<Header>, new_timestamp: u64) -> [u8; 32] {
+    pub fn new_target_from_lch(lch: &Vec<Header>, new_timestamp: u64) -> Result<[u8; 32], String> {
         // get slice of max length ADJUSTMENT_BLOCKS
         let adjh: Vec<Header>;
         if lch.len() > Header::BLOCKS_PER_ADJUSTMENT as usize {
@@ -205,7 +209,10 @@ impl Header {
         // convert all targets into big numbers
         let len = adjh.len();
         if len == 0 {
-            return Header::INITIAL_TARGET;
+            return Ok(Header::INITIAL_TARGET);
+        }
+        if len == 1 {
+            return Ok(adjh[0].target);
         }
         let first_header = adjh[0].clone();
         // let last_header = adjh[len - 1].clone();
@@ -215,15 +222,13 @@ impl Header {
             targets.push(target);
         }
         let target_sum: BigUint = targets.iter().sum();
+        if new_timestamp <= first_header.timestamp {
+            // error
+            return Err("timestamps must be increasing".to_string());
+        }
         let real_time_diff: BigUint =
             BigUint::from(new_timestamp) - BigUint::from(first_header.timestamp);
-        if real_time_diff == BigUint::from(0 as u64) {
-            return Header::INITIAL_TARGET;
-        }
-        let intended_time_diff = len as u64 * Header::BLOCK_INTERVAL;
-        // new target = average target * real time diff / intended time diff
-        // let new_target = (target_sum / len) * real_time_diff / intended_time_diff;
-        let new_target = (target_sum * real_time_diff) / intended_time_diff / len;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
 
         let mut new_target_bytes = new_target.to_bytes_be();
         while new_target_bytes.len() < 32 {
@@ -232,7 +237,24 @@ impl Header {
         if new_target_bytes.len() > 32 {
             new_target_bytes = Header::INITIAL_TARGET.to_vec();
         }
-        new_target_bytes.try_into().unwrap()
+        Ok(new_target_bytes.try_into().unwrap())
+    }
+
+    pub fn new_target_from_old_targets(
+        target_sum: BigUint,
+        real_time_diff: BigUint,
+        len: usize,
+    ) -> BigUint {
+        // target_sum is sum of all targets in the adjustment period
+        // real_time_diff is the time difference between the first and last
+        // block in the adjustment period
+        // new target = average target * real time diff / intended time diff
+        // let new_target = (target_sum / len) * real_time_diff / intended_time_diff;
+        // let new_target = (target_sum * real_time_diff) / intended_time_diff / len;
+        let intended_time_diff = len as u64 * Header::BLOCK_INTERVAL;
+        let new_target =
+            (target_sum * real_time_diff) / BigUint::from(intended_time_diff) / BigUint::from(len);
+        new_target
     }
 
     pub fn coinbase_amount(block_num: u64) -> u64 {
@@ -323,5 +345,182 @@ mod tests {
             sum += Header::coinbase_amount(i);
         }
         assert_eq!(sum, 4193945312500000);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_1() {
+        let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+
+        let target_sum = target_1;
+        let real_time_diff: u64 = 600;
+        let len: usize = 1;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_1_2() {
+        let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+
+        let target_sum = target_1;
+        let real_time_diff: u64 = 300;
+        let len: usize = 1;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_1_3() {
+        let target_1_hex = "8000000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+
+        let target_sum = target_1;
+        let real_time_diff: u64 = 600;
+        let len: usize = 1;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "8000000000000000000000000000000000000000000000000000000000000000";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_1_4() {
+        let target_1_hex = "8000000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+
+        let target_sum = target_1;
+        let real_time_diff: u64 = 300;
+        let len: usize = 1;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "4000000000000000000000000000000000000000000000000000000000000000";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_1_5() {
+        let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+
+        let target_sum = target_1;
+        let real_time_diff: u64 = 1200;
+        let len: usize = 1;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "0100000000000000000000000000000000000000000000000000000000000000";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_2() {
+        let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_sum = target_1 + target_2;
+        let real_time_diff: u64 = 600 + 600;
+        let len: usize = 2;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_2_2() {
+        let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_sum = target_1 + target_2;
+        let real_time_diff: u64 = 600 + 300;
+        let len: usize = 2;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
+        let expected_hex = "0060000000000000000000000000000000000000000000000000000000000000";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_2_3() {
+        let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_sum = target_1 + target_2;
+        let real_time_diff: u64 = 600 + 1200;
+        let len: usize = 2;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
+        let expected_hex = "00c0000000000000000000000000000000000000000000000000000000000000";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_3() {
+        let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_3_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_sum = target_1 + target_2 + target_3;
+        let real_time_diff: u64 = 600 + 600 + 600;
+        let len: usize = 3;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex = hex::encode(new_target.to_bytes_be());
+        let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_3_2() {
+        let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_3_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_sum = target_1 + target_2 + target_3;
+        let real_time_diff: u64 = 600 + 600 + 601;
+        let len: usize = 3;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
+        let expected_hex = "0080123456789abcdf0123456789abcdf0123456789abcdf0123456789abcdf0";
+        assert_eq!(new_target_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_new_target_from_old_targets_3_3() {
+        let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_3_hex = "0080000000000000000000000000000000000000000000000000000000000000";
+        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_sum = target_1 + target_2 + target_3;
+        let real_time_diff: u64 = 600 + 600 + 599;
+        let len: usize = 3;
+        let new_target =
+            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
+        let expected_hex = "007fedcba987654320fedcba987654320fedcba987654320fedcba987654320f";
+        assert_eq!(new_target_hex, expected_hex);
     }
 }
