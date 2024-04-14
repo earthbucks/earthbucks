@@ -44,24 +44,13 @@ impl HeaderChain {
         coinbase_tx
     }
 
-    pub fn get_next_header(&self, merkle_root: [u8; 32]) -> Result<Header, String> {
+    pub fn get_next_header(
+        &self,
+        merkle_root: [u8; 32],
+        new_timestamp: u64,
+    ) -> Result<Header, String> {
         // valid block header, except for PoW
-        let building_block_n = self.headers.len();
-        let mut block_header: Header;
-        if building_block_n == 0 {
-            block_header = Header::from_genesis();
-        } else {
-            let prev_header: Header = (*self.headers.last().unwrap()).clone();
-            let prev_adj_header: Option<Header>;
-            let adj_idx: i64 = building_block_n as i64 - Header::BLOCKS_PER_ADJUSTMENT as i64;
-            if adj_idx > 0 {
-                prev_adj_header = Some(self.headers[adj_idx as usize].clone());
-            } else {
-                prev_adj_header = None;
-            }
-            block_header = Header::from_prev_block_header(prev_header, prev_adj_header)
-                .map_err(|e| format!("Unable to produce block header: {}", e))?;
-        }
+        let mut block_header: Header = Header::from_lch(&self.headers, new_timestamp)?;
         block_header.merkle_root = merkle_root;
         Ok(block_header)
     }
