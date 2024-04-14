@@ -19,7 +19,8 @@ CREATE TABLE `header` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `longest_chain_header` (
+-- longest chain header
+CREATE TABLE `lch` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure

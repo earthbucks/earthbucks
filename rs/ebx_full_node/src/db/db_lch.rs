@@ -1,8 +1,10 @@
 use ebx_lib::header::Header;
-use sqlx::{types::chrono, Error, MySqlPool};
+use ebx_lib::header_chain::HeaderChain;
+use sqlx::types::chrono;
+use sqlx::{Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct ModelHeader {
+pub struct DbLch {
     pub id: Vec<u8>,
     pub version: u32,
     pub prev_block_id: Vec<u8>,
@@ -14,7 +16,8 @@ pub struct ModelHeader {
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl ModelHeader {
+// longest chain header
+impl DbLch {
     pub fn new(
         id: Vec<u8>,
         version: u32,
@@ -65,18 +68,51 @@ impl ModelHeader {
         )
     }
 
-    pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<ModelHeader>, Error> {
-        // fetch all model_block_header
-        let rows: Vec<ModelHeader> = sqlx::query_as(
+    pub async fn get(pool: &MySqlPool, id: Vec<u8>) -> Result<Self, Error> {
+        let row: Self = sqlx::query_as(
             r#"
-            SELECT * FROM header
-            ORDER BY created_at DESC
-            LIMIT 10
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            FROM lch
+            WHERE id = ?
+            "#,
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await?;
+        Ok(row)
+    }
+
+    pub async fn get_longest_chain(pool: &MySqlPool) -> Result<HeaderChain, Error> {
+        let rows: Vec<DbLch> = sqlx::query_as(
+            r#"
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            FROM lch
+            ORDER BY block_num ASC
             "#,
         )
         .fetch_all(pool)
         .await?;
+        let mut chain = HeaderChain::new();
+        for row in rows {
+            chain.add(row.to_block_header());
+        }
+        Ok(chain)
+    }
 
-        Ok(rows)
+    pub async fn get_chain_tip(pool: &MySqlPool) -> Result<Option<Header>, Error> {
+        let row: Option<DbLch> = sqlx::query_as(
+            r#"
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            FROM lch
+            ORDER BY block_num DESC
+            LIMIT 1
+            "#,
+        )
+        .fetch_optional(pool)
+        .await?;
+        match row {
+            Some(row) => Ok(Some(row.to_block_header())),
+            None => Ok(None),
+        }
     }
 }

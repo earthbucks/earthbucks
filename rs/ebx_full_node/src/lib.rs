@@ -1,4 +1,4 @@
-pub mod models {
-    pub mod model_header;
-    pub mod model_longest_chain_header;
+pub mod db {
+    pub mod db_header;
+    pub mod db_lch;
 }
