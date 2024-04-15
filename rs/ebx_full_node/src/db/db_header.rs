@@ -82,13 +82,11 @@ impl DbHeader {
     }
 
     pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<DbHeader>, Error> {
-        // fetch all model_block_header
         let rows: Vec<DbHeader> = sqlx::query_as(
             r#"
             SELECT * FROM db_header
             WHERE is_work_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL
             ORDER BY created_at DESC
-            LIMIT 10
             "#,
         )
         .fetch_all(pool)
