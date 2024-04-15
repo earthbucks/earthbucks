@@ -3,17 +3,17 @@ use sqlx::{types::chrono, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DbMerkleProof {
-    pub merkle_root: Vec<u8>,
-    pub tx_id: Vec<u8>,
-    pub merkle_proof: Vec<u8>,
+    pub merkle_root: String,
+    pub tx_id: String,
+    pub merkle_proof: String,
     pub created_at: chrono::NaiveDateTime,
 }
 
 impl DbMerkleProof {
     pub fn new(
-        merkle_root: Vec<u8>,
-        tx_id: Vec<u8>,
-        merkle_proof: Vec<u8>,
+        merkle_root: String,
+        tx_id: String,
+        merkle_proof: String,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -26,15 +26,15 @@ impl DbMerkleProof {
 
     pub fn from_merkle_proof(merkle_proof: &MerkleProof, tx_id: Vec<u8>) -> Self {
         Self {
-            merkle_root: merkle_proof.root.to_vec(),
-            tx_id,
-            merkle_proof: merkle_proof.to_u8_vec(),
+            merkle_root: hex::encode(merkle_proof.root),
+            tx_id: hex::encode(tx_id),
+            merkle_proof: hex::encode(merkle_proof.to_u8_vec()),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_merkle_proof(&self) -> MerkleProof {
-        MerkleProof::from_u8_vec(&self.merkle_proof)
+        MerkleProof::from_u8_vec(&hex::decode(&self.merkle_proof).unwrap())
     }
 
     pub async fn get(

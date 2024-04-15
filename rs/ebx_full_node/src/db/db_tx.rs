@@ -6,16 +6,16 @@ use sqlx::Executor;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DbTx {
-    pub id: Vec<u8>,
-    pub tx_buf: Vec<u8>,
+    pub id: String,
+    pub tx: String,
     pub version: u8,
     pub tx_in_count: u32,
     pub tx_out_count: u32,
     pub lock_time: u64,
     pub is_valid: Option<bool>,
     pub is_vote_valid: Option<bool>,
-    pub confirmed_block_id: Option<Vec<u8>>,
-    pub confirmed_merkle_root: Option<Vec<u8>>,
+    pub confirmed_block_id: Option<String>,
+    pub confirmed_merkle_root: Option<String>,
     pub domain: String,
     pub ebx_address: Option<String>,
     pub created_at: chrono::NaiveDateTime,
@@ -23,23 +23,23 @@ pub struct DbTx {
 
 impl DbTx {
     pub fn new(
-        id: Vec<u8>,
-        tx: Vec<u8>,
+        id: String,
+        tx: String,
         version: u8,
         tx_in_count: u32,
         tx_out_count: u32,
         lock_time: u64,
         is_valid: Option<bool>,
         is_vote_valid: Option<bool>,
-        confirmed_block_id: Option<Vec<u8>>,
-        confirmed_merkle_root: Option<Vec<u8>>,
+        confirmed_block_id: Option<String>,
+        confirmed_merkle_root: Option<String>,
         domain: String,
         ebx_address: Option<String>,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
             id,
-            tx_buf: tx,
+            tx: tx,
             version,
             lock_time,
             tx_in_count,
@@ -56,8 +56,8 @@ impl DbTx {
 
     pub fn from_new_tx(tx: &Tx, domain: String, ebx_address: Option<String>) -> Self {
         Self {
-            id: tx.id().to_vec(),
-            tx_buf: tx.to_u8_vec(),
+            id: hex::encode(tx.id().to_vec()),
+            tx: hex::encode(tx.to_u8_vec()),
             version: tx.version,
             tx_in_count: tx.inputs.len() as u32,
             tx_out_count: tx.outputs.len() as u32,
@@ -73,10 +73,10 @@ impl DbTx {
     }
 
     pub fn to_tx(&self) -> Result<Tx, Box<dyn std::error::Error>> {
-        Tx::from_u8_vec(self.tx_buf.clone())
+        Tx::from_u8_vec(hex::decode(&self.tx).unwrap())
     }
 
-    pub async fn get(id: &Vec<u8>, pool: &sqlx::MySqlPool) -> Result<DbTx, sqlx::Error> {
+    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<DbTx, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
             SELECT * FROM db_tx WHERE id = ?
@@ -93,7 +93,7 @@ impl DbTx {
         &self,
         pool: &sqlx::MySqlPool,
     ) -> Result<(), sqlx::Error> {
-        let tx_buf = &self.tx_buf;
+        let tx = &self.tx;
         let id = self.id.clone();
         let version = self.version;
         let tx_in_count = self.tx_in_count;
@@ -117,12 +117,12 @@ impl DbTx {
             .execute(
                 sqlx::query(
                 r#"
-                INSERT INTO db_tx (id, tx_buf, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+                INSERT INTO db_tx (id, tx, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 "#,
                 )
                 .bind(id)
-                .bind(tx_buf)
+                .bind(tx)
                 .bind(version)
                 .bind(tx_in_count)
                 .bind(tx_out_count)

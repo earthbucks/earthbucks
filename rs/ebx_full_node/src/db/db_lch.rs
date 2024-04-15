@@ -5,13 +5,13 @@ use sqlx::{Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DbLch {
-    pub id: Vec<u8>,
+    pub id: String,
     pub version: u32,
-    pub prev_block_id: Vec<u8>,
-    pub merkle_root: Vec<u8>,
+    pub prev_block_id: String,
+    pub merkle_root: String,
     pub timestamp: u64,
-    pub target: Vec<u8>,
-    pub nonce: Vec<u8>,
+    pub target: String,
+    pub nonce: String,
     pub block_num: u64,
     pub created_at: chrono::NaiveDateTime,
 }
@@ -19,13 +19,13 @@ pub struct DbLch {
 // longest chain header
 impl DbLch {
     pub fn new(
-        id: Vec<u8>,
+        id: String,
         version: u32,
-        prev_block_id: Vec<u8>,
-        merkle_root: Vec<u8>,
+        prev_block_id: String,
+        merkle_root: String,
         timestamp: u64,
-        target: Vec<u8>,
-        nonce: Vec<u8>,
+        target: String,
+        nonce: String,
         block_num: u64,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
@@ -44,13 +44,13 @@ impl DbLch {
 
     pub fn from_block_header(header: &Header) -> Self {
         Self {
-            id: header.id().try_into().unwrap(),
+            id: hex::encode(header.id()),
             version: header.version,
-            prev_block_id: header.prev_block_id.try_into().unwrap(),
-            merkle_root: header.merkle_root.try_into().unwrap(),
+            prev_block_id: hex::encode(header.prev_block_id),
+            merkle_root: hex::encode(header.merkle_root),
             timestamp: header.timestamp,
-            target: header.target.try_into().unwrap(),
-            nonce: header.nonce.try_into().unwrap(),
+            target: hex::encode(header.target),
+            nonce: hex::encode(header.nonce),
             block_num: header.block_num,
             created_at: chrono::Utc::now().naive_utc(),
         }
@@ -59,11 +59,14 @@ impl DbLch {
     pub fn to_block_header(&self) -> Header {
         Header::new(
             self.version,
-            self.prev_block_id.clone().try_into().unwrap(),
-            self.merkle_root.clone().try_into().unwrap(),
+            hex::decode(&self.prev_block_id)
+                .unwrap()
+                .try_into()
+                .unwrap(),
+            hex::decode(&self.merkle_root).unwrap().try_into().unwrap(),
             self.timestamp,
-            self.target.clone().try_into().unwrap(),
-            self.nonce.clone().try_into().unwrap(),
+            hex::decode(&self.target).unwrap().try_into().unwrap(),
+            hex::decode(&self.nonce).unwrap().try_into().unwrap(),
             self.block_num,
         )
     }

@@ -126,22 +126,17 @@ async fn main() -> Result<()> {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
                 let db_raw_tx = DbTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
-                let coinbase_tx_id = coinbase_tx.id().to_vec();
+                let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
+                log!("Coinbase tx ID: {}", coinbase_tx_id);
                 let coinbase_db_tx = DbTx::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_db_tx {
-                    log!(
-                        "Inserting coinbase tx: {}",
-                        Buffer::from(coinbase_tx_id).to_hex()
-                    );
+                    log!("Inserting coinbase tx: {}", coinbase_tx_id);
                     let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
                     if let Err(e) = res {
                         anyhow::bail!("Failed to insert coinbase tx: {}", e);
                     }
                 } else {
-                    log!(
-                        "Coinbase tx already exists: {}",
-                        Buffer::from(coinbase_tx_id).to_hex()
-                    );
+                    log!("Coinbase tx already exists: {}", coinbase_tx_id);
                 }
             }
 

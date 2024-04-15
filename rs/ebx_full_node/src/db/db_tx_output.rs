@@ -3,19 +3,19 @@ use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DbTxOutput {
-    pub tx_id: Vec<u8>,
+    pub tx_id: String,
     pub tx_out_num: u32,
     pub value: u64,
-    pub script: Vec<u8>,
+    pub script: String,
     pub created_at: chrono::NaiveDateTime,
 }
 
 impl DbTxOutput {
     pub fn new(
-        tx_id: Vec<u8>,
+        tx_id: String,
         tx_out_num: u32,
         value: u64,
-        script: Vec<u8>,
+        script: String,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -32,10 +32,10 @@ impl DbTxOutput {
             .iter()
             .enumerate()
             .map(|(tx_out_num, tx_out)| Self {
-                tx_id: tx.id().to_vec(),
+                tx_id: hex::encode(tx.id().to_vec()),
                 tx_out_num: tx_out_num as u32,
                 value: tx_out.value,
-                script: tx_out.script.to_u8_vec(),
+                script: hex::encode(tx_out.script.to_u8_vec()),
                 created_at: chrono::Utc::now().naive_utc(),
             })
             .collect()
