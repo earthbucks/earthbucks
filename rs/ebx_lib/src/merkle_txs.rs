@@ -3,13 +3,13 @@ use crate::tx::Tx;
 
 pub struct MerkleTxs {
     pub txs: Vec<Tx>,
-    pub root: Vec<u8>,
+    pub root: [u8; 32],
     pub proofs: Vec<MerkleProof>,
 }
 
 impl MerkleTxs {
     pub fn new(txs: Vec<Tx>) -> Self {
-        let hashed_datas = txs.iter().map(|tx| tx.id()).collect::<Vec<_>>();
+        let hashed_datas: Vec<[u8; 32]> = txs.iter().map(|tx| tx.id()).collect::<Vec<_>>();
         let (root, proofs) = MerkleProof::generate_proofs_and_root(hashed_datas);
         Self { txs, root, proofs }
     }

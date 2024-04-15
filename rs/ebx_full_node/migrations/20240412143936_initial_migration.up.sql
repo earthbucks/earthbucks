@@ -84,9 +84,9 @@ CREATE TABLE `tx` (
   `id` binary(32) NOT NULL,
   -- data structure
   `tx` BLOB NOT NULL,
-  -- database metadata
   `version` tinyint UNSIGNED NOT NULL,
   `lock_time` bigint UNSIGNED NOT NULL,
+  -- database metadata
   `tx_in_count` int UNSIGNED NOT NULL,
   `tx_out_count` int UNSIGNED NOT NULL,
   `is_valid` BOOLEAN,

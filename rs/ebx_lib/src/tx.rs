@@ -107,12 +107,12 @@ impl Tx {
         self.inputs.len() == 1 && self.inputs[0].is_coinbase()
     }
 
-    pub fn blake3_hash(&self) -> Vec<u8> {
-        blake3_hash(&self.to_u8_vec()).to_vec()
+    pub fn blake3_hash(&self) -> [u8; 32] {
+        blake3_hash(&self.to_u8_vec())
     }
 
-    pub fn id(&self) -> Vec<u8> {
-        double_blake3_hash(&self.to_u8_vec()).to_vec()
+    pub fn id(&self) -> [u8; 32] {
+        double_blake3_hash(&self.to_u8_vec())
     }
 
     pub fn hash_prevouts(&self) -> Vec<u8> {
@@ -478,7 +478,7 @@ mod tests {
         let outputs = vec![tx_output];
         let lock_time = 0;
         let tx = Tx::new(version, inputs, outputs, lock_time);
-        let expected_hash = blake3_hash(&tx.to_u8_vec()).to_vec();
+        let expected_hash = blake3_hash(&tx.to_u8_vec());
         assert_eq!(tx.blake3_hash(), expected_hash);
     }
 
@@ -499,7 +499,7 @@ mod tests {
         let outputs = vec![tx_output];
         let lock_time = 0;
         let tx = Tx::new(version, inputs, outputs, lock_time);
-        let expected_hash = double_blake3_hash(&tx.to_u8_vec()).to_vec();
+        let expected_hash = double_blake3_hash(&tx.to_u8_vec());
         assert_eq!(tx.id(), expected_hash);
     }
 
