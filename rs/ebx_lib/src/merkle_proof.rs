@@ -4,8 +4,8 @@ use crate::buffer_writer::BufferWriter;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
-    root: [u8; 32],
-    proof: Vec<([u8; 32], bool)>,
+    pub root: [u8; 32],
+    pub proof: Vec<([u8; 32], bool)>,
 }
 
 impl MerkleProof {

@@ -1,9 +1,11 @@
 use anyhow::Result;
 use dotenv::dotenv;
-use ebx_full_node::db::{db_header::DbHeader, db_lch::DbLch};
+use ebx_full_node::db::{
+    db_header::DbHeader, db_lch::DbLch, db_merkle_proof::DbMerkleProof, db_raw_tx::DbRawTx,
+};
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
-    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey,
+    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
 };
 use sqlx::{
     mysql::MySqlPool,
@@ -90,55 +92,98 @@ async fn main() -> Result<()> {
     loop {
         interval.tick().await;
 
-        // TODO: Replace with synchronize, not re-load
-        longest_chain = DbLch::get_longest_chain(&pool).await?;
+        // 1. Synchronize with longest chain
+        {
+            // TODO: Replace with synchronize, not re-load
+            longest_chain = DbLch::get_longest_chain(&pool).await?;
 
-        let chain_length = longest_chain.headers.len();
-        if chain_length != building_block_num {
-            building_block_num = chain_length;
-            log!("Building block: {}", building_block_num);
+            let chain_length = longest_chain.headers.len();
+            if chain_length != building_block_num {
+                building_block_num = chain_length;
+                log!("Building block: {}", building_block_num);
+            }
         }
 
-        let new_block_headers = DbHeader::get_candidate_headers(&pool).await?;
-        if !new_block_headers.is_empty() {
-            // TODO: Verify new block
+        // 2. Check for new blocks and validate. Broadcast & continue if found.
+        {
+            // TODO: Check for new blocks
             // new block?
             //   validate work
             //   validate transactions
-            //   add block to longest chain or reorg
-            //   broadcast block
-            log!("New block headers: {}", new_block_headers.len());
-            anyhow::bail!("Not yet implemented");
+            //   broadcast block and assess votes
+            //   if valid, add to longest chain and continue
+            //   if invalid, punish miner
         }
 
-        // produce coinbase transaction
-        let coinbase_tx = longest_chain.get_next_coinbase(config.coinbase_pkh.clone());
+        // 3. Check for new transactions and validate. Broadcast if found.
+        {}
 
-        // TODO: Gather all unconfirmed transactions
-
-        // produce merkle root
-        let merkle_txs = MerkleTxs::new(vec![coinbase_tx]);
-        let merkle_root: [u8; 32] = merkle_txs.root.try_into().unwrap();
-
-        // produce candidate block header
-        let new_timestamp = Header::get_new_timestamp();
-        let block_header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
-            Ok(header) => header,
-            Err(e) => {
-                log!("Failed to produce block header: {}", e);
-                continue;
+        // 4. Create new candidate block header for mining.
+        {
+            // produce and upsert coinbase transaction
+            let coinbase_tx: Tx;
+            {
+                coinbase_tx = longest_chain
+                    .get_next_coinbase(config.coinbase_pkh.clone(), config.domain.clone());
+                let db_raw_tx = DbRawTx::from_tx(&coinbase_tx, config.domain.clone());
+                let res = db_raw_tx.upsert(&pool).await;
+                if let Err(e) = res {
+                    anyhow::bail!("Failed to upsert coinbase tx: {}", e);
+                }
             }
-        };
-        let block_id = block_header.id();
 
-        // save candidate block header
-        let db_header = DbHeader::from_block_header(&block_header, config.domain.clone());
-        db_header.save(&pool).await?;
+            // TODO: Get (synchronize) all unconfirmed transactions (mempool)
+            let mempool_txs: Vec<Tx> = vec![];
 
-        // log!("Block header: {:?}", block_header.to_string());
-        log!(
-            "Candidate block ID: {}",
-            Buffer::from(block_id.to_vec()).to_hex()
-        );
+            // combine coinbase and mempool transactions
+            let unconfirmed_txs: Vec<Tx> =
+                vec![coinbase_tx].into_iter().chain(mempool_txs).collect();
+
+            // Produce Merkle root and Merkle proofs
+            let merkle_txs = MerkleTxs::new(unconfirmed_txs);
+            let merkle_root: [u8; 32] = merkle_txs.root;
+
+            // Save all Merkle proofs (upsert)
+            {
+                for (tx, proof) in merkle_txs.get_iterator() {
+                    let db_merkle_proof =
+                        DbMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
+                    let res = db_merkle_proof.upsert(&pool).await;
+                    if let Err(e) = res {
+                        anyhow::bail!("Failed to save merkle proof: {}", e);
+                    }
+                }
+            }
+
+            // Produce candidate block header
+            let new_timestamp = Header::get_new_timestamp();
+            let block_header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
+                Ok(header) => header,
+                Err(e) => {
+                    log!("Failed to produce block header: {}", e);
+                    continue;
+                }
+            };
+            let block_id = block_header.id();
+
+            // Save candidate block header
+            let db_header = DbHeader::from_block_header(&block_header, config.domain.clone());
+            db_header.save(&pool).await?;
+
+            log!(
+                "Produced candidate block header ID: {}",
+                Buffer::from(block_id.to_vec()).to_hex()
+            );
+        }
+
+        // 5. Check for valid PoW and write block if found.
+        {
+            // log!("Block header: {:?}", block_header.to_string());
+            let new_headers = DbHeader::get_candidate_headers(&pool).await?;
+            if !new_headers.is_empty() {
+                log!("New block headers: {}", new_headers.len());
+                anyhow::bail!("Not yet implemented");
+            }
+        }
     }
 }

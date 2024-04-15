@@ -83,27 +83,44 @@ CREATE TABLE `tx` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
-  `tx` BLOB NOT NULL,
   `version` tinyint UNSIGNED NOT NULL,
-  `lock_time` bigint UNSIGNED NOT NULL,
-  -- database metadata
   `tx_in_count` int UNSIGNED NOT NULL,
   `tx_out_count` int UNSIGNED NOT NULL,
+  `lock_time` bigint UNSIGNED NOT NULL,
+  -- database metadata
   `is_valid` BOOLEAN,
   `is_vote_valid` BOOLEAN,
   `confirmed_block_id` binary(32),
   `confirmed_merkle_root` binary(32),
+  `domain` varchar(255) NOT NULL,
+  `ebx_address` varchar(255),
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `block` (
+CREATE TABLE `raw_block` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
   `block` BLOB NOT NULL,
   -- database metadata
+  `is_parsed` BOOLEAN NOT NULL,
+  `domain` varchar(255) NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  -- primary key
+  PRIMARY KEY (`id`)
+);
+
+create table `raw_tx` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `tx` BLOB NOT NULL,
+  -- database metadata
+  `is_parsed` BOOLEAN NOT NULL,
+  `domain` varchar(255) NOT NULL,
+  `ebx_address` varchar(255),
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)

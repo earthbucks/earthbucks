@@ -14,6 +14,10 @@ impl MerkleTxs {
         Self { txs, root, proofs }
     }
 
+    pub fn get_iterator(&self) -> impl Iterator<Item = (&Tx, &MerkleProof)> {
+        self.txs.iter().zip(self.proofs.iter())
+    }
+
     pub fn verify(&self) -> bool {
         for i in 0..self.txs.len() {
             let tx = &self.txs[i];
