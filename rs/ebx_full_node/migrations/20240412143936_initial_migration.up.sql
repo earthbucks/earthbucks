@@ -97,3 +97,14 @@ CREATE TABLE `tx` (
   -- primary key
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `block` (
+  -- id
+  `id` binary(32) NOT NULL,
+  -- data structure
+  `block` BLOB NOT NULL,
+  -- database metadata
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  -- primary key
+  PRIMARY KEY (`id`)
+);
