@@ -79,7 +79,7 @@ impl DbTx {
     pub async fn get(id: &Vec<u8>, pool: &sqlx::MySqlPool) -> Result<DbTx, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM tx WHERE id = ?
+            SELECT * FROM db_tx WHERE id = ?
             "#,
         )
         .bind(id)
@@ -117,7 +117,7 @@ impl DbTx {
             .execute(
                 sqlx::query(
                 r#"
-                INSERT INTO tx (id, tx_buf, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+                INSERT INTO db_tx (id, tx_buf, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 "#,
                 )
@@ -142,7 +142,7 @@ impl DbTx {
                 .execute(
                     sqlx::query(
                     r#"
-                    INSERT INTO tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
+                    INSERT INTO db_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     "#,
                     )
@@ -162,7 +162,7 @@ impl DbTx {
                 .execute(
                     sqlx::query(
                         r#"
-                    INSERT INTO tx_output (tx_id, tx_out_num, value, script, created_at)
+                    INSERT INTO db_tx_output (tx_id, tx_out_num, value, script, created_at)
                     VALUES (?, ?, ?, ?, ?)
                     "#,
                     )

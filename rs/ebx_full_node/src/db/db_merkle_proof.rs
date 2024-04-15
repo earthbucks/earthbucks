@@ -43,7 +43,7 @@ impl DbMerkleProof {
         pool: &MySqlPool,
     ) -> Result<Self, sqlx::Error> {
         let result = sqlx::query_as::<_, Self>(
-            "SELECT * FROM merkle_proof WHERE merkle_root = ? AND tx_id = ?",
+            "SELECT * FROM db_merkle_proof WHERE merkle_root = ? AND tx_id = ?",
         )
         .bind(merkle_root)
         .bind(tx_id)
@@ -56,7 +56,7 @@ impl DbMerkleProof {
     pub async fn upsert(&self, pool: &MySqlPool) -> Result<(), sqlx::Error> {
         sqlx::query(
             r#"
-            INSERT INTO merkle_proof (merkle_root, tx_id, merkle_proof)
+            INSERT INTO db_merkle_proof (merkle_root, tx_id, merkle_proof)
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 merkle_proof = VALUES(merkle_proof)

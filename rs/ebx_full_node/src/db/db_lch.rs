@@ -72,7 +72,7 @@ impl DbLch {
         let row: Self = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM lch
+            FROM db_lch
             WHERE id = ?
             "#,
         )
@@ -86,7 +86,7 @@ impl DbLch {
         let rows: Vec<DbLch> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM lch
+            FROM db_lch
             ORDER BY block_num ASC
             "#,
         )
@@ -103,7 +103,7 @@ impl DbLch {
         let row: Option<DbLch> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM lch
+            FROM db_lch
             ORDER BY block_num DESC
             LIMIT 1
             "#,

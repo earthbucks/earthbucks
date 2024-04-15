@@ -1,4 +1,4 @@
-CREATE TABLE `header` (
+CREATE TABLE `db_header` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
@@ -20,7 +20,7 @@ CREATE TABLE `header` (
 );
 
 -- longest chain header
-CREATE TABLE `lch` (
+CREATE TABLE `db_lch` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
@@ -39,7 +39,7 @@ CREATE TABLE `lch` (
   UNIQUE KEY `block_num_id` (`block_num`, `id`)
 );
 
-CREATE TABLE `merkle_proof` (
+CREATE TABLE `db_merkle_proof` (
   -- id
   `merkle_root` binary(32) NOT NULL,
   `tx_id` binary(32) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE `merkle_proof` (
   PRIMARY KEY (`merkle_root`, `tx_id`)
 );
 
-CREATE TABLE `tx_input` (
+CREATE TABLE `db_tx_input` (
   -- id
   `tx_id` binary(32) NOT NULL,
   `tx_in_num` int UNSIGNED NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE `tx_input` (
   PRIMARY KEY (`tx_id`, `tx_in_num`)
 );
 
-CREATE TABLE `tx_output` (
+CREATE TABLE `db_tx_output` (
   -- id
   `tx_id` binary(32) NOT NULL,
   `tx_out_num` int UNSIGNED NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE `tx_output` (
   PRIMARY KEY (`tx_id`, `tx_out_num`)
 );
 
-CREATE TABLE `tx` (
+CREATE TABLE `db_tx` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
@@ -100,7 +100,7 @@ CREATE TABLE `tx` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `raw_block` (
+CREATE TABLE `db_raw_block` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure

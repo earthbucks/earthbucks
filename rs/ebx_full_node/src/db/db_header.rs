@@ -85,7 +85,7 @@ impl DbHeader {
         // fetch all model_block_header
         let rows: Vec<DbHeader> = sqlx::query_as(
             r#"
-            SELECT * FROM header
+            SELECT * FROM db_header
             WHERE is_work_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL
             ORDER BY created_at DESC
             LIMIT 10
@@ -100,7 +100,7 @@ impl DbHeader {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, is_vote_valid, domain, created_at)
+            INSERT INTO db_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, is_vote_valid, domain, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )

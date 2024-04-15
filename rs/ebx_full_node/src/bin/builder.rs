@@ -137,6 +137,11 @@ async fn main() -> Result<()> {
                     if let Err(e) = res {
                         anyhow::bail!("Failed to insert coinbase tx: {}", e);
                     }
+                } else {
+                    log!(
+                        "Coinbase tx already exists: {}",
+                        Buffer::from(coinbase_tx_id).to_hex()
+                    );
                 }
             }
 
