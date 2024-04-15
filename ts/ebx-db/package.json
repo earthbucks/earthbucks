@@ -1,0 +1,25 @@
+{
+  "name": "ebx-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db:introspect": "drizzle-kit introspect:mysql --config=drizzle.config.ts",
+    "db:clear": "drizzle-kit push:mysql --config=drizzle-clear.config.ts",
+    "db:push": "drizzle-kit push:mysql --config=drizzle.config.ts"
+  },
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "license": "MIT",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.8",
+    "mysql2": "^3.9.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.14"
+  }
+}

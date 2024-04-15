@@ -1,0 +1,602 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "mysql",
+  "tables": {
+    "_sqlx_migrations": {
+      "name": "_sqlx_migrations",
+      "columns": {
+        "version": {
+          "autoincrement": false,
+          "name": "version",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "autoincrement": false,
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "installed_on": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "installed_on",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "success": {
+          "autoincrement": false,
+          "name": "success",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum": {
+          "autoincrement": false,
+          "name": "checksum",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "execution_time": {
+          "autoincrement": false,
+          "name": "execution_time",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "_sqlx_migrations_version": {
+          "name": "_sqlx_migrations_version",
+          "columns": [
+            "version"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_header": {
+      "name": "db_header",
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "autoincrement": false,
+          "name": "version",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prev_block_id": {
+          "autoincrement": false,
+          "name": "prev_block_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "merkle_root": {
+          "autoincrement": false,
+          "name": "merkle_root",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "autoincrement": false,
+          "name": "timestamp",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target": {
+          "autoincrement": false,
+          "name": "target",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nonce": {
+          "autoincrement": false,
+          "name": "nonce",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block_num": {
+          "autoincrement": false,
+          "name": "block_num",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_work_valid": {
+          "autoincrement": false,
+          "name": "is_work_valid",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_block_valid": {
+          "autoincrement": false,
+          "name": "is_block_valid",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_vote_valid": {
+          "autoincrement": false,
+          "name": "is_vote_valid",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "domain": {
+          "autoincrement": false,
+          "name": "domain",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_header_id": {
+          "name": "db_header_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_lch": {
+      "name": "db_lch",
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "autoincrement": false,
+          "name": "version",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prev_block_id": {
+          "autoincrement": false,
+          "name": "prev_block_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "merkle_root": {
+          "autoincrement": false,
+          "name": "merkle_root",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "autoincrement": false,
+          "name": "timestamp",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target": {
+          "autoincrement": false,
+          "name": "target",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nonce": {
+          "autoincrement": false,
+          "name": "nonce",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block_num": {
+          "autoincrement": false,
+          "name": "block_num",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "domain": {
+          "autoincrement": false,
+          "name": "domain",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_lch_id": {
+          "name": "db_lch_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {
+        "block_num_id": {
+          "name": "block_num_id",
+          "columns": [
+            "block_num",
+            "id"
+          ]
+        }
+      }
+    },
+    "db_merkle_proof": {
+      "name": "db_merkle_proof",
+      "columns": {
+        "merkle_root": {
+          "autoincrement": false,
+          "name": "merkle_root",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_id": {
+          "autoincrement": false,
+          "name": "tx_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "merkle_proof": {
+          "autoincrement": false,
+          "name": "merkle_proof",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_merkle_proof_merkle_root_tx_id": {
+          "name": "db_merkle_proof_merkle_root_tx_id",
+          "columns": [
+            "merkle_root",
+            "tx_id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_raw_block": {
+      "name": "db_raw_block",
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block": {
+          "autoincrement": false,
+          "name": "block",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_parsed": {
+          "autoincrement": false,
+          "name": "is_parsed",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "domain": {
+          "autoincrement": false,
+          "name": "domain",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_raw_block_id": {
+          "name": "db_raw_block_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_tx": {
+      "name": "db_tx",
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_buf": {
+          "autoincrement": false,
+          "name": "tx_buf",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "autoincrement": false,
+          "name": "version",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_in_count": {
+          "autoincrement": false,
+          "name": "tx_in_count",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_out_count": {
+          "autoincrement": false,
+          "name": "tx_out_count",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lock_time": {
+          "autoincrement": false,
+          "name": "lock_time",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_valid": {
+          "autoincrement": false,
+          "name": "is_valid",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_vote_valid": {
+          "autoincrement": false,
+          "name": "is_vote_valid",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confirmed_block_id": {
+          "autoincrement": false,
+          "name": "confirmed_block_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confirmed_merkle_root": {
+          "autoincrement": false,
+          "name": "confirmed_merkle_root",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "domain": {
+          "autoincrement": false,
+          "name": "domain",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ebx_address": {
+          "autoincrement": false,
+          "name": "ebx_address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_tx_id": {
+          "name": "db_tx_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_tx_input": {
+      "name": "db_tx_input",
+      "columns": {
+        "tx_id": {
+          "autoincrement": false,
+          "name": "tx_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_in_num": {
+          "autoincrement": false,
+          "name": "tx_in_num",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "input_tx_id": {
+          "autoincrement": false,
+          "name": "input_tx_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "input_tx_out_num": {
+          "autoincrement": false,
+          "name": "input_tx_out_num",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "script": {
+          "autoincrement": false,
+          "name": "script",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "autoincrement": false,
+          "name": "sequence",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_tx_input_tx_id_tx_in_num": {
+          "name": "db_tx_input_tx_id_tx_in_num",
+          "columns": [
+            "tx_id",
+            "tx_in_num"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "db_tx_output": {
+      "name": "db_tx_output",
+      "columns": {
+        "tx_id": {
+          "autoincrement": false,
+          "name": "tx_id",
+          "type": "binary(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_out_num": {
+          "autoincrement": false,
+          "name": "tx_out_num",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "autoincrement": false,
+          "name": "value",
+          "type": "bigint unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "script": {
+          "autoincrement": false,
+          "name": "script",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "db_tx_output_tx_id_tx_out_num": {
+          "name": "db_tx_output_tx_id_tx_out_num",
+          "columns": [
+            "tx_id",
+            "tx_out_num"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
