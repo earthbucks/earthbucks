@@ -1,3 +1,4 @@
+use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
@@ -30,5 +31,21 @@ impl DbTxInput {
             sequence,
             created_at,
         }
+    }
+
+    pub fn from_tx(tx: &Tx) -> Vec<Self> {
+        tx.inputs
+            .iter()
+            .enumerate()
+            .map(|(tx_in_num, tx_in)| Self {
+                tx_id: tx.id().to_vec(),
+                tx_in_num: tx_in_num as u32,
+                input_tx_id: tx_in.input_tx_id.to_vec(),
+                input_tx_out_num: tx_in.input_tx_out_num as u32,
+                script: tx_in.script.to_u8_vec(),
+                sequence: tx_in.sequence,
+                created_at: chrono::Utc::now().naive_utc(),
+            })
+            .collect()
     }
 }

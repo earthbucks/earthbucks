@@ -1,7 +1,7 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_full_node::db::{
-    db_header::DbHeader, db_lch::DbLch, db_merkle_proof::DbMerkleProof, db_raw_tx::DbRawTx,
+    db_header::DbHeader, db_lch::DbLch, db_merkle_proof::DbMerkleProof, db_tx::DbTx,
 };
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
@@ -124,11 +124,19 @@ async fn main() -> Result<()> {
             let coinbase_tx: Tx;
             {
                 coinbase_tx = longest_chain
-                    .get_next_coinbase(config.coinbase_pkh.clone(), config.domain.clone());
-                let db_raw_tx = DbRawTx::from_tx(&coinbase_tx, config.domain.clone());
-                let res = db_raw_tx.upsert(&pool).await;
-                if let Err(e) = res {
-                    anyhow::bail!("Failed to upsert coinbase tx: {}", e);
+                    .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
+                let db_raw_tx = DbTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
+                let coinbase_tx_id = coinbase_tx.id().to_vec();
+                let coinbase_db_tx = DbTx::get(&coinbase_tx_id, &pool).await;
+                if let Err(_) = coinbase_db_tx {
+                    log!(
+                        "Inserting coinbase tx: {}",
+                        Buffer::from(coinbase_tx_id).to_hex()
+                    );
+                    let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
+                    if let Err(e) = res {
+                        anyhow::bail!("Failed to insert coinbase tx: {}", e);
+                    }
                 }
             }
 
@@ -150,24 +158,23 @@ async fn main() -> Result<()> {
                         DbMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
                     let res = db_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
-                        anyhow::bail!("Failed to save merkle proof: {}", e);
+                        anyhow::bail!("Failed to upsert merkle proof: {}", e);
                     }
                 }
             }
 
             // Produce candidate block header
             let new_timestamp = Header::get_new_timestamp();
-            let block_header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
+            let header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
                 Ok(header) => header,
                 Err(e) => {
-                    log!("Failed to produce block header: {}", e);
-                    continue;
+                    anyhow::bail!("Failed to produce block header: {}", e);
                 }
             };
-            let block_id = block_header.id();
+            let block_id = header.id();
 
             // Save candidate block header
-            let db_header = DbHeader::from_block_header(&block_header, config.domain.clone());
+            let db_header = DbHeader::from_block_header(&header, config.domain.clone());
             db_header.save(&pool).await?;
 
             log!(
@@ -178,12 +185,14 @@ async fn main() -> Result<()> {
 
         // 5. Check for valid PoW and write block if found.
         {
-            // log!("Block header: {:?}", block_header.to_string());
             let new_headers = DbHeader::get_candidate_headers(&pool).await?;
             if !new_headers.is_empty() {
                 log!("New block headers: {}", new_headers.len());
                 anyhow::bail!("Not yet implemented");
             }
         }
+
+        // TODO: Delete old unused block headers
+        // TODO: Any other cleanup processes
     }
 }

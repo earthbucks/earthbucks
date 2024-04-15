@@ -21,7 +21,7 @@ impl TxVerifier {
     pub fn verify_input_script(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
-        let output_index = tx_input.input_tx_n_out;
+        let output_index = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_map.get(tx_out_hash, output_index);
         match tx_out {
             None => return false,
@@ -68,7 +68,7 @@ impl TxVerifier {
         for input in &self.tx.inputs {
             let tx_out = self
                 .tx_out_map
-                .get(&input.input_tx_id, input.input_tx_n_out);
+                .get(&input.input_tx_id, input.input_tx_out_num);
             match tx_out {
                 None => return false,
                 Some(tx_out) => total_input_value += tx_out.value,

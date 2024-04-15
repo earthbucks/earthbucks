@@ -41,8 +41,8 @@ impl DbMerkleProof {
         merkle_root: Vec<u8>,
         tx_id: Vec<u8>,
         pool: &MySqlPool,
-    ) -> Result<DbMerkleProof, sqlx::Error> {
-        let result = sqlx::query_as::<_, DbMerkleProof>(
+    ) -> Result<Self, sqlx::Error> {
+        let result = sqlx::query_as::<_, Self>(
             "SELECT * FROM merkle_proof WHERE merkle_root = ? AND tx_id = ?",
         )
         .bind(merkle_root)

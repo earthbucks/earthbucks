@@ -6,4 +6,3 @@ DROP TABLE `tx_input`;
 DROP TABLE `tx_output`;
 DROP TABLE `tx`;
 DROP TABLE `raw_block`;
-DROP TABLE `raw_tx`;

@@ -1,3 +1,4 @@
+use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
@@ -24,5 +25,19 @@ impl DbTxOutput {
             script,
             created_at,
         }
+    }
+
+    pub fn from_tx(tx: &Tx) -> Vec<Self> {
+        tx.outputs
+            .iter()
+            .enumerate()
+            .map(|(tx_out_num, tx_out)| Self {
+                tx_id: tx.id().to_vec(),
+                tx_out_num: tx_out_num as u32,
+                value: tx_out.value,
+                script: tx_out.script.to_u8_vec(),
+                created_at: chrono::Utc::now().naive_utc(),
+            })
+            .collect()
     }
 }

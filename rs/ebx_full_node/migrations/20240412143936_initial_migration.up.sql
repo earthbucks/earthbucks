@@ -83,6 +83,7 @@ CREATE TABLE `tx` (
   -- id
   `id` binary(32) NOT NULL,
   -- data structure
+  `tx_buf` BLOB NOT NULL,
   `version` tinyint UNSIGNED NOT NULL,
   `tx_in_count` int UNSIGNED NOT NULL,
   `tx_out_count` int UNSIGNED NOT NULL,
@@ -107,20 +108,6 @@ CREATE TABLE `raw_block` (
   -- database metadata
   `is_parsed` BOOLEAN NOT NULL,
   `domain` varchar(255) NOT NULL,
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  -- primary key
-  PRIMARY KEY (`id`)
-);
-
-create table `raw_tx` (
-  -- id
-  `id` binary(32) NOT NULL,
-  -- data structure
-  `tx` BLOB NOT NULL,
-  -- database metadata
-  `is_parsed` BOOLEAN NOT NULL,
-  `domain` varchar(255) NOT NULL,
-  `ebx_address` varchar(255),
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   -- primary key
   PRIMARY KEY (`id`)

@@ -22,7 +22,7 @@ impl TxSigner {
         let mut tx_clone = self.tx.clone();
         let tx_input = &mut tx_clone.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
-        let output_index = tx_input.input_tx_n_out;
+        let output_index = tx_input.input_tx_out_num;
         let tx_out = match self.tx_out_map.get(&tx_out_hash, output_index) {
             Some(tx_out) => tx_out,
             None => return false,
@@ -121,7 +121,7 @@ mod tests {
 
         let tx_input = &signed_tx.inputs[0];
         let tx_output = tx_out_map
-            .get(&tx_input.input_tx_id.clone(), tx_input.input_tx_n_out)
+            .get(&tx_input.input_tx_id.clone(), tx_input.input_tx_out_num)
             .unwrap();
         let exec_script = tx_output.script.clone();
         let sig_buf = tx_input.script.chunks[0].buffer.clone().unwrap();
@@ -180,7 +180,7 @@ mod tests {
 
         let tx_input_1 = &signed_tx.inputs[0];
         let tx_output_1 = tx_out_map
-            .get(&tx_input_1.input_tx_id.clone(), tx_input_1.input_tx_n_out)
+            .get(&tx_input_1.input_tx_id.clone(), tx_input_1.input_tx_out_num)
             .unwrap();
         let exec_script_1 = tx_output_1.script.clone();
         let sig_buf_1 = tx_input_1.script.chunks[0].buffer.clone().unwrap();
@@ -205,7 +205,7 @@ mod tests {
 
         let tx_input_2 = &signed_tx.inputs[1];
         let tx_output_2 = tx_out_map
-            .get(&tx_input_2.input_tx_id.clone(), tx_input_2.input_tx_n_out)
+            .get(&tx_input_2.input_tx_id.clone(), tx_input_2.input_tx_out_num)
             .unwrap();
         let exec_script_2 = tx_output_2.script.clone();
         let sig_buf_2 = tx_input_2.script.chunks[0].buffer.clone().unwrap();

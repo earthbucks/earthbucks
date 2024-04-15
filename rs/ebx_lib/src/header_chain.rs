@@ -32,7 +32,7 @@ impl HeaderChain {
         false
     }
 
-    pub fn get_next_coinbase(&self, pkh: Pkh, domain: String) -> Tx {
+    pub fn get_next_coinbase_tx(&self, pkh: &Pkh, domain: &String) -> Tx {
         let building_block_n = self.headers.len();
         let script_block_num = ScriptNum::from_usize(building_block_n);
         let script_block_num_data = script_block_num.to_u8_vec();
