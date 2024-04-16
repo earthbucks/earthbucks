@@ -86,7 +86,7 @@ async fn main() -> Result<()> {
 
     let mut interval = interval(Duration::from_secs(1));
 
-    log!("OpenEBX Full Node Builder for {}", config.domain);
+    log!("{} EBX Mine", config.domain);
     log!("Building block: {}", building_block_num);
 
     loop {
@@ -127,16 +127,18 @@ async fn main() -> Result<()> {
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
                 let db_raw_tx = DbTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
-                log!("Coinbase tx ID: {}", coinbase_tx_id);
+                log!("Coinbase tx ID:");
+                log!("{}", coinbase_tx_id);
                 let coinbase_db_tx = DbTx::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_db_tx {
                     log!("Inserting coinbase tx: {}", coinbase_tx_id);
                     let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
                     if let Err(e) = res {
-                        anyhow::bail!("Failed to insert coinbase tx: {}", e);
+                        anyhow::bail!("Failed to insert coinbase tx:\n{}", e);
                     }
                 } else {
-                    log!("Coinbase tx already exists: {}", coinbase_tx_id);
+                    log!("Coinbase tx already exists:");
+                    log!("{}", coinbase_tx_id);
                 }
             }
 
@@ -177,10 +179,8 @@ async fn main() -> Result<()> {
             let db_header = DbHeader::from_block_header(&header, config.domain.clone());
             db_header.save(&pool).await?;
 
-            log!(
-                "Produced candidate block header ID: {}",
-                Buffer::from(block_id.to_vec()).to_hex()
-            );
+            log!("Produced candidate block header ID:");
+            log!("{}", Buffer::from(block_id.to_vec()).to_hex());
         }
 
         // 5. Check for valid PoW and write block if found.
