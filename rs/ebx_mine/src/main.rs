@@ -147,12 +147,6 @@ async fn main() -> Result<()> {
                 log!("{}", Buffer::from(header.id().to_vec()).to_hex());
                 continue 'main_loop;
             }
-            // new block?
-            //   validate work
-            //   validate transactions
-            //   broadcast block
-            //   if valid, add to longest chain and continue
-            //   if invalid, punish miner
         }
 
         // 4. Check for valid PoW and continue main loop if found.
@@ -172,6 +166,8 @@ async fn main() -> Result<()> {
                 } else {
                     log!("Header is invalid: {}", header.block_num);
                     log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    log!("Header target: {}", Buffer::from(header.target.to_vec()).to_hex());
+                    log!("Header id: {}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
             }
