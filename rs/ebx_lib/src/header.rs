@@ -302,17 +302,20 @@ impl Header {
     pub fn new_target_from_old_targets(
         target_sum: BigUint,
         real_time_diff: BigUint,
-        len: usize,
+        len_usize: usize,
     ) -> BigUint {
-        // target_sum is sum of all targets in the adjustment period
-        // real_time_diff is the time difference between the first and last
-        // block in the adjustment period
+        // - target_sum is sum of all targets in the adjustment period
+        // - real_time_diff is the time difference between the first block in
+        //   the adjustment period and now (the new block)
         // new target = average target * real time diff / intended time diff
         // let new_target = (target_sum / len) * real_time_diff / intended_time_diff;
         // let new_target = (target_sum * real_time_diff) / intended_time_diff / len;
-        let intended_time_diff = len as u64 * Header::BLOCK_INTERVAL;
-        let new_target =
-            (target_sum * real_time_diff) / BigUint::from(intended_time_diff) / BigUint::from(len);
+        // let new_target = (target_sum * real_time_diff) / len / intended_time_diff;
+        // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
+        // the fewest divisions is the most accurate in integer arithmetic...
+        let intended_time_diff = BigUint::from(len_usize as u64 * Header::BLOCK_INTERVAL);
+        let len = BigUint::from(len_usize);
+        let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
         new_target
     }
 
