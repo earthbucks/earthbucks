@@ -84,6 +84,20 @@ impl MineHeader {
         )
     }
 
+    pub async fn get(id: &String, pool: &MySqlPool) -> Result<Self, Error> {
+        let row: MineHeader = sqlx::query_as(
+            r#"
+            SELECT * FROM mine_header
+            WHERE id = ?
+            "#,
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await?;
+
+        Ok(row)
+    }
+
     pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
         let now_timestamp = Header::get_new_timestamp();
         let rows: Vec<MineHeader> = sqlx::query_as(

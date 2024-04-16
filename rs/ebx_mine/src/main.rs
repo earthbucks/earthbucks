@@ -166,7 +166,10 @@ async fn main() -> Result<()> {
                 } else {
                     log!("Header is invalid: {}", header.block_num);
                     log!("{}", Buffer::from(header.id().to_vec()).to_hex());
-                    log!("Header target: {}", Buffer::from(header.target.to_vec()).to_hex());
+                    log!(
+                        "Header target: {}",
+                        Buffer::from(header.target.to_vec()).to_hex()
+                    );
                     log!("Header id: {}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
@@ -236,10 +239,16 @@ async fn main() -> Result<()> {
 
             // Save candidate block header
             let mine_header = MineHeader::from_block_header(&header, config.domain.clone());
-            mine_header.save(&pool).await?;
-
-            log!("Produced candidate block header ID:");
-            log!("{}", Buffer::from(block_id.to_vec()).to_hex());
+            let res = MineHeader::get(&mine_header.id, &pool).await;
+            if let Ok(_) = res {
+                // this can hypothetically happen if timestamp is the same
+                log!("Candidate block header already exists:");
+                log!("{}", Buffer::from(block_id.to_vec()).to_hex());
+            } else {
+                mine_header.save(&pool).await?;
+                log!("Produced candidate block header ID:");
+                log!("{}", Buffer::from(block_id.to_vec()).to_hex());
+            }
         }
 
         // TODO: Delete old unused block headers
