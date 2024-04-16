@@ -16,23 +16,22 @@ Website: [earthbucks.com](https://earthbucks.com)
 
 rs/ts:
 
+rs:
+
 - lib (transactions, blocks, data structures, algorithms, standardized tests)
-- client (private/public interface to full node or spv node)
+- mine (build blocks, build merkle trees, validate txs, validate blocks)
+- spv (follow block headers, validate txs + merkle proofs)
 
-rs only:
+ts:
 
-- full_node
-  - builder (build blocks, validate txs, validate blocks, build merkle trees)
-  - api (horizontally scalable REST API)
-- light_node
-  - follower (follow block headers, validate txs + merkle proofs)
-  - api (horizontally scalable REST API)
-- system-work (CUDA, CPU, OpenCL, uses client)
-- cli (command-line interface, uses client)
-
-ts only:
-
-- browser-work (WebGL, WebGPU, WASM, uses client)
+- lib (transactions, blocks, data structures, algorithms, standardized tests)
+- mine-db (db schema, db queries)
+- mine-api (http server, uses mine-db)
+- mine-client (auth, wallet, explorer)
+- mine-work (WebGL, WebGPU, WASM, CUDA, OpenCL, uses client)
+- spv-db (db schema, db queries)
+- spv-api (http server, uses spv-db)
+- spv-client (auth, wallet, explorer)
 - gui (auth, wallet, explorer, mining pool, button, uses client)
 
 ## Initial Nodes

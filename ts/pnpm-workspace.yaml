@@ -1,5 +1,5 @@
 packages:
-  - 'ebx-db'
+  - 'ebx-mine-db'
   - 'ebx-gui'
   - 'ebx-lib'
   - 'ebx-client'
