@@ -1,11 +1,11 @@
-use crate::db::db_tx_input::DbTxInput;
-use crate::db::db_tx_output::DbTxOutput;
+use crate::db::mine_tx_input::MineTxInput;
+use crate::db::mine_tx_output::MineTxOutput;
 use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 use sqlx::Executor;
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct DbTx {
+pub struct MineTx {
     pub id: String,
     pub tx: String,
     pub version: u8,
@@ -21,7 +21,7 @@ pub struct DbTx {
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl DbTx {
+impl MineTx {
     pub fn new(
         id: String,
         tx: String,
@@ -76,10 +76,10 @@ impl DbTx {
         Tx::from_u8_vec(hex::decode(&self.tx).unwrap())
     }
 
-    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<DbTx, sqlx::Error> {
+    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<MineTx, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM db_tx WHERE id = ?
+            SELECT * FROM mine_tx WHERE id = ?
             "#,
         )
         .bind(id)
@@ -107,8 +107,8 @@ impl DbTx {
         let ebx_address = self.ebx_address.clone();
         let created_at = self.created_at;
 
-        let tx_inputs = DbTxInput::from_tx(&self.to_tx().unwrap());
-        let tx_outputs = DbTxOutput::from_tx(&self.to_tx().unwrap());
+        let tx_inputs = MineTxInput::from_tx(&self.to_tx().unwrap());
+        let tx_outputs = MineTxOutput::from_tx(&self.to_tx().unwrap());
 
         let mut transaction = pool.begin().await?;
 
@@ -117,7 +117,7 @@ impl DbTx {
             .execute(
                 sqlx::query(
                 r#"
-                INSERT INTO db_tx (id, tx, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+                INSERT INTO mine_tx (id, tx, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 "#,
                 )
@@ -142,7 +142,7 @@ impl DbTx {
                 .execute(
                     sqlx::query(
                     r#"
-                    INSERT INTO db_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
+                    INSERT INTO mine_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                     "#,
                     )
@@ -162,7 +162,7 @@ impl DbTx {
                 .execute(
                     sqlx::query(
                         r#"
-                    INSERT INTO db_tx_output (tx_id, tx_out_num, value, script, created_at)
+                    INSERT INTO mine_tx_output (tx_id, tx_out_num, value, script, created_at)
                     VALUES (?, ?, ?, ?, ?)
                     "#,
                     )

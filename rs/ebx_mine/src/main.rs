@@ -1,7 +1,7 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_full_node::db::{
-    db_header::DbHeader, db_lch::DbLch, db_merkle_proof::DbMerkleProof, db_tx::DbTx,
+    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof, mine_tx::MineTx,
 };
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
@@ -81,12 +81,12 @@ async fn main() -> Result<()> {
         .await
         .map_err(|e| anyhow::Error::msg(format!("Failed to connect to database: {}", e)))?;
 
-    let mut longest_chain: HeaderChain = DbLch::get_longest_chain(&pool).await?;
+    let mut longest_chain: HeaderChain = MineLch::get_longest_chain(&pool).await?;
     let mut building_block_num = longest_chain.headers.len();
 
     let mut interval = interval(Duration::from_secs(1));
 
-    log!("{} EBX Mine", config.domain);
+    log!("EBX Mine: {}", config.domain);
     log!("Building block: {}", building_block_num);
 
     loop {
@@ -95,7 +95,7 @@ async fn main() -> Result<()> {
         // 1. Synchronize with longest chain
         {
             // TODO: Replace with synchronize, not re-load
-            longest_chain = DbLch::get_longest_chain(&pool).await?;
+            longest_chain = MineLch::get_longest_chain(&pool).await?;
 
             let chain_length = longest_chain.headers.len();
             if chain_length != building_block_num {
@@ -125,12 +125,12 @@ async fn main() -> Result<()> {
             {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
-                let db_raw_tx = DbTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
+                let db_raw_tx = MineTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
                 log!("Coinbase tx ID:");
                 log!("{}", coinbase_tx_id);
-                let coinbase_db_tx = DbTx::get(&coinbase_tx_id, &pool).await;
-                if let Err(_) = coinbase_db_tx {
+                let coinbase_mine_tx = MineTx::get(&coinbase_tx_id, &pool).await;
+                if let Err(_) = coinbase_mine_tx {
                     log!("Inserting coinbase tx: {}", coinbase_tx_id);
                     let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
                     if let Err(e) = res {
@@ -156,9 +156,9 @@ async fn main() -> Result<()> {
             // Save all Merkle proofs (upsert)
             {
                 for (tx, proof) in merkle_txs.get_iterator() {
-                    let db_merkle_proof =
-                        DbMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
-                    let res = db_merkle_proof.upsert(&pool).await;
+                    let mine_merkle_proof =
+                        MineMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
+                    let res = mine_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
                         anyhow::bail!("Failed to upsert merkle proof: {}", e);
                     }
@@ -176,8 +176,8 @@ async fn main() -> Result<()> {
             let block_id = header.id();
 
             // Save candidate block header
-            let db_header = DbHeader::from_block_header(&header, config.domain.clone());
-            db_header.save(&pool).await?;
+            let mine_header = MineHeader::from_block_header(&header, config.domain.clone());
+            mine_header.save(&pool).await?;
 
             log!("Produced candidate block header ID:");
             log!("{}", Buffer::from(block_id.to_vec()).to_hex());
@@ -185,7 +185,7 @@ async fn main() -> Result<()> {
 
         // 5. Check for valid PoW and write block if found.
         {
-            let new_headers = DbHeader::get_candidate_headers(&pool).await?;
+            let new_headers = MineHeader::get_candidate_headers(&pool).await?;
             if !new_headers.is_empty() {
                 log!("New block headers: {}", new_headers.len());
                 anyhow::bail!("Not yet implemented");

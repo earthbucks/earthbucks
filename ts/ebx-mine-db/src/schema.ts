@@ -17,7 +17,7 @@ import {
 import { sql } from 'drizzle-orm'
 
 export const dbHeader = mysqlTable(
-  'db_header',
+  'mine_header',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -43,13 +43,13 @@ export const dbHeader = mysqlTable(
   },
   (table) => {
     return {
-      dbHeaderId: primaryKey({ columns: [table.id], name: 'db_header_id' }),
+      dbHeaderId: primaryKey({ columns: [table.id], name: 'mine_header_id' }),
     }
   },
 )
 
 export const dbLch = mysqlTable(
-  'db_lch',
+  'mine_lch',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -72,14 +72,14 @@ export const dbLch = mysqlTable(
   },
   (table) => {
     return {
-      dbLchId: primaryKey({ columns: [table.id], name: 'db_lch_id' }),
+      dbLchId: primaryKey({ columns: [table.id], name: 'mine_lch_id' }),
       blockNumId: unique('block_num_id').on(table.blockNum, table.id),
     }
   },
 )
 
 export const dbMerkleProof = mysqlTable(
-  'db_merkle_proof',
+  'mine_merkle_proof',
   {
     // id
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
@@ -95,14 +95,14 @@ export const dbMerkleProof = mysqlTable(
     return {
       dbMerkleProofMerkleRootTxId: primaryKey({
         columns: [table.merkleRoot, table.txId],
-        name: 'db_merkle_proof_merkle_root_tx_id',
+        name: 'mine_merkle_proof_merkle_root_tx_id',
       }),
     }
   },
 )
 
 export const dbRawBlock = mysqlTable(
-  'db_raw_block',
+  'mine_raw_block',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -119,14 +119,14 @@ export const dbRawBlock = mysqlTable(
     return {
       dbRawBlockId: primaryKey({
         columns: [table.id],
-        name: 'db_raw_block_id',
+        name: 'mine_raw_block_id',
       }),
     }
   },
 )
 
 export const dbTx = mysqlTable(
-  'db_tx',
+  'mine_tx',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -149,13 +149,13 @@ export const dbTx = mysqlTable(
   },
   (table) => {
     return {
-      dbTxId: primaryKey({ columns: [table.id], name: 'db_tx_id' }),
+      dbTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
     }
   },
 )
 
 export const dbTxInput = mysqlTable(
-  'db_tx_input',
+  'mine_tx_input',
   {
     // id
     txId: char('tx_id', { length: 64 }).notNull(),
@@ -174,14 +174,14 @@ export const dbTxInput = mysqlTable(
     return {
       dbTxInputTxIdTxInNum: primaryKey({
         columns: [table.txId, table.txInNum],
-        name: 'db_tx_input_tx_id_tx_in_num',
+        name: 'mine_tx_input_tx_id_tx_in_num',
       }),
     }
   },
 )
 
 export const dbTxOutput = mysqlTable(
-  'db_tx_output',
+  'mine_tx_output',
   {
     // id
     txId: char('tx_id', { length: 64 }).notNull(),
@@ -198,7 +198,7 @@ export const dbTxOutput = mysqlTable(
     return {
       dbTxOutputTxIdTxOutNum: primaryKey({
         columns: [table.txId, table.txOutNum],
-        name: 'db_tx_output_tx_id_tx_out_num',
+        name: 'mine_tx_output_tx_id_tx_out_num',
       }),
     }
   },

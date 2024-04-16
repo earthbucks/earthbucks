@@ -2,7 +2,7 @@ use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct DbTxInput {
+pub struct MineTxInput {
     pub tx_id: String,
     pub tx_in_num: u32,
     pub input_tx_id: String,
@@ -12,7 +12,7 @@ pub struct DbTxInput {
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl DbTxInput {
+impl MineTxInput {
     pub fn new(
         tx_id: String,
         tx_in_num: u32,

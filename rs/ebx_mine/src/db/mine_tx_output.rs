@@ -2,7 +2,7 @@ use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct DbTxOutput {
+pub struct MineTxOutput {
     pub tx_id: String,
     pub tx_out_num: u32,
     pub value: u64,
@@ -10,7 +10,7 @@ pub struct DbTxOutput {
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl DbTxOutput {
+impl MineTxOutput {
     pub fn new(
         tx_id: String,
         tx_out_num: u32,

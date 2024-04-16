@@ -1,10 +1,8 @@
 use ebx_lib::header::Header;
-use ebx_lib::header_chain::HeaderChain;
-use sqlx::types::chrono;
-use sqlx::{Error, MySqlPool};
+use sqlx::{types::chrono, Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct DbLch {
+pub struct MineHeader {
     pub id: String,
     pub version: u32,
     pub prev_block_id: String,
@@ -13,11 +11,14 @@ pub struct DbLch {
     pub target: String,
     pub nonce: String,
     pub block_num: u64,
+    pub is_work_valid: Option<bool>,
+    pub is_block_valid: Option<bool>,
+    pub is_vote_valid: Option<bool>,
+    pub domain: String,
     pub created_at: chrono::NaiveDateTime,
 }
 
-// longest chain header
-impl DbLch {
+impl MineHeader {
     pub fn new(
         id: String,
         version: u32,
@@ -27,6 +28,10 @@ impl DbLch {
         target: String,
         nonce: String,
         block_num: u64,
+        is_work_valid: Option<bool>,
+        is_block_valid: Option<bool>,
+        is_vote_valid: Option<bool>,
+        domain: String,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -38,11 +43,15 @@ impl DbLch {
             target,
             nonce,
             block_num,
+            is_work_valid,
+            is_block_valid,
+            is_vote_valid,
+            domain,
             created_at,
         }
     }
 
-    pub fn from_block_header(header: &Header) -> Self {
+    pub fn from_block_header(header: &Header, domain: String) -> Self {
         Self {
             id: hex::encode(header.id()),
             version: header.version,
@@ -52,6 +61,10 @@ impl DbLch {
             target: hex::encode(header.target),
             nonce: hex::encode(header.nonce),
             block_num: header.block_num,
+            is_work_valid: None,
+            is_block_valid: None,
+            is_vote_valid: None,
+            domain,
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -71,51 +84,43 @@ impl DbLch {
         )
     }
 
-    pub async fn get(pool: &MySqlPool, id: Vec<u8>) -> Result<Self, Error> {
-        let row: Self = sqlx::query_as(
+    pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
+        let rows: Vec<MineHeader> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM db_lch
-            WHERE id = ?
-            "#,
-        )
-        .bind(id)
-        .fetch_one(pool)
-        .await?;
-        Ok(row)
-    }
-
-    pub async fn get_longest_chain(pool: &MySqlPool) -> Result<HeaderChain, Error> {
-        let rows: Vec<DbLch> = sqlx::query_as(
-            r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM db_lch
-            ORDER BY block_num ASC
+            SELECT * FROM mine_header
+            WHERE is_work_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL
+            ORDER BY created_at DESC
             "#,
         )
         .fetch_all(pool)
         .await?;
-        let mut chain = HeaderChain::new();
-        for row in rows {
-            chain.add(row.to_block_header());
-        }
-        Ok(chain)
+
+        Ok(rows)
     }
 
-    pub async fn get_chain_tip(pool: &MySqlPool) -> Result<Option<Header>, Error> {
-        let row: Option<DbLch> = sqlx::query_as(
+    pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
+        sqlx::query(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
-            FROM db_lch
-            ORDER BY block_num DESC
-            LIMIT 1
+            INSERT INTO mine_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, is_vote_valid, domain, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
-        .fetch_optional(pool)
+        .bind(&self.id)
+        .bind(self.version)
+        .bind(&self.prev_block_id)
+        .bind(&self.merkle_root)
+        .bind(self.timestamp)
+        .bind(&self.target)
+        .bind(&self.nonce)
+        .bind(self.block_num)
+        .bind(self.is_work_valid)
+        .bind(self.is_block_valid)
+        .bind(self.is_vote_valid)
+        .bind(&self.domain)
+        .bind(self.created_at)
+        .execute(pool)
         .await?;
-        match row {
-            Some(row) => Ok(Some(row.to_block_header())),
-            None => Ok(None),
-        }
+
+        Ok(())
     }
 }
