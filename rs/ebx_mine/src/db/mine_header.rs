@@ -227,4 +227,18 @@ impl MineHeader {
 
         Ok(())
     }
+
+    pub async fn delete_unused_headers(block_num: u64, pool: &MySqlPool) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            DELETE FROM mine_header
+            WHERE block_num < ? AND (is_header_valid IS NULL OR is_header_valid = FALSE)
+            "#,
+        )
+        .bind(block_num)
+        .execute(pool)
+        .await?;
+
+        Ok(())
+    }
 }

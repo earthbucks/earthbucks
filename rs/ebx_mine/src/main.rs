@@ -251,7 +251,17 @@ async fn main() -> Result<()> {
             }
         }
 
-        // TODO: Delete old unused block headers
+        // Delete old unused block headers
+        let res = MineHeader::delete_unused_headers(building_block_num as u64, &pool).await;
+        if let Err(e) = res {
+            anyhow::bail!("Failed to delete unused headers: {}", e);
+        } else {
+            log!(
+                "Deleted unused headers before block num: {}",
+                building_block_num
+            );
+        }
+        // TODO: Delete old unused coinbase transactions
         // TODO: Any other cleanup processes
         interval.tick().await;
     }
