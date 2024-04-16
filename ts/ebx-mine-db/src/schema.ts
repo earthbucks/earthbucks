@@ -16,7 +16,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
-export const dbHeader = mysqlTable(
+export const MineHeader = mysqlTable(
   'mine_header',
   {
     // id
@@ -43,12 +43,12 @@ export const dbHeader = mysqlTable(
   },
   (table) => {
     return {
-      dbHeaderId: primaryKey({ columns: [table.id], name: 'mine_header_id' }),
+      mineHeaderId: primaryKey({ columns: [table.id], name: 'mine_header_id' }),
     }
   },
 )
 
-export const dbLch = mysqlTable(
+export const MineLch = mysqlTable(
   'mine_lch',
   {
     // id
@@ -72,13 +72,13 @@ export const dbLch = mysqlTable(
   },
   (table) => {
     return {
-      dbLchId: primaryKey({ columns: [table.id], name: 'mine_lch_id' }),
+      mineLchId: primaryKey({ columns: [table.id], name: 'mine_lch_id' }),
       blockNumId: unique('block_num_id').on(table.blockNum, table.id),
     }
   },
 )
 
-export const dbMerkleProof = mysqlTable(
+export const MineMerkleProof = mysqlTable(
   'mine_merkle_proof',
   {
     // id
@@ -93,7 +93,7 @@ export const dbMerkleProof = mysqlTable(
   },
   (table) => {
     return {
-      dbMerkleProofMerkleRootTxId: primaryKey({
+      mineMerkleProofMerkleRootTxId: primaryKey({
         columns: [table.merkleRoot, table.txId],
         name: 'mine_merkle_proof_merkle_root_tx_id',
       }),
@@ -101,31 +101,7 @@ export const dbMerkleProof = mysqlTable(
   },
 )
 
-export const dbRawBlock = mysqlTable(
-  'mine_raw_block',
-  {
-    // id
-    id: char('id', { length: 64 }).notNull(),
-    // data structure
-    block: longtext('block').notNull(),
-    // database metadata
-    isParsed: tinyint('is_parsed').notNull(),
-    domain: varchar('domain', { length: 255 }).notNull(),
-    createdAt: datetime('created_at', { mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => {
-    return {
-      dbRawBlockId: primaryKey({
-        columns: [table.id],
-        name: 'mine_raw_block_id',
-      }),
-    }
-  },
-)
-
-export const dbTx = mysqlTable(
+export const MineTx = mysqlTable(
   'mine_tx',
   {
     // id
@@ -149,12 +125,12 @@ export const dbTx = mysqlTable(
   },
   (table) => {
     return {
-      dbTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
+      mineTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
     }
   },
 )
 
-export const dbTxInput = mysqlTable(
+export const MineTxInput = mysqlTable(
   'mine_tx_input',
   {
     // id
@@ -172,7 +148,7 @@ export const dbTxInput = mysqlTable(
   },
   (table) => {
     return {
-      dbTxInputTxIdTxInNum: primaryKey({
+      mineTxInputTxIdTxInNum: primaryKey({
         columns: [table.txId, table.txInNum],
         name: 'mine_tx_input_tx_id_tx_in_num',
       }),
@@ -180,7 +156,7 @@ export const dbTxInput = mysqlTable(
   },
 )
 
-export const dbTxOutput = mysqlTable(
+export const MineTxOutput = mysqlTable(
   'mine_tx_output',
   {
     // id
@@ -196,9 +172,33 @@ export const dbTxOutput = mysqlTable(
   },
   (table) => {
     return {
-      dbTxOutputTxIdTxOutNum: primaryKey({
+      mineTxOutputTxIdTxOutNum: primaryKey({
         columns: [table.txId, table.txOutNum],
         name: 'mine_tx_output_tx_id_tx_out_num',
+      }),
+    }
+  },
+)
+
+export const MineRawBlock = mysqlTable(
+  'mine_raw_block',
+  {
+    // id
+    id: char('id', { length: 64 }).notNull(),
+    // data structure
+    block: longtext('block').notNull(),
+    // database metadata
+    isParsed: tinyint('is_parsed').notNull(),
+    domain: varchar('domain', { length: 255 }).notNull(),
+    createdAt: datetime('created_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => {
+    return {
+      mineRawBlockId: primaryKey({
+        columns: [table.id],
+        name: 'mine_raw_block_id',
       }),
     }
   },

@@ -90,8 +90,6 @@ async fn main() -> Result<()> {
     log!("Building block: {}", building_block_num);
 
     loop {
-        interval.tick().await;
-
         // 1. Synchronize with longest chain
         {
             // TODO: Replace with synchronize, not re-load
@@ -115,10 +113,19 @@ async fn main() -> Result<()> {
             //   if invalid, punish miner
         }
 
-        // 3. Check for new transactions and validate. Broadcast if found.
+        // 3. Check for valid PoW and write block if found.
+        {
+            let new_headers = MineHeader::get_candidate_headers(&pool).await?;
+            if !new_headers.is_empty() {
+                log!("New block headers: {}", new_headers.len());
+                anyhow::bail!("Not yet implemented");
+            }
+        }
+
+        // 4. Check for new transactions and validate. Broadcast if found.
         {}
 
-        // 4. Create new candidate block header for mining.
+        // 5. Create new candidate block header for mining.
         {
             // produce and upsert coinbase transaction
             let coinbase_tx: Tx;
@@ -183,16 +190,9 @@ async fn main() -> Result<()> {
             log!("{}", Buffer::from(block_id.to_vec()).to_hex());
         }
 
-        // 5. Check for valid PoW and write block if found.
-        {
-            let new_headers = MineHeader::get_candidate_headers(&pool).await?;
-            if !new_headers.is_empty() {
-                log!("New block headers: {}", new_headers.len());
-                anyhow::bail!("Not yet implemented");
-            }
-        }
-
         // TODO: Delete old unused block headers
         // TODO: Any other cleanup processes
+
+        interval.tick().await;
     }
 }
