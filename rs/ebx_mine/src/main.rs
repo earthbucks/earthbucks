@@ -93,7 +93,11 @@ async fn main() -> Result<()> {
     let mut loop_count: u64 = 0;
 
     'main_loop: loop {
-        log!("Loop count: {}", loop_count);
+        log!(
+            "Loop count: {}. Building block num: {}.",
+            loop_count,
+            building_block_num
+        );
         loop_count += 1;
 
         // 1. Synchronize with longest chain
@@ -108,7 +112,29 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 2. Check for new blocks and validate. Broadcast & continue if found.
+        // 2. Assess votes for new blocks, mark votes as valid or invalid.
+        //    Update longest chain if votes are valid.
+        //    Continue main loop if found.
+        {
+            let new_mine_headers = MineHeader::get_voting_headers(&pool).await?;
+            log!("New voting headers: {}", new_mine_headers.len());
+            for new_mine_header in &new_mine_headers {
+                // if votes are valid, mark as such
+                // TODO: Gather and assess votes
+                // TODO: This should be a transaction
+                MineHeader::update_is_vote_valid(&new_mine_header.id, true, &pool).await?;
+                let mine_lch = MineLch::from_mine_header(new_mine_header);
+                let res = mine_lch.save(&pool).await;
+                if let Err(e) = res {
+                    anyhow::bail!("Failed to save new block header: {}", e);
+                }
+                log!("New longest chain tip ID:");
+                log!("{}", mine_lch.id);
+                continue 'main_loop;
+            }
+        }
+
+        // 3. Validate new block, broadcast, and continue main loop if found.
         {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
             log!("New validated headers: {}", new_mine_headers.len());
@@ -116,17 +142,20 @@ async fn main() -> Result<()> {
                 let header = new_mine_header.to_block_header();
                 let _ = header;
                 // TODO: Verify block
-                anyhow::bail!("Not yet implemented");
+                MineHeader::update_is_block_valid(&new_mine_header.id, true, &pool).await?;
+                log!("New validated block ID:");
+                log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                continue 'main_loop;
             }
             // new block?
             //   validate work
             //   validate transactions
-            //   broadcast block and assess votes
+            //   broadcast block
             //   if valid, add to longest chain and continue
             //   if invalid, punish miner
         }
 
-        // 3. Check for valid PoW and write block if found.
+        // 4. Check for valid PoW and continue main loop if found.
         {
             let new_mine_headers = MineHeader::get_candidate_headers(&pool).await?;
             // for each header, validate against the longest chain
@@ -148,10 +177,10 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 4. Check for new transactions and validate. Broadcast if found.
+        // 5. Check for new transactions and validate. Broadcast if found.
         {}
 
-        // 5. Create new candidate block header for mining.
+        // 6. Create new candidate block header for mining.
         {
             // produce and insert coinbase transaction
             let coinbase_tx: Tx;

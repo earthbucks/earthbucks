@@ -114,6 +114,20 @@ impl MineHeader {
         Ok(rows)
     }
 
+    pub async fn get_voting_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
+        let rows: Vec<MineHeader> = sqlx::query_as(
+            r#"
+            SELECT * FROM mine_header
+            WHERE is_header_valid = TRUE AND is_block_valid = TRUE AND is_vote_valid IS NULL
+            ORDER BY target ASC
+            "#,
+        )
+        .fetch_all(pool)
+        .await?;
+
+        Ok(rows)
+    }
+
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
@@ -153,6 +167,46 @@ impl MineHeader {
             "#,
         )
         .bind(is_header_valid)
+        .bind(id)
+        .execute(pool)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn update_is_block_valid(
+        id: &String,
+        is_block_valid: bool,
+        pool: &MySqlPool,
+    ) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            UPDATE mine_header
+            SET is_block_valid = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(is_block_valid)
+        .bind(id)
+        .execute(pool)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn update_is_vote_valid(
+        id: &String,
+        is_vote_valid: bool,
+        pool: &MySqlPool,
+    ) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            UPDATE mine_header
+            SET is_vote_valid = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(is_vote_valid)
         .bind(id)
         .execute(pool)
         .await?;

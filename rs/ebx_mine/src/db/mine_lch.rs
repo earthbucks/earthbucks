@@ -1,3 +1,4 @@
+use crate::db::mine_header::MineHeader;
 use ebx_lib::header::Header;
 use ebx_lib::header_chain::HeaderChain;
 use sqlx::types::chrono;
@@ -13,6 +14,7 @@ pub struct MineLch {
     pub target: String,
     pub nonce: String,
     pub block_num: u64,
+    pub domain: String,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -27,6 +29,7 @@ impl MineLch {
         target: String,
         nonce: String,
         block_num: u64,
+        domain: String,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
@@ -38,11 +41,27 @@ impl MineLch {
             target,
             nonce,
             block_num,
+            domain,
             created_at,
         }
     }
 
-    pub fn from_block_header(header: &Header) -> Self {
+    pub fn from_mine_header(header: &MineHeader) -> Self {
+        Self {
+            id: header.id.clone(),
+            version: header.version,
+            prev_block_id: header.prev_block_id.clone(),
+            merkle_root: header.merkle_root.clone(),
+            timestamp: header.timestamp,
+            target: header.target.clone(),
+            nonce: header.nonce.clone(),
+            block_num: header.block_num,
+            domain: header.domain.clone(),
+            created_at: chrono::Utc::now().naive_utc(),
+        }
+    }
+
+    pub fn from_block_header(header: &Header, domain: &String) -> Self {
         Self {
             id: hex::encode(header.id()),
             version: header.version,
@@ -52,6 +71,7 @@ impl MineLch {
             target: hex::encode(header.target),
             nonce: hex::encode(header.nonce),
             block_num: header.block_num,
+            domain: domain.clone(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -74,7 +94,7 @@ impl MineLch {
     pub async fn get(pool: &MySqlPool, id: Vec<u8>) -> Result<Self, Error> {
         let row: Self = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
             FROM mine_lch
             WHERE id = ?
             "#,
@@ -88,7 +108,7 @@ impl MineLch {
     pub async fn get_longest_chain(pool: &MySqlPool) -> Result<HeaderChain, Error> {
         let rows: Vec<MineLch> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
             FROM mine_lch
             ORDER BY block_num ASC
             "#,
@@ -105,7 +125,7 @@ impl MineLch {
     pub async fn get_chain_tip(pool: &MySqlPool) -> Result<Option<Header>, Error> {
         let row: Option<MineLch> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
             FROM mine_lch
             ORDER BY block_num DESC
             LIMIT 1
@@ -117,5 +137,35 @@ impl MineLch {
             Some(row) => Ok(Some(row.to_block_header())),
             None => Ok(None),
         }
+    }
+
+    pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            INSERT INTO mine_lch (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                version = VALUES(version),
+                prev_block_id = VALUES(prev_block_id),
+                merkle_root = VALUES(merkle_root),
+                timestamp = VALUES(timestamp),
+                target = VALUES(target),
+                nonce = VALUES(nonce),
+                block_num = VALUES(block_num),
+                domain = VALUES(domain)
+            "#,
+        )
+        .bind(&self.id)
+        .bind(&self.version)
+        .bind(&self.prev_block_id)
+        .bind(&self.merkle_root)
+        .bind(&self.timestamp)
+        .bind(&self.target)
+        .bind(&self.nonce)
+        .bind(&self.block_num)
+        .bind(&self.domain)
+        .execute(pool)
+        .await?;
+        Ok(())
     }
 }
