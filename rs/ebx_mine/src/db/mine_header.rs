@@ -1,7 +1,7 @@
 use ebx_lib::header::Header;
 use sqlx::{types::chrono, Error, MySqlPool};
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug, sqlx::FromRow, Clone)]
 pub struct MineHeader {
     pub id: String,
     pub version: u32,
@@ -11,7 +11,7 @@ pub struct MineHeader {
     pub target: String,
     pub nonce: String,
     pub block_num: u64,
-    pub is_work_valid: Option<bool>,
+    pub is_header_valid: Option<bool>,
     pub is_block_valid: Option<bool>,
     pub is_vote_valid: Option<bool>,
     pub domain: String,
@@ -28,7 +28,7 @@ impl MineHeader {
         target: String,
         nonce: String,
         block_num: u64,
-        is_work_valid: Option<bool>,
+        is_header_valid: Option<bool>,
         is_block_valid: Option<bool>,
         is_vote_valid: Option<bool>,
         domain: String,
@@ -43,7 +43,7 @@ impl MineHeader {
             target,
             nonce,
             block_num,
-            is_work_valid,
+            is_header_valid,
             is_block_valid,
             is_vote_valid,
             domain,
@@ -61,7 +61,7 @@ impl MineHeader {
             target: hex::encode(header.target),
             nonce: hex::encode(header.nonce),
             block_num: header.block_num,
-            is_work_valid: None,
+            is_header_valid: None,
             is_block_valid: None,
             is_vote_valid: None,
             domain,
@@ -85,11 +85,27 @@ impl MineHeader {
     }
 
     pub async fn get_candidate_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
+        let now_timestamp = Header::get_new_timestamp();
         let rows: Vec<MineHeader> = sqlx::query_as(
             r#"
             SELECT * FROM mine_header
-            WHERE is_work_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL
-            ORDER BY created_at DESC
+            WHERE is_header_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL AND timestamp <= ?
+            ORDER BY target ASC
+            "#,
+        )
+        .bind(now_timestamp)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(rows)
+    }
+
+    pub async fn get_validated_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
+        let rows: Vec<MineHeader> = sqlx::query_as(
+            r#"
+            SELECT * FROM mine_header
+            WHERE is_header_valid = TRUE AND is_block_valid IS NULL AND is_vote_valid IS NULL
+            ORDER BY target ASC
             "#,
         )
         .fetch_all(pool)
@@ -101,7 +117,7 @@ impl MineHeader {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO mine_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_work_valid, is_block_valid, is_vote_valid, domain, created_at)
+            INSERT INTO mine_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_header_valid, is_block_valid, is_vote_valid, domain, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
@@ -113,11 +129,31 @@ impl MineHeader {
         .bind(&self.target)
         .bind(&self.nonce)
         .bind(self.block_num)
-        .bind(self.is_work_valid)
+        .bind(self.is_header_valid)
         .bind(self.is_block_valid)
         .bind(self.is_vote_valid)
         .bind(&self.domain)
         .bind(self.created_at)
+        .execute(pool)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn update_is_header_valid(
+        id: &String,
+        is_header_valid: bool,
+        pool: &MySqlPool,
+    ) -> Result<(), Error> {
+        sqlx::query(
+            r#"
+            UPDATE mine_header
+            SET is_header_valid = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(is_header_valid)
+        .bind(id)
         .execute(pool)
         .await?;
 

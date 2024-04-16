@@ -128,16 +128,78 @@ impl Header {
         Header::from_hex(hex)
     }
 
+    pub fn is_valid_target(&self, lch: &Vec<Header>) -> bool {
+        let new_target_res = Header::new_target_from_lch(lch, self.timestamp);
+        if new_target_res.is_err() {
+            return false;
+        }
+        let new_target = new_target_res.unwrap();
+        let target = BigUint::from_bytes_be(&self.target);
+        let new_target_num = BigUint::from_bytes_be(&new_target);
+        target == new_target_num
+    }
+
+    pub fn is_valid_pow(&self) -> bool {
+        let id = self.id();
+        let target = BigUint::from_bytes_be(&self.target);
+        let id_num = BigUint::from_bytes_be(&id);
+        id_num < target
+    }
+
     pub fn is_valid_version(version: u32) -> bool {
         version == 1
     }
 
-    pub fn is_valid(&self) -> bool {
+    pub fn is_valid_in_isolation(&self) -> bool {
         let len = self.to_u8_vec().len();
         if len != Header::BLOCK_HEADER_SIZE {
             return false;
         }
         return Header::is_valid_version(self.version);
+    }
+
+    pub fn is_valid_at_timestamp(&self, timestamp: u64) -> bool {
+        if self.timestamp > timestamp {
+            return false;
+        }
+        true
+    }
+
+    pub fn is_valid_in_lch(&self, lch: &Vec<Header>) -> bool {
+        if !self.is_valid_in_isolation() {
+            return false;
+        }
+        if self.block_num == 0 {
+            return self.is_genesis();
+        }
+        if lch.len() == 0 {
+            return false;
+        }
+        if self.block_num != lch.len() as u64 {
+            return false;
+        }
+        if self.prev_block_id != lch.last().unwrap().id() {
+            return false;
+        }
+        if self.timestamp <= lch.last().unwrap().timestamp {
+            return false;
+        }
+        if !self.is_valid_target(lch) {
+            return false;
+        }
+        if !self.is_valid_pow() {
+            return false;
+        }
+        true
+    }
+
+    pub fn is_valid_at(&self, lch: &Vec<Header>, timestamp: u64) -> bool {
+        self.is_valid_in_lch(lch) && self.is_valid_at_timestamp(timestamp)
+    }
+
+    pub fn is_valid_now(&self, lch: &Vec<Header>) -> bool {
+        let now = Header::get_new_timestamp();
+        self.is_valid_at(lch, now)
     }
 
     pub fn is_genesis(&self) -> bool {
@@ -296,7 +358,7 @@ mod tests {
     #[test]
     fn test_is_valid() {
         let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
-        assert!(bh1.is_valid());
+        assert!(bh1.is_valid_in_isolation());
     }
 
     #[test]

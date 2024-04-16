@@ -33,7 +33,7 @@ export const MineHeader = mysqlTable(
     nonce: char('nonce', { length: 64 }).notNull(),
     blockNum: bigint('block_num', { mode: 'number', unsigned: true }).notNull(),
     // database metadata
-    isWorkValid: tinyint('is_work_valid'),
+    isHeaderValid: tinyint('is_header_valid'),
     isBlockValid: tinyint('is_block_valid'),
     isVoteValid: tinyint('is_vote_valid'),
     domain: varchar('domain', { length: 255 }).notNull(),
@@ -175,30 +175,6 @@ export const MineTxOutput = mysqlTable(
       mineTxOutputTxIdTxOutNum: primaryKey({
         columns: [table.txId, table.txOutNum],
         name: 'mine_tx_output_tx_id_tx_out_num',
-      }),
-    }
-  },
-)
-
-export const MineRawBlock = mysqlTable(
-  'mine_raw_block',
-  {
-    // id
-    id: char('id', { length: 64 }).notNull(),
-    // data structure
-    block: longtext('block').notNull(),
-    // database metadata
-    isParsed: tinyint('is_parsed').notNull(),
-    domain: varchar('domain', { length: 255 }).notNull(),
-    createdAt: datetime('created_at', { mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => {
-    return {
-      mineRawBlockId: primaryKey({
-        columns: [table.id],
-        name: 'mine_raw_block_id',
       }),
     }
   },

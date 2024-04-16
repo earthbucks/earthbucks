@@ -85,11 +85,17 @@ async fn main() -> Result<()> {
     let mut building_block_num = longest_chain.headers.len();
 
     let mut interval = interval(Duration::from_secs(1));
+    interval.tick().await;
 
     log!("EBX Mine: {}", config.domain);
     log!("Building block: {}", building_block_num);
 
-    loop {
+    let mut loop_count: u64 = 0;
+
+    'main_loop: loop {
+        log!("Loop count: {}", loop_count);
+        loop_count += 1;
+
         // 1. Synchronize with longest chain
         {
             // TODO: Replace with synchronize, not re-load
@@ -104,7 +110,14 @@ async fn main() -> Result<()> {
 
         // 2. Check for new blocks and validate. Broadcast & continue if found.
         {
-            // TODO: Check for new blocks
+            let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
+            log!("New validated headers: {}", new_mine_headers.len());
+            for new_mine_header in &new_mine_headers {
+                let header = new_mine_header.to_block_header();
+                let _ = header;
+                // TODO: Verify block
+                anyhow::bail!("Not yet implemented");
+            }
             // new block?
             //   validate work
             //   validate transactions
@@ -115,10 +128,23 @@ async fn main() -> Result<()> {
 
         // 3. Check for valid PoW and write block if found.
         {
-            let new_headers = MineHeader::get_candidate_headers(&pool).await?;
-            if !new_headers.is_empty() {
-                log!("New block headers: {}", new_headers.len());
-                anyhow::bail!("Not yet implemented");
+            let new_mine_headers = MineHeader::get_candidate_headers(&pool).await?;
+            // for each header, validate against the longest chain
+            // if any header is valid, mark as such and continue main loop
+            // if header is invalid, mark as such
+            log!("New candidate headers: {}", new_mine_headers.len());
+            for new_mine_header in &new_mine_headers {
+                let header = new_mine_header.to_block_header();
+                if longest_chain.new_header_is_valid_now(&header) {
+                    log!("Header is valid: {}", header.block_num);
+                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    MineHeader::update_is_header_valid(&new_mine_header.id, true, &pool).await?;
+                    continue 'main_loop;
+                } else {
+                    log!("Header is invalid: {}", header.block_num);
+                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
+                }
             }
         }
 
@@ -127,7 +153,7 @@ async fn main() -> Result<()> {
 
         // 5. Create new candidate block header for mining.
         {
-            // produce and upsert coinbase transaction
+            // produce and insert coinbase transaction
             let coinbase_tx: Tx;
             {
                 coinbase_tx = longest_chain
@@ -149,7 +175,7 @@ async fn main() -> Result<()> {
                 }
             }
 
-            // TODO: Get (synchronize) all unconfirmed transactions (pmempool)
+            // TODO: Get (synchronize) all unconfirmed transactions (mempool)
             let mempool_txs: Vec<Tx> = vec![];
 
             // combine coinbase and mempool transactions
@@ -163,6 +189,7 @@ async fn main() -> Result<()> {
             // Save all Merkle proofs (upsert)
             {
                 for (tx, proof) in merkle_txs.get_iterator() {
+                    // TODO: This should be a transaction
                     let mine_merkle_proof =
                         MineMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
                     let res = mine_merkle_proof.upsert(&pool).await;
@@ -192,7 +219,6 @@ async fn main() -> Result<()> {
 
         // TODO: Delete old unused block headers
         // TODO: Any other cleanup processes
-
         interval.tick().await;
     }
 }

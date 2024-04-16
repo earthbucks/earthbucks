@@ -23,13 +23,12 @@ impl HeaderChain {
         self.headers.last()
     }
 
-    pub fn header_is_valid(&self, header: &Header) -> bool {
-        if let Some(tip) = self.get_tip() {
-            if tip.id().to_vec() == header.prev_block_id {
-                return true;
-            }
-        }
-        false
+    pub fn new_header_is_valid_at(&self, header: &Header, timestamp: u64) -> bool {
+        header.is_valid_at(&self.headers, timestamp)
+    }
+
+    pub fn new_header_is_valid_now(&self, header: &Header) -> bool {
+        header.is_valid_now(&self.headers)
     }
 
     pub fn get_next_coinbase_tx(&self, pkh: &Pkh, domain: &String) -> Tx {
@@ -77,14 +76,5 @@ mod tests {
         let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
         chain.add(header);
         assert_eq!(chain.get_tip().unwrap().version, 1);
-    }
-
-    #[test]
-    fn test_header_is_valid() {
-        let mut chain = HeaderChain::new();
-        let header1 = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
-        let header2 = Header::new(2, header1.id(), [0; 32], 1, [0; 32], [0; 32], 1);
-        chain.add(header1);
-        assert_eq!(chain.header_is_valid(&header2), true);
     }
 }
