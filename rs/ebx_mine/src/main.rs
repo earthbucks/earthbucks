@@ -166,11 +166,10 @@ async fn main() -> Result<()> {
                 } else {
                     log!("Header is invalid: {}", header.block_num);
                     log!("{}", Buffer::from(header.id().to_vec()).to_hex());
-                    log!(
-                        "Header target: {}",
-                        Buffer::from(header.target.to_vec()).to_hex()
-                    );
-                    log!("Header id: {}", Buffer::from(header.id().to_vec()).to_hex());
+                    log!("Header target:");
+                    log!("{}", Buffer::from(header.target.to_vec()).to_hex());
+                    log!("Header id:");
+                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
             }
