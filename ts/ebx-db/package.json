@@ -6,7 +6,8 @@
   "scripts": {
     "db:introspect": "drizzle-kit introspect:mysql --config=drizzle.config.ts",
     "db:clear": "drizzle-kit push:mysql --config=drizzle-clear.config.ts",
-    "db:push": "drizzle-kit push:mysql --config=drizzle.config.ts"
+    "db:push": "drizzle-kit push:mysql --config=drizzle.config.ts",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "license": "MIT",
@@ -20,6 +21,7 @@
     "mysql2": "^3.9.2"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.20.14"
+    "drizzle-kit": "^0.20.14",
+    "prettier": "^3.2.5"
   }
 }

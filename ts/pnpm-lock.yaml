@@ -36,6 +36,9 @@ importers:
       drizzle-kit:
         specifier: ^0.20.14
         version: 0.20.14
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
 
   ebx-gui:
     dependencies:

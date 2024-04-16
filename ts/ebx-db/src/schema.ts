@@ -19,9 +19,9 @@ import { sql } from 'drizzle-orm'
 export const dbHeader = mysqlTable(
   'db_header',
   {
-		// id
+    // id
     id: char('id', { length: 64 }).notNull(),
-		// data structure
+    // data structure
     version: int('version', { unsigned: true }).notNull(),
     prevBlockId: char('prev_block_id', { length: 64 }).notNull(),
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
@@ -32,7 +32,7 @@ export const dbHeader = mysqlTable(
     target: char('target', { length: 64 }).notNull(),
     nonce: char('nonce', { length: 64 }).notNull(),
     blockNum: bigint('block_num', { mode: 'number', unsigned: true }).notNull(),
-		// database metadata
+    // database metadata
     isWorkValid: tinyint('is_work_valid'),
     isBlockValid: tinyint('is_block_valid'),
     isVoteValid: tinyint('is_vote_valid'),
@@ -51,9 +51,9 @@ export const dbHeader = mysqlTable(
 export const dbLch = mysqlTable(
   'db_lch',
   {
-		// id
+    // id
     id: char('id', { length: 64 }).notNull(),
-		// data structure
+    // data structure
     version: int('version', { unsigned: true }).notNull(),
     prevBlockId: char('prev_block_id', { length: 64 }).notNull(),
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
@@ -64,7 +64,7 @@ export const dbLch = mysqlTable(
     target: char('target', { length: 64 }).notNull(),
     nonce: char('nonce', { length: 64 }).notNull(),
     blockNum: bigint('block_num', { mode: 'number', unsigned: true }).notNull(),
-		// database metadata
+    // database metadata
     domain: varchar('domain', { length: 255 }).notNull(),
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -81,12 +81,12 @@ export const dbLch = mysqlTable(
 export const dbMerkleProof = mysqlTable(
   'db_merkle_proof',
   {
-		// id
+    // id
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
     txId: char('tx_id', { length: 64 }).notNull(),
-		// data structure
+    // data structure
     merkleProof: text('merkle_proof').notNull(),
-		// database metadata
+    // database metadata
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -104,11 +104,11 @@ export const dbMerkleProof = mysqlTable(
 export const dbRawBlock = mysqlTable(
   'db_raw_block',
   {
-		// id
+    // id
     id: char('id', { length: 64 }).notNull(),
-		// data structure
+    // data structure
     block: longtext('block').notNull(),
-		// database metadata
+    // database metadata
     isParsed: tinyint('is_parsed').notNull(),
     domain: varchar('domain', { length: 255 }).notNull(),
     createdAt: datetime('created_at', { mode: 'string' })
@@ -128,15 +128,15 @@ export const dbRawBlock = mysqlTable(
 export const dbTx = mysqlTable(
   'db_tx',
   {
-		// id
+    // id
     id: char('id', { length: 64 }).notNull(),
     tx: longtext('tx').notNull(),
-		// data structure
+    // data structure
     version: tinyint('version', { unsigned: true }).notNull(),
     txInCount: int('tx_in_count', { unsigned: true }).notNull(),
     txOutCount: int('tx_out_count', { unsigned: true }).notNull(),
     lockTime: bigint('lock_time', { mode: 'number', unsigned: true }).notNull(),
-		// database metadata
+    // database metadata
     isValid: tinyint('is_valid'),
     isVoteValid: tinyint('is_vote_valid'),
     confirmedBlockId: char('confirmed_block_id', { length: 64 }),
@@ -157,15 +157,15 @@ export const dbTx = mysqlTable(
 export const dbTxInput = mysqlTable(
   'db_tx_input',
   {
-		// id
+    // id
     txId: char('tx_id', { length: 64 }).notNull(),
     txInNum: int('tx_in_num', { unsigned: true }).notNull(),
-		// data structure
+    // data structure
     inputTxId: char('input_tx_id', { length: 64 }).notNull(),
     inputTxOutNum: int('input_tx_out_num', { unsigned: true }).notNull(),
     script: text('script').notNull(),
     sequence: int('sequence', { unsigned: true }).notNull(),
-		// database metadata
+    // database metadata
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -183,13 +183,13 @@ export const dbTxInput = mysqlTable(
 export const dbTxOutput = mysqlTable(
   'db_tx_output',
   {
-		// id
+    // id
     txId: char('tx_id', { length: 64 }).notNull(),
     txOutNum: int('tx_out_num', { unsigned: true }).notNull(),
-		// data structure
+    // data structure
     value: bigint('value', { mode: 'number', unsigned: true }).notNull(),
     script: text('script').notNull(),
-		// database metadata
+    // database metadata
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

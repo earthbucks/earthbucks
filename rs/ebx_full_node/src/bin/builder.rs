@@ -140,7 +140,7 @@ async fn main() -> Result<()> {
                 }
             }
 
-            // TODO: Get (synchronize) all unconfirmed transactions (mempool)
+            // TODO: Get (synchronize) all unconfirmed transactions (pmempool)
             let mempool_txs: Vec<Tx> = vec![];
 
             // combine coinbase and mempool transactions
