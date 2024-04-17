@@ -101,8 +101,8 @@ export const MineMerkleProof = mysqlTable(
   },
 )
 
-export const MineTx = mysqlTable(
-  'mine_tx',
+export const MineTxParsed = mysqlTable(
+  'mine_tx_parsed',
   {
     // id
     id: char('id', { length: 64 }).notNull(),

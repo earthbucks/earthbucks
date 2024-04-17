@@ -1,7 +1,8 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_full_node::db::{
-    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof, mine_tx::MineTx,
+    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
+    mine_tx::MineTxParsed,
 };
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
@@ -193,11 +194,12 @@ async fn main() -> Result<()> {
             {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
-                let db_raw_tx = MineTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
+                let db_raw_tx =
+                    MineTxParsed::from_new_tx(&coinbase_tx, config.domain.clone(), None);
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
                 debug!("Coinbase tx ID:");
                 debug!("{}", coinbase_tx_id);
-                let coinbase_mine_tx = MineTx::get(&coinbase_tx_id, &pool).await;
+                let coinbase_mine_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_mine_tx {
                     debug!("Inserting coinbase tx:");
                     debug!("{}", coinbase_tx_id);

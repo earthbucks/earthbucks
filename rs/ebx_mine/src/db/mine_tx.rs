@@ -5,7 +5,7 @@ use sqlx::types::chrono;
 use sqlx::Executor;
 
 #[derive(Debug, sqlx::FromRow)]
-pub struct MineTx {
+pub struct MineTxParsed {
     pub id: String,
     pub tx: String,
     pub version: u8,
@@ -21,7 +21,7 @@ pub struct MineTx {
     pub created_at: chrono::NaiveDateTime,
 }
 
-impl MineTx {
+impl MineTxParsed {
     pub fn new(
         id: String,
         tx: String,
@@ -76,10 +76,10 @@ impl MineTx {
         Tx::from_u8_vec(hex::decode(&self.tx).unwrap())
     }
 
-    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<MineTx, sqlx::Error> {
+    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<MineTxParsed, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM mine_tx WHERE id = ?
+            SELECT * FROM mine_tx_parsed WHERE id = ?
             "#,
         )
         .bind(id)
@@ -117,7 +117,7 @@ impl MineTx {
             .execute(
                 sqlx::query(
                 r#"
-                INSERT INTO mine_tx (id, tx, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+                INSERT INTO mine_tx_parsed (id, tx, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 "#,
                 )
