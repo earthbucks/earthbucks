@@ -7,20 +7,11 @@ use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
     merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
 };
-use sqlx::{
-    mysql::MySqlPool,
-    types::chrono::{self},
-};
+use env_logger;
+use log::{debug, error, info};
+use sqlx::mysql::MySqlPool;
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
-
-#[macro_export]
-macro_rules! log {
-    ($($arg:tt)*) => ({
-        let now = chrono::Utc::now().format("%Y-%m-%d");
-        println!("[{}] {}", now, format!($($arg)*));
-    })
-}
 
 #[allow(dead_code)] // TODO: remove before launch
 struct EnvConfig {
@@ -75,6 +66,7 @@ impl EnvConfig {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::init();
     let config = EnvConfig::new().unwrap();
 
     let pool = MySqlPool::connect(&config.database_url)
@@ -87,16 +79,15 @@ async fn main() -> Result<()> {
     let mut interval = interval(Duration::from_secs(1));
     interval.tick().await;
 
-    log!("EBX Mine: {}", config.domain);
-    log!("Building block: {}", building_block_num);
+    info!("EBX Mine: {}", config.domain);
+    info!("Building block: {}", building_block_num);
 
     let mut loop_count: u64 = 0;
 
     'main_loop: loop {
-        log!(
+        debug!(
             "Loop count: {}. Building block num: {}.",
-            loop_count,
-            building_block_num
+            loop_count, building_block_num
         );
         loop_count += 1;
 
@@ -107,6 +98,7 @@ async fn main() -> Result<()> {
             } else {
                 let db_chain_tip_id_opt: Option<String> = MineLch::get_chain_tip_id(&pool).await;
                 if db_chain_tip_id_opt.is_none() {
+                    log::error!("Longest chain in memory does not match database.");
                     anyhow::bail!("Longest chain in memory does not match database.")
                 } else {
                     let db_chain_tip_id_hex = db_chain_tip_id_opt.unwrap();
@@ -122,7 +114,7 @@ async fn main() -> Result<()> {
             let chain_length = longest_chain.headers.len();
             if chain_length != building_block_num {
                 building_block_num = chain_length;
-                log!("Building block: {}", building_block_num);
+                info!("Building block: {}", building_block_num);
             }
         }
 
@@ -132,7 +124,7 @@ async fn main() -> Result<()> {
         //    hinges on whether a new block is found to be valid.
         {
             let new_mine_headers = MineHeader::get_voting_headers(&pool).await?;
-            log!("New voting headers: {}", new_mine_headers.len());
+            debug!("New voting headers: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
                 // if votes are valid, mark as such
                 // TODO: Gather and assess votes
@@ -141,10 +133,11 @@ async fn main() -> Result<()> {
                 let mine_lch = MineLch::from_mine_header(new_mine_header);
                 let res = mine_lch.save(&pool).await;
                 if let Err(e) = res {
-                    anyhow::bail!("Failed to save new block header: {}", e);
+                    error!("Failed to save new block header: {}", e);
+                    anyhow::bail!("Failed to save new block header: {}", e)
                 }
-                log!("New longest chain tip ID:");
-                log!("{}", mine_lch.id);
+                debug!("New longest chain tip ID:");
+                debug!("{}", mine_lch.id);
                 continue 'main_loop;
             }
         }
@@ -152,14 +145,14 @@ async fn main() -> Result<()> {
         // 3. Validate new block, broadcast, and continue main loop if found.
         {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
-            log!("New validated headers: {}", new_mine_headers.len());
+            debug!("New validated headers: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
                 let _ = header;
                 // TODO: Verify block
                 MineHeader::update_is_block_valid(&new_mine_header.id, true, &pool).await?;
-                log!("New validated block ID:");
-                log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                debug!("New validated block ID:");
+                debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
                 continue 'main_loop;
             }
         }
@@ -170,21 +163,21 @@ async fn main() -> Result<()> {
             // for each header, validate against the longest chain
             // if any header is valid, mark as such and continue main loop
             // if header is invalid, mark as such
-            log!("New candidate headers: {}", new_mine_headers.len());
+            debug!("New candidate headers: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
                 if longest_chain.new_header_is_valid_now(&header) {
-                    log!("Header is valid: {}", header.block_num);
-                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    debug!("Header is valid: {}", header.block_num);
+                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, true, &pool).await?;
                     continue 'main_loop;
                 } else {
-                    log!("Header is invalid: {}", header.block_num);
-                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
-                    log!("Header target:");
-                    log!("{}", Buffer::from(header.target.to_vec()).to_hex());
-                    log!("Header ID:");
-                    log!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    debug!("Header is invalid: {}", header.block_num);
+                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    debug!("Header target:");
+                    debug!("{}", Buffer::from(header.target.to_vec()).to_hex());
+                    debug!("Header ID:");
+                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
             }
@@ -202,18 +195,20 @@ async fn main() -> Result<()> {
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
                 let db_raw_tx = MineTx::from_new_tx(&coinbase_tx, config.domain.clone(), None);
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
-                log!("Coinbase tx ID:");
-                log!("{}", coinbase_tx_id);
+                debug!("Coinbase tx ID:");
+                debug!("{}", coinbase_tx_id);
                 let coinbase_mine_tx = MineTx::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_mine_tx {
-                    log!("Inserting coinbase tx: {}", coinbase_tx_id);
+                    debug!("Inserting coinbase tx:");
+                    debug!("{}", coinbase_tx_id);
                     let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
                     if let Err(e) = res {
-                        anyhow::bail!("Failed to insert coinbase tx:\n{}", e);
+                        error!("Failed to insert coinbase tx:\n{}", e);
+                        anyhow::bail!("Failed to insert coinbase tx:\n{}", e)
                     }
                 } else {
-                    log!("Coinbase tx already exists:");
-                    log!("{}", coinbase_tx_id);
+                    debug!("Coinbase tx already exists:");
+                    debug!("{}", coinbase_tx_id);
                 }
             }
 
@@ -236,7 +231,8 @@ async fn main() -> Result<()> {
                         MineMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
                     let res = mine_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
-                        anyhow::bail!("Failed to upsert merkle proof: {}", e);
+                        error!("Failed to upsert merkle proof: {}", e);
+                        anyhow::bail!("Failed to upsert merkle proof: {}", e)
                     }
                 }
             }
@@ -246,7 +242,8 @@ async fn main() -> Result<()> {
             let header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
                 Ok(header) => header,
                 Err(e) => {
-                    anyhow::bail!("Failed to produce header: {}", e);
+                    error!("Failed to produce header: {}", e);
+                    anyhow::bail!("Failed to produce header: {}", e)
                 }
             };
             let block_id = header.id();
@@ -256,12 +253,12 @@ async fn main() -> Result<()> {
             let res = MineHeader::get(&mine_header.id, &pool).await;
             if let Ok(_) = res {
                 // this can hypothetically happen if timestamp is the same
-                log!("Candidate header already exists:");
-                log!("{}", Buffer::from(block_id.to_vec()).to_hex());
+                debug!("Candidate header already exists:");
+                debug!("{}", Buffer::from(block_id.to_vec()).to_hex());
             } else {
                 mine_header.save(&pool).await?;
-                log!("Produced candidate header ID:");
-                log!("{}", Buffer::from(block_id.to_vec()).to_hex());
+                debug!("Produced candidate header ID:");
+                debug!("{}", Buffer::from(block_id.to_vec()).to_hex());
             }
         }
 
@@ -270,9 +267,10 @@ async fn main() -> Result<()> {
             // Delete old unused block headers
             let res = MineHeader::delete_unused_headers(building_block_num as u64, &pool).await;
             if let Err(e) = res {
-                anyhow::bail!("Failed to delete unused headers: {}", e);
+                error!("Failed to delete unused headers: {}", e);
+                anyhow::bail!("Failed to delete unused headers: {}", e)
             } else {
-                log!(
+                debug!(
                     "Deleted unused headers before block num: {}",
                     building_block_num
                 );
