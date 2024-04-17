@@ -101,12 +101,30 @@ export const MineMerkleProof = mysqlTable(
   },
 )
 
+export const MineTxRaw = mysqlTable(
+  'mine_tx_raw',
+  {
+    // id
+    id: char('id', { length: 64 }).notNull(),
+    // data structure
+    txRaw: longtext('tx_raw').notNull(),
+    // database metadata
+    createdAt: datetime('created_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => {
+    return {
+      mineTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
+    }
+  },
+)
+
 export const MineTxParsed = mysqlTable(
   'mine_tx_parsed',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
-    tx: longtext('tx').notNull(),
     // data structure
     version: tinyint('version', { unsigned: true }).notNull(),
     txInCount: int('tx_in_count', { unsigned: true }).notNull(),

@@ -1,12 +1,12 @@
 use anyhow::Result;
 use dotenv::dotenv;
-use ebx_full_node::db::{
-    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
-    mine_tx::MineTxParsed,
-};
 use ebx_lib::{
     buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
     merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
+};
+use ebx_mine::db::{
+    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
+    mine_tx_parsed::MineTxParsed, mine_tx_raw::MineTxRaw,
 };
 use env_logger;
 use log::{debug, error, info};
@@ -194,17 +194,22 @@ async fn main() -> Result<()> {
             {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
-                let db_raw_tx =
-                    MineTxParsed::from_new_tx(&coinbase_tx, config.domain.clone(), None);
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
                 debug!("Coinbase tx ID:");
                 debug!("{}", coinbase_tx_id);
                 let coinbase_mine_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_mine_tx {
-                    debug!("Inserting coinbase tx:");
-                    debug!("{}", coinbase_tx_id);
-                    let res = db_raw_tx.insert_with_inputs_and_outputs(&pool).await;
-                    if let Err(e) = res {
+                    info!("Inserting coinbase tx:");
+                    info!("{}", coinbase_tx_id);
+                    let ebx_address: Option<String> = None;
+                    let res_tx_id = MineTxRaw::parse_and_insert(
+                        &coinbase_tx,
+                        config.domain.clone(),
+                        ebx_address,
+                        &pool,
+                    )
+                    .await;
+                    if let Err(e) = res_tx_id {
                         error!("Failed to insert coinbase tx:\n{}", e);
                         anyhow::bail!("Failed to insert coinbase tx:\n{}", e)
                     }

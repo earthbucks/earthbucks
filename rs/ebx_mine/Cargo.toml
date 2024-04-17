@@ -1,5 +1,5 @@
 [package]
-name = "ebx_full_node"
+name = "ebx_mine"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"

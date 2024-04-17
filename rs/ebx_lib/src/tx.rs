@@ -87,6 +87,10 @@ impl Tx {
         writer
     }
 
+    pub fn to_hex(&self) -> String {
+        hex::encode(self.to_u8_vec())
+    }
+
     pub fn to_string(&self) -> String {
         hex::encode(self.to_u8_vec())
     }
