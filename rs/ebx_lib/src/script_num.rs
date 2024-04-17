@@ -73,6 +73,10 @@ impl ScriptNum {
     pub fn to_u32(&self) -> u32 {
         self.num.to_u32().unwrap()
     }
+
+    pub fn to_u64(&self) -> u64 {
+        self.num.to_u64().unwrap()
+    }
 }
 
 #[cfg(test)]

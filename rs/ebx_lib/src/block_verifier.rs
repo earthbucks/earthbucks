@@ -1,8 +1,11 @@
 use crate::block::Block;
+use crate::domain::Domain;
 use crate::header_chain::HeaderChain;
 use crate::merkle_txs::MerkleTxs;
+use crate::script_num::ScriptNum;
 use crate::tx_output_map::TxOutputMap;
 use crate::tx_verifier::TxVerifier;
+use num_bigint::BigInt;
 
 pub struct BlockVerifier {
     pub block: Block,
@@ -33,15 +36,55 @@ impl BlockVerifier {
         merkle_txs.root == merkle_root
     }
 
-    pub fn txs_are_valid(&mut self) -> bool {
+    pub fn is_valid_coinbase(&self) -> bool {
+        // 1. coinbase tx is first tx
         let txs = &self.block.txs;
         if txs.len() == 0 {
             return false;
         }
-        let tx1 = &txs[0];
-        if !tx1.is_coinbase() {
+        let coinbase_tx = &txs[0];
+        if !coinbase_tx.is_coinbase() {
             return false;
         }
+        // 2. coinbase script is valid (push only)
+        let coinbase_input = &coinbase_tx.inputs[0];
+        let coinbase_script = &coinbase_input.script;
+        if !coinbase_script.is_push_only() {
+            return false;
+        }
+        // 3. block number at the top of the stack is correct
+        let script_chunks = &coinbase_script.chunks;
+        let chunks_len = script_chunks.len();
+        if chunks_len < 2 {
+            return false;
+        }
+        let block_num_chunk = &script_chunks[chunks_len - 1];
+        let block_num = ScriptNum::from_u8_vec(&block_num_chunk.buffer.clone().unwrap());
+        if BigInt::from(self.block.header.block_num) != block_num.num {
+            return false;
+        }
+        // 4. domain name, second to top, of stack is valid
+        let domain_chunk = &script_chunks[chunks_len - 2];
+        let domain_buf = domain_chunk.buffer.clone().unwrap();
+        let res_domain_str = String::from_utf8(domain_buf);
+        if res_domain_str.is_err() {
+            return false;
+        }
+        let domain_str = res_domain_str.unwrap();
+        if !Domain::is_valid_domain(&domain_str) {
+            return false;
+        }
+        // note that we do not verify whether domain is actually correct, rather
+        // only that it is a valid domain. that would require pinging the domain
+        // name, which is done elsewhere.
+        true
+    }
+
+    pub fn txs_are_valid(&mut self) -> bool {
+        if !self.is_valid_coinbase() {
+            return false;
+        }
+        let txs = &self.block.txs;
         // iterate through all transactions
         // if invalid, return false
         // if valid, add outputs to tx_output_map and remove used outputs
