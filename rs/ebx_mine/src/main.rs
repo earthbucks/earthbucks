@@ -100,10 +100,24 @@ async fn main() -> Result<()> {
         );
         loop_count += 1;
 
-        // 1. Synchronize with longest chain
+        // 1. Synchronize memory with longest chain from DB
         {
-            // TODO: Replace with synchronize, not re-load
-            longest_chain = MineLch::get_longest_chain(&pool).await?;
+            if longest_chain.headers.len() == 0 {
+                longest_chain = MineLch::get_longest_chain(&pool).await?;
+            } else {
+                let db_chain_tip_id_opt: Option<String> = MineLch::get_chain_tip_id(&pool).await;
+                if db_chain_tip_id_opt.is_none() {
+                    anyhow::bail!("Longest chain in memory does not match database.")
+                } else {
+                    let db_chain_tip_id_hex = db_chain_tip_id_opt.unwrap();
+                    let mem_chain_tip_id_hex =
+                        hex::encode(longest_chain.get_tip().unwrap().id().to_vec());
+                    if db_chain_tip_id_hex != mem_chain_tip_id_hex {
+                        // TODO: Load only new block headers
+                        longest_chain = MineLch::get_longest_chain(&pool).await?;
+                    }
+                }
+            }
 
             let chain_length = longest_chain.headers.len();
             if chain_length != building_block_num {
@@ -112,9 +126,10 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 2. Assess votes for new blocks, mark votes as valid or invalid.
-        //    Update longest chain if votes are valid.
-        //    Continue main loop if found.
+        // 2. Any new blocks that need to be voted on? Gather votes for new
+        //    blocks, mark votes as valid or invalid. Update longest chain if
+        //    votes are valid. Continue main loop if found, because everything
+        //    hinges on whether a new block is found to be valid.
         {
             let new_mine_headers = MineHeader::get_voting_headers(&pool).await?;
             log!("New voting headers: {}", new_mine_headers.len());

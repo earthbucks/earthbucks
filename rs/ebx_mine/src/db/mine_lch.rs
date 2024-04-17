@@ -168,4 +168,21 @@ impl MineLch {
         .await?;
         Ok(())
     }
+
+    pub async fn get_chain_tip_id(pool: &MySqlPool) -> Option<String> {
+        let row: Result<Option<MineLch>, Error> = sqlx::query_as(
+            r#"
+            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
+            FROM mine_lch
+            ORDER BY block_num DESC
+            LIMIT 1
+            "#,
+        )
+        .fetch_optional(pool)
+        .await;
+        match row {
+            Ok(Some(row)) => Some(row.id),
+            _ => None,
+        }
+    }
 }
