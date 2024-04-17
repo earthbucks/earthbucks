@@ -136,8 +136,8 @@ async fn main() -> Result<()> {
                     error!("Failed to save new block header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
-                debug!("New longest chain tip ID:");
-                debug!("{}", mine_lch.id);
+                info!("New longest chain tip ID:");
+                info!("{}", mine_lch.id);
                 continue 'main_loop;
             }
         }
@@ -151,8 +151,8 @@ async fn main() -> Result<()> {
                 let _ = header;
                 // TODO: Verify block
                 MineHeader::update_is_block_valid(&new_mine_header.id, true, &pool).await?;
-                debug!("New validated block ID:");
-                debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                info!("New validated block ID:");
+                info!("{}", Buffer::from(header.id().to_vec()).to_hex());
                 continue 'main_loop;
             }
         }
@@ -167,8 +167,8 @@ async fn main() -> Result<()> {
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
                 if longest_chain.new_header_is_valid_now(&header) {
-                    debug!("Header is valid: {}", header.block_num);
-                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    info!("New header is valid: {}", header.block_num);
+                    info!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, true, &pool).await?;
                     continue 'main_loop;
                 } else {
