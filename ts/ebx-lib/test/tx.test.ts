@@ -16,14 +16,14 @@ describe('Tx', () => {
       const version = 1
       const inputs: TxInput[] = []
       const outputs: TxOutput[] = []
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
       expect(tx).toBeInstanceOf(Tx)
       expect(tx.version).toBe(version)
       expect(tx.inputs).toBe(inputs)
       expect(tx.outputs).toBe(outputs)
-      expect(tx.lockBlockNum).toBe(lockBlockNum)
+      expect(tx.lockNum).toBe(lockNum)
     })
   })
 
@@ -33,9 +33,9 @@ describe('Tx', () => {
       new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
     ]
     const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-    const lockBlockNum = BigInt(0)
+    const lockNum = BigInt(0)
 
-    const tx = new Tx(version, inputs, outputs, lockBlockNum)
+    const tx = new Tx(version, inputs, outputs, lockNum)
     const result = Tx.fromU8Vec(tx.toU8Vec())
     expect(tx.toBuffer().toString('hex')).toEqual(
       result.toBuffer().toString('hex'),
@@ -49,16 +49,16 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const result = Tx.fromU8Vec(tx.toU8Vec())
       expect(result).toBeInstanceOf(Tx)
       expect(result.version).toEqual(version)
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
-      expect(result.lockBlockNum).toEqual(lockBlockNum)
+      expect(result.lockNum).toEqual(lockNum)
     })
   })
 
@@ -69,9 +69,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const reader = new BufferReader(tx.toBuffer())
       const result = Tx.fromBufferReader(reader)
@@ -79,7 +79,7 @@ describe('Tx', () => {
       expect(result.version).toEqual(version)
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
-      expect(result.lockBlockNum).toEqual(lockBlockNum)
+      expect(result.lockNum).toEqual(lockNum)
     })
   })
 
@@ -90,16 +90,16 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const result = Tx.fromString(tx.toString())
       expect(result).toBeInstanceOf(Tx)
       expect(result.version).toEqual(version)
       expect(result.inputs.length).toEqual(inputs.length)
       expect(result.outputs.length).toEqual(outputs.length)
-      expect(result.lockBlockNum).toEqual(lockBlockNum)
+      expect(result.lockNum).toEqual(lockNum)
     })
   })
 
@@ -122,9 +122,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0xffffffff, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
       expect(tx.isCoinbase()).toBe(true)
     })
 
@@ -134,9 +134,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
       expect(tx.isCoinbase()).toBe(false)
     })
 
@@ -155,9 +155,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
       const expectedHash = blake3Hash(tx.toU8Vec())
       expect(tx.blake3Hash()).toEqual(expectedHash)
     })
@@ -170,9 +170,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
       const expectedHash = blake3Hash(blake3Hash(tx.toU8Vec()))
       expect(tx.id()).toEqual(expectedHash)
     })
@@ -185,9 +185,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const result = tx.hashPrevouts()
 
@@ -204,9 +204,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const result = tx.hashSequence()
 
@@ -223,9 +223,9 @@ describe('Tx', () => {
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
       ]
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const result = tx.hashOutputs()
 
@@ -244,9 +244,9 @@ describe('Tx', () => {
       const outputs: TxOutput[] = [
         new TxOutput(BigInt(100), Script.fromString('')),
       ]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()
@@ -272,9 +272,9 @@ describe('Tx', () => {
       const outputs: TxOutput[] = [
         new TxOutput(BigInt(100), Script.fromString('')),
       ]
-      const lockBlockNum = BigInt(0)
+      const lockNum = BigInt(0)
 
-      const tx = new Tx(version, inputs, outputs, lockBlockNum)
+      const tx = new Tx(version, inputs, outputs, lockNum)
 
       const script = Script.fromString('')
       const scriptU8Vec = script.toU8Vec()

@@ -9,17 +9,17 @@ pub struct TxBuilder {
     tx: Tx,
     change_script: Script,
     input_amount: u64,
-    lock_block_num: u64,
+    lock_num: u64,
 }
 
 impl TxBuilder {
-    pub fn new(tx_out_map: &TxOutputMap, change_script: Script, lock_block_num: u64) -> Self {
+    pub fn new(tx_out_map: &TxOutputMap, change_script: Script, lock_num: u64) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
             tx_out_map: tx_out_map.clone(),
             change_script,
             input_amount: 0,
-            lock_block_num,
+            lock_num,
         }
     }
 
@@ -42,7 +42,7 @@ impl TxBuilder {
         // therefore invalid txs. you must input enough to cover the
         // total spend amount or the output will be invalid. note also that this
         // tx is not signed.
-        self.tx.lock_block_num = self.lock_block_num;
+        self.tx.lock_num = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;

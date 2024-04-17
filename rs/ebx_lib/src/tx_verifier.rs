@@ -104,7 +104,7 @@ impl<'a> TxVerifier<'a> {
     }
 
     pub fn verify_block_num(&self, block_num: u64) -> bool {
-        if self.tx.lock_block_num > block_num {
+        if self.tx.lock_num > block_num {
             return false;
         }
         true
@@ -189,7 +189,7 @@ mod tests {
     }
 
     #[test]
-    fn should_sign_and_not_verify_a_tx_with_wrong_lock_block_num() {
+    fn should_sign_and_not_verify_a_tx_with_wrong_lock_num() {
         let mut tx_out_map = TxOutputMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map

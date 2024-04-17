@@ -1,8 +1,7 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_lib::{
-    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
-    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
+    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx
 };
 use ebx_mine::db::{
     mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
@@ -136,7 +135,7 @@ async fn main() -> Result<()> {
                 let mine_lch = MineLch::from_mine_header(new_mine_header);
                 let res = mine_lch.save(&pool).await;
                 if let Err(e) = res {
-                    error!("Failed to save new block header: {}", e);
+                    error!("Failed to save new blbock header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
                 info!("New longest chain tip ID: {}", mine_lch.id);

@@ -19,18 +19,18 @@ export default class Tx {
   public version: number
   public inputs: TxInput[]
   public outputs: TxOutput[]
-  public lockBlockNum: bigint
+  public lockNum: bigint
 
   constructor(
     version: number,
     inputs: TxInput[],
     outputs: TxOutput[],
-    lockBlockNum: bigint,
+    lockNum: bigint,
   ) {
     this.version = version
     this.inputs = inputs
     this.outputs = outputs
-    this.lockBlockNum = lockBlockNum
+    this.lockNum = lockNum
   }
 
   static fromU8Vec(buf: Uint8Array): Tx {
@@ -46,8 +46,8 @@ export default class Tx {
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TxOutput.fromBufferReader(reader))
     }
-    const lockBlockNum = reader.readUInt64BEBigInt()
-    return new Tx(version, inputs, outputs, BigInt(lockBlockNum))
+    const lockNum = reader.readUInt64BEBigInt()
+    return new Tx(version, inputs, outputs, BigInt(lockNum))
   }
 
   static fromBufferReader(reader: BufferReader): Tx {
@@ -62,8 +62,8 @@ export default class Tx {
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TxOutput.fromBufferReader(reader))
     }
-    const lockBlockNum = reader.readUInt64BEBigInt()
-    return new Tx(version, inputs, outputs, BigInt(lockBlockNum))
+    const lockNum = reader.readUInt64BEBigInt()
+    return new Tx(version, inputs, outputs, BigInt(lockNum))
   }
 
   toU8Vec(): Uint8Array {
@@ -77,7 +77,7 @@ export default class Tx {
     for (const output of this.outputs) {
       writer.writeU8Vec(output.toU8Vec())
     }
-    writer.writeUInt64BEBigInt(this.lockBlockNum)
+    writer.writeUInt64BEBigInt(this.lockNum)
     return writer.toU8Vec()
   }
 
@@ -101,8 +101,8 @@ export default class Tx {
     const version = 1
     const inputs = [TxInput.fromCoinbase(inputScript)]
     const outputs = [new TxOutput(outputAmount, outputScript)]
-    const lockBlockNum = BigInt(0)
-    return new Tx(version, inputs, outputs, lockBlockNum)
+    const lockNum = BigInt(0)
+    return new Tx(version, inputs, outputs, lockNum)
   }
 
   isCoinbase(): boolean {
@@ -201,7 +201,7 @@ export default class Tx {
     writer.writeUInt64BEBigInt(amount)
     writer.writeUInt32BE(this.inputs[inputIndex].sequence)
     writer.writeU8Vec(outputsHash)
-    writer.writeUInt64BEBigInt(this.lockBlockNum)
+    writer.writeUInt64BEBigInt(this.lockNum)
     writer.writeUInt8(hashType)
     return writer.toU8Vec()
   }

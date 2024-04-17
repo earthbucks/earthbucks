@@ -32,21 +32,16 @@ pub struct Tx {
     pub version: u8,
     pub inputs: Vec<TxInput>,
     pub outputs: Vec<TxOutput>,
-    pub lock_block_num: u64,
+    pub lock_num: u64,
 }
 
 impl Tx {
-    pub fn new(
-        version: u8,
-        inputs: Vec<TxInput>,
-        outputs: Vec<TxOutput>,
-        lock_block_num: u64,
-    ) -> Self {
+    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_num: u64) -> Self {
         Self {
             version,
             inputs,
             outputs,
-            lock_block_num,
+            lock_num,
         }
     }
 
@@ -73,8 +68,8 @@ impl Tx {
         for _ in 0..output_count {
             outputs.push(TxOutput::from_buffer_reader(reader)?);
         }
-        let lock_block_num = reader.read_u64_be();
-        Ok(Self::new(version, inputs, outputs, lock_block_num))
+        let lock_num = reader.read_u64_be();
+        Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
     pub fn to_buffer_writer(&self) -> BufferWriter {
@@ -88,7 +83,7 @@ impl Tx {
         for output in &self.outputs {
             writer.write_u8_vec(output.to_u8_vec());
         }
-        writer.write_u64_be(self.lock_block_num);
+        writer.write_u64_be(self.lock_num);
         writer
     }
 
@@ -113,8 +108,8 @@ impl Tx {
         let version = 1;
         let inputs = vec![TxInput::from_coinbase(input_script)];
         let outputs = vec![TxOutput::new(output_amount, output_script)];
-        let lock_block_num = block_num;
-        Self::new(version, inputs, outputs, lock_block_num)
+        let lock_num = block_num;
+        Self::new(version, inputs, outputs, lock_num)
     }
 
     pub fn is_coinbase(&self) -> bool {
@@ -216,7 +211,7 @@ impl Tx {
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].sequence);
         bw.write_u8_vec(outputs_hash);
-        bw.write_u64_be(self.lock_block_num);
+        bw.write_u64_be(self.lock_num);
         bw.write_u8(hash_type);
         bw.to_u8_vec()
     }
@@ -370,15 +365,15 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
 
         let buf = tx.to_u8_vec();
         let tx2 = Tx::from_u8_vec(buf).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_block_num, tx2.lock_block_num);
+        assert_eq!(tx.lock_num, tx2.lock_num);
         Ok(())
     }
 
@@ -397,8 +392,8 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
 
         let buf = tx.to_u8_vec();
         let mut reader = BufferReader::new(buf);
@@ -406,7 +401,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_block_num, tx2.lock_block_num);
+        assert_eq!(tx.lock_num, tx2.lock_num);
         Ok(())
     }
 
@@ -425,15 +420,15 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
 
         let hex = tx.to_string();
         let tx2 = Tx::from_string(&hex).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_block_num, tx2.lock_block_num);
+        assert_eq!(tx.lock_num, tx2.lock_num);
         Ok(())
     }
 
@@ -446,7 +441,7 @@ mod tests {
         assert_eq!(tx.version, 1);
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 1);
-        assert_eq!(tx.lock_block_num, 0);
+        assert_eq!(tx.lock_num, 0);
     }
 
     #[test]
@@ -464,8 +459,8 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
         assert!(!tx.is_coinbase());
 
         let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -490,8 +485,8 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
         let expected_hash = blake3_hash(&tx.to_u8_vec());
         assert_eq!(tx.blake3_hash(), expected_hash);
     }
@@ -511,8 +506,8 @@ mod tests {
         let version = 1;
         let inputs = vec![tx_input];
         let outputs = vec![tx_output];
-        let lock_block_num = 0;
-        let tx = Tx::new(version, inputs, outputs, lock_block_num);
+        let lock_num = 0;
+        let tx = Tx::new(version, inputs, outputs, lock_num);
         let expected_hash = double_blake3_hash(&tx.to_u8_vec());
         assert_eq!(tx.id(), expected_hash);
     }
