@@ -465,17 +465,45 @@ Ryan X. Charles
 
 ### Database Architecture
 
+April 15, 2024
+
 I am using MySQL for the database. I want to be able to access the database not
 just in Rust, but also in node.js. Unfortunately, the tool I am using for MySQL
 databases in node.js, Drizzle, does not support blob columns. I have therefore
-decided to change the schema to use hex-encoded blobs instead of blobs. This
-increases the storage space, but it is a small price to pay for the ability to
-access the database in node.js.
+decided to change the schema to use hex-encoded strings instead of binary blobs.
+This increases the storage space, but it is a small price to pay for the ability
+to access the database in node.js.
 
 Considering blocks are likely to be less than 1 MB on average for quite some
 time (Bitcoin didn't reach that limit until 8 years after launch), the extra
 storage space is not a big deal. The other thing is that this data can be pruned
 eventually. We can use an object store like AWS S3 for archival data at some
 point in the future.
+
+Ryan X. Charles
+
+---
+
+## Incentivizing Accurate Timestamps with Continuous Target Adjustment
+
+April 17, 2024
+
+The target is the value in the block header that miners must find a hash below.
+In EarthBucks, the target adjusts moment by moment to keep the block time at 10
+minutes.
+
+This is different from Bitcoin, which has a target that adjusts every 2016
+blocks. Bitcoin timestamps are valid if they are within two hours of the network
+time. This means some blocks have wildly inaccurate timestamps. And when the
+network hash rate adjusts, you have to wait a long time for the target to
+adjust.
+
+In EarthBucks, a continuous target means the target depends on the current
+timestamp. Blocks from the future are ignored. Blocks from the past have the
+easiest target if they are produced right now. These factors combine to
+incentivize accurate timestamps. You don't want to produce a block with a future
+timestamp, because it will be ignored. Nor do you want to produce a block with
+an old timestamp, because it will be hard to find a hash below the target. What
+you want is to produce a block with exactly the right timestamp.
 
 Ryan X. Charles
