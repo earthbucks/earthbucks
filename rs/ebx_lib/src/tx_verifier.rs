@@ -2,14 +2,14 @@ use crate::script_interpreter::ScriptInterpreter;
 use crate::tx::{HashCache, Tx};
 use crate::tx_output_map::TxOutputMap;
 
-pub struct TxVerifier {
+pub struct TxVerifier<'a> {
     tx: Tx,
-    tx_out_map: TxOutputMap,
+    tx_out_map: &'a TxOutputMap,
     hash_cache: HashCache,
 }
 
-impl TxVerifier {
-    pub fn new(tx: Tx, tx_out_map: TxOutputMap) -> Self {
+impl<'a> TxVerifier<'a> {
+    pub fn new(tx: Tx, tx_out_map: &'a TxOutputMap) -> Self {
         let hash_cache = HashCache::new();
         Self {
             tx,
@@ -59,6 +59,25 @@ impl TxVerifier {
         true
     }
 
+    pub fn verify_no_double_spend(&self) -> bool {
+        let mut spent_outputs = Vec::new();
+        for input in &self.tx.inputs {
+            let tx_out = self
+                .tx_out_map
+                .get(&input.input_tx_id, input.input_tx_out_num);
+            match tx_out {
+                None => return false,
+                Some(tx_out) => {
+                    if spent_outputs.contains(&tx_out) {
+                        return false;
+                    }
+                    spent_outputs.push(tx_out);
+                }
+            }
+        }
+        true
+    }
+
     pub fn verify_output_values(&self) -> bool {
         let mut total_output_value = 0;
         for output in &self.tx.outputs {
@@ -78,6 +97,9 @@ impl TxVerifier {
     }
 
     pub fn verify(&mut self) -> bool {
+        if !self.verify_no_double_spend() {
+            return false;
+        }
         if !self.verify_scripts() {
             return false;
         }
@@ -132,7 +154,7 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert_eq!(signed, true);
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
         let verified_input = tx_verifier.verify_input_script(0);
         assert_eq!(verified_input, true);
 
@@ -180,7 +202,7 @@ mod tests {
         assert_eq!(signed2, true);
         let signed_tx = tx_signer.tx;
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, tx_out_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
         let verified_input1 = tx_verifier.verify_input_script(0);
         assert_eq!(verified_input1, true);
         let verified_input2 = tx_verifier.verify_input_script(1);

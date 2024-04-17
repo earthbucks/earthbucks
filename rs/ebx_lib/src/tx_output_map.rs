@@ -1,3 +1,4 @@
+use crate::tx::Tx;
 use crate::tx_output::TxOutput;
 use std::collections::HashMap;
 
@@ -42,6 +43,12 @@ impl TxOutputMap {
 
     pub fn values(&self) -> Vec<&TxOutput> {
         self.map.values().collect()
+    }
+
+    pub fn add_tx_outputs(&mut self, tx: &Tx) {
+        for (output_index, output) in tx.outputs.iter().enumerate() {
+            self.add(output.clone(), &tx.id().to_vec(), output_index as u32);
+        }
     }
 }
 
