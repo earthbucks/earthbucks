@@ -80,8 +80,10 @@ async fn main() -> Result<()> {
     let mut interval = interval(Duration::from_secs(1));
     interval.tick().await;
 
-    info!("EBX Mine: {}", config.domain);
-    info!("Building block: {}", building_block_num);
+    info!(
+        "EBX Mine: {}. Building block: {}.",
+        config.domain, building_block_num
+    );
 
     let mut loop_count: u64 = 0;
 
@@ -137,8 +139,7 @@ async fn main() -> Result<()> {
                     error!("Failed to save new block header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
-                info!("New longest chain tip ID:");
-                info!("{}", mine_lch.id);
+                info!("New longest chain tip ID: {}", mine_lch.id);
                 continue 'main_loop;
             }
         }
@@ -152,8 +153,10 @@ async fn main() -> Result<()> {
                 let _ = header;
                 // TODO: Verify block
                 MineHeader::update_is_block_valid(&new_mine_header.id, true, &pool).await?;
-                info!("New validated block ID:");
-                info!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                info!(
+                    "New validated block ID: {}",
+                    Buffer::from(header.id().to_vec()).to_hex()
+                );
                 continue 'main_loop;
             }
         }
@@ -168,17 +171,23 @@ async fn main() -> Result<()> {
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
                 if longest_chain.new_header_is_valid_now(&header) {
-                    info!("New header is valid: {}", header.block_num);
-                    info!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    info!(
+                        "New header is valid: {}, {}",
+                        header.block_num,
+                        Buffer::from(header.id().to_vec()).to_hex()
+                    );
                     MineHeader::update_is_header_valid(&new_mine_header.id, true, &pool).await?;
                     continue 'main_loop;
                 } else {
-                    debug!("Header is invalid: {}", header.block_num);
-                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
-                    debug!("Header target:");
-                    debug!("{}", Buffer::from(header.target.to_vec()).to_hex());
-                    debug!("Header ID:");
-                    debug!("{}", Buffer::from(header.id().to_vec()).to_hex());
+                    debug!(
+                        "Header is invalid: {}, {}",
+                        header.block_num,
+                        Buffer::from(header.id().to_vec()).to_hex()
+                    );
+                    debug!(
+                        "Header target: {}",
+                        Buffer::from(header.target.to_vec()).to_hex()
+                    );
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
             }
@@ -195,12 +204,10 @@ async fn main() -> Result<()> {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
                 let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
-                debug!("Coinbase tx ID:");
-                debug!("{}", coinbase_tx_id);
+                debug!("Coinbase tx ID: {}", coinbase_tx_id);
                 let coinbase_mine_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
                 if let Err(_) = coinbase_mine_tx {
-                    info!("Inserting coinbase tx:");
-                    info!("{}", coinbase_tx_id);
+                    info!("Inserting coinbase tx ID: {}", coinbase_tx_id);
                     let ebx_address: Option<String> = None;
                     let res_tx_id = MineTxRaw::parse_and_insert(
                         &coinbase_tx,
@@ -210,12 +217,11 @@ async fn main() -> Result<()> {
                     )
                     .await;
                     if let Err(e) = res_tx_id {
-                        error!("Failed to insert coinbase tx:\n{}", e);
-                        anyhow::bail!("Failed to insert coinbase tx:\n{}", e)
+                        error!("Failed to insert coinbase tx: {}", e);
+                        anyhow::bail!("Failed to insert coinbase tx: {}", e)
                     }
                 } else {
-                    debug!("Coinbase tx already exists:");
-                    debug!("{}", coinbase_tx_id);
+                    debug!("Coinbase tx already exists: {}", coinbase_tx_id);
                 }
             }
 
@@ -260,12 +266,16 @@ async fn main() -> Result<()> {
             let res = MineHeader::get(&mine_header.id, &pool).await;
             if let Ok(_) = res {
                 // this can hypothetically happen if timestamp is the same
-                debug!("Candidate header already exists:");
-                debug!("{}", Buffer::from(block_id.to_vec()).to_hex());
+                debug!(
+                    "Candidate header already exists: {}",
+                    Buffer::from(block_id.to_vec()).to_hex()
+                );
             } else {
                 mine_header.save(&pool).await?;
-                debug!("Produced candidate header ID:");
-                debug!("{}", Buffer::from(block_id.to_vec()).to_hex());
+                debug!(
+                    "Produced candidate header ID: {}",
+                    Buffer::from(block_id.to_vec()).to_hex()
+                );
             }
         }
 
