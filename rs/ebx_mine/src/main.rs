@@ -183,7 +183,7 @@ async fn main() -> Result<()> {
                     log!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     log!("Header target:");
                     log!("{}", Buffer::from(header.target.to_vec()).to_hex());
-                    log!("Header id:");
+                    log!("Header ID:");
                     log!("{}", Buffer::from(header.id().to_vec()).to_hex());
                     MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
                 }
@@ -241,42 +241,46 @@ async fn main() -> Result<()> {
                 }
             }
 
-            // Produce candidate block header
+            // Produce candidate header
             let new_timestamp = Header::get_new_timestamp();
             let header = match longest_chain.get_next_header(merkle_root, new_timestamp) {
                 Ok(header) => header,
                 Err(e) => {
-                    anyhow::bail!("Failed to produce block header: {}", e);
+                    anyhow::bail!("Failed to produce header: {}", e);
                 }
             };
             let block_id = header.id();
 
-            // Save candidate block header
-            let mine_header = MineHeader::from_block_header(&header, config.domain.clone());
+            // Save candidate header
+            let mine_header = MineHeader::from_header(&header, config.domain.clone());
             let res = MineHeader::get(&mine_header.id, &pool).await;
             if let Ok(_) = res {
                 // this can hypothetically happen if timestamp is the same
-                log!("Candidate block header already exists:");
+                log!("Candidate header already exists:");
                 log!("{}", Buffer::from(block_id.to_vec()).to_hex());
             } else {
                 mine_header.save(&pool).await?;
-                log!("Produced candidate block header ID:");
+                log!("Produced candidate header ID:");
                 log!("{}", Buffer::from(block_id.to_vec()).to_hex());
             }
         }
 
-        // Delete old unused block headers
-        let res = MineHeader::delete_unused_headers(building_block_num as u64, &pool).await;
-        if let Err(e) = res {
-            anyhow::bail!("Failed to delete unused headers: {}", e);
-        } else {
-            log!(
-                "Deleted unused headers before block num: {}",
-                building_block_num
-            );
+        // 7. Clean up old headers, merkle proofs, coinbase transactions, etc.
+        {
+            // Delete old unused block headers
+            let res = MineHeader::delete_unused_headers(building_block_num as u64, &pool).await;
+            if let Err(e) = res {
+                anyhow::bail!("Failed to delete unused headers: {}", e);
+            } else {
+                log!(
+                    "Deleted unused headers before block num: {}",
+                    building_block_num
+                );
+            }
+            // TODO: Delete old unused merkle proofs
+            // TODO: Delete old unused coinbase transactions
+            // TODO: Any other cleanup processes
         }
-        // TODO: Delete old unused coinbase transactions
-        // TODO: Any other cleanup processes
         interval.tick().await;
     }
 }

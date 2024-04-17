@@ -51,7 +51,7 @@ impl MineHeader {
         }
     }
 
-    pub fn from_block_header(header: &Header, domain: String) -> Self {
+    pub fn from_header(header: &Header, domain: String) -> Self {
         Self {
             id: hex::encode(header.id()),
             version: header.version,
