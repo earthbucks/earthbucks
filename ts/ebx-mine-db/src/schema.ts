@@ -129,7 +129,7 @@ export const MineTxParsed = mysqlTable(
     version: tinyint('version', { unsigned: true }).notNull(),
     txInCount: int('tx_in_count', { unsigned: true }).notNull(),
     txOutCount: int('tx_out_count', { unsigned: true }).notNull(),
-    lockTime: bigint('lock_time', { mode: 'number', unsigned: true }).notNull(),
+    lockBlockNum: bigint('lock_block_num', { mode: 'number', unsigned: true }).notNull(),
     // database metadata
     isValid: tinyint('is_valid'),
     isVoteValid: tinyint('is_vote_valid'),

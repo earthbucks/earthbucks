@@ -44,8 +44,8 @@ impl BlockVerifier {
         if !coinbase_tx.is_coinbase() {
             return false;
         }
-        // 2. locktime equals block number
-        if coinbase_tx.lock_time != self.block.header.block_num {
+        // 2. lockBlockNum equals block number
+        if coinbase_tx.lock_block_num != self.block.header.block_num {
             return false;
         }
         // 3. version is 1

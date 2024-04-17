@@ -46,7 +46,7 @@ impl MineTxRaw {
         let version = mine_tx_parsed.version;
         let tx_in_count = mine_tx_parsed.tx_in_count;
         let tx_out_count = mine_tx_parsed.tx_out_count;
-        let lock_time = mine_tx_parsed.lock_time;
+        let lock_block_num = mine_tx_parsed.lock_block_num;
         let is_valid = mine_tx_parsed.is_valid;
         let is_vote_valid = mine_tx_parsed.is_vote_valid;
         let confirmed_block_id = mine_tx_parsed.confirmed_block_id.clone();
@@ -80,7 +80,7 @@ impl MineTxRaw {
           .execute(
               sqlx::query(
               r#"
-              INSERT INTO mine_tx_parsed (id, version, tx_in_count, tx_out_count, lock_time, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+              INSERT INTO mine_tx_parsed (id, version, tx_in_count, tx_out_count, lock_block_num, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               "#,
               )
@@ -88,7 +88,7 @@ impl MineTxRaw {
               .bind(version)
               .bind(tx_in_count)
               .bind(tx_out_count)
-              .bind(lock_time)
+              .bind(lock_block_num)
               .bind(is_valid)
               .bind(is_vote_valid)
               .bind(confirmed_block_id)
