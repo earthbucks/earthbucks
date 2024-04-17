@@ -96,7 +96,17 @@ impl<'a> TxVerifier<'a> {
         total_input_value == total_output_value
     }
 
+    pub fn verify_is_not_coinbase(&self) -> bool {
+        if self.tx.inputs.len() == 1 && self.tx.inputs[0].is_coinbase() {
+            return false;
+        }
+        true
+    }
+
     pub fn verify(&mut self) -> bool {
+        if !self.verify_is_not_coinbase() {
+            return false;
+        }
         if !self.verify_no_double_spend() {
             return false;
         }

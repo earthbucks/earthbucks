@@ -36,7 +36,7 @@ impl BlockVerifier {
         merkle_txs.root == merkle_root
     }
 
-    pub fn is_valid_coinbase(&self) -> bool {
+    pub fn has_valid_coinbase(&self) -> bool {
         // 1. coinbase tx is first tx
         let txs = &self.block.txs;
         if txs.len() == 0 {
@@ -74,6 +74,12 @@ impl BlockVerifier {
         if !Domain::is_valid_domain(&domain_str) {
             return false;
         }
+        // 5. all outputs are pkh
+        for tx_output in &coinbase_tx.outputs {
+            if !tx_output.script.is_pkh_output() {
+                return false;
+            }
+        }
         // note that we do not verify whether domain is actually correct, rather
         // only that it is a valid domain. that would require pinging the domain
         // name, which is done elsewhere.
@@ -81,11 +87,11 @@ impl BlockVerifier {
     }
 
     pub fn txs_are_valid(&mut self) -> bool {
-        if !self.is_valid_coinbase() {
+        if !self.has_valid_coinbase() {
             return false;
         }
-        let txs = &self.block.txs;
-        // iterate through all transactions
+        let txs = &self.block.txs[1..];
+        // iterate through all transactions except the first (coinbase tx)
         // if invalid, return false
         // if valid, add outputs to tx_output_map and remove used outputs
         for tx in txs {
