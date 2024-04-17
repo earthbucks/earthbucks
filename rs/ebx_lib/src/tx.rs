@@ -36,7 +36,12 @@ pub struct Tx {
 }
 
 impl Tx {
-    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_block_num: u64) -> Self {
+    pub fn new(
+        version: u8,
+        inputs: Vec<TxInput>,
+        outputs: Vec<TxOutput>,
+        lock_block_num: u64,
+    ) -> Self {
         Self {
             version,
             inputs,

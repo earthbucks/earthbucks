@@ -103,7 +103,17 @@ impl<'a> TxVerifier<'a> {
         true
     }
 
-    pub fn verify(&mut self) -> bool {
+    pub fn verify_block_num(&self, block_num: u64) -> bool {
+        if self.tx.lock_block_num > block_num {
+            return false;
+        }
+        true
+    }
+
+    pub fn verify(&mut self, block_num: u64) -> bool {
+        if !self.verify_block_num(block_num) {
+            return false;
+        }
         if !self.verify_is_not_coinbase() {
             return false;
         }
@@ -148,7 +158,7 @@ mod tests {
         }
 
         let change_script = Script::from_string("").unwrap();
-        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script);
+        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
 
         tx_builder.add_output(50, Script::from_string("").unwrap());
 
@@ -174,8 +184,53 @@ mod tests {
         let verified_output_values = tx_verifier.verify_output_values();
         assert_eq!(verified_output_values, true);
 
-        let verified = tx_verifier.verify();
+        let verified = tx_verifier.verify(0);
         assert_eq!(verified, true);
+    }
+
+    #[test]
+    fn should_sign_and_not_verify_a_tx_with_wrong_lock_block_num() {
+        let mut tx_out_map = TxOutputMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
+        // generate 5 keys, 5 outputs, and add them to the tx_out_map
+        for i in 0..5 {
+            let key = KeyPair::from_random();
+            let pkh = Pkh::new(key.clone().pub_key.buf.to_vec());
+            pkh_key_map.add(key, &pkh.pkh);
+            let script = Script::from_pkh_output(&pkh.pkh);
+            let output = TxOutput::new(100, script);
+            tx_out_map.add(output, &vec![0; 32], i);
+        }
+
+        let change_script = Script::from_string("").unwrap();
+        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 1);
+
+        tx_builder.add_output(50, Script::from_string("").unwrap());
+
+        let tx = tx_builder.build();
+
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 50);
+        assert_eq!(tx.outputs[1].value, 50);
+
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let signed = tx_signer.sign(0);
+        let signed_tx = tx_signer.tx;
+        assert_eq!(signed, true);
+
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
+        let verified_input = tx_verifier.verify_input_script(0);
+        assert_eq!(verified_input, true);
+
+        let verified_scripts = tx_verifier.verify_scripts();
+        assert_eq!(verified_scripts, true);
+
+        let verified_output_values = tx_verifier.verify_output_values();
+        assert_eq!(verified_output_values, true);
+
+        let verified = tx_verifier.verify(0);
+        assert_eq!(verified, false);
     }
 
     #[test]
@@ -193,7 +248,7 @@ mod tests {
         }
 
         let change_script = Script::from_string("").unwrap();
-        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script);
+        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
 
         tx_builder.add_output(100, Script::from_string("").unwrap());
         tx_builder.add_output(100, Script::from_string("").unwrap());
@@ -224,7 +279,7 @@ mod tests {
         let verified_output_values = tx_verifier.verify_output_values();
         assert_eq!(verified_output_values, true);
 
-        let verified = tx_verifier.verify();
+        let verified = tx_verifier.verify(0);
         assert_eq!(verified, true);
     }
 }
