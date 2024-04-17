@@ -46,13 +46,27 @@ impl BlockVerifier {
         if !coinbase_tx.is_coinbase() {
             return false;
         }
-        // 2. coinbase script is valid (push only)
+        // 2. locktime is 0
+        if coinbase_tx.lock_time != 0 {
+            return false;
+        }
+        // 3. version is 1
+        if coinbase_tx.version != 1 {
+            return false;
+        }
+        // 4. all outputs are pkh
+        for tx_output in &coinbase_tx.outputs {
+            if !tx_output.script.is_pkh_output() {
+                return false;
+            }
+        }
+        // 5. coinbase script is valid (push only)
         let coinbase_input = &coinbase_tx.inputs[0];
         let coinbase_script = &coinbase_input.script;
         if !coinbase_script.is_push_only() {
             return false;
         }
-        // 3. block number at the top of the stack is correct
+        // 6. block number at the top of the stack matches header
         let script_chunks = &coinbase_script.chunks;
         let chunks_len = script_chunks.len();
         if chunks_len < 2 {
@@ -63,7 +77,7 @@ impl BlockVerifier {
         if BigInt::from(self.block.header.block_num) != block_num.num {
             return false;
         }
-        // 4. domain name, second to top, of stack is valid
+        // 7. domain name, second to top, of stack is valid
         let domain_chunk = &script_chunks[chunks_len - 2];
         let domain_buf = domain_chunk.buffer.clone().unwrap();
         let res_domain_str = String::from_utf8(domain_buf);
@@ -74,15 +88,9 @@ impl BlockVerifier {
         if !Domain::is_valid_domain(&domain_str) {
             return false;
         }
-        // 5. all outputs are pkh
-        for tx_output in &coinbase_tx.outputs {
-            if !tx_output.script.is_pkh_output() {
-                return false;
-            }
-        }
-        // note that we do not verify whether domain is actually correct, rather
-        // only that it is a valid domain. that would require pinging the domain
-        // name, which is done elsewhere.
+        // note that we do not verify whether domain is actually responsive and
+        // delivers this block. that would require pinging the domain name,
+        // which is done elsewhere.
         true
     }
 
