@@ -2,10 +2,8 @@ use crate::block::Block;
 use crate::domain::Domain;
 use crate::header_chain::HeaderChain;
 use crate::merkle_txs::MerkleTxs;
-use crate::script_num::ScriptNum;
 use crate::tx_output_map::TxOutputMap;
 use crate::tx_verifier::TxVerifier;
-use num_bigint::BigInt;
 
 pub struct BlockVerifier {
     pub block: Block,
@@ -46,8 +44,8 @@ impl BlockVerifier {
         if !coinbase_tx.is_coinbase() {
             return false;
         }
-        // 2. locktime is 0
-        if coinbase_tx.lock_time != 0 {
+        // 2. locktime equals block number
+        if coinbase_tx.lock_time != self.block.header.block_num {
             return false;
         }
         // 3. version is 1
@@ -66,18 +64,12 @@ impl BlockVerifier {
         if !coinbase_script.is_push_only() {
             return false;
         }
-        // 6. block number at the top of the stack matches header
+        // 6. domain name, top of the stack, is valid
         let script_chunks = &coinbase_script.chunks;
         let chunks_len = script_chunks.len();
-        if chunks_len < 2 {
+        if chunks_len < 1 {
             return false;
         }
-        let block_num_chunk = &script_chunks[chunks_len - 1];
-        let block_num = ScriptNum::from_u8_vec(&block_num_chunk.buffer.clone().unwrap());
-        if BigInt::from(self.block.header.block_num) != block_num.num {
-            return false;
-        }
-        // 7. domain name, second to top, of stack is valid
         let domain_chunk = &script_chunks[chunks_len - 2];
         let domain_buf = domain_chunk.buffer.clone().unwrap();
         let res_domain_str = String::from_utf8(domain_buf);

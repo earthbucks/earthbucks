@@ -99,11 +99,16 @@ impl Tx {
         Self::from_u8_vec(hex::decode(hex)?)
     }
 
-    pub fn from_coinbase(input_script: Script, output_script: Script, output_amount: u64) -> Self {
+    pub fn from_coinbase(
+        input_script: Script,
+        output_script: Script,
+        output_amount: u64,
+        block_num: u64,
+    ) -> Self {
         let version = 1;
         let inputs = vec![TxInput::from_coinbase(input_script)];
         let outputs = vec![TxOutput::new(output_amount, output_script)];
-        let lock_time = 0;
+        let lock_time = block_num;
         Self::new(version, inputs, outputs, lock_time)
     }
 
@@ -432,7 +437,7 @@ mod tests {
         let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
-        let tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert_eq!(tx.version, 1);
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 1);
@@ -461,7 +466,7 @@ mod tests {
         let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
-        let tx = Tx::from_coinbase(input_script, output_script, output_amount);
+        let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert!(tx.is_coinbase());
     }
 
