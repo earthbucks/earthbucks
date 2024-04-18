@@ -6,6 +6,7 @@ pub struct MineMerkleProof {
     pub merkle_root: String,
     pub tx_id: String,
     pub merkle_proof: String,
+    pub position: u64,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -14,12 +15,14 @@ impl MineMerkleProof {
         merkle_root: String,
         tx_id: String,
         merkle_proof: String,
+        position: u64,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
         Self {
             merkle_root,
             tx_id,
             merkle_proof,
+            position,
             created_at,
         }
     }
@@ -29,6 +32,7 @@ impl MineMerkleProof {
             merkle_root: hex::encode(merkle_proof.root),
             tx_id: hex::encode(tx_id),
             merkle_proof: hex::encode(merkle_proof.to_u8_vec()),
+            position: merkle_proof.position_in_tree(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -56,8 +60,8 @@ impl MineMerkleProof {
     pub async fn upsert(&self, pool: &MySqlPool) -> Result<(), sqlx::Error> {
         sqlx::query(
             r#"
-            INSERT INTO mine_merkle_proof (merkle_root, tx_id, merkle_proof)
-            VALUES (?, ?, ?)
+            INSERT INTO mine_merkle_proof (merkle_root, tx_id, merkle_proof, position)
+            VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 merkle_proof = VALUES(merkle_proof)
             "#,
@@ -65,6 +69,7 @@ impl MineMerkleProof {
         .bind(&self.merkle_root)
         .bind(&self.tx_id)
         .bind(&self.merkle_proof)
+        .bind(self.position)
         .execute(pool)
         .await?;
         Ok(())

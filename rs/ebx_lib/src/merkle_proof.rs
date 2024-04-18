@@ -33,7 +33,7 @@ impl MerkleProof {
         proof.root == *root || proof.verify(data)
     }
 
-    pub fn position_in_tree(&self) -> usize {
+    pub fn position_in_tree(&self) -> u64 {
         let mut position = 0;
         let len = self.proof.len();
         for (i, (_, is_left)) in self.proof.iter().enumerate() {

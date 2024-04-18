@@ -26,12 +26,12 @@ export const MineHeader = mysqlTable(
     prevBlockId: char('prev_block_id', { length: 64 }).notNull(),
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
     timestamp: bigint('timestamp', {
-      mode: 'number',
+      mode: 'bigint',
       unsigned: true,
     }).notNull(),
     target: char('target', { length: 64 }).notNull(),
     nonce: char('nonce', { length: 64 }).notNull(),
-    blockNum: bigint('block_num', { mode: 'number', unsigned: true }).notNull(),
+    blockNum: bigint('block_num', { mode: 'bigint', unsigned: true }).notNull(),
     // database metadata
     isHeaderValid: tinyint('is_header_valid'),
     isBlockValid: tinyint('is_block_valid'),
@@ -58,12 +58,12 @@ export const MineLch = mysqlTable(
     prevBlockId: char('prev_block_id', { length: 64 }).notNull(),
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
     timestamp: bigint('timestamp', {
-      mode: 'number',
+      mode: 'bigint',
       unsigned: true,
     }).notNull(),
     target: char('target', { length: 64 }).notNull(),
     nonce: char('nonce', { length: 64 }).notNull(),
-    blockNum: bigint('block_num', { mode: 'number', unsigned: true }).notNull(),
+    blockNum: bigint('block_num', { mode: 'bigint', unsigned: true }).notNull(),
     // database metadata
     domain: varchar('domain', { length: 255 }).notNull(),
     createdAt: datetime('created_at', { mode: 'string' })
@@ -87,6 +87,7 @@ export const MineMerkleProof = mysqlTable(
     // data structure
     merkleProof: text('merkle_proof').notNull(),
     // database metadata
+    position: bigint('position', { mode: 'bigint', unsigned: true }).notNull(),
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -129,7 +130,7 @@ export const MineTxParsed = mysqlTable(
     version: tinyint('version', { unsigned: true }).notNull(),
     txInCount: int('tx_in_count', { unsigned: true }).notNull(),
     txOutCount: int('tx_out_count', { unsigned: true }).notNull(),
-    lockNum: bigint('lock_num', { mode: 'number', unsigned: true }).notNull(),
+    lockNum: bigint('lock_num', { mode: 'bigint', unsigned: true }).notNull(),
     // database metadata
     isValid: tinyint('is_valid'),
     isVoteValid: tinyint('is_vote_valid'),
@@ -181,7 +182,7 @@ export const MineTxOutput = mysqlTable(
     txId: char('tx_id', { length: 64 }).notNull(),
     txOutNum: int('tx_out_num', { unsigned: true }).notNull(),
     // data structure
-    value: bigint('value', { mode: 'number', unsigned: true }).notNull(),
+    value: bigint('value', { mode: 'bigint', unsigned: true }).notNull(),
     script: text('script').notNull(),
     // database metadata
     createdAt: datetime('created_at', { mode: 'string' })

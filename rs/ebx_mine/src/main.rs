@@ -154,6 +154,10 @@ async fn main() -> Result<()> {
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
                 let _ = header;
+                // TODO: Load all transactions from this merkle root
+                // let merkle_root = header.merkle_root;
+                // let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+
                 // TODO: Verify block
                 let is_block_valid = true;
                 MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)
