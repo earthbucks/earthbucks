@@ -30,7 +30,7 @@ impl PubKey {
     }
 
     pub fn to_hex(&self) -> String {
-        hex::encode(&self.buf)
+        hex::encode(self.buf)
     }
 
     pub fn from_hex(hex: &str) -> Result<PubKey, String> {
@@ -38,11 +38,11 @@ impl PubKey {
         PubKey::from_u8_vec(pub_key_buf)
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         self.to_hex()
     }
 
-    pub fn from_string(s: &str) -> Result<PubKey, String> {
+    pub fn from_string_fmt(s: &str) -> Result<PubKey, String> {
         PubKey::from_hex(s)
     }
 
@@ -75,7 +75,7 @@ mod tests {
     fn test_is_not_valid() {
         // valid: 035b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219
         let invalid = "065b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219";
-        let pub_key = PubKey::from_string(invalid).unwrap();
+        let pub_key = PubKey::from_string_fmt(invalid).unwrap();
         assert!(!pub_key.is_valid());
     }
 }

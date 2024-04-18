@@ -12,6 +12,9 @@ Genesis block in 2024.
 
 Website: [earthbucks.com](https://earthbucks.com)
 
+For more information, please see the [prompt](./docs/prompt.md), which is
+designed to be used by an AI for questions and answers about EarthBucks.
+
 ## Architecture
 
 rs/ts:

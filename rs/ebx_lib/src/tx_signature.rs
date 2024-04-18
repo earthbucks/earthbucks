@@ -15,7 +15,7 @@ impl TxSignature {
 
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut result = Vec::new();
-        result.push(self.hash_type as u8);
+        result.push(self.hash_type);
         result.extend(&self.sig_buf);
         result
     }

@@ -18,39 +18,9 @@ pub struct MineTxParsed {
 }
 
 impl MineTxParsed {
-    pub fn new(
-        id: String,
-        version: u8,
-        tx_in_count: u32,
-        tx_out_count: u32,
-        lock_num: u64,
-        is_valid: Option<bool>,
-        is_vote_valid: Option<bool>,
-        confirmed_block_id: Option<String>,
-        confirmed_merkle_root: Option<String>,
-        domain: String,
-        ebx_address: Option<String>,
-        created_at: chrono::NaiveDateTime,
-    ) -> Self {
-        Self {
-            id,
-            version,
-            lock_num,
-            tx_in_count,
-            tx_out_count,
-            is_valid,
-            is_vote_valid,
-            confirmed_block_id,
-            confirmed_merkle_root,
-            domain,
-            ebx_address,
-            created_at,
-        }
-    }
-
     pub fn from_new_tx(tx: &Tx, domain: String, ebx_address: Option<String>) -> Self {
         Self {
-            id: hex::encode(tx.id().to_vec()),
+            id: hex::encode(tx.id()),
             version: tx.version,
             tx_in_count: tx.inputs.len() as u32,
             tx_out_count: tx.outputs.len() as u32,

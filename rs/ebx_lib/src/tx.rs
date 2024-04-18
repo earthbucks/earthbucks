@@ -10,6 +10,7 @@ use crate::var_int::VarInt;
 use secp256k1::ecdsa::Signature;
 use secp256k1::{Message, PublicKey, Secp256k1};
 
+#[derive(Debug, Default)]
 pub struct HashCache {
     pub prevouts_hash: Option<Vec<u8>>,
     pub sequence_hash: Option<Vec<u8>>,
@@ -91,11 +92,11 @@ impl Tx {
         hex::encode(self.to_u8_vec())
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         hex::encode(self.to_u8_vec())
     }
 
-    pub fn from_string(hex: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_string_fmt(hex: &str) -> Result<Self, Box<dyn std::error::Error>> {
         Self::from_u8_vec(hex::decode(hex)?)
     }
 
@@ -423,8 +424,8 @@ mod tests {
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
-        let hex = tx.to_string();
-        let tx2 = Tx::from_string(&hex).unwrap();
+        let hex = tx.to_string_fmt();
+        let tx2 = Tx::from_string_fmt(&hex).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
@@ -521,9 +522,9 @@ mod tests {
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
 
-        let tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0);
 
         let result = tx.hash_prevouts();
 
@@ -544,9 +545,9 @@ mod tests {
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
 
-        let tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0);
 
         let result = tx.hash_sequence();
 
@@ -567,9 +568,9 @@ mod tests {
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
 
-        let tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let tx = Tx::new(version, inputs, outputs, 0);
 
         let result = tx.hash_outputs();
 
@@ -590,9 +591,9 @@ mod tests {
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
 
-        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0);
 
         let script = Script::from_string("").unwrap();
         let amount = 1;
@@ -614,9 +615,9 @@ mod tests {
             Script::from_string("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100 as u64, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
 
-        let mut tx = Tx::new(version, inputs, outputs, 0 as u64);
+        let mut tx = Tx::new(version, inputs, outputs, 0);
 
         let script = Script::from_string("").unwrap();
         let amount = 1;
@@ -647,13 +648,13 @@ mod tests {
             0xffffffff,
         )];
         assert_eq!(
-            hex::encode(&inputs[0].to_u8_vec()),
+            hex::encode(inputs[0].to_u8_vec()),
             "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
         );
         let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
-        assert_eq!(hex::encode(&outputs[0].to_u8_vec()), "000000000000006400");
+        assert_eq!(hex::encode(outputs[0].to_u8_vec()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(&tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
 
         // Act
         let signature = tx.sign_no_cache(
@@ -666,7 +667,7 @@ mod tests {
 
         // Assert
         let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
-        assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
+        assert_eq!(hex::encode(signature.to_u8_vec()), expected_signature_hex);
 
         // Arrange
         // let key = KeyPair::new(private_key);
@@ -700,13 +701,13 @@ mod tests {
             0xffffffff,
         )];
         assert_eq!(
-            hex::encode(&inputs[0].to_u8_vec()),
+            hex::encode(inputs[0].to_u8_vec()),
             "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
         );
         let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
-        assert_eq!(hex::encode(&outputs[0].to_u8_vec()), "000000000000006400");
+        assert_eq!(hex::encode(outputs[0].to_u8_vec()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(&tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_u8_vec()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
         let hash_cache_1 = &mut HashCache::new();
 
         // Act
@@ -721,7 +722,7 @@ mod tests {
 
         // Assert
         let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
-        assert_eq!(hex::encode(&signature.to_u8_vec()), expected_signature_hex);
+        assert_eq!(hex::encode(signature.to_u8_vec()), expected_signature_hex);
 
         // Arrange
         // let key = KeyPair::new(private_key);

@@ -34,5 +34,6 @@
   "[sql]": {
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   },
-  "sql-formatter.uppercase": true
+  "sql-formatter.uppercase": true,
+  "rust-analyzer.check.command": "clippy"
 }

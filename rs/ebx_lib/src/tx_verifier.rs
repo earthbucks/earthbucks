@@ -24,7 +24,7 @@ impl<'a> TxVerifier<'a> {
         let output_index = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_map.get(tx_out_hash, output_index);
         match tx_out {
-            None => return false,
+            None => false,
             Some(tx_out) => {
                 let output_script = &tx_out.script;
                 let input_script = &tx_input.script;
@@ -34,7 +34,7 @@ impl<'a> TxVerifier<'a> {
                 let stack: Vec<Vec<u8>> = input_script
                     .chunks
                     .iter()
-                    .map(|chunk| chunk.buffer.clone().unwrap_or_else(Vec::new))
+                    .map(|chunk| chunk.buffer.clone().unwrap())
                     .collect();
                 let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
                     output_script.clone(),
@@ -44,8 +44,7 @@ impl<'a> TxVerifier<'a> {
                     tx_out.value,
                     &mut self.hash_cache,
                 );
-                let result = script_interpreter.eval_script();
-                return result;
+                script_interpreter.eval_script()
             }
         }
     }
@@ -154,7 +153,7 @@ mod tests {
             pkh_key_map.add(key, &pkh.pkh);
             let script = Script::from_pkh_output(&pkh.pkh);
             let output = TxOutput::new(100, script);
-            tx_out_map.add(output, &vec![0; 32], i);
+            tx_out_map.add(output, &[0; 32], i);
         }
 
         let change_script = Script::from_string("").unwrap();
@@ -172,20 +171,20 @@ mod tests {
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
-        assert_eq!(signed, true);
+        assert!(signed);
 
         let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
         let verified_input = tx_verifier.verify_input_script(0);
-        assert_eq!(verified_input, true);
+        assert!(verified_input);
 
         let verified_scripts = tx_verifier.verify_scripts();
-        assert_eq!(verified_scripts, true);
+        assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
-        assert_eq!(verified_output_values, true);
+        assert!(verified_output_values);
 
         let verified = tx_verifier.verify(0);
-        assert_eq!(verified, true);
+        assert!(verified);
     }
 
     #[test]
@@ -199,7 +198,7 @@ mod tests {
             pkh_key_map.add(key, &pkh.pkh);
             let script = Script::from_pkh_output(&pkh.pkh);
             let output = TxOutput::new(100, script);
-            tx_out_map.add(output, &vec![0; 32], i);
+            tx_out_map.add(output, &[0; 32], i);
         }
 
         let change_script = Script::from_string("").unwrap();
@@ -217,20 +216,20 @@ mod tests {
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
-        assert_eq!(signed, true);
+        assert!(signed);
 
         let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
         let verified_input = tx_verifier.verify_input_script(0);
-        assert_eq!(verified_input, true);
+        assert!(verified_input);
 
         let verified_scripts = tx_verifier.verify_scripts();
-        assert_eq!(verified_scripts, true);
+        assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
-        assert_eq!(verified_output_values, true);
+        assert!(verified_output_values);
 
         let verified = tx_verifier.verify(0);
-        assert_eq!(verified, false);
+        assert!(!verified);
     }
 
     #[test]
@@ -244,7 +243,7 @@ mod tests {
             pkh_key_map.add(key, &pkh.pkh);
             let script = Script::from_pkh_output(&pkh.pkh);
             let output = TxOutput::new(100, script);
-            tx_out_map.add(output, &vec![0; 32], i);
+            tx_out_map.add(output, &[0; 32], i);
         }
 
         let change_script = Script::from_string("").unwrap();
@@ -262,24 +261,24 @@ mod tests {
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed1 = tx_signer.sign(0);
-        assert_eq!(signed1, true);
+        assert!(signed1);
         let signed2 = tx_signer.sign(1);
-        assert_eq!(signed2, true);
+        assert!(signed2);
         let signed_tx = tx_signer.tx;
 
         let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
         let verified_input1 = tx_verifier.verify_input_script(0);
-        assert_eq!(verified_input1, true);
+        assert!(verified_input1);
         let verified_input2 = tx_verifier.verify_input_script(1);
-        assert_eq!(verified_input2, true);
+        assert!(verified_input2);
 
         let verified_scripts = tx_verifier.verify_scripts();
-        assert_eq!(verified_scripts, true);
+        assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
-        assert_eq!(verified_output_values, true);
+        assert!(verified_output_values);
 
         let verified = tx_verifier.verify(0);
-        assert_eq!(verified, true);
+        assert!(verified);
     }
 }

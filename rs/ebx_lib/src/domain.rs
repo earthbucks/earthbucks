@@ -13,10 +13,6 @@ impl Domain {
         Self::new(domain_str)
     }
 
-    pub fn to_string(&self) -> String {
-        self.domain_str.clone()
-    }
-
     pub fn is_valid(&self) -> bool {
         Self::is_valid_domain(&self.domain_str)
     }
@@ -72,28 +68,13 @@ mod tests {
 
     #[test]
     fn test_is_valid_domain() {
-        assert_eq!(
-            Domain::from_string("earthbucks.com".to_string()).is_valid(),
-            true
-        );
-        assert_eq!(
-            Domain::from_string("earthbucks.com.".to_string()).is_valid(),
-            false
-        );
-        assert_eq!(
-            Domain::from_string(".earthbucks.com".to_string()).is_valid(),
-            false
-        );
-        assert_eq!(
-            Domain::from_string("node.node.node.node.earthbucks.com".to_string()).is_valid(),
-            true
-        );
-        assert_eq!(
-            Domain::from_string(
-                "node.node.node.node.node.node.node.node.node.earthbucks.com".to_string()
-            )
-            .is_valid(),
-            false
-        );
+        assert!(Domain::from_string("earthbucks.com".to_string()).is_valid());
+        assert!(!Domain::from_string("earthbucks.com.".to_string()).is_valid());
+        assert!(!Domain::from_string(".earthbucks.com".to_string()).is_valid());
+        assert!(Domain::from_string("node.node.node.node.earthbucks.com".to_string()).is_valid());
+        assert!(!Domain::from_string(
+            "node.node.node.node.node.node.node.node.node.earthbucks.com".to_string()
+        )
+        .is_valid());
     }
 }

@@ -120,15 +120,15 @@ impl Header {
         Header::from_u8_vec(buf)
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         self.to_hex()
     }
 
-    pub fn from_string(hex: &str) -> Result<Header, &'static str> {
+    pub fn from_string_fmt(hex: &str) -> Result<Header, &'static str> {
         Header::from_hex(hex)
     }
 
-    pub fn is_valid_target(&self, lch: &Vec<Header>) -> bool {
+    pub fn is_valid_target(&self, lch: &[Header]) -> bool {
         let new_target_res = Header::new_target_from_lch(lch, self.timestamp);
         if new_target_res.is_err() {
             return false;
@@ -155,7 +155,7 @@ impl Header {
         if len != Header::BLOCK_HEADER_SIZE {
             return false;
         }
-        return Header::is_valid_version(self.version);
+        Header::is_valid_version(self.version)
     }
 
     pub fn is_valid_at_timestamp(&self, timestamp: u64) -> bool {
@@ -165,14 +165,14 @@ impl Header {
         true
     }
 
-    pub fn is_valid_in_lch(&self, lch: &Vec<Header>) -> bool {
+    pub fn is_valid_in_lch(&self, lch: &[Header]) -> bool {
         if !self.is_valid_in_isolation() {
             return false;
         }
         if self.block_num == 0 {
             return self.is_genesis();
         }
-        if lch.len() == 0 {
+        if lch.is_empty() {
             return false;
         }
         if self.block_num != lch.len() as u64 {
@@ -193,11 +193,11 @@ impl Header {
         true
     }
 
-    pub fn is_valid_at(&self, lch: &Vec<Header>, timestamp: u64) -> bool {
+    pub fn is_valid_at(&self, lch: &[Header], timestamp: u64) -> bool {
         self.is_valid_in_lch(lch) && self.is_valid_at_timestamp(timestamp)
     }
 
-    pub fn is_valid_now(&self, lch: &Vec<Header>) -> bool {
+    pub fn is_valid_now(&self, lch: &[Header]) -> bool {
         let now = Header::get_new_timestamp();
         self.is_valid_at(lch, now)
     }
@@ -235,8 +235,8 @@ impl Header {
             .as_secs()
     }
 
-    pub fn from_lch(lch: &Vec<Header>, new_timestamp: u64) -> Result<Self, String> {
-        if lch.len() == 0 {
+    pub fn from_lch(lch: &[Header], new_timestamp: u64) -> Result<Self, String> {
+        if lch.is_empty() {
             return Ok(Header::from_genesis(new_timestamp));
         }
         let new_target_res = Header::new_target_from_lch(lch, new_timestamp);
@@ -259,14 +259,13 @@ impl Header {
         ))
     }
 
-    pub fn new_target_from_lch(lch: &Vec<Header>, new_timestamp: u64) -> Result<[u8; 32], String> {
+    pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<[u8; 32], String> {
         // get slice of max length BLOCKS_PER_TARGET_ADJ
-        let adjh: Vec<Header>;
-        if lch.len() > Header::BLOCKS_PER_TARGET_ADJ as usize {
-            adjh = lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ as usize..].to_vec();
+        let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ as usize {
+            lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ as usize..].to_vec()
         } else {
-            adjh = lch.clone();
-        }
+            lch.to_vec().clone()
+        };
 
         // convert all targets into big numbers
         let len = adjh.len();
@@ -315,14 +314,13 @@ impl Header {
         // the fewest divisions is the most accurate in integer arithmetic...
         let intended_time_diff = BigUint::from(len_usize as u64 * Header::BLOCK_INTERVAL);
         let len = BigUint::from(len_usize);
-        let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
-        new_target
+        (target_sum * real_time_diff) / (len * intended_time_diff)
     }
 
     pub fn coinbase_amount(block_num: u64) -> u64 {
         // shift every 210,000 blocks
         let shift_by = block_num / 210_000;
-        100 * 100_000_000 >> shift_by
+        (100 * 100_000_000) >> shift_by
     }
 }
 

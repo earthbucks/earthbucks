@@ -19,38 +19,6 @@ pub struct MineHeader {
 }
 
 impl MineHeader {
-    pub fn new(
-        id: String,
-        version: u32,
-        prev_block_id: String,
-        merkle_root: String,
-        timestamp: u64,
-        target: String,
-        nonce: String,
-        block_num: u64,
-        is_header_valid: Option<bool>,
-        is_block_valid: Option<bool>,
-        is_vote_valid: Option<bool>,
-        domain: String,
-        created_at: chrono::NaiveDateTime,
-    ) -> Self {
-        Self {
-            id,
-            version,
-            prev_block_id,
-            merkle_root,
-            timestamp,
-            target,
-            nonce,
-            block_num,
-            is_header_valid,
-            is_block_valid,
-            is_vote_valid,
-            domain,
-            created_at,
-        }
-    }
-
     pub fn from_header(header: &Header, domain: String) -> Self {
         Self {
             id: hex::encode(header.id()),

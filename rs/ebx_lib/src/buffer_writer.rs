@@ -1,5 +1,7 @@
 use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
 
+// add Default
+#[derive(Default)]
 pub struct BufferWriter {
     bufs: Vec<Vec<u8>>,
 }
@@ -284,8 +286,7 @@ mod tests {
     #[test]
     fn test_var_int_buf() {
         // Test case where n < 253
-        let mut buf = vec![];
-        buf.push(100 as u8);
+        let buf: Vec<u8> = vec![100];
         assert_eq!(BufferWriter::var_int_buf(100), buf);
 
         // Test case where 253 <= n < 0x10000

@@ -45,10 +45,9 @@ impl ScriptNum {
         } else {
             let bit_length = self.num.bits();
             let byte_length = (bit_length + 7) / 8;
-            let twos_complement = (BigInt::from(2).pow((byte_length * 8) as u32) + &self.num)
+            (BigInt::from(2).pow((byte_length * 8) as u32) + &self.num)
                 .to_bytes_be()
-                .1;
-            twos_complement
+                .1
         }
     }
 
@@ -60,11 +59,11 @@ impl ScriptNum {
         hex::encode(self.to_u8_vec())
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         self.num.to_str_radix(10)
     }
 
-    pub fn from_string(str: &str) -> Self {
+    pub fn from_string_fmt(str: &str) -> Self {
         ScriptNum {
             num: BigInt::parse_bytes(str.as_bytes(), 10).unwrap(),
         }
@@ -86,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_script_num() {
-        let original_num = ScriptNum::from_string("123456789");
+        let original_num = ScriptNum::from_string_fmt("123456789");
         let bytes = original_num.to_u8_vec();
         let new_num = ScriptNum::from_u8_vec(&bytes);
         assert_eq!(original_num.num, new_num.num);
@@ -115,7 +114,7 @@ mod tests {
 
         for (hex, dec) in test_cases {
             let num_from_hex = ScriptNum::from_u8_vec(&hex::decode(hex).unwrap());
-            let num_from_dec = ScriptNum::from_string(dec);
+            let num_from_dec = ScriptNum::from_string_fmt(dec);
             assert_eq!(num_from_hex.num, num_from_dec.num);
 
             let hex_from_num = hex::encode(num_from_hex.to_u8_vec());

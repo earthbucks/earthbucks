@@ -13,17 +13,9 @@ pub struct MineTxRaw {
 }
 
 impl MineTxRaw {
-    pub fn new(id: String, tx_raw: String, created_at: chrono::NaiveDateTime) -> Self {
-        Self {
-            id,
-            tx_raw,
-            created_at,
-        }
-    }
-
     pub fn from_tx(tx: &Tx) -> Self {
         Self {
-            id: hex::encode(tx.id().to_vec()),
+            id: hex::encode(tx.id()),
             tx_raw: hex::encode(tx.to_u8_vec()),
             created_at: chrono::Utc::now().naive_utc(),
         }
@@ -55,8 +47,8 @@ impl MineTxRaw {
         let ebx_address = mine_tx_parsed.ebx_address.clone();
         let created_at = mine_tx_parsed.created_at;
 
-        let tx_inputs = MineTxInput::from_tx(&tx);
-        let tx_outputs = MineTxOutput::from_tx(&tx);
+        let tx_inputs = MineTxInput::from_tx(tx);
+        let tx_outputs = MineTxOutput::from_tx(tx);
 
         let mut transaction = pool.begin().await?;
 
@@ -69,7 +61,7 @@ impl MineTxRaw {
               VALUES (?, ?, ?)
               "#,
                 )
-                .bind(&id)
+                .bind(id)
                 .bind(tx_raw_hex)
                 .bind(created_at),
             )
@@ -84,7 +76,7 @@ impl MineTxRaw {
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               "#,
               )
-              .bind(&id)
+              .bind(id)
               .bind(version)
               .bind(tx_in_count)
               .bind(tx_out_count)

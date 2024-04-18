@@ -38,7 +38,7 @@ impl BlockVerifier {
     pub fn has_valid_coinbase(&self) -> bool {
         // 1. coinbase tx is first tx
         let txs = &self.block.txs;
-        if txs.len() == 0 {
+        if txs.is_empty() {
             return false;
         }
         let coinbase_tx = &txs[0];

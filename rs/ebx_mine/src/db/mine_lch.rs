@@ -20,32 +20,6 @@ pub struct MineLch {
 
 // longest chain header
 impl MineLch {
-    pub fn new(
-        id: String,
-        version: u32,
-        prev_block_id: String,
-        merkle_root: String,
-        timestamp: u64,
-        target: String,
-        nonce: String,
-        block_num: u64,
-        domain: String,
-        created_at: chrono::NaiveDateTime,
-    ) -> Self {
-        Self {
-            id,
-            version,
-            prev_block_id,
-            merkle_root,
-            timestamp,
-            target,
-            nonce,
-            block_num,
-            domain,
-            created_at,
-        }
-    }
-
     pub fn from_mine_header(header: &MineHeader) -> Self {
         Self {
             id: header.id.clone(),
@@ -61,7 +35,7 @@ impl MineLch {
         }
     }
 
-    pub fn from_block_header(header: &Header, domain: &String) -> Self {
+    pub fn from_block_header(header: &Header, domain: &str) -> Self {
         Self {
             id: hex::encode(header.id()),
             version: header.version,
@@ -71,7 +45,7 @@ impl MineLch {
             target: hex::encode(header.target),
             nonce: hex::encode(header.nonce),
             block_num: header.block_num,
-            domain: domain.clone(),
+            domain: domain.to_string(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
@@ -156,13 +130,13 @@ impl MineLch {
             "#,
         )
         .bind(&self.id)
-        .bind(&self.version)
+        .bind(self.version)
         .bind(&self.prev_block_id)
         .bind(&self.merkle_root)
-        .bind(&self.timestamp)
+        .bind(self.timestamp)
         .bind(&self.target)
         .bind(&self.nonce)
-        .bind(&self.block_num)
+        .bind(self.block_num)
         .bind(&self.domain)
         .execute(pool)
         .await?;

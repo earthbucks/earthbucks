@@ -13,7 +13,7 @@ impl Script {
     }
 
     pub fn self_from_string(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        if s == "" {
+        if s.is_empty() {
             return Ok(Self::new(Vec::new()));
         }
         let chunks: Result<Vec<ScriptChunk>, _> = s
@@ -56,7 +56,7 @@ impl Script {
                 let len = match chunk.opcode {
                     opcode if opcode == OP["PUSHDATA1"] => reader.read_u8() as u32,
                     opcode if opcode == OP["PUSHDATA2"] => reader.read_u16_be() as u32,
-                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be() as u32,
+                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be(),
                     _ => unreachable!(),
                 };
 

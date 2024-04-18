@@ -49,7 +49,7 @@ impl PrivKey {
     }
 
     pub fn to_hex(&self) -> String {
-        hex::encode(&self.buf)
+        hex::encode(self.buf)
     }
 
     pub fn from_hex(hex: &str) -> Result<Self, String> {
@@ -57,11 +57,11 @@ impl PrivKey {
         PrivKey::from_u8_vec(priv_key_vec)
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         self.to_hex()
     }
 
-    pub fn from_string(s: &str) -> Result<Self, String> {
+    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
         PrivKey::from_hex(s)
     }
 }
@@ -80,7 +80,7 @@ mod tests {
     fn test_to_pub_key_buf() {
         let priv_key = PrivKey::from_random();
         let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
-        println!("pub_key_buf: {}", hex::encode(&pub_key_buf));
+        println!("pub_key_buf: {}", hex::encode(pub_key_buf));
     }
 
     #[test]
@@ -101,15 +101,15 @@ mod tests {
     #[test]
     fn test_to_string() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_string();
+        let s = priv_key.to_string_fmt();
         println!("s: {}", s);
     }
 
     #[test]
     fn test_from_string() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_string();
-        let priv_key2 = PrivKey::from_string(&s).unwrap();
+        let s = priv_key.to_string_fmt();
+        let priv_key2 = PrivKey::from_string_fmt(&s).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }
 

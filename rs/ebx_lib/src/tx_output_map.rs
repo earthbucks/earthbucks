@@ -2,7 +2,7 @@ use crate::tx::Tx;
 use crate::tx_output::TxOutput;
 use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct TxOutputMap {
     pub map: HashMap<String, TxOutput>,
 }
@@ -47,7 +47,7 @@ impl TxOutputMap {
 
     pub fn add_tx_outputs(&mut self, tx: &Tx) {
         for (output_index, output) in tx.outputs.iter().enumerate() {
-            self.add(output.clone(), &tx.id().to_vec(), output_index as u32);
+            self.add(output.clone(), &tx.id(), output_index as u32);
         }
     }
 }

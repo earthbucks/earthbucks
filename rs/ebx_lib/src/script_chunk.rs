@@ -34,7 +34,7 @@ impl ScriptChunk {
 
     pub fn from_string(&mut self, str: String) -> Result<(), Box<dyn Error>> {
         if str.starts_with("0x") {
-            let buffer = hex::decode(&str[2..])?;
+            let buffer = hex::decode(str.strip_prefix("0x").unwrap())?;
             let len = buffer.len();
             self.buffer = Some(buffer);
             if len <= 0xff {
@@ -141,7 +141,7 @@ impl ScriptChunk {
     }
 
     pub fn from_small_number(n: i8) -> ScriptChunk {
-        if n == -1 || (n >= 1 && n <= 16) {
+        if n == -1 || (1..=16).contains(&n) {
             ScriptChunk::new(n as u8 + *OP.get("1").unwrap() - 1, None)
         } else {
             ScriptChunk::new(0, None)

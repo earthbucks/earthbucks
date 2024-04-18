@@ -35,7 +35,7 @@ impl BlockBuilder {
         let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
         let txs = vec![coinbase_tx];
         let merkle_txs = MerkleTxs::new(txs.clone());
-        let root: [u8; 32] = merkle_txs.root.clone().try_into().unwrap();
+        let root: [u8; 32] = merkle_txs.root;
         header.merkle_root = root;
         Self::new(header, txs, merkle_txs)
     }

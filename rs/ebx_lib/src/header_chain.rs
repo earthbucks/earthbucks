@@ -1,5 +1,7 @@
 use crate::{header::Header, pkh::Pkh, script::Script, script_chunk::ScriptChunk, tx::Tx};
 
+// add Default
+#[derive(Default)]
 pub struct HeaderChain {
     pub headers: Vec<Header>,
 }
@@ -35,13 +37,12 @@ impl HeaderChain {
         let input_script = Script::new(vec![script_chunk_domain]);
         let output_script = Script::from_pkh_output(&pkh.pkh);
         let output_amount = Header::coinbase_amount(building_block_n as u64);
-        let coinbase_tx = Tx::from_coinbase(
+        Tx::from_coinbase(
             input_script,
             output_script,
             output_amount,
             building_block_n as u64,
-        );
-        coinbase_tx
+        )
     }
 
     pub fn get_next_header(

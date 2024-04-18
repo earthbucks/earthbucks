@@ -1,13 +1,14 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_lib::{
-    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx
+    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
+    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
 };
 use ebx_mine::db::{
     mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
     mine_tx_parsed::MineTxParsed, mine_tx_raw::MineTxRaw,
 };
-use env_logger;
+
 use log::{debug, error, info};
 use sqlx::mysql::MySqlPool;
 use std::{env, error::Error};
@@ -34,7 +35,7 @@ impl EnvConfig {
 
         let domain_priv_key_str =
             env::var("DOMAIN_PRIV_KEY").map_err(|_| "Missing domain priv key".to_string())?;
-        let domain_priv_key: PrivKey = PrivKey::from_string(&domain_priv_key_str)
+        let domain_priv_key: PrivKey = PrivKey::from_string_fmt(&domain_priv_key_str)
             .map_err(|e| format!("Invalid domain priv key: {}", e))?;
 
         let domain_key_pair: KeyPair = KeyPair::from_priv_key(&domain_priv_key)
@@ -47,7 +48,7 @@ impl EnvConfig {
 
         let admin_pub_key_str =
             env::var("ADMIN_PUB_KEY").map_err(|_| "Missing admin pub key".to_string())?;
-        let admin_pub_key: PubKey = PubKey::from_string(&admin_pub_key_str)
+        let admin_pub_key: PubKey = PubKey::from_string_fmt(&admin_pub_key_str)
             .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
         let database_url =
@@ -95,7 +96,7 @@ async fn main() -> Result<()> {
 
         // 1. Synchronize memory with longest chain from DB
         {
-            if longest_chain.headers.len() == 0 {
+            if longest_chain.headers.is_empty() {
                 longest_chain = MineLch::get_longest_chain(&pool).await?;
             } else {
                 let db_chain_tip_id_opt: Option<String> = MineLch::get_chain_tip_id(&pool).await;
@@ -104,8 +105,7 @@ async fn main() -> Result<()> {
                     anyhow::bail!("Longest chain in memory does not match database.")
                 } else {
                     let db_chain_tip_id_hex = db_chain_tip_id_opt.unwrap();
-                    let mem_chain_tip_id_hex =
-                        hex::encode(longest_chain.get_tip().unwrap().id().to_vec());
+                    let mem_chain_tip_id_hex = hex::encode(longest_chain.get_tip().unwrap().id());
                     if db_chain_tip_id_hex != mem_chain_tip_id_hex {
                         // TODO: Load only new block headers
                         longest_chain = MineLch::get_longest_chain(&pool).await?;
@@ -131,15 +131,19 @@ async fn main() -> Result<()> {
                 // if votes are valid, mark as such
                 // TODO: Gather and assess votes
                 // TODO: This should be a transaction
-                MineHeader::update_is_vote_valid(&new_mine_header.id, true, &pool).await?;
+                let is_block_voted = true;
+                MineHeader::update_is_vote_valid(&new_mine_header.id, is_block_voted, &pool)
+                    .await?;
                 let mine_lch = MineLch::from_mine_header(new_mine_header);
                 let res = mine_lch.save(&pool).await;
                 if let Err(e) = res {
-                    error!("Failed to save new blbock header: {}", e);
+                    error!("Failed to save new block header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
                 info!("New longest chain tip ID: {}", mine_lch.id);
-                continue 'main_loop;
+                if is_block_voted {
+                    continue 'main_loop;
+                }
             }
         }
 
@@ -151,12 +155,16 @@ async fn main() -> Result<()> {
                 let header = new_mine_header.to_block_header();
                 let _ = header;
                 // TODO: Verify block
-                MineHeader::update_is_block_valid(&new_mine_header.id, true, &pool).await?;
+                let is_block_valid = true;
+                MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)
+                    .await?;
                 info!(
                     "New validated block ID: {}",
                     Buffer::from(header.id().to_vec()).to_hex()
                 );
-                continue 'main_loop;
+                if is_block_valid {
+                    continue 'main_loop;
+                }
             }
         }
 
@@ -202,10 +210,10 @@ async fn main() -> Result<()> {
             {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
-                let coinbase_tx_id = hex::encode(coinbase_tx.id().to_vec());
+                let coinbase_tx_id = hex::encode(coinbase_tx.id());
                 debug!("Coinbase tx ID: {}", coinbase_tx_id);
                 let coinbase_mine_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
-                if let Err(_) = coinbase_mine_tx {
+                if coinbase_mine_tx.is_err() {
                     info!("Inserting coinbase tx ID: {}", coinbase_tx_id);
                     let ebx_address: Option<String> = None;
                     let res_tx_id = MineTxRaw::parse_and_insert(
@@ -240,7 +248,7 @@ async fn main() -> Result<()> {
                 for (tx, proof) in merkle_txs.get_iterator() {
                     // TODO: This should be a transaction
                     let mine_merkle_proof =
-                        MineMerkleProof::from_merkle_proof(&proof, tx.id().to_vec());
+                        MineMerkleProof::from_merkle_proof(proof, tx.id().to_vec());
                     let res = mine_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
                         error!("Failed to upsert merkle proof: {}", e);
@@ -263,7 +271,7 @@ async fn main() -> Result<()> {
             // Save candidate header
             let mine_header = MineHeader::from_header(&header, config.domain.clone());
             let res = MineHeader::get(&mine_header.id, &pool).await;
-            if let Ok(_) = res {
+            if res.is_ok() {
                 // this can hypothetically happen if timestamp is the same
                 debug!(
                     "Candidate header already exists: {}",

@@ -1,7 +1,7 @@
 use crate::key_pair::KeyPair;
 use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct PkhKeyMap {
     map: HashMap<String, KeyPair>,
 }
@@ -50,8 +50,8 @@ mod tests {
         pkh_key_map.add(key.clone(), &pkh_u8_vec);
         let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
         assert_eq!(
-            hex::encode(&retrieved_key.priv_key.buf),
-            hex::encode(&key.priv_key.buf)
+            hex::encode(retrieved_key.priv_key.buf),
+            hex::encode(key.priv_key.buf)
         );
     }
 
@@ -77,8 +77,8 @@ mod tests {
         pkh_key_map.add(key.clone(), &pkh_u8_vec);
         let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
         assert_eq!(
-            hex::encode(&retrieved_key.priv_key.buf),
-            hex::encode(&key.priv_key.buf)
+            hex::encode(retrieved_key.priv_key.buf),
+            hex::encode(key.priv_key.buf)
         );
     }
 
@@ -98,11 +98,11 @@ mod tests {
         let values: Vec<&KeyPair> = pkh_key_map.values().collect();
         assert_eq!(values.len(), 2);
 
-        let key1_encoded = hex::encode(&key1.priv_key.buf);
-        let key2_encoded = hex::encode(&key2.priv_key.buf);
+        let key1_encoded = hex::encode(key1.priv_key.buf);
+        let key2_encoded = hex::encode(key2.priv_key.buf);
         let values_encoded: Vec<String> = values
             .iter()
-            .map(|value| hex::encode(&value.priv_key.buf))
+            .map(|value| hex::encode(value.priv_key.buf))
             .collect();
 
         assert!(values_encoded.contains(&key1_encoded));

@@ -24,59 +24,27 @@ pub struct ScriptInterpreter<'a> {
 }
 
 impl<'a> ScriptInterpreter<'a> {
-    pub fn new(
-        script: Script,
-        tx: Tx,
-        n_in: usize,
-        stack: Vec<Vec<u8>>,
-        alt_stack: Vec<Vec<u8>>,
-        pc: usize,
-        n_op_count: usize,
-        if_stack: Vec<bool>,
-        return_value: Option<Vec<u8>>,
-        return_success: Option<bool>,
-        err_str: String,
-        value: u64,
-        hash_cache: &'a mut HashCache,
-    ) -> Self {
-        Self {
-            script,
-            tx,
-            n_in,
-            stack,
-            alt_stack,
-            pc,
-            n_op_count,
-            if_stack,
-            return_value,
-            return_success,
-            err_str,
-            value,
-            hash_cache,
-        }
-    }
-
     pub fn from_script_tx(
         script: Script,
         tx: Tx,
         n_in: usize,
         hash_cache: &'a mut HashCache,
     ) -> Self {
-        Self::new(
+        Self {
             script,
             tx,
             n_in,
-            Vec::new(),
-            Vec::new(),
-            0,
-            0,
-            Vec::new(),
-            None,
-            None,
-            "".to_string(),
-            0 as u64,
+            stack: Vec::new(),
+            alt_stack: Vec::new(),
+            pc: 0,
+            n_op_count: 0,
+            if_stack: Vec::new(),
+            return_value: None,
+            return_success: None,
+            err_str: "".to_string(),
+            value: 0,
             hash_cache,
-        )
+        }
     }
 
     pub fn from_output_script_tx(
@@ -87,24 +55,24 @@ impl<'a> ScriptInterpreter<'a> {
         value: u64,
         hash_cache: &'a mut HashCache,
     ) -> Self {
-        Self::new(
+        Self {
             script,
             tx,
             n_in,
             stack,
-            Vec::new(),
-            0,
-            0,
-            Vec::new(),
-            None,
-            None,
-            "".to_string(),
+            alt_stack: Vec::new(),
+            pc: 0,
+            n_op_count: 0,
+            if_stack: Vec::new(),
+            return_value: None,
+            return_success: None,
+            err_str: "".to_string(),
             value,
             hash_cache,
-        )
+        }
     }
 
-    pub fn cast_to_bool(buf: &Vec<u8>) -> bool {
+    pub fn cast_to_bool(buf: &[u8]) -> bool {
         !buf.iter().all(|&x| x == 0)
     }
 
@@ -123,7 +91,7 @@ impl<'a> ScriptInterpreter<'a> {
                 if opcode == OP["IF"] {
                     let mut if_value = false;
                     if if_exec {
-                        if self.stack.len() < 1 {
+                        if self.stack.is_empty() {
                             self.err_str = "unbalanced conditional".to_string();
                             break;
                         }
@@ -134,7 +102,7 @@ impl<'a> ScriptInterpreter<'a> {
                 } else if opcode == OP["NOTIF"] {
                     let mut if_value = false;
                     if if_exec {
-                        if self.stack.len() < 1 {
+                        if self.stack.is_empty() {
                             self.err_str = "unbalanced conditional".to_string();
                             break;
                         }
@@ -167,7 +135,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid pushdata".to_string();
                     }
                 } else if opcode == OP["1NEGATE"] {
-                    let script_num = ScriptNum::new(-1.to_bigint().unwrap());
+                    let script_num = ScriptNum::new((-1).to_bigint().unwrap());
                     self.stack.push(script_num.to_u8_vec());
                 } else if opcode == OP["1"] {
                     let script_num = ScriptNum::new(1.into());
@@ -218,7 +186,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let script_num = ScriptNum::new(16.into());
                     self.stack.push(script_num.to_u8_vec());
                 } else if opcode == OP["VERIFY"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -230,13 +198,13 @@ impl<'a> ScriptInterpreter<'a> {
                 } else if opcode == OP["RETURN"] {
                     break;
                 } else if opcode == OP["TOALTSTACK"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     self.alt_stack.push(self.stack.pop().unwrap());
                 } else if opcode == OP["FROMALTSTACK"] {
-                    if self.alt_stack.len() < 1 {
+                    if self.alt_stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -300,7 +268,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(buf1);
                     self.stack.push(buf2);
                 } else if opcode == OP["IFDUP"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -312,13 +280,13 @@ impl<'a> ScriptInterpreter<'a> {
                     let script_num = ScriptNum::new(self.stack.len().to_bigint().unwrap());
                     self.stack.push(script_num.to_u8_vec());
                 } else if opcode == OP["DROP"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     self.stack.pop();
                 } else if opcode == OP["DUP"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -340,7 +308,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let buf = self.stack[self.stack.len() - 2].clone();
                     self.stack.push(buf);
                 } else if opcode == OP["PICK"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -359,7 +327,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let buf = self.stack[self.stack.len() - num - 1].clone();
                     self.stack.push(buf);
                 } else if opcode == OP["ROLL"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -462,7 +430,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_buf = buf[buf.len() - len..buf.len()].to_vec();
                     self.stack.push(new_buf);
                 } else if opcode == OP["SIZE"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -470,14 +438,12 @@ impl<'a> ScriptInterpreter<'a> {
                         ScriptNum::new(self.stack[self.stack.len() - 1].len().to_bigint().unwrap());
                     self.stack.push(script_num.to_u8_vec());
                 } else if opcode == OP["INVERT"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     let mut buf = self.stack.pop().unwrap();
-                    for i in 0..buf.len() {
-                        buf[i] = !buf[i];
-                    }
+                    buf.iter_mut().for_each(|byte| *byte = !*byte);
                     self.stack.push(buf);
                 } else if opcode == OP["AND"] {
                     if self.stack.len() < 2 {
@@ -557,7 +523,7 @@ impl<'a> ScriptInterpreter<'a> {
                         break;
                     }
                 } else if opcode == OP["1ADD"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -565,7 +531,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_num = script_num.num + 1.to_bigint().unwrap();
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["1SUB"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -573,7 +539,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_num = script_num.num - 1.to_bigint().unwrap();
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["2MUL"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -581,7 +547,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_num = script_num.num * 2.to_bigint().unwrap();
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["2DIV"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -589,7 +555,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_num = script_num.num / 2.to_bigint().unwrap();
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["NEGATE"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -597,7 +563,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let new_num = -script_num.num;
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["ABS"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -607,7 +573,7 @@ impl<'a> ScriptInterpreter<'a> {
                     }
                     self.stack.push(ScriptNum::new(script_num.num).to_u8_vec());
                 } else if opcode == OP["NOT"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -619,7 +585,7 @@ impl<'a> ScriptInterpreter<'a> {
                     };
                     self.stack.push(ScriptNum::new(new_num).to_u8_vec());
                 } else if opcode == OP["0NOTEQUAL"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -856,7 +822,7 @@ impl<'a> ScriptInterpreter<'a> {
                         vec![0]
                     });
                 } else if opcode == OP["BLAKE3"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -864,7 +830,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let hash = blake3_hash(&buf);
                     self.stack.push(hash.to_vec());
                 } else if opcode == OP["DOUBLEBLAKE3"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -901,7 +867,7 @@ impl<'a> ScriptInterpreter<'a> {
                         signature,
                         exec_script_buf,
                         self.value,
-                        &mut self.hash_cache,
+                        self.hash_cache,
                     );
 
                     self.stack.push(vec![if success { 1 } else { 0 }]);
@@ -910,7 +876,7 @@ impl<'a> ScriptInterpreter<'a> {
                         break;
                     }
                 } else if opcode == OP["CHECKMULTISIG"] || opcode == OP["CHECKMULTISIGVERIFY"] {
-                    if self.stack.len() < 1 {
+                    if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
@@ -953,15 +919,15 @@ impl<'a> ScriptInterpreter<'a> {
                     let exec_script_buf = self.script.to_u8_vec();
 
                     let mut matched_sigs = 0;
-                    for i in 0..n_sigs.to_usize().unwrap() {
+                    for sig in sigs {
                         for j in 0..pub_keys.len() {
                             let success = self.tx.verify_with_cache(
                                 self.n_in,
                                 pub_keys[j][..33].try_into().unwrap(),
-                                TxSignature::from_u8_vec(&sigs[i].clone()),
+                                TxSignature::from_u8_vec(&sig.clone()),
                                 exec_script_buf.clone(),
                                 self.value,
-                                &mut self.hash_cache,
+                                self.hash_cache,
                             );
                             if success {
                                 matched_sigs += 1;
@@ -997,7 +963,7 @@ impl<'a> ScriptInterpreter<'a> {
         if !self.stack.is_empty() {
             self.return_value = Some(self.stack[self.stack.len() - 1].clone());
             self.return_success = Some(ScriptInterpreter::cast_to_bool(
-                &self.return_value.as_ref().unwrap(),
+                self.return_value.as_ref().unwrap(),
             ));
         } else {
             self.return_value = Some(vec![]);
@@ -1029,7 +995,7 @@ mod tests {
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
-            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "00");
+            assert_eq!(hex::encode(script_interpreter.return_value.unwrap()), "00");
         }
 
         #[test]
@@ -1042,7 +1008,7 @@ mod tests {
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
-            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+            assert_eq!(hex::encode(script_interpreter.return_value.unwrap()), "ff");
         }
 
         #[test]
@@ -1057,7 +1023,7 @@ mod tests {
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
             assert_eq!(
-                hex::encode(&script_interpreter.return_value.unwrap()),
+                hex::encode(script_interpreter.return_value.unwrap()),
                 "ff".repeat(256)
             );
         }
@@ -1073,7 +1039,7 @@ mod tests {
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
             assert_eq!(
-                hex::encode(&script_interpreter.return_value.unwrap()),
+                hex::encode(script_interpreter.return_value.unwrap()),
                 "ff".repeat(65536)
             );
         }
@@ -1088,7 +1054,7 @@ mod tests {
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(true));
             assert!(script_interpreter.return_value.is_some());
-            assert_eq!(hex::encode(&script_interpreter.return_value.unwrap()), "ff");
+            assert_eq!(hex::encode(script_interpreter.return_value.unwrap()), "ff");
         }
 
         #[test]
@@ -1102,7 +1068,7 @@ mod tests {
                     .unwrap()
                     .buf;
             assert_eq!(
-                hex::encode(&output_pub_key),
+                hex::encode(output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
             let output_pkh = Pkh::new(output_pub_key.to_vec());
@@ -1150,7 +1116,7 @@ mod tests {
         #[test]
         fn checkmultisig() {
             // Define private keys
-            let priv_keys_hex = vec![
+            let priv_keys_hex = [
                 "eee66a051d43a62b00da7185bbf2a13b42f601a0b987a8f1815b4213c9343451",
                 "f8749a7b6a825eb9e82e27720fd3b90e0f157adc75fe3e0efbf3c8a335eb3ef5",
                 "5df05870846dd200a7d29da98ad32016209d99af0422d66e568f97720d1acee3",
@@ -1230,7 +1196,7 @@ mod tests {
             // Evaluate the script
             let result = script_interpreter.eval_script();
             assert_eq!(script_interpreter.err_str, "");
-            assert_eq!(result, true);
+            assert!(result);
         }
     }
 
@@ -1275,8 +1241,8 @@ mod tests {
                         Script::from_string("").unwrap(),
                         0xffffffff,
                     )],
-                    vec![TxOutput::new(0 as u64, Script::from_string("").unwrap())],
-                    0 as u64,
+                    vec![TxOutput::new(0, Script::from_string("").unwrap())],
+                    0,
                 );
                 let mut hash_cache = HashCache::new();
                 let mut script_interpreter =

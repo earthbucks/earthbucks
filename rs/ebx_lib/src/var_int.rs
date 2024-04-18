@@ -1,6 +1,7 @@
 use crate::buffer_reader::BufferReader;
 use crate::buffer_writer::BufferWriter;
 
+#[derive(Default)]
 pub struct VarInt {
     buf: Vec<u8>,
 }

@@ -81,12 +81,12 @@ mod tests {
         let mut tx_out_map = TxOutputMap::new();
         let change_script = Script::from_string("");
 
-        for i in 0..5 as u32 {
+        for i in 0..5 {
             let key = KeyPair::from_random();
             let pkh = Pkh::new(key.pub_key.buf.to_vec());
             let script = Script::from_pkh_output(pkh.pkh());
             let output = TxOutput::new(100, script);
-            tx_out_map.add(output, &vec![0; 32], i);
+            tx_out_map.add(output, &[0; 32], i);
         }
 
         TxBuilder::new(&tx_out_map, change_script.unwrap(), 0)

@@ -63,7 +63,7 @@ impl KeyPair {
     }
 
     pub fn to_hex(&self) -> String {
-        hex::encode(&self.to_buffer())
+        hex::encode(self.to_buffer())
     }
 
     pub fn from_hex(hex: &str) -> Result<Self, String> {
@@ -75,11 +75,11 @@ impl KeyPair {
         Ok(KeyPair::from_buffer(&buffer))
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         self.to_hex()
     }
 
-    pub fn from_string(s: &str) -> Result<Self, String> {
+    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
         KeyPair::from_hex(s)
     }
 
@@ -116,7 +116,7 @@ mod tests {
         let key_pairs: JsonKeyPairs = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in key_pairs.key_pair {
-            let priv_key: PrivKey = PrivKey::from_string(&pair.priv_key).unwrap();
+            let priv_key: PrivKey = PrivKey::from_string_fmt(&pair.priv_key).unwrap();
             let key_pair = KeyPair::from_priv_key(&priv_key);
             let pub_key = key_pair.unwrap().pub_key;
 

@@ -59,7 +59,7 @@ mod tests {
         let tx = Tx::new(1, vec![], vec![], 1);
         let block = Block::new(header, vec![tx]);
         let bw = block.to_buffer_writer();
-        assert_eq!(bw.to_u8_vec().len() > 0, true);
+        assert!(!bw.to_u8_vec().is_empty());
     }
 
     #[test]
@@ -90,6 +90,6 @@ mod tests {
         let header = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
         let tx = Tx::new(1, vec![], vec![], 0);
         let block = Block::new(header, vec![tx]);
-        assert_eq!(block.header.is_genesis(), true);
+        assert!(block.header.is_genesis());
     }
 }

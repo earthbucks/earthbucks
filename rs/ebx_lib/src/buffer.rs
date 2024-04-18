@@ -10,7 +10,7 @@ impl Buffer {
         let mut hex_string = hex_string
             .to_lowercase()
             .chars()
-            .take_while(|c| c.is_digit(16))
+            .take_while(|c| c.is_ascii_hexdigit())
             .collect::<String>();
         if hex_string.len() % 2 != 0 {
             hex_string.truncate(hex_string.len() - 1);

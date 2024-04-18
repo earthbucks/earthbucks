@@ -38,8 +38,8 @@ impl MerkleProof {
             panic!("Cannot create Merkle tree from empty array");
         }
         if hashed_datas.len() == 1 {
-            let root = hashed_datas[0].clone();
-            let proof = MerkleProof::new(root.clone(), vec![]);
+            let root = hashed_datas[0];
+            let proof = MerkleProof::new(root, vec![]);
             return (root, vec![proof]);
         }
         if hashed_datas.len() == 2 {
@@ -48,14 +48,14 @@ impl MerkleProof {
             combined.extend_from_slice(&hashed_datas[1]);
             let root = double_blake3_hash(&combined);
             let proofs = vec![
-                MerkleProof::new(root.clone(), vec![(hashed_datas[1].clone(), true)]),
-                MerkleProof::new(root.clone(), vec![(hashed_datas[0].clone(), false)]),
+                MerkleProof::new(root, vec![(hashed_datas[1], true)]),
+                MerkleProof::new(root, vec![(hashed_datas[0], false)]),
             ];
             return (root, proofs);
         }
         let mut hashed_datas = hashed_datas;
         while hashed_datas.len() & (hashed_datas.len() - 1) != 0 {
-            hashed_datas.push(hashed_datas.last().unwrap().clone());
+            hashed_datas.push(*hashed_datas.last().unwrap());
         }
         let (left_root, left_proofs) =
             Self::generate_proofs_and_root(hashed_datas[..hashed_datas.len() / 2].to_vec());
@@ -70,10 +70,10 @@ impl MerkleProof {
                 .into_iter()
                 .map(|proof| {
                     MerkleProof::new(
-                        root.clone(),
-                        [(right_root.clone(), true)]
+                        root,
+                        [(right_root, true)]
                             .into_iter()
-                            .chain(proof.proof.into_iter())
+                            .chain(proof.proof)
                             .collect(),
                     )
                 })
@@ -82,10 +82,10 @@ impl MerkleProof {
                 .into_iter()
                 .map(|proof| {
                     MerkleProof::new(
-                        root.clone(),
-                        [(left_root.clone(), false)]
+                        root,
+                        [(left_root, false)]
                             .into_iter()
-                            .chain(proof.proof.into_iter())
+                            .chain(proof.proof)
                             .collect(),
                     )
                 })
@@ -119,11 +119,11 @@ impl MerkleProof {
         MerkleProof::new(root, proof)
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string_fmt(&self) -> String {
         hex::encode(self.to_u8_vec())
     }
 
-    pub fn from_string(hex: &str) -> MerkleProof {
+    pub fn from_string_fmt(hex: &str) -> MerkleProof {
         MerkleProof::from_u8_vec(&hex::decode(hex).unwrap())
     }
 }
@@ -136,9 +136,9 @@ mod tests {
     fn generate_proofs_and_root_with_1_data() {
         let data1 = double_blake3_hash("data1".as_bytes());
 
-        let data = vec![data1.clone()];
+        let data = vec![data1];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root.clone());
+        let hex = hex::encode(root);
         assert_eq!(
             hex,
             "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244"
@@ -154,9 +154,9 @@ mod tests {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
 
-        let data = vec![data1.clone(), data2.clone()];
+        let data = vec![data1, data2];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root.clone());
+        let hex = hex::encode(root);
         assert_eq!(
             hex,
             "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde"
@@ -177,9 +177,9 @@ mod tests {
         let data2 = double_blake3_hash("data2".as_bytes());
         let data3 = double_blake3_hash("data3".as_bytes());
 
-        let data = vec![data1.clone(), data2.clone(), data3.clone()];
+        let data = vec![data1, data2, data3];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root.clone());
+        let hex = hex::encode(root);
         assert_eq!(
             hex,
             "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf"
@@ -205,9 +205,9 @@ mod tests {
         let data3 = double_blake3_hash("data3".as_bytes());
         let data4 = double_blake3_hash("data4".as_bytes());
 
-        let data = vec![data1.clone(), data2.clone(), data3.clone(), data4.clone()];
+        let data = vec![data1, data2, data3, data4];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root.clone());
+        let hex = hex::encode(root);
         assert_eq!(
             hex,
             "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187"
@@ -233,9 +233,9 @@ mod tests {
     #[test]
     fn generate_proofs_and_root_with_non_unique_data() {
         let data1 = double_blake3_hash("data1".as_bytes());
-        let data = vec![data1.clone(), data1.clone()];
+        let data = vec![data1, data1];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root.clone());
+        let hex = hex::encode(root);
         assert_eq!(
             hex,
             "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3"
@@ -254,7 +254,7 @@ mod tests {
     fn to_u8_vec_and_from_u8_vec() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
-        let proof = MerkleProof::new(data1.clone(), vec![(data2.clone(), true)]);
+        let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
         let u8 = proof.to_u8_vec();
         let new_proof = MerkleProof::from_u8_vec(&u8);
@@ -267,10 +267,10 @@ mod tests {
     fn to_string_and_from_string() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
-        let proof = MerkleProof::new(data1.clone(), vec![(data2.clone(), true)]);
+        let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
-        let hex = proof.to_string();
-        let new_proof = MerkleProof::from_string(&hex);
+        let hex = proof.to_string_fmt();
+        let new_proof = MerkleProof::from_string_fmt(&hex);
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);

@@ -27,7 +27,7 @@ impl TxInput {
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
-        let script = Script::from_u8_vec(reader.read_u8_vec(size as usize).as_slice())?;
+        let script = Script::from_u8_vec(reader.read_u8_vec(size).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }
@@ -38,7 +38,7 @@ impl TxInput {
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_var_int() as usize;
-        let script = Script::from_u8_vec(reader.read_u8_vec(size as usize).as_slice())?;
+        let script = Script::from_u8_vec(reader.read_u8_vec(size).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }

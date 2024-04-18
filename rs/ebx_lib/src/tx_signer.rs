@@ -23,7 +23,7 @@ impl TxSigner {
         let tx_input = &mut tx_clone.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
-        let tx_out = match self.tx_out_map.get(&tx_out_hash, output_index) {
+        let tx_out = match self.tx_out_map.get(tx_out_hash, output_index) {
             Some(tx_out) => tx_out,
             None => return false,
         };
@@ -117,7 +117,7 @@ mod tests {
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
-        assert_eq!(signed, true);
+        assert!(signed);
 
         let tx_input = &signed_tx.inputs[0];
         let tx_output = tx_out_map
@@ -142,7 +142,7 @@ mod tests {
         );
 
         let result = script_interpreter.eval_script();
-        assert_eq!(result, true);
+        assert!(result);
     }
 
     #[test]
@@ -175,8 +175,8 @@ mod tests {
         let signed1 = tx_signer.sign(0);
         let signed2 = tx_signer.sign(1);
         let signed_tx = tx_signer.tx;
-        assert_eq!(signed1, true);
-        assert_eq!(signed2, true);
+        assert!(signed1);
+        assert!(signed2);
 
         let tx_input_1 = &signed_tx.inputs[0];
         let tx_output_1 = tx_out_map
@@ -201,7 +201,7 @@ mod tests {
         );
 
         let result_1 = script_interpreter_1.eval_script();
-        assert_eq!(result_1, true);
+        assert!(result_1);
 
         let tx_input_2 = &signed_tx.inputs[1];
         let tx_output_2 = tx_out_map
@@ -226,6 +226,6 @@ mod tests {
         );
 
         let result_2 = script_interpreter_2.eval_script();
-        assert_eq!(result_2, true);
+        assert!(result_2);
     }
 }
