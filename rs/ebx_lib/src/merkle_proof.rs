@@ -33,6 +33,17 @@ impl MerkleProof {
         proof.root == *root || proof.verify(data)
     }
 
+    pub fn position_in_tree(&self) -> usize {
+        let mut position = 0;
+        let len = self.proof.len();
+        for (i, (_, is_left)) in self.proof.iter().enumerate() {
+            if !is_left {
+                position += 1 << (len - 1 - i);
+            }
+        }
+        position
+    }
+
     pub fn generate_proofs_and_root(hashed_datas: Vec<[u8; 32]>) -> ([u8; 32], Vec<MerkleProof>) {
         if hashed_datas.is_empty() {
             panic!("Cannot create Merkle tree from empty array");
@@ -199,6 +210,39 @@ mod tests {
     }
 
     #[test]
+    fn verify_position_with_3_datas() {
+        let data1 = double_blake3_hash("data1".as_bytes());
+        let data2 = double_blake3_hash("data2".as_bytes());
+        let data3 = double_blake3_hash("data3".as_bytes());
+
+        let data = vec![data1, data2, data3];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root);
+        assert_eq!(
+            hex,
+            "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+        let valid_position1 = proof1.position_in_tree();
+        assert_eq!(valid_position1, 0);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data2, proof2, &root);
+        assert!(verified2);
+        let valid_position2 = proof2.position_in_tree();
+        assert_eq!(valid_position2, 1);
+
+        let proof3 = &proofs[2];
+        let verified3 = MerkleProof::verify_proof(&data3, proof3, &root);
+        assert!(verified3);
+        let valid_position3 = proof3.position_in_tree();
+        assert_eq!(valid_position3, 2);
+    }
+
+    #[test]
     fn generate_proofs_and_root_with_4_datas() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
@@ -228,6 +272,191 @@ mod tests {
         let proof4 = &proofs[3];
         let verified4 = MerkleProof::verify_proof(&data4, proof4, &root);
         assert!(verified4);
+    }
+
+    #[test]
+    fn verify_position_with_4_datas() {
+        let data1 = double_blake3_hash("data1".as_bytes());
+        let data2 = double_blake3_hash("data2".as_bytes());
+        let data3 = double_blake3_hash("data3".as_bytes());
+        let data4 = double_blake3_hash("data4".as_bytes());
+
+        let data = vec![data1, data2, data3, data4];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root);
+        assert_eq!(
+            hex,
+            "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+        let valid_position1 = proof1.position_in_tree();
+        assert_eq!(valid_position1, 0);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data2, proof2, &root);
+        assert!(verified2);
+        let valid_position2 = proof2.position_in_tree();
+        assert_eq!(valid_position2, 1);
+
+        let proof3 = &proofs[2];
+        let verified3 = MerkleProof::verify_proof(&data3, proof3, &root);
+        assert!(verified3);
+        let valid_position3 = proof3.position_in_tree();
+        assert_eq!(valid_position3, 2);
+
+        let proof4 = &proofs[3];
+        let verified4 = MerkleProof::verify_proof(&data4, proof4, &root);
+        assert!(verified4);
+        let valid_position4 = proof4.position_in_tree();
+        assert_eq!(valid_position4, 3);
+    }
+
+    #[test]
+    fn verify_position_with_8_datas() {
+        let data1 = double_blake3_hash("data1".as_bytes());
+        let data2 = double_blake3_hash("data2".as_bytes());
+        let data3 = double_blake3_hash("data3".as_bytes());
+        let data4 = double_blake3_hash("data4".as_bytes());
+        let data5 = double_blake3_hash("data5".as_bytes());
+        let data6 = double_blake3_hash("data6".as_bytes());
+        let data7 = double_blake3_hash("data7".as_bytes());
+        let data8 = double_blake3_hash("data8".as_bytes());
+
+        let data = vec![data1, data2, data3, data4, data5, data6, data7, data8];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root);
+        assert_eq!(
+            hex,
+            "fc4b21e6bdd266c1808fe1f511d0da1eaf7a589ba581b580bb8cb6bb1d8663d6"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+        let valid_position1 = proof1.position_in_tree();
+        assert_eq!(valid_position1, 0);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data2, proof2, &root);
+        assert!(verified2);
+        let valid_position2 = proof2.position_in_tree();
+        assert_eq!(valid_position2, 1);
+
+        let proof3 = &proofs[2];
+        let verified3 = MerkleProof::verify_proof(&data3, proof3, &root);
+        assert!(verified3);
+        let valid_position3 = proof3.position_in_tree();
+        assert_eq!(valid_position3, 2);
+
+        let proof4 = &proofs[3];
+        let verified4 = MerkleProof::verify_proof(&data4, proof4, &root);
+        assert!(verified4);
+        let valid_position4 = proof4.position_in_tree();
+        assert_eq!(valid_position4, 3);
+
+        let proof5 = &proofs[4];
+        let verified5 = MerkleProof::verify_proof(&data5, proof5, &root);
+        assert!(verified5);
+        let valid_position5 = proof5.position_in_tree();
+        assert_eq!(valid_position5, 4);
+
+        let proof6 = &proofs[5];
+        let verified6 = MerkleProof::verify_proof(&data6, proof6, &root);
+        assert!(verified6);
+        let valid_position6 = proof6.position_in_tree();
+        assert_eq!(valid_position6, 5);
+
+        let proof7 = &proofs[6];
+        let verified7 = MerkleProof::verify_proof(&data7, proof7, &root);
+        assert!(verified7);
+        let valid_position7 = proof7.position_in_tree();
+        assert_eq!(valid_position7, 6);
+
+        let proof8 = &proofs[7];
+        let verified8 = MerkleProof::verify_proof(&data8, proof8, &root);
+        assert!(verified8);
+        let valid_position8 = proof8.position_in_tree();
+        assert_eq!(valid_position8, 7);
+    }
+
+    #[test]
+    fn verify_position_with_9_datas() {
+        let data1 = double_blake3_hash("data1".as_bytes());
+        let data2 = double_blake3_hash("data2".as_bytes());
+        let data3 = double_blake3_hash("data3".as_bytes());
+        let data4 = double_blake3_hash("data4".as_bytes());
+        let data5 = double_blake3_hash("data5".as_bytes());
+        let data6 = double_blake3_hash("data6".as_bytes());
+        let data7 = double_blake3_hash("data7".as_bytes());
+        let data8 = double_blake3_hash("data8".as_bytes());
+        let data9 = double_blake3_hash("data9".as_bytes());
+
+        let data = vec![
+            data1, data2, data3, data4, data5, data6, data7, data8, data9,
+        ];
+        let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
+        let hex = hex::encode(root);
+        assert_eq!(
+            hex,
+            "11be5d17fee5f6858e594524337f5e39511c78f668f2a8bdf1efbb33921aaaa0"
+        );
+
+        let proof1 = &proofs[0];
+        let verified1 = MerkleProof::verify_proof(&data1, proof1, &root);
+        assert!(verified1);
+        let valid_position1 = proof1.position_in_tree();
+        assert_eq!(valid_position1, 0);
+
+        let proof2 = &proofs[1];
+        let verified2 = MerkleProof::verify_proof(&data2, proof2, &root);
+        assert!(verified2);
+        let valid_position2 = proof2.position_in_tree();
+        assert_eq!(valid_position2, 1);
+
+        let proof3 = &proofs[2];
+        let verified3 = MerkleProof::verify_proof(&data3, proof3, &root);
+        assert!(verified3);
+        let valid_position3 = proof3.position_in_tree();
+        assert_eq!(valid_position3, 2);
+
+        let proof4 = &proofs[3];
+        let verified4 = MerkleProof::verify_proof(&data4, proof4, &root);
+        assert!(verified4);
+        let valid_position4 = proof4.position_in_tree();
+        assert_eq!(valid_position4, 3);
+
+        let proof5 = &proofs[4];
+        let verified5 = MerkleProof::verify_proof(&data5, proof5, &root);
+        assert!(verified5);
+        let valid_position5 = proof5.position_in_tree();
+        assert_eq!(valid_position5, 4);
+
+        let proof6 = &proofs[5];
+        let verified6 = MerkleProof::verify_proof(&data6, proof6, &root);
+        assert!(verified6);
+        let valid_position6 = proof6.position_in_tree();
+        assert_eq!(valid_position6, 5);
+
+        let proof7 = &proofs[6];
+        let verified7 = MerkleProof::verify_proof(&data7, proof7, &root);
+        assert!(verified7);
+        let valid_position7 = proof7.position_in_tree();
+        assert_eq!(valid_position7, 6);
+
+        let proof8 = &proofs[7];
+        let verified8 = MerkleProof::verify_proof(&data8, proof8, &root);
+        assert!(verified8);
+        let valid_position8 = proof8.position_in_tree();
+        assert_eq!(valid_position8, 7);
+
+        let proof9 = &proofs[8];
+        let verified9 = MerkleProof::verify_proof(&data9, proof9, &root);
+        assert!(verified9);
+        let valid_position9 = proof9.position_in_tree();
+        assert_eq!(valid_position9, 8);
     }
 
     #[test]
