@@ -33,7 +33,7 @@ export default function Index() {
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Transactions for everybody on Planet Earth.
+              For everybody on Planet Earth.
               <br />
               <br />
               <a
