@@ -1,7 +1,7 @@
 use crate::{header::Header, pkh::Pkh, script::Script, script_chunk::ScriptChunk, tx::Tx};
 
 // add Default
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct HeaderChain {
     pub headers: Vec<Header>,
 }

@@ -29,7 +29,7 @@ impl MineTxOutput {
             .collect()
     }
 
-    pub async fn get_all_from_tx_ids_and_tx_out_nums(
+    pub async fn get_all_unspent_from_tx_ids_and_tx_out_nums(
         tx_id_tx_out_num_tuples: &[(String, u32)],
         pool: &sqlx::MySqlPool,
     ) -> Result<Vec<Self>, sqlx::Error> {
@@ -39,7 +39,12 @@ impl MineTxOutput {
             .map(|_| "(?, ?)".to_string())
             .collect();
         let sql = format!(
-            "SELECT * FROM `mine_tx_output` WHERE (tx_id, tx_out_num) IN ({})",
+            r#"
+            SELECT * FROM `mine_tx_output`
+            WHERE (tx_id, tx_out_num) IN ({})
+            AND spent_by_tx_id IS NULL
+            AND spent_by_tx_in_num IS NULL
+            "#,
             placeholders.join(", ")
         );
 

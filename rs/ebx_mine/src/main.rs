@@ -1,8 +1,10 @@
 use anyhow::Result;
 use dotenv::dotenv;
 use ebx_lib::{
-    buffer::Buffer, domain::Domain, header::Header, header_chain::HeaderChain, key_pair::KeyPair,
-    merkle_txs::MerkleTxs, pkh::Pkh, priv_key::PrivKey, pub_key::PubKey, tx::Tx,
+    block::Block, block_verifier::BlockVerifier, buffer::Buffer, domain::Domain, header::Header,
+    header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh,
+    priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_output::TxOutput,
+    tx_output_map::TxOutputMap,
 };
 use ebx_mine::db::{
     mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
@@ -153,13 +155,15 @@ async fn main() -> Result<()> {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
             debug!("New validated headers: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
+                // Get the merkle root from the header
                 let header = new_mine_header.to_block_header();
-                // TODO: Load all transactions from this merkle root
                 let merkle_root = header.merkle_root;
                 let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+                // Load all transactions from this merkle root
                 let mine_tx_raws =
                     MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
                 let txs: Vec<Tx> = mine_tx_raws.iter().map(|tx| tx.to_tx()).collect();
+                // gather all (txid, txoutnum) from txs inputs
                 let tx_id_tx_out_num_tuples: Vec<(String, u32)> = txs
                     .iter()
                     .map(|tx| {
@@ -168,26 +172,40 @@ async fn main() -> Result<()> {
                         (tx_id, tx_out_num)
                     })
                     .collect();
-                // gather all (txid, txoutnum) from txs inputs
+                // gather all unspent outputs matching (txid, txoutnum)
                 let mine_tx_outputs: Vec<MineTxOutput> =
-                    MineTxOutput::get_all_from_tx_ids_and_tx_out_nums(
+                    MineTxOutput::get_all_unspent_from_tx_ids_and_tx_out_nums(
                         &tx_id_tx_out_num_tuples,
                         &pool,
                     )
                     .await?;
-                let _ = mine_tx_outputs; // TODO: Use this
+                let mut tx_out_map = TxOutputMap::new();
+                for mine_tx_output in &mine_tx_outputs {
+                    let tx_id = hex::decode(&mine_tx_output.tx_id).unwrap();
+                    let tx_out_num = mine_tx_output.tx_out_num;
+                    let tx_output = TxOutput::new(
+                        mine_tx_output.value,
+                        Script::from_u8_vec(&hex::decode(&mine_tx_output.script).unwrap()).unwrap(),
+                    );
+                    tx_out_map.add(tx_output, &tx_id, tx_out_num);
+                }
 
-                // gather all unspent outputs matching (txid, txoutnum)
-                // let block_verifier = BlockVerifier::new(header, txs);
+                let block = Block::new(header.clone(), txs);
+                // TODO: Remove clone of longest_chain
+                let block_verifier = BlockVerifier::new(block, tx_out_map, longest_chain.clone());
+                let _ = block_verifier; // TODO: use block_verifier
 
                 // TODO: Verify block
                 let is_block_valid = true;
+
+                // Update is_block_valid
                 MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)
                     .await?;
                 info!(
                     "New validated block ID: {}",
                     Buffer::from(header.id().to_vec()).to_hex()
                 );
+                // If block is valid, drop everything and proceed to vote.
                 if is_block_valid {
                     continue 'main_loop;
                 }
