@@ -153,16 +153,19 @@ async fn main() -> Result<()> {
         // TODO: Should there be a lock when validating a block?
         {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
-            debug!("New validated headers: {}", new_mine_headers.len());
+            debug!("New headers to verify: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
+                info!("Verifying block: {}", new_mine_header.id);
                 // Get the merkle root from the header
                 let header = new_mine_header.to_block_header();
                 let merkle_root = header.merkle_root;
                 let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+
                 // Load all transactions from this merkle root
                 let mine_tx_raws =
                     MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
                 let txs: Vec<Tx> = mine_tx_raws.iter().map(|tx| tx.to_tx()).collect();
+
                 // gather all (txid, txoutnum) from txs inputs
                 let tx_id_tx_out_num_tuples: Vec<(String, u32)> = txs
                     .iter()
@@ -172,6 +175,7 @@ async fn main() -> Result<()> {
                         (tx_id, tx_out_num)
                     })
                     .collect();
+
                 // gather all unspent outputs matching (txid, txoutnum)
                 let mine_tx_outputs: Vec<MineTxOutput> =
                     MineTxOutput::get_all_unspent_from_tx_ids_and_tx_out_nums(
@@ -190,13 +194,11 @@ async fn main() -> Result<()> {
                     tx_out_map.add(tx_output, &tx_id, tx_out_num);
                 }
 
+                // Validate the block
                 let block = Block::new(header.clone(), txs);
-                // TODO: Remove clone of longest_chain
-                let block_verifier = BlockVerifier::new(block, tx_out_map, longest_chain.clone());
-                let _ = block_verifier; // TODO: use block_verifier
-
-                // TODO: Verify block
-                let is_block_valid = true;
+                let mut block_verifier = BlockVerifier::new(block, tx_out_map, &longest_chain);
+                let is_block_valid = block_verifier.is_valid_now();
+                info!("Block is valid: {}", is_block_valid);
 
                 // Update is_block_valid
                 MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)

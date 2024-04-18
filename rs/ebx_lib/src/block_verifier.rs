@@ -6,14 +6,14 @@ use crate::merkle_txs::MerkleTxs;
 use crate::tx_output_map::TxOutputMap;
 use crate::tx_verifier::TxVerifier;
 
-pub struct BlockVerifier {
+pub struct BlockVerifier<'a> {
     pub block: Block,
     pub tx_output_map: TxOutputMap, // from earlier blocks
-    pub lch: HeaderChain,           // longest chain
+    pub lch: &'a HeaderChain,       // longest chain
 }
 
-impl BlockVerifier {
-    pub fn new(block: Block, tx_output_map: TxOutputMap, lch: HeaderChain) -> Self {
+impl<'a> BlockVerifier<'a> {
+    pub fn new(block: Block, tx_output_map: TxOutputMap, lch: &'a HeaderChain) -> Self {
         Self {
             block,
             tx_output_map,
@@ -72,12 +72,11 @@ impl BlockVerifier {
             return false;
         }
         // 6. domain name, top of the stack, is valid
-        let script_chunks = &coinbase_script.chunks;
-        let chunks_len = script_chunks.len();
-        if chunks_len < 1 {
+        let mut script_chunks = coinbase_script.chunks.clone();
+        if script_chunks.is_empty() {
             return false;
         }
-        let domain_chunk = &script_chunks[chunks_len - 2];
+        let domain_chunk = script_chunks.pop().unwrap();
         let domain_buf = domain_chunk.buffer.clone().unwrap();
         let res_domain_str = String::from_utf8(domain_buf);
         if res_domain_str.is_err() {
@@ -131,5 +130,10 @@ impl BlockVerifier {
             return false;
         }
         true
+    }
+
+    pub fn is_valid_now(&mut self) -> bool {
+        let timestamp = Header::get_new_timestamp();
+        self.is_valid_at_timestamp(timestamp)
     }
 }
