@@ -25,6 +25,30 @@ impl MineTxRaw {
         Tx::from_u8_vec(hex::decode(&self.tx_raw).unwrap()).unwrap()
     }
 
+    pub async fn get_for_all_merkle_root_in_order(
+        merkle_root_hex: String,
+        pool: &sqlx::MySqlPool,
+    ) -> Result<Vec<Self>, sqlx::Error> {
+        let mine_tx_raws: Vec<MineTxRaw> = sqlx::query_as::<_, Self>(
+            r#"
+            SELECT * FROM mine_tx_raw
+            WHERE id IN (
+                SELECT tx_id FROM mine_merkle_proof
+                WHERE merkle_root = ?
+            )
+            ORDER BY (
+                SELECT position FROM mine_merkle_proof
+                WHERE mine_tx_raw.id = mine_merkle_proof.tx_id
+            )
+            "#,
+        )
+        .bind(merkle_root_hex)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(mine_tx_raws)
+    }
+
     pub async fn parse_and_insert(
         tx: &Tx,
         domain: String,

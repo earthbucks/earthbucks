@@ -185,6 +185,9 @@ export const MineTxOutput = mysqlTable(
     value: bigint('value', { mode: 'bigint', unsigned: true }).notNull(),
     script: text('script').notNull(),
     // database metadata
+    spentByTxId: char('spent_by_tx_id', { length: 64 }),
+    spentByTxInNum: int('spent_by_tx_in_num', { unsigned: true }),
+    // returnValueHex: text('return_value_hex'),
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

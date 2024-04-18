@@ -57,13 +57,32 @@ impl MineMerkleProof {
         Ok(result)
     }
 
+    pub async fn get_all_for_merkle_root(
+        merkle_root: Vec<u8>,
+        pool: &MySqlPool,
+    ) -> Result<Vec<Self>, sqlx::Error> {
+        let result = sqlx::query_as::<_, Self>(
+            r#"
+            SELECT * FROM mine_merkle_proof
+            WHERE merkle_root = ?
+            ORDER BY position ASC
+            "#,
+        )
+        .bind(merkle_root)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(result)
+    }
+
     pub async fn upsert(&self, pool: &MySqlPool) -> Result<(), sqlx::Error> {
         sqlx::query(
             r#"
             INSERT INTO mine_merkle_proof (merkle_root, tx_id, merkle_proof, position)
             VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
-                merkle_proof = VALUES(merkle_proof)
+                merkle_proof = VALUES(merkle_proof),
+                position = VALUES(position)
             "#,
         )
         .bind(&self.merkle_root)

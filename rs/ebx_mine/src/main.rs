@@ -6,7 +6,7 @@ use ebx_lib::{
 };
 use ebx_mine::db::{
     mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
-    mine_tx_parsed::MineTxParsed, mine_tx_raw::MineTxRaw,
+    mine_tx_output::MineTxOutput, mine_tx_parsed::MineTxParsed, mine_tx_raw::MineTxRaw,
 };
 
 use log::{debug, error, info};
@@ -148,15 +148,37 @@ async fn main() -> Result<()> {
         }
 
         // 3. Validate new block, broadcast, and continue main loop if found.
+        // TODO: Should there be a lock when validating a block?
         {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
             debug!("New validated headers: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
                 let header = new_mine_header.to_block_header();
-                let _ = header;
                 // TODO: Load all transactions from this merkle root
-                // let merkle_root = header.merkle_root;
-                // let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+                let merkle_root = header.merkle_root;
+                let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+                let mine_tx_raws =
+                    MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
+                let txs: Vec<Tx> = mine_tx_raws.iter().map(|tx| tx.to_tx()).collect();
+                let tx_id_tx_out_num_tuples: Vec<(String, u32)> = txs
+                    .iter()
+                    .map(|tx| {
+                        let tx_id = hex::encode(tx.id());
+                        let tx_out_num = 0;
+                        (tx_id, tx_out_num)
+                    })
+                    .collect();
+                // gather all (txid, txoutnum) from txs inputs
+                let mine_tx_outputs: Vec<MineTxOutput> =
+                    MineTxOutput::get_all_from_tx_ids_and_tx_out_nums(
+                        &tx_id_tx_out_num_tuples,
+                        &pool,
+                    )
+                    .await?;
+                let _ = mine_tx_outputs; // TODO: Use this
+
+                // gather all unspent outputs matching (txid, txoutnum)
+                // let block_verifier = BlockVerifier::new(header, txs);
 
                 // TODO: Verify block
                 let is_block_valid = true;
