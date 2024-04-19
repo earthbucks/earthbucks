@@ -2,8 +2,8 @@ import type { MetaFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'EBX Pool' },
-    { name: 'description', content: 'Welcome to EBX Pool!' },
+    { title: 'EarthBucks Pool' },
+    { name: 'description', content: 'Welcome to EarthBucks Pool!' },
   ]
 }
 
@@ -21,14 +21,14 @@ export default function Index() {
             <div className="hidden dark:block">
               <img
                 src="/earthbucks-pool-text-white.png"
-                alt="EBX Pool"
+                alt="EarthBucks Pool"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/earthbucks-pool-text-black.png"
-                alt="EBX Pool"
+                alt="EarthBucks Pool"
                 className="mx-auto block h-[50px]"
               />
             </div>

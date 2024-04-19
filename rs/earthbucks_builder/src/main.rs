@@ -99,7 +99,7 @@ async fn main() -> Result<()> {
     interval.tick().await;
 
     info!(
-        "EBX Mine: {}. Building block: {}.",
+        "EarthBucks Builder: {}. Building block: {}.",
         config.domain, building_block_num
     );
 
