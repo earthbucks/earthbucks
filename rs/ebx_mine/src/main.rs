@@ -12,11 +12,13 @@ use ebx_mine::db::{
 };
 
 use log::{debug, error, info};
+use signal_hook::consts::signal::{SIGINT, SIGTERM};
+use signal_hook::iterator::Signals;
 use sqlx::mysql::MySqlPool;
-use std::{env, error::Error};
-use tokio::time::{interval, Duration};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::{env, error::Error};
+use tokio::time::{interval, Duration};
 
 #[allow(dead_code)] // TODO: remove before launch
 struct EnvConfig {
@@ -73,10 +75,14 @@ impl EnvConfig {
 async fn main() -> Result<()> {
     let running = Arc::new(AtomicBool::new(true));
     let r = running.clone();
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    }).expect("Error setting Ctrl-C handler");
 
+    let mut signals = Signals::new([SIGINT, SIGTERM])?;
+
+    std::thread::spawn(move || {
+        for _ in signals.forever() {
+            r.store(false, Ordering::SeqCst);
+        }
+    });
 
     env_logger::init();
     let config = EnvConfig::new().unwrap();
@@ -218,11 +224,11 @@ async fn main() -> Result<()> {
                     Buffer::from(header.id().to_vec()).to_hex()
                 );
                 if is_block_valid {
-                // 7. TODO: Broadcast block
-                // 8. TODO: Vote.
-                // 9. TODO: if voted, mark all used UTXOs as spent
-                // 10. TODO: if voted, mark all transactions as confirmed
-                // 11. TODO: if voted, mark block as voted
+                    // 7. TODO: Broadcast block
+                    // 8. TODO: Vote.
+                    // 9. TODO: if voted, mark all used UTXOs as spent
+                    // 10. TODO: if voted, mark all transactions as confirmed
+                    // 11. TODO: if voted, mark block as voted
                     continue 'main_loop;
                 }
             }
@@ -363,10 +369,10 @@ async fn main() -> Result<()> {
             // TODO: Delete old unused coinbase transactions
             // TODO: Any other cleanup processes
         }
-        
-         // Check if Ctrl+C was pressed
-         if !running.load(Ordering::SeqCst) {
-            debug!("Ctrl+C detected, terminating...");
+
+        // Check if Ctrl+C was pressed
+        if !running.load(Ordering::SeqCst) {
+            debug!("Termination signal detected, terminating...");
             break 'main_loop;
         }
 
