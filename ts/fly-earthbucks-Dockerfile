@@ -13,12 +13,19 @@ RUN npm install -g pnpm@$PNPM_VERSION
 
 FROM base as build
 
+WORKDIR /app
+
 # COPY --link package.json pnpm-lock.yaml ./
 # RUN pnpm install --frozen-lockfile --prod=false
-COPY --link package.json ./
+COPY --link ./pnpm-lock.yaml ./
+COPY --link ./pnpm-workspace.yaml ./
 RUN pnpm install --prod=false
 
 COPY --link . .
+
+WORKDIR /app/earthbucks-com
+
+RUN pnpm install --prod=false
 
 RUN pnpm run build
 
@@ -26,7 +33,11 @@ RUN pnpm prune --prod
 
 FROM base
 
+WORKDIR /app
+
 COPY --from=build /app /app
+
+WORKDIR /app/earthbucks-com
 
 EXPOSE 3000
 CMD [ "pnpm", "run", "start" ]

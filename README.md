@@ -21,7 +21,6 @@ TypeScript (ts):
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
-- earthbucks-wallet-db (mysql database, works with follower)
 - earthbucks-com (main app, mining pool and wallet, works with builder, database)
 - earthbucks-wallet (wallet, works with follower)
 - earthbucks-explorer (block explorer, works with builder)
