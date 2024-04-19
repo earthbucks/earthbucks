@@ -137,34 +137,7 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 2. Any new blocks that need to be voted on? Gather votes for new
-        //    blocks, mark votes as valid or invalid. Update longest chain if
-        //    votes are valid. Continue main loop if found, because everything
-        //    hinges on whether a new block is found to be valid.
-        {
-            let new_mine_headers = MineHeader::get_voting_headers(&pool).await?;
-            debug!("New voting headers: {}", new_mine_headers.len());
-            for new_mine_header in &new_mine_headers {
-                // if votes are valid, mark as such
-                // TODO: Gather and assess votes
-                // TODO: This should be a transaction
-                let is_block_voted = true;
-                MineHeader::update_is_vote_valid(&new_mine_header.id, is_block_voted, &pool)
-                    .await?;
-                let mine_lch = MineLch::from_mine_header(new_mine_header);
-                let res = mine_lch.save(&pool).await;
-                if let Err(e) = res {
-                    error!("Failed to save new block header: {}", e);
-                    anyhow::bail!("Failed to save new block header: {}", e)
-                }
-                info!("New longest chain tip ID: {}", mine_lch.id);
-                if is_block_voted {
-                    continue 'main_loop;
-                }
-            }
-        }
-
-        // 3. Validate new block, broadcast, and continue main loop if found.
+        // 2. Validate new block, broadcast, and vote.
         // TODO: Should there be a lock when validating a block?
         {
             let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
@@ -223,18 +196,37 @@ async fn main() -> Result<()> {
                     "New validated block ID: {}",
                     Buffer::from(header.id().to_vec()).to_hex()
                 );
-                if is_block_valid {
-                    // 7. TODO: Broadcast block
-                    // 8. TODO: Vote.
-                    // 9. TODO: if voted, mark all used UTXOs as spent
-                    // 10. TODO: if voted, mark all transactions as confirmed
-                    // 11. TODO: if voted, mark block as voted
-                    continue 'main_loop;
+                if !is_block_valid {
+                    continue;
                 }
+
+                // 7. TODO: Broadcast block
+
+                // 8. TODO: Vote. If voted, mark as such.
+                // if votes are valid, mark as such
+                // TODO: Gather and assess votes
+                // TODO: This should be a transaction
+                let is_block_voted = true;
+                MineHeader::update_is_vote_valid(&new_mine_header.id, is_block_voted, &pool)
+                    .await?;
+                let mine_lch = MineLch::from_mine_header(new_mine_header);
+                let res = mine_lch.save(&pool).await;
+                if let Err(e) = res {
+                    error!("Failed to save new block header: {}", e);
+                    anyhow::bail!("Failed to save new block header: {}", e)
+                }
+                info!("New longest chain tip ID: {}", mine_lch.id);
+                if !is_block_voted {
+                    continue;
+                }
+
+                // 9. TODO: Mark all used UTXOs as spent
+                // 10. TODO: Mark all transactions as confirmed
+                // 11. TODO: if voted, mark block as voted
             }
         }
 
-        // 4. Check for valid PoW and continue main loop if found.
+        // 3. Check for valid PoW and continue main loop if found.
         {
             let new_mine_headers = MineHeader::get_candidate_headers(&pool).await?;
             // for each header, validate against the longest chain
@@ -266,10 +258,10 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 5. Check for new transactions and validate. Broadcast if found.
+        // 4. Check for new transactions and validate. Broadcast if found.
         {}
 
-        // 6. Create new candidate block header for mining.
+        // 5. Create new candidate block header for mining.
         {
             // produce and insert coinbase transaction
             let coinbase_tx: Tx;
@@ -352,7 +344,7 @@ async fn main() -> Result<()> {
             }
         }
 
-        // 7. Clean up old headers, merkle proofs, coinbase transactions, etc.
+        // 6. Clean up old headers, merkle proofs, coinbase transactions, etc.
         {
             // Delete old unused block headers
             let res = MineHeader::delete_unused_headers(building_block_num as u64, &pool).await;

@@ -10,6 +10,7 @@ pub struct MineTxOutput {
     pub created_at: chrono::NaiveDateTime,
     pub spent_by_tx_id: Option<String>,
     pub spent_by_tx_in_num: Option<u32>,
+    pub spent_in_block_id: Option<String>,
 }
 
 impl MineTxOutput {
@@ -24,6 +25,7 @@ impl MineTxOutput {
                 script: hex::encode(tx_out.script.to_u8_vec()),
                 spent_by_tx_id: None,
                 spent_by_tx_in_num: None,
+                spent_in_block_id: None,
                 created_at: chrono::Utc::now().naive_utc(),
             })
             .collect()

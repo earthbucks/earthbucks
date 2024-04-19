@@ -187,6 +187,7 @@ export const MineTxOutput = mysqlTable(
     // database metadata
     spentByTxId: char('spent_by_tx_id', { length: 64 }),
     spentByTxInNum: int('spent_by_tx_in_num', { unsigned: true }),
+    spentInBlockId: char('spent_in_block_id', { length: 64 }),
     // returnValueHex: text('return_value_hex'),
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)

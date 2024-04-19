@@ -86,7 +86,10 @@ impl MineHeader {
         let rows: Vec<MineHeader> = sqlx::query_as(
             r#"
             SELECT * FROM mine_header
-            WHERE is_header_valid = TRUE AND is_block_valid IS NULL AND is_vote_valid IS NULL
+            WHERE
+                is_header_valid = TRUE
+                AND (is_block_valid IS NULL OR is_block_valid = false)
+                AND is_vote_valid IS NULL
             ORDER BY target ASC
             "#,
         )
@@ -96,19 +99,19 @@ impl MineHeader {
         Ok(rows)
     }
 
-    pub async fn get_voting_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
-        let rows: Vec<MineHeader> = sqlx::query_as(
-            r#"
-            SELECT * FROM mine_header
-            WHERE is_header_valid = TRUE AND is_block_valid = TRUE AND is_vote_valid IS NULL
-            ORDER BY target ASC
-            "#,
-        )
-        .fetch_all(pool)
-        .await?;
+    // pub async fn get_voting_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
+    //     let rows: Vec<MineHeader> = sqlx::query_as(
+    //         r#"
+    //         SELECT * FROM mine_header
+    //         WHERE is_header_valid = TRUE AND is_block_valid = TRUE AND is_vote_valid IS NULL
+    //         ORDER BY target ASC
+    //         "#,
+    //     )
+    //     .fetch_all(pool)
+    //     .await?;
 
-        Ok(rows)
-    }
+    //     Ok(rows)
+    // }
 
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
