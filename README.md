@@ -1,6 +1,6 @@
 # EarthBucks (EBX)
 
-42 trillion coins. No pre-mine. GPUs. Big blocks. Script.
+42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in 2024.
 
