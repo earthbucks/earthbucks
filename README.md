@@ -21,21 +21,16 @@ rs/ts:
 
 rs:
 
-- lib (transactions, blocks, data structures, algorithms, standardized tests)
-- mine (build blocks, build merkle trees, validate txs, validate blocks)
-- spv (follow block headers, validate txs + merkle proofs)
+- ebx_lib (transactions, blocks, data structures, algorithms, standardized tests)
+- ebx_builder (build blocks, build merkle trees, validate txs, validate blocks)
+- ebx_follower (follow block headers, validate txs + merkle proofs)
 
 ts:
 
-- lib (transactions, blocks, data structures, algorithms, standardized tests)
-- mine-db (db schema, db queries)
-- mine-api (http server, uses mine-db)
-- mine-client (auth, wallet, explorer)
-- mine-work (WebGL, WebGPU, WASM, CUDA, OpenCL, uses client)
-- spv-db (db schema, db queries)
-- spv-api (http server, uses spv-db)
-- spv-client (auth, wallet, explorer)
-- gui (auth, wallet, explorer, mining pool, button, uses client)
+- ebx-lib (transactions, blocks, data structures, algorithms, standardized tests)
+- ebx-pool (mining pool and wallet, works with builder)
+- ebx-wallet (wallet, works with follower)
+- ebx-explorer (block explorer, works with builder)
 
 ## Initial Nodes
 
