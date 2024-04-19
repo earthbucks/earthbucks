@@ -68,12 +68,6 @@ export default function Index() {
                 GitHub
               </a>
             </div>
-            <br />
-            <img
-              src="/earthbucks-note-small.png"
-              alt=""
-              className="mx-auto mb-4 block w-[80px]"
-            />
           </div>
         </div>
       </div>
