@@ -1,5 +1,7 @@
 # EarthBucks
 
+<img src="./earthbucks.png" width="200" height="200">
+
 42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in 2024.
