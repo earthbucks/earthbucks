@@ -1,6 +1,7 @@
 {
   "name": "earthbucks-com",
   "license": "UNLICENSED",
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "private": true,
   "sideEffects": false,
   "type": "module",

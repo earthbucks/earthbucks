@@ -1,4 +1,4 @@
-# EarthBucks (EBX)
+# EarthBucks
 
 42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
@@ -20,7 +20,7 @@ Rust (rs):
 TypeScript (ts):
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks-db (mysql database, works with builder, follower, pool, wallet)
+- earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
 - earthbucks-wallet-db (mysql database, works with follower)
 - earthbucks-com (main app, mining pool and wallet, works with builder, database)
 - earthbucks-wallet (wallet, works with follower)
