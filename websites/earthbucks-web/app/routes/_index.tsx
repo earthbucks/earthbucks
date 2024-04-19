@@ -61,7 +61,7 @@ export default function Index() {
               </a>{' '}
               &middot;{' '}
               <a
-                href="https://github.com/earthbucks/openebx"
+                href="https://github.com/earthbucks/earthbucks"
                 target="_blank"
                 className="underline"
               >
