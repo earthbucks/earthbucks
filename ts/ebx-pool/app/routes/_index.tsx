@@ -33,7 +33,7 @@ export default function Index() {
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              Mining pool software for EBX blockchain.
+              Mining pool for EBX blockchain.
               <br />
               <br />
               <a
