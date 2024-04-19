@@ -1,4 +1,4 @@
-use crate::db::mine_header::MineHeader;
+use crate::db::builder_header::MineHeader;
 use ebx_lib::header::Header;
 use ebx_lib::header_chain::HeaderChain;
 use sqlx::types::chrono;
@@ -20,7 +20,7 @@ pub struct MineLch {
 
 // longest chain header
 impl MineLch {
-    pub fn from_mine_header(header: &MineHeader) -> Self {
+    pub fn from_builder_header(header: &MineHeader) -> Self {
         Self {
             id: header.id.clone(),
             version: header.version,
@@ -69,7 +69,7 @@ impl MineLch {
         let row: Self = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
-            FROM mine_lch
+            FROM builder_lch
             WHERE id = ?
             "#,
         )
@@ -83,7 +83,7 @@ impl MineLch {
         let rows: Vec<MineLch> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
-            FROM mine_lch
+            FROM builder_lch
             ORDER BY block_num ASC
             "#,
         )
@@ -100,7 +100,7 @@ impl MineLch {
         let row: Option<MineLch> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
-            FROM mine_lch
+            FROM builder_lch
             ORDER BY block_num DESC
             LIMIT 1
             "#,
@@ -116,7 +116,7 @@ impl MineLch {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO mine_lch (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain)
+            INSERT INTO builder_lch (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 version = VALUES(version),
@@ -147,7 +147,7 @@ impl MineLch {
         let row: Result<Option<MineLch>, Error> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
-            FROM mine_lch
+            FROM builder_lch
             ORDER BY block_num DESC
             LIMIT 1
             "#,

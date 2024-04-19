@@ -1,6 +1,6 @@
-use crate::db::mine_tx_input::MineTxInput;
-use crate::db::mine_tx_output::MineTxOutput;
-use crate::db::mine_tx_parsed;
+use crate::db::builder_tx_input::MineTxInput;
+use crate::db::builder_tx_output::MineTxOutput;
+use crate::db::builder_tx_parsed;
 use ebx_lib::tx::Tx;
 use sqlx::types::chrono;
 use sqlx::Executor;
@@ -29,16 +29,16 @@ impl MineTxRaw {
         merkle_root_hex: String,
         pool: &sqlx::MySqlPool,
     ) -> Result<Vec<Self>, sqlx::Error> {
-        let mine_tx_raws: Vec<MineTxRaw> = sqlx::query_as::<_, Self>(
+        let builder_tx_raws: Vec<MineTxRaw> = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM mine_tx_raw
+            SELECT * FROM builder_tx_raw
             WHERE id IN (
-                SELECT tx_id FROM mine_merkle_proof
+                SELECT tx_id FROM builder_merkle_proof
                 WHERE merkle_root = ?
             )
             ORDER BY (
-                SELECT position FROM mine_merkle_proof
-                WHERE mine_tx_raw.id = mine_merkle_proof.tx_id
+                SELECT position FROM builder_merkle_proof
+                WHERE builder_tx_raw.id = builder_merkle_proof.tx_id
             )
             "#,
         )
@@ -46,7 +46,7 @@ impl MineTxRaw {
         .fetch_all(pool)
         .await?;
 
-        Ok(mine_tx_raws)
+        Ok(builder_tx_raws)
     }
 
     pub async fn parse_and_insert(
@@ -55,21 +55,21 @@ impl MineTxRaw {
         ebx_address: Option<String>,
         pool: &sqlx::MySqlPool,
     ) -> Result<String, sqlx::Error> {
-        let mine_tx_parsed =
-            mine_tx_parsed::MineTxParsed::from_new_tx(tx, domain.clone(), ebx_address.clone());
+        let builder_tx_parsed =
+            builder_tx_parsed::MineTxParsed::from_new_tx(tx, domain.clone(), ebx_address.clone());
         let tx_raw_hex = tx.to_hex();
-        let id = &mine_tx_parsed.id.clone();
-        let version = mine_tx_parsed.version;
-        let tx_in_count = mine_tx_parsed.tx_in_count;
-        let tx_out_count = mine_tx_parsed.tx_out_count;
-        let lock_num = mine_tx_parsed.lock_num;
-        let is_valid = mine_tx_parsed.is_valid;
-        let is_vote_valid = mine_tx_parsed.is_vote_valid;
-        let confirmed_block_id = mine_tx_parsed.confirmed_block_id.clone();
-        let confirmed_merkle_root = mine_tx_parsed.confirmed_merkle_root.clone();
-        let domain = mine_tx_parsed.domain.clone();
-        let ebx_address = mine_tx_parsed.ebx_address.clone();
-        let created_at = mine_tx_parsed.created_at;
+        let id = &builder_tx_parsed.id.clone();
+        let version = builder_tx_parsed.version;
+        let tx_in_count = builder_tx_parsed.tx_in_count;
+        let tx_out_count = builder_tx_parsed.tx_out_count;
+        let lock_num = builder_tx_parsed.lock_num;
+        let is_valid = builder_tx_parsed.is_valid;
+        let is_vote_valid = builder_tx_parsed.is_vote_valid;
+        let confirmed_block_id = builder_tx_parsed.confirmed_block_id.clone();
+        let confirmed_merkle_root = builder_tx_parsed.confirmed_merkle_root.clone();
+        let domain = builder_tx_parsed.domain.clone();
+        let ebx_address = builder_tx_parsed.ebx_address.clone();
+        let created_at = builder_tx_parsed.created_at;
 
         let tx_inputs = MineTxInput::from_tx(tx);
         let tx_outputs = MineTxOutput::from_tx(tx);
@@ -81,7 +81,7 @@ impl MineTxRaw {
             .execute(
                 sqlx::query(
                     r#"
-              INSERT INTO mine_tx_raw (id, tx_raw, created_at)
+              INSERT INTO builder_tx_raw (id, tx_raw, created_at)
               VALUES (?, ?, ?)
               "#,
                 )
@@ -96,7 +96,7 @@ impl MineTxRaw {
           .execute(
               sqlx::query(
               r#"
-              INSERT INTO mine_tx_parsed (id, version, tx_in_count, tx_out_count, lock_num, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+              INSERT INTO builder_tx_parsed (id, version, tx_in_count, tx_out_count, lock_num, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               "#,
               )
@@ -120,7 +120,7 @@ impl MineTxRaw {
               .execute(
                   sqlx::query(
                   r#"
-                  INSERT INTO mine_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
+                  INSERT INTO builder_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
                   VALUES (?, ?, ?, ?, ?, ?, ?)
                   "#,
                   )
@@ -140,7 +140,7 @@ impl MineTxRaw {
                 .execute(
                     sqlx::query(
                         r#"
-                  INSERT INTO mine_tx_output (tx_id, tx_out_num, value, script, created_at)
+                  INSERT INTO builder_tx_output (tx_id, tx_out_num, value, script, created_at)
                   VALUES (?, ?, ?, ?, ?)
                   "#,
                     )

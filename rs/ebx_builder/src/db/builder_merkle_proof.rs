@@ -47,7 +47,7 @@ impl MineMerkleProof {
         pool: &MySqlPool,
     ) -> Result<Self, sqlx::Error> {
         let result = sqlx::query_as::<_, Self>(
-            "SELECT * FROM mine_merkle_proof WHERE merkle_root = ? AND tx_id = ?",
+            "SELECT * FROM builder_merkle_proof WHERE merkle_root = ? AND tx_id = ?",
         )
         .bind(merkle_root)
         .bind(tx_id)
@@ -63,7 +63,7 @@ impl MineMerkleProof {
     ) -> Result<Vec<Self>, sqlx::Error> {
         let result = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM mine_merkle_proof
+            SELECT * FROM builder_merkle_proof
             WHERE merkle_root = ?
             ORDER BY position ASC
             "#,
@@ -78,7 +78,7 @@ impl MineMerkleProof {
     pub async fn upsert(&self, pool: &MySqlPool) -> Result<(), sqlx::Error> {
         sqlx::query(
             r#"
-            INSERT INTO mine_merkle_proof (merkle_root, tx_id, merkle_proof, position)
+            INSERT INTO builder_merkle_proof (merkle_root, tx_id, merkle_proof, position)
             VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 merkle_proof = VALUES(merkle_proof),

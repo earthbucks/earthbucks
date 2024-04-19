@@ -38,7 +38,7 @@ impl MineTxParsed {
     pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<MineTxParsed, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
-            SELECT * FROM mine_tx_parsed WHERE id = ?
+            SELECT * FROM builder_tx_parsed WHERE id = ?
             "#,
         )
         .bind(id)

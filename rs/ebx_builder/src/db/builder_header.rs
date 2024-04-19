@@ -55,7 +55,7 @@ impl MineHeader {
     pub async fn get(id: &String, pool: &MySqlPool) -> Result<Self, Error> {
         let row: MineHeader = sqlx::query_as(
             r#"
-            SELECT * FROM mine_header
+            SELECT * FROM builder_header
             WHERE id = ?
             "#,
         )
@@ -70,7 +70,7 @@ impl MineHeader {
         let now_timestamp = Header::get_new_timestamp();
         let rows: Vec<MineHeader> = sqlx::query_as(
             r#"
-            SELECT * FROM mine_header
+            SELECT * FROM builder_header
             WHERE is_header_valid IS NULL AND is_block_valid IS NULL AND is_vote_valid IS NULL AND timestamp <= ?
             ORDER BY target ASC
             "#,
@@ -85,7 +85,7 @@ impl MineHeader {
     pub async fn get_validated_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
         let rows: Vec<MineHeader> = sqlx::query_as(
             r#"
-            SELECT * FROM mine_header
+            SELECT * FROM builder_header
             WHERE
                 is_header_valid = TRUE
                 AND (is_block_valid IS NULL OR is_block_valid = false)
@@ -102,7 +102,7 @@ impl MineHeader {
     // pub async fn get_voting_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
     //     let rows: Vec<MineHeader> = sqlx::query_as(
     //         r#"
-    //         SELECT * FROM mine_header
+    //         SELECT * FROM builder_header
     //         WHERE is_header_valid = TRUE AND is_block_valid = TRUE AND is_vote_valid IS NULL
     //         ORDER BY target ASC
     //         "#,
@@ -116,7 +116,7 @@ impl MineHeader {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO mine_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_header_valid, is_block_valid, is_vote_valid, domain, created_at)
+            INSERT INTO builder_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_header_valid, is_block_valid, is_vote_valid, domain, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
@@ -146,7 +146,7 @@ impl MineHeader {
     ) -> Result<(), Error> {
         sqlx::query(
             r#"
-            UPDATE mine_header
+            UPDATE builder_header
             SET is_header_valid = ?
             WHERE id = ?
             "#,
@@ -166,7 +166,7 @@ impl MineHeader {
     ) -> Result<(), Error> {
         sqlx::query(
             r#"
-            UPDATE mine_header
+            UPDATE builder_header
             SET is_block_valid = ?
             WHERE id = ?
             "#,
@@ -186,7 +186,7 @@ impl MineHeader {
     ) -> Result<(), Error> {
         sqlx::query(
             r#"
-            UPDATE mine_header
+            UPDATE builder_header
             SET is_vote_valid = ?
             WHERE id = ?
             "#,
@@ -202,7 +202,7 @@ impl MineHeader {
     pub async fn delete_unused_headers(block_num: u64, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            DELETE FROM mine_header
+            DELETE FROM builder_header
             WHERE block_num < ? AND (is_header_valid IS NULL OR is_header_valid = FALSE)
             "#,
         )

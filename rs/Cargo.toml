@@ -1,6 +1,6 @@
 [workspace]
 members = [
     "ebx_lib",
-    "ebx_mine",
+    "ebx_builder",
 ]
 resolver = "2"

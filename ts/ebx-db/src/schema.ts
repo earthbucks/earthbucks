@@ -16,8 +16,8 @@ import {
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
-export const MineHeader = mysqlTable(
-  'mine_header',
+export const BuilderHeader = mysqlTable(
+  'builder_header',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -43,13 +43,13 @@ export const MineHeader = mysqlTable(
   },
   (table) => {
     return {
-      mineHeaderId: primaryKey({ columns: [table.id], name: 'mine_header_id' }),
+      mineHeaderId: primaryKey({ columns: [table.id], name: 'builder_header_id' }),
     }
   },
 )
 
-export const MineLch = mysqlTable(
-  'mine_lch',
+export const BuilderLch = mysqlTable(
+  'builder_lch',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -72,14 +72,14 @@ export const MineLch = mysqlTable(
   },
   (table) => {
     return {
-      mineLchId: primaryKey({ columns: [table.id], name: 'mine_lch_id' }),
+      mineLchId: primaryKey({ columns: [table.id], name: 'builder_lch_id' }),
       blockNumId: unique('block_num_id').on(table.blockNum, table.id),
     }
   },
 )
 
-export const MineMerkleProof = mysqlTable(
-  'mine_merkle_proof',
+export const BuilderMerkleProof = mysqlTable(
+  'builder_merkle_proof',
   {
     // id
     merkleRoot: char('merkle_root', { length: 64 }).notNull(),
@@ -96,14 +96,14 @@ export const MineMerkleProof = mysqlTable(
     return {
       mineMerkleProofMerkleRootTxId: primaryKey({
         columns: [table.merkleRoot, table.txId],
-        name: 'mine_merkle_proof_merkle_root_tx_id',
+        name: 'builder_merkle_proof_merkle_root_tx_id',
       }),
     }
   },
 )
 
-export const MineTxRaw = mysqlTable(
-  'mine_tx_raw',
+export const BuilderTxRaw = mysqlTable(
+  'builder_tx_raw',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -116,13 +116,13 @@ export const MineTxRaw = mysqlTable(
   },
   (table) => {
     return {
-      mineTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
+      mineTxId: primaryKey({ columns: [table.id], name: 'builder_tx_id' }),
     }
   },
 )
 
-export const MineTxParsed = mysqlTable(
-  'mine_tx_parsed',
+export const BuilderTxParsed = mysqlTable(
+  'builder_tx_parsed',
   {
     // id
     id: char('id', { length: 64 }).notNull(),
@@ -144,13 +144,13 @@ export const MineTxParsed = mysqlTable(
   },
   (table) => {
     return {
-      mineTxId: primaryKey({ columns: [table.id], name: 'mine_tx_id' }),
+      mineTxId: primaryKey({ columns: [table.id], name: 'builder_tx_id' }),
     }
   },
 )
 
-export const MineTxInput = mysqlTable(
-  'mine_tx_input',
+export const BuilderTxInput = mysqlTable(
+  'builder_tx_input',
   {
     // id
     txId: char('tx_id', { length: 64 }).notNull(),
@@ -169,14 +169,14 @@ export const MineTxInput = mysqlTable(
     return {
       mineTxInputTxIdTxInNum: primaryKey({
         columns: [table.txId, table.txInNum],
-        name: 'mine_tx_input_tx_id_tx_in_num',
+        name: 'builder_tx_input_tx_id_tx_in_num',
       }),
     }
   },
 )
 
-export const MineTxOutput = mysqlTable(
-  'mine_tx_output',
+export const BuilderTxOutput = mysqlTable(
+  'builder_tx_output',
   {
     // id
     txId: char('tx_id', { length: 64 }).notNull(),
@@ -197,7 +197,7 @@ export const MineTxOutput = mysqlTable(
     return {
       mineTxOutputTxIdTxOutNum: primaryKey({
         columns: [table.txId, table.txOutNum],
-        name: 'mine_tx_output_tx_id_tx_out_num',
+        name: 'builder_tx_output_tx_id_tx_out_num',
       }),
     }
   },

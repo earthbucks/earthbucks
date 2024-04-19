@@ -42,7 +42,7 @@ impl MineTxOutput {
             .collect();
         let sql = format!(
             r#"
-            SELECT * FROM `mine_tx_output`
+            SELECT * FROM `builder_tx_output`
             WHERE (tx_id, tx_out_num) IN ({})
             AND spent_by_tx_id IS NULL
             AND spent_by_tx_in_num IS NULL

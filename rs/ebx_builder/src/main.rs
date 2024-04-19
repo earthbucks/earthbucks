@@ -6,9 +6,9 @@ use ebx_lib::{
     priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_output::TxOutput,
     tx_output_map::TxOutputMap,
 };
-use ebx_mine::db::{
-    mine_header::MineHeader, mine_lch::MineLch, mine_merkle_proof::MineMerkleProof,
-    mine_tx_output::MineTxOutput, mine_tx_parsed::MineTxParsed, mine_tx_raw::MineTxRaw,
+use ebx_builder::db::{
+    builder_header::MineHeader, builder_lch::MineLch, builder_merkle_proof::MineMerkleProof,
+    builder_tx_output::MineTxOutput, builder_tx_parsed::MineTxParsed, builder_tx_raw::MineTxRaw,
 };
 
 use log::{debug, error, info};
@@ -91,6 +91,7 @@ async fn main() -> Result<()> {
         .await
         .map_err(|e| anyhow::Error::msg(format!("Failed to connect to database: {}", e)))?;
 
+    // TODO: Load adjustment chain (last 2016 blocks) instead of longest chain
     let mut longest_chain: HeaderChain = MineLch::get_longest_chain(&pool).await?;
     let mut building_block_num = longest_chain.headers.len();
 
@@ -140,19 +141,19 @@ async fn main() -> Result<()> {
         // 2. Validate new block, broadcast, and vote.
         // TODO: Should there be a lock when validating a block?
         {
-            let new_mine_headers = MineHeader::get_validated_headers(&pool).await?;
-            debug!("New headers to verify: {}", new_mine_headers.len());
-            for new_mine_header in &new_mine_headers {
-                info!("Verifying block: {}", new_mine_header.id);
+            let new_builder_headers = MineHeader::get_validated_headers(&pool).await?;
+            debug!("New headers to verify: {}", new_builder_headers.len());
+            for new_builder_header in &new_builder_headers {
+                info!("Verifying block: {}", new_builder_header.id);
                 // 1. Get the merkle root from the header
-                let header = new_mine_header.to_block_header();
+                let header = new_builder_header.to_block_header();
                 let merkle_root = header.merkle_root;
                 let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
 
                 // 2. Load all transactions from DB for this merkle root (in order)
-                let mine_tx_raws =
+                let builder_tx_raws =
                     MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
-                let txs: Vec<Tx> = mine_tx_raws.iter().map(|tx| tx.to_tx()).collect();
+                let txs: Vec<Tx> = builder_tx_raws.iter().map(|tx| tx.to_tx()).collect();
 
                 // 3. Gather all (txid, txoutnum) from txs inputs so that we
                 //    know which UTXOs to load from the DB.
@@ -166,19 +167,19 @@ async fn main() -> Result<()> {
                     .collect();
 
                 // 4. Gather all unspent outputs matching (txid, txoutnum)
-                let mine_tx_outputs: Vec<MineTxOutput> =
+                let builder_tx_outputs: Vec<MineTxOutput> =
                     MineTxOutput::get_all_unspent_from_tx_ids_and_tx_out_nums(
                         &tx_id_tx_out_num_tuples,
                         &pool,
                     )
                     .await?;
                 let mut tx_out_map = TxOutputMap::new();
-                for mine_tx_output in &mine_tx_outputs {
-                    let tx_id = hex::decode(&mine_tx_output.tx_id).unwrap();
-                    let tx_out_num = mine_tx_output.tx_out_num;
+                for builder_tx_output in &builder_tx_outputs {
+                    let tx_id = hex::decode(&builder_tx_output.tx_id).unwrap();
+                    let tx_out_num = builder_tx_output.tx_out_num;
                     let tx_output = TxOutput::new(
-                        mine_tx_output.value,
-                        Script::from_u8_vec(&hex::decode(&mine_tx_output.script).unwrap()).unwrap(),
+                        builder_tx_output.value,
+                        Script::from_u8_vec(&hex::decode(&builder_tx_output.script).unwrap()).unwrap(),
                     );
                     tx_out_map.add(tx_output, &tx_id, tx_out_num);
                 }
@@ -190,7 +191,7 @@ async fn main() -> Result<()> {
                 info!("Block is valid: {}", is_block_valid);
 
                 // 6. Update is_block_valid
-                MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)
+                MineHeader::update_is_block_valid(&new_builder_header.id, is_block_valid, &pool)
                     .await?;
                 info!(
                     "New validated block ID: {}",
@@ -207,15 +208,15 @@ async fn main() -> Result<()> {
                 // TODO: Gather and assess votes
                 // TODO: This should be a transaction
                 let is_block_voted = true;
-                MineHeader::update_is_vote_valid(&new_mine_header.id, is_block_voted, &pool)
+                MineHeader::update_is_vote_valid(&new_builder_header.id, is_block_voted, &pool)
                     .await?;
-                let mine_lch = MineLch::from_mine_header(new_mine_header);
-                let res = mine_lch.save(&pool).await;
+                let builder_lch = MineLch::from_builder_header(new_builder_header);
+                let res = builder_lch.save(&pool).await;
                 if let Err(e) = res {
                     error!("Failed to save new block header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
-                info!("New longest chain tip ID: {}", mine_lch.id);
+                info!("New longest chain tip ID: {}", builder_lch.id);
                 if !is_block_voted {
                     continue;
                 }
@@ -228,20 +229,20 @@ async fn main() -> Result<()> {
 
         // 3. Check for valid PoW and continue main loop if found.
         {
-            let new_mine_headers = MineHeader::get_candidate_headers(&pool).await?;
+            let new_builder_headers = MineHeader::get_candidate_headers(&pool).await?;
             // for each header, validate against the longest chain
             // if any header is valid, mark as such and continue main loop
             // if header is invalid, mark as such
-            debug!("New candidate headers: {}", new_mine_headers.len());
-            for new_mine_header in &new_mine_headers {
-                let header = new_mine_header.to_block_header();
+            debug!("New candidate headers: {}", new_builder_headers.len());
+            for new_builder_header in &new_builder_headers {
+                let header = new_builder_header.to_block_header();
                 if longest_chain.new_header_is_valid_now(&header) {
                     info!(
                         "New header is valid: {}, {}",
                         header.block_num,
                         Buffer::from(header.id().to_vec()).to_hex()
                     );
-                    MineHeader::update_is_header_valid(&new_mine_header.id, true, &pool).await?;
+                    MineHeader::update_is_header_valid(&new_builder_header.id, true, &pool).await?;
                     continue 'main_loop;
                 } else {
                     debug!(
@@ -253,7 +254,7 @@ async fn main() -> Result<()> {
                         "Header target: {}",
                         Buffer::from(header.target.to_vec()).to_hex()
                     );
-                    MineHeader::update_is_header_valid(&new_mine_header.id, false, &pool).await?;
+                    MineHeader::update_is_header_valid(&new_builder_header.id, false, &pool).await?;
                 }
             }
         }
@@ -270,8 +271,8 @@ async fn main() -> Result<()> {
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
                 let coinbase_tx_id = hex::encode(coinbase_tx.id());
                 debug!("Coinbase tx ID: {}", coinbase_tx_id);
-                let coinbase_mine_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
-                if coinbase_mine_tx.is_err() {
+                let coinbase_builder_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
+                if coinbase_builder_tx.is_err() {
                     info!("Inserting coinbase tx ID: {}", coinbase_tx_id);
                     let ebx_address: Option<String> = None;
                     let res_tx_id = MineTxRaw::parse_and_insert(
@@ -305,9 +306,9 @@ async fn main() -> Result<()> {
             {
                 for (tx, proof) in merkle_txs.get_iterator() {
                     // TODO: This should be a transaction
-                    let mine_merkle_proof =
+                    let builder_merkle_proof =
                         MineMerkleProof::from_merkle_proof(proof, tx.id().to_vec());
-                    let res = mine_merkle_proof.upsert(&pool).await;
+                    let res = builder_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
                         error!("Failed to upsert merkle proof: {}", e);
                         anyhow::bail!("Failed to upsert merkle proof: {}", e)
@@ -327,8 +328,8 @@ async fn main() -> Result<()> {
             let block_id = header.id();
 
             // Save candidate header
-            let mine_header = MineHeader::from_header(&header, config.domain.clone());
-            let res = MineHeader::get(&mine_header.id, &pool).await;
+            let builder_header = MineHeader::from_header(&header, config.domain.clone());
+            let res = MineHeader::get(&builder_header.id, &pool).await;
             if res.is_ok() {
                 // this can hypothetically happen if timestamp is the same
                 debug!(
@@ -336,7 +337,7 @@ async fn main() -> Result<()> {
                     Buffer::from(block_id.to_vec()).to_hex()
                 );
             } else {
-                mine_header.save(&pool).await?;
+                builder_header.save(&pool).await?;
                 debug!(
                     "Produced candidate header ID: {}",
                     Buffer::from(block_id.to_vec()).to_hex()
