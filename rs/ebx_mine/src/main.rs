@@ -15,6 +15,8 @@ use log::{debug, error, info};
 use sqlx::mysql::MySqlPool;
 use std::{env, error::Error};
 use tokio::time::{interval, Duration};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 #[allow(dead_code)] // TODO: remove before launch
 struct EnvConfig {
@@ -69,6 +71,13 @@ impl EnvConfig {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+    ctrlc::set_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    }).expect("Error setting Ctrl-C handler");
+
+
     env_logger::init();
     let config = EnvConfig::new().unwrap();
 
@@ -156,17 +165,18 @@ async fn main() -> Result<()> {
             debug!("New headers to verify: {}", new_mine_headers.len());
             for new_mine_header in &new_mine_headers {
                 info!("Verifying block: {}", new_mine_header.id);
-                // Get the merkle root from the header
+                // 1. Get the merkle root from the header
                 let header = new_mine_header.to_block_header();
                 let merkle_root = header.merkle_root;
                 let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
 
-                // Load all transactions from this merkle root
+                // 2. Load all transactions from DB for this merkle root (in order)
                 let mine_tx_raws =
                     MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
                 let txs: Vec<Tx> = mine_tx_raws.iter().map(|tx| tx.to_tx()).collect();
 
-                // gather all (txid, txoutnum) from txs inputs
+                // 3. Gather all (txid, txoutnum) from txs inputs so that we
+                //    know which UTXOs to load from the DB.
                 let tx_id_tx_out_num_tuples: Vec<(String, u32)> = txs
                     .iter()
                     .map(|tx| {
@@ -176,7 +186,7 @@ async fn main() -> Result<()> {
                     })
                     .collect();
 
-                // gather all unspent outputs matching (txid, txoutnum)
+                // 4. Gather all unspent outputs matching (txid, txoutnum)
                 let mine_tx_outputs: Vec<MineTxOutput> =
                     MineTxOutput::get_all_unspent_from_tx_ids_and_tx_out_nums(
                         &tx_id_tx_out_num_tuples,
@@ -194,21 +204,25 @@ async fn main() -> Result<()> {
                     tx_out_map.add(tx_output, &tx_id, tx_out_num);
                 }
 
-                // Validate the block
+                // 5. Validate the block
                 let block = Block::new(header.clone(), txs);
                 let mut block_verifier = BlockVerifier::new(block, tx_out_map, &longest_chain);
                 let is_block_valid = block_verifier.is_valid_now();
                 info!("Block is valid: {}", is_block_valid);
 
-                // Update is_block_valid
+                // 6. Update is_block_valid
                 MineHeader::update_is_block_valid(&new_mine_header.id, is_block_valid, &pool)
                     .await?;
                 info!(
                     "New validated block ID: {}",
                     Buffer::from(header.id().to_vec()).to_hex()
                 );
-                // If block is valid, drop everything and proceed to vote.
                 if is_block_valid {
+                // 7. TODO: Broadcast block
+                // 8. TODO: Vote.
+                // 9. TODO: if voted, mark all used UTXOs as spent
+                // 10. TODO: if voted, mark all transactions as confirmed
+                // 11. TODO: if voted, mark block as voted
                     continue 'main_loop;
                 }
             }
@@ -349,6 +363,15 @@ async fn main() -> Result<()> {
             // TODO: Delete old unused coinbase transactions
             // TODO: Any other cleanup processes
         }
+        
+         // Check if Ctrl+C was pressed
+         if !running.load(Ordering::SeqCst) {
+            debug!("Ctrl+C detected, terminating...");
+            break 'main_loop;
+        }
+
         interval.tick().await;
     }
+
+    Ok(())
 }

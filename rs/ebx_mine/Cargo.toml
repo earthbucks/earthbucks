@@ -15,3 +15,4 @@ sqlx = { version = "0.7.4", features = ["mysql", "runtime-tokio-rustls", "chrono
 anyhow = "1.0"
 env_logger = "0.11.3"
 log = "0.4.21"
+ctrlc = "3.4.4"
