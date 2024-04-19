@@ -1,5 +1,5 @@
 packages:
   - 'earthbucks-com'
-  - 'earthbucks-db'
+  - 'earthbucks-pool-db'
   - 'earthbucks-pool'
   - 'earthbucks-lib'

@@ -1,5 +1,5 @@
 {
-  "name": "earthbucks-db",
+  "name": "earthbucks-pool-db",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

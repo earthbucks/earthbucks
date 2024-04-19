@@ -20,7 +20,9 @@ Rust (rs):
 TypeScript (ts):
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks-pool (mining pool and wallet, works with builder)
+- earthbucks-builder-db (mysql database, works with builder)
+- earthbucks-follower-db (mysql database, works with builder)
+- earthbucks-com (main app, mining pool and wallet, works with builder, database)
 - earthbucks-wallet (wallet, works with follower)
 - earthbucks-explorer (block explorer, works with builder)
 
