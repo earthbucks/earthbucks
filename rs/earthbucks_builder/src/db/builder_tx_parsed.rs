@@ -1,4 +1,4 @@
-use ebx_lib::tx::Tx;
+use earthbucks_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
@@ -13,12 +13,12 @@ pub struct MineTxParsed {
     pub confirmed_block_id: Option<String>,
     pub confirmed_merkle_root: Option<String>,
     pub domain: String,
-    pub ebx_address: Option<String>,
+    pub earthbucks_address: Option<String>,
     pub created_at: chrono::NaiveDateTime,
 }
 
 impl MineTxParsed {
-    pub fn from_new_tx(tx: &Tx, domain: String, ebx_address: Option<String>) -> Self {
+    pub fn from_new_tx(tx: &Tx, domain: String, earthbucks_address: Option<String>) -> Self {
         Self {
             id: hex::encode(tx.id()),
             version: tx.version,
@@ -30,7 +30,7 @@ impl MineTxParsed {
             confirmed_block_id: None,
             confirmed_merkle_root: None,
             domain,
-            ebx_address,
+            earthbucks_address,
             created_at: chrono::Utc::now().naive_utc(),
         }
     }

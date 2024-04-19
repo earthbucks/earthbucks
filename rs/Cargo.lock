@@ -648,14 +648,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
-name = "ebx_builder"
+name = "earthbucks_builder"
 version = "0.1.0"
 dependencies = [
  "actix-web",
  "anyhow",
  "ctrlc",
  "dotenv",
- "ebx_lib",
+ "earthbucks_lib",
  "env_logger",
  "hex",
  "log",
@@ -665,7 +665,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ebx_lib"
+name = "earthbucks_lib"
 version = "0.1.0"
 dependencies = [
  "blake3",

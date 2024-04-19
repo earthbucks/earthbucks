@@ -1,12 +1,12 @@
 [package]
-name = "ebx_builder"
+name = "earthbucks_builder"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
-"ebx_lib" = { path = "../ebx_lib" }
+"earthbucks_lib" = { path = "../earthbucks_lib" }
 hex = "0.4.3"
 actix-web = "4.5.1"
 tokio = { version = "1", features = ["full"] }

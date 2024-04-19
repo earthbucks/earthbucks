@@ -1,4 +1,4 @@
-use ebx_lib::merkle_proof::MerkleProof;
+use earthbucks_lib::merkle_proof::MerkleProof;
 use sqlx::{types::chrono, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]

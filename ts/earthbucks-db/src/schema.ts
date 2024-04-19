@@ -137,7 +137,7 @@ export const BuilderTxParsed = mysqlTable(
     confirmedBlockId: char('confirmed_block_id', { length: 64 }),
     confirmedMerkleRoot: char('confirmed_merkle_root', { length: 64 }),
     domain: varchar('domain', { length: 255 }).notNull(),
-    ebxAddress: varchar('ebx_address', { length: 255 }),
+    ebxAddress: varchar('earthbucks_address', { length: 255 }),
     createdAt: datetime('created_at', { mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

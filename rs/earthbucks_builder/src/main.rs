@@ -1,12 +1,12 @@
 use anyhow::Result;
 use dotenv::dotenv;
-use ebx_lib::{
+use earthbucks_lib::{
     block::Block, block_verifier::BlockVerifier, buffer::Buffer, domain::Domain, header::Header,
     header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh,
     priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_output::TxOutput,
     tx_output_map::TxOutputMap,
 };
-use ebx_builder::db::{
+use earthbucks_builder::db::{
     builder_header::MineHeader, builder_lch::MineLch, builder_merkle_proof::MineMerkleProof,
     builder_tx_output::MineTxOutput, builder_tx_parsed::MineTxParsed, builder_tx_raw::MineTxRaw,
 };
@@ -274,11 +274,11 @@ async fn main() -> Result<()> {
                 let coinbase_builder_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
                 if coinbase_builder_tx.is_err() {
                     info!("Inserting coinbase tx ID: {}", coinbase_tx_id);
-                    let ebx_address: Option<String> = None;
+                    let earthbucks_address: Option<String> = None;
                     let res_tx_id = MineTxRaw::parse_and_insert(
                         &coinbase_tx,
                         config.domain.clone(),
-                        ebx_address,
+                        earthbucks_address,
                         &pool,
                     )
                     .await;

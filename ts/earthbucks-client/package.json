@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
-    "ebx-lib": "workspace:*",
+    "earthbucks-lib": "workspace:*",
     "jest": "^29.7.0",
     "prettier": "^3.2.5"
   }

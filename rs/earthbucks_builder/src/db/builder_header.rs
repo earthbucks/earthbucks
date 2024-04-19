@@ -1,4 +1,4 @@
-use ebx_lib::header::Header;
+use earthbucks_lib::header::Header;
 use sqlx::{types::chrono, Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow, Clone)]

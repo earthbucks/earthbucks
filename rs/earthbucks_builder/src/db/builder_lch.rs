@@ -1,6 +1,6 @@
 use crate::db::builder_header::MineHeader;
-use ebx_lib::header::Header;
-use ebx_lib::header_chain::HeaderChain;
+use earthbucks_lib::header::Header;
+use earthbucks_lib::header_chain::HeaderChain;
 use sqlx::types::chrono;
 use sqlx::{Error, MySqlPool};
 

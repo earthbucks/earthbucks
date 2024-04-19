@@ -1,7 +1,7 @@
 use crate::db::builder_tx_input::MineTxInput;
 use crate::db::builder_tx_output::MineTxOutput;
 use crate::db::builder_tx_parsed;
-use ebx_lib::tx::Tx;
+use earthbucks_lib::tx::Tx;
 use sqlx::types::chrono;
 use sqlx::Executor;
 
@@ -52,11 +52,11 @@ impl MineTxRaw {
     pub async fn parse_and_insert(
         tx: &Tx,
         domain: String,
-        ebx_address: Option<String>,
+        earthbucks_address: Option<String>,
         pool: &sqlx::MySqlPool,
     ) -> Result<String, sqlx::Error> {
         let builder_tx_parsed =
-            builder_tx_parsed::MineTxParsed::from_new_tx(tx, domain.clone(), ebx_address.clone());
+            builder_tx_parsed::MineTxParsed::from_new_tx(tx, domain.clone(), earthbucks_address.clone());
         let tx_raw_hex = tx.to_hex();
         let id = &builder_tx_parsed.id.clone();
         let version = builder_tx_parsed.version;
@@ -68,7 +68,7 @@ impl MineTxRaw {
         let confirmed_block_id = builder_tx_parsed.confirmed_block_id.clone();
         let confirmed_merkle_root = builder_tx_parsed.confirmed_merkle_root.clone();
         let domain = builder_tx_parsed.domain.clone();
-        let ebx_address = builder_tx_parsed.ebx_address.clone();
+        let earthbucks_address = builder_tx_parsed.earthbucks_address.clone();
         let created_at = builder_tx_parsed.created_at;
 
         let tx_inputs = MineTxInput::from_tx(tx);
@@ -96,7 +96,7 @@ impl MineTxRaw {
           .execute(
               sqlx::query(
               r#"
-              INSERT INTO builder_tx_parsed (id, version, tx_in_count, tx_out_count, lock_num, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, ebx_address, created_at)
+              INSERT INTO builder_tx_parsed (id, version, tx_in_count, tx_out_count, lock_num, is_valid, is_vote_valid, confirmed_block_id, confirmed_merkle_root, domain, earthbucks_address, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               "#,
               )
@@ -110,7 +110,7 @@ impl MineTxRaw {
               .bind(confirmed_block_id)
               .bind(confirmed_merkle_root)
               .bind(domain)
-              .bind(ebx_address)
+              .bind(earthbucks_address)
               .bind(created_at)
           ).await?;
 

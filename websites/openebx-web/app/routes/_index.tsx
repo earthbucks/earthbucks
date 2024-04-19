@@ -14,20 +14,20 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/openebx-logo.png"
+              src="/openearthbucks-logo.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/openebx-text-white.png"
+                src="/openearthbucks-text-white.png"
                 alt="OpenEBX"
                 className="mx-auto block h-[50px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/openebx-text-black.png"
+                src="/openearthbucks-text-black.png"
                 alt="OpenEBX"
                 className="mx-auto block h-[50px]"
               />

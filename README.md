@@ -13,16 +13,16 @@ designed to be used by an AI for questions and answers about EarthBucks.
 
 Rust (rs):
 
-- ebx_lib (transactions, blocks, data structures, algorithms, standardized tests)
-- ebx_builder (build blocks, build merkle trees, validate txs, validate blocks)
-- ebx_follower (follow block headers, validate txs + merkle proofs)
+- earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
+- earthbucks_builder (build blocks, build merkle trees, validate txs, validate blocks)
+- earthbucks_follower (follow block headers, validate txs + merkle proofs)
 
 TypeScript (ts):
 
-- ebx-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- ebx-pool (mining pool and wallet, works with builder)
-- ebx-wallet (wallet, works with follower)
-- ebx-explorer (block explorer, works with builder)
+- earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
+- earthbucks-pool (mining pool and wallet, works with builder)
+- earthbucks-wallet (wallet, works with follower)
+- earthbucks-explorer (block explorer, works with builder)
 
 ## License
 

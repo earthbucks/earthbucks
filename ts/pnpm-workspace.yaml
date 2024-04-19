@@ -1,5 +1,5 @@
 packages:
-  - 'ebx-db'
-  - 'ebx-pool'
-  - 'ebx-lib'
-  - 'ebx-client'
+  - 'earthbucks-db'
+  - 'earthbucks-pool'
+  - 'earthbucks-lib'
+  - 'earthbucks-client'

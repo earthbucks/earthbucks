@@ -1,4 +1,4 @@
-use ebx_lib::tx::Tx;
+use earthbucks_lib::tx::Tx;
 use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]

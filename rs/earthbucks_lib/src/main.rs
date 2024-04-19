@@ -1,5 +1,5 @@
-use ebx_lib::key_pair::KeyPair;
-use ebx_lib::pkh;
+use earthbucks_lib::key_pair::KeyPair;
+use earthbucks_lib::pkh;
 use std::env;
 
 fn main() {
