@@ -3,15 +3,15 @@ use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct MineTxParsed {
-    pub id: String,
+    pub id: Vec<u8>,
     pub version: u8,
     pub tx_in_count: u32,
     pub tx_out_count: u32,
     pub lock_num: u64,
     pub is_valid: Option<bool>,
     pub is_vote_valid: Option<bool>,
-    pub confirmed_block_id: Option<String>,
-    pub confirmed_merkle_root: Option<String>,
+    pub confirmed_block_id: Option<Vec<u8>>,
+    pub confirmed_merkle_root: Option<Vec<u8>>,
     pub domain: String,
     pub earthbucks_address: Option<String>,
     pub created_at: chrono::NaiveDateTime,
@@ -20,7 +20,7 @@ pub struct MineTxParsed {
 impl MineTxParsed {
     pub fn from_new_tx(tx: &Tx, domain: String, earthbucks_address: Option<String>) -> Self {
         Self {
-            id: hex::encode(tx.id()),
+            id: tx.id().to_vec(),
             version: tx.version,
             tx_in_count: tx.inputs.len() as u32,
             tx_out_count: tx.outputs.len() as u32,
@@ -35,7 +35,7 @@ impl MineTxParsed {
         }
     }
 
-    pub async fn get(id: &String, pool: &sqlx::MySqlPool) -> Result<MineTxParsed, sqlx::Error> {
+    pub async fn get(id: &Vec<u8>, pool: &sqlx::MySqlPool) -> Result<MineTxParsed, sqlx::Error> {
         let tx = sqlx::query_as::<_, Self>(
             r#"
             SELECT * FROM builder_tx_parsed WHERE id = ?

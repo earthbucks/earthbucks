@@ -3,14 +3,14 @@ use sqlx::types::chrono;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct MineTxOutput {
-    pub tx_id: String,
+    pub tx_id: Vec<u8>,
     pub tx_out_num: u32,
     pub value: u64,
-    pub script: String,
+    pub script: Vec<u8>,
     pub created_at: chrono::NaiveDateTime,
-    pub spent_by_tx_id: Option<String>,
+    pub spent_by_tx_id: Option<Vec<u8>>,
     pub spent_by_tx_in_num: Option<u32>,
-    pub spent_in_block_id: Option<String>,
+    pub spent_in_block_id: Option<Vec<u8>>,
 }
 
 impl MineTxOutput {
@@ -19,10 +19,10 @@ impl MineTxOutput {
             .iter()
             .enumerate()
             .map(|(tx_out_num, tx_out)| Self {
-                tx_id: hex::encode(tx.id()),
+                tx_id: tx.id().to_vec(),
                 tx_out_num: tx_out_num as u32,
                 value: tx_out.value,
-                script: hex::encode(tx_out.script.to_u8_vec()),
+                script: tx_out.script.to_u8_vec(),
                 spent_by_tx_id: None,
                 spent_by_tx_in_num: None,
                 spent_in_block_id: None,
@@ -32,7 +32,7 @@ impl MineTxOutput {
     }
 
     pub async fn get_all_unspent_from_tx_ids_and_tx_out_nums(
-        tx_id_tx_out_num_tuples: &[(String, u32)],
+        tx_id_tx_out_num_tuples: &[(Vec<u8>, u32)],
         pool: &sqlx::MySqlPool,
     ) -> Result<Vec<Self>, sqlx::Error> {
         // simpler approach: IN clause

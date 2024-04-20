@@ -3,13 +3,13 @@ use sqlx::{types::chrono, Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow, Clone)]
 pub struct MineHeader {
-    pub id: String,
+    pub id: Vec<u8>,
     pub version: u32,
-    pub prev_block_id: String,
-    pub merkle_root: String,
+    pub prev_block_id: Vec<u8>,
+    pub merkle_root: Vec<u8>,
     pub timestamp: u64,
-    pub target: String,
-    pub nonce: String,
+    pub target: Vec<u8>,
+    pub nonce: Vec<u8>,
     pub block_num: u64,
     pub is_header_valid: Option<bool>,
     pub is_block_valid: Option<bool>,
@@ -21,13 +21,13 @@ pub struct MineHeader {
 impl MineHeader {
     pub fn from_header(header: &Header, domain: String) -> Self {
         Self {
-            id: hex::encode(header.id()),
+            id: header.id().to_vec(),
             version: header.version,
-            prev_block_id: hex::encode(header.prev_block_id),
-            merkle_root: hex::encode(header.merkle_root),
+            prev_block_id: header.prev_block_id.to_vec(),
+            merkle_root: header.merkle_root.to_vec(),
             timestamp: header.timestamp,
-            target: hex::encode(header.target),
-            nonce: hex::encode(header.nonce),
+            target: header.target.to_vec(),
+            nonce: header.nonce.to_vec(),
             block_num: header.block_num,
             is_header_valid: None,
             is_block_valid: None,
@@ -40,19 +40,16 @@ impl MineHeader {
     pub fn to_block_header(&self) -> Header {
         Header::new(
             self.version,
-            hex::decode(&self.prev_block_id)
-                .unwrap()
-                .try_into()
-                .unwrap(),
-            hex::decode(&self.merkle_root).unwrap().try_into().unwrap(),
+            self.prev_block_id.clone().try_into().unwrap(),
+            self.merkle_root.clone().try_into().unwrap(),
             self.timestamp,
-            hex::decode(&self.target).unwrap().try_into().unwrap(),
-            hex::decode(&self.nonce).unwrap().try_into().unwrap(),
+            self.target.clone().try_into().unwrap(),
+            self.nonce.clone().try_into().unwrap(),
             self.block_num,
         )
     }
 
-    pub async fn get(id: &String, pool: &MySqlPool) -> Result<Self, Error> {
+    pub async fn get(id: &Vec<u8>, pool: &MySqlPool) -> Result<Self, Error> {
         let row: MineHeader = sqlx::query_as(
             r#"
             SELECT * FROM builder_header
@@ -140,7 +137,7 @@ impl MineHeader {
     }
 
     pub async fn update_is_header_valid(
-        id: &String,
+        id: &Vec<u8>,
         is_header_valid: bool,
         pool: &MySqlPool,
     ) -> Result<(), Error> {
@@ -160,7 +157,7 @@ impl MineHeader {
     }
 
     pub async fn update_is_block_valid(
-        id: &String,
+        id: &Vec<u8>,
         is_block_valid: bool,
         pool: &MySqlPool,
     ) -> Result<(), Error> {
@@ -180,7 +177,7 @@ impl MineHeader {
     }
 
     pub async fn update_is_vote_valid(
-        id: &String,
+        id: &Vec<u8>,
         is_vote_valid: bool,
         pool: &MySqlPool,
     ) -> Result<(), Error> {

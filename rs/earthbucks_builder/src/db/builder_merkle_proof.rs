@@ -3,18 +3,18 @@ use sqlx::{types::chrono, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct MineMerkleProof {
-    pub merkle_root: String,
-    pub tx_id: String,
-    pub merkle_proof: String,
+    pub merkle_root: Vec<u8>,
+    pub tx_id: Vec<u8>,
+    pub merkle_proof: Vec<u8>,
     pub position: u64,
     pub created_at: chrono::NaiveDateTime,
 }
 
 impl MineMerkleProof {
     pub fn new(
-        merkle_root: String,
-        tx_id: String,
-        merkle_proof: String,
+        merkle_root: Vec<u8>,
+        tx_id: Vec<u8>,
+        merkle_proof: Vec<u8>,
         position: u64,
         created_at: chrono::NaiveDateTime,
     ) -> Self {
@@ -27,18 +27,18 @@ impl MineMerkleProof {
         }
     }
 
-    pub fn from_merkle_proof(merkle_proof: &MerkleProof, tx_id: Vec<u8>) -> Self {
+    pub fn from_merkle_proof(merkle_proof: &MerkleProof, tx_id: [u8; 32]) -> Self {
         Self {
-            merkle_root: hex::encode(merkle_proof.root),
-            tx_id: hex::encode(tx_id),
-            merkle_proof: hex::encode(merkle_proof.to_u8_vec()),
+            merkle_root: merkle_proof.root.to_vec(),
+            tx_id: tx_id.to_vec(),
+            merkle_proof: merkle_proof.to_u8_vec(),
             position: merkle_proof.position_in_tree(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_merkle_proof(&self) -> MerkleProof {
-        MerkleProof::from_u8_vec(&hex::decode(&self.merkle_proof).unwrap())
+        MerkleProof::from_u8_vec(&self.merkle_proof)
     }
 
     pub async fn get(

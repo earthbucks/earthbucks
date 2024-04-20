@@ -7,26 +7,26 @@ use sqlx::Executor;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct MineTxRaw {
-    pub id: String,
-    pub tx_raw: String,
+    pub id: Vec<u8>,
+    pub tx_raw: Vec<u8>,
     pub created_at: chrono::NaiveDateTime,
 }
 
 impl MineTxRaw {
     pub fn from_tx(tx: &Tx) -> Self {
         Self {
-            id: hex::encode(tx.id()),
-            tx_raw: hex::encode(tx.to_u8_vec()),
+            id: tx.id().to_vec(),
+            tx_raw: tx.to_u8_vec(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_tx(&self) -> Tx {
-        Tx::from_u8_vec(hex::decode(&self.tx_raw).unwrap()).unwrap()
+        Tx::from_u8_vec(self.tx_raw.clone()).unwrap()
     }
 
     pub async fn get_for_all_merkle_root_in_order(
-        merkle_root_hex: String,
+        merkle_root: Vec<u8>,
         pool: &sqlx::MySqlPool,
     ) -> Result<Vec<Self>, sqlx::Error> {
         let builder_tx_raws: Vec<MineTxRaw> = sqlx::query_as::<_, Self>(
@@ -42,7 +42,7 @@ impl MineTxRaw {
             )
             "#,
         )
-        .bind(merkle_root_hex)
+        .bind(merkle_root)
         .fetch_all(pool)
         .await?;
 
@@ -54,10 +54,13 @@ impl MineTxRaw {
         domain: String,
         earthbucks_address: Option<String>,
         pool: &sqlx::MySqlPool,
-    ) -> Result<String, sqlx::Error> {
-        let builder_tx_parsed =
-            builder_tx_parsed::MineTxParsed::from_new_tx(tx, domain.clone(), earthbucks_address.clone());
-        let tx_raw_hex = tx.to_hex();
+    ) -> Result<Vec<u8>, sqlx::Error> {
+        let builder_tx_parsed = builder_tx_parsed::MineTxParsed::from_new_tx(
+            tx,
+            domain.clone(),
+            earthbucks_address.clone(),
+        );
+        let tx_raw = tx.to_u8_vec();
         let id = &builder_tx_parsed.id.clone();
         let version = builder_tx_parsed.version;
         let tx_in_count = builder_tx_parsed.tx_in_count;
@@ -86,7 +89,7 @@ impl MineTxRaw {
               "#,
                 )
                 .bind(id)
-                .bind(tx_raw_hex)
+                .bind(tx_raw)
                 .bind(created_at),
             )
             .await?;
@@ -155,6 +158,6 @@ impl MineTxRaw {
 
         transaction.commit().await?;
 
-        Ok(id.to_string())
+        Ok(id.clone())
     }
 }

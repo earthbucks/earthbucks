@@ -1,14 +1,14 @@
 use anyhow::Result;
 use dotenv::dotenv;
+use earthbucks_builder::db::{
+    builder_header::MineHeader, builder_lch::MineLch, builder_merkle_proof::MineMerkleProof,
+    builder_tx_output::MineTxOutput, builder_tx_parsed::MineTxParsed, builder_tx_raw::MineTxRaw,
+};
 use earthbucks_lib::{
     block::Block, block_verifier::BlockVerifier, buffer::Buffer, domain::Domain, header::Header,
     header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh,
     priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_output::TxOutput,
     tx_output_map::TxOutputMap,
-};
-use earthbucks_builder::db::{
-    builder_header::MineHeader, builder_lch::MineLch, builder_merkle_proof::MineMerkleProof,
-    builder_tx_output::MineTxOutput, builder_tx_parsed::MineTxParsed, builder_tx_raw::MineTxRaw,
 };
 
 use log::{debug, error, info};
@@ -117,14 +117,14 @@ async fn main() -> Result<()> {
             if longest_chain.headers.is_empty() {
                 longest_chain = MineLch::get_longest_chain(&pool).await?;
             } else {
-                let db_chain_tip_id_opt: Option<String> = MineLch::get_chain_tip_id(&pool).await;
+                let db_chain_tip_id_opt: Option<Vec<u8>> = MineLch::get_chain_tip_id(&pool).await;
                 if db_chain_tip_id_opt.is_none() {
                     log::error!("Longest chain in memory does not match database.");
                     anyhow::bail!("Longest chain in memory does not match database.")
                 } else {
-                    let db_chain_tip_id_hex = db_chain_tip_id_opt.unwrap();
-                    let mem_chain_tip_id_hex = hex::encode(longest_chain.get_tip().unwrap().id());
-                    if db_chain_tip_id_hex != mem_chain_tip_id_hex {
+                    let db_chain_tip_id = db_chain_tip_id_opt.unwrap();
+                    let mem_chain_tip_id = longest_chain.get_tip().unwrap().id();
+                    if db_chain_tip_id != mem_chain_tip_id {
                         // TODO: Load only new block headers
                         longest_chain = MineLch::get_longest_chain(&pool).await?;
                     }
@@ -144,23 +144,26 @@ async fn main() -> Result<()> {
             let new_builder_headers = MineHeader::get_validated_headers(&pool).await?;
             debug!("New headers to verify: {}", new_builder_headers.len());
             for new_builder_header in &new_builder_headers {
-                info!("Verifying block: {}", new_builder_header.id);
+                info!(
+                    "Verifying block: {}",
+                    hex::encode(new_builder_header.id.clone())
+                );
                 // 1. Get the merkle root from the header
                 let header = new_builder_header.to_block_header();
                 let merkle_root = header.merkle_root;
-                let merkle_root_hex = Buffer::from(merkle_root.to_vec()).to_hex();
+                let merkle_root = merkle_root.to_vec();
 
                 // 2. Load all transactions from DB for this merkle root (in order)
                 let builder_tx_raws =
-                    MineTxRaw::get_for_all_merkle_root_in_order(merkle_root_hex, &pool).await?;
+                    MineTxRaw::get_for_all_merkle_root_in_order(merkle_root, &pool).await?;
                 let txs: Vec<Tx> = builder_tx_raws.iter().map(|tx| tx.to_tx()).collect();
 
                 // 3. Gather all (txid, txoutnum) from txs inputs so that we
                 //    know which UTXOs to load from the DB.
-                let tx_id_tx_out_num_tuples: Vec<(String, u32)> = txs
+                let tx_id_tx_out_num_tuples: Vec<(Vec<u8>, u32)> = txs
                     .iter()
                     .map(|tx| {
-                        let tx_id = hex::encode(tx.id());
+                        let tx_id = tx.id().to_vec();
                         let tx_out_num = 0;
                         (tx_id, tx_out_num)
                     })
@@ -175,11 +178,11 @@ async fn main() -> Result<()> {
                     .await?;
                 let mut tx_out_map = TxOutputMap::new();
                 for builder_tx_output in &builder_tx_outputs {
-                    let tx_id = hex::decode(&builder_tx_output.tx_id).unwrap();
+                    let tx_id = builder_tx_output.tx_id.clone();
                     let tx_out_num = builder_tx_output.tx_out_num;
                     let tx_output = TxOutput::new(
                         builder_tx_output.value,
-                        Script::from_u8_vec(&hex::decode(&builder_tx_output.script).unwrap()).unwrap(),
+                        Script::from_u8_vec(&builder_tx_output.script).unwrap(),
                     );
                     tx_out_map.add(tx_output, &tx_id, tx_out_num);
                 }
@@ -216,7 +219,7 @@ async fn main() -> Result<()> {
                     error!("Failed to save new block header: {}", e);
                     anyhow::bail!("Failed to save new block header: {}", e)
                 }
-                info!("New longest chain tip ID: {}", builder_lch.id);
+                info!("New longest chain tip ID: {}", hex::encode(builder_lch.id));
                 if !is_block_voted {
                     continue;
                 }
@@ -254,7 +257,8 @@ async fn main() -> Result<()> {
                         "Header target: {}",
                         Buffer::from(header.target.to_vec()).to_hex()
                     );
-                    MineHeader::update_is_header_valid(&new_builder_header.id, false, &pool).await?;
+                    MineHeader::update_is_header_valid(&new_builder_header.id, false, &pool)
+                        .await?;
                 }
             }
         }
@@ -269,11 +273,11 @@ async fn main() -> Result<()> {
             {
                 coinbase_tx = longest_chain
                     .get_next_coinbase_tx(&config.coinbase_pkh, &config.domain.clone());
-                let coinbase_tx_id = hex::encode(coinbase_tx.id());
-                debug!("Coinbase tx ID: {}", coinbase_tx_id);
-                let coinbase_builder_tx = MineTxParsed::get(&coinbase_tx_id, &pool).await;
+                let coinbase_tx_id = coinbase_tx.id();
+                debug!("Coinbase tx ID: {}", hex::encode(coinbase_tx_id));
+                let coinbase_builder_tx = MineTxParsed::get(&coinbase_tx_id.to_vec(), &pool).await;
                 if coinbase_builder_tx.is_err() {
-                    info!("Inserting coinbase tx ID: {}", coinbase_tx_id);
+                    info!("Inserting coinbase tx ID: {}", hex::encode(coinbase_tx_id));
                     let earthbucks_address: Option<String> = None;
                     let res_tx_id = MineTxRaw::parse_and_insert(
                         &coinbase_tx,
@@ -287,7 +291,10 @@ async fn main() -> Result<()> {
                         anyhow::bail!("Failed to insert coinbase tx: {}", e)
                     }
                 } else {
-                    debug!("Coinbase tx already exists: {}", coinbase_tx_id);
+                    debug!(
+                        "Coinbase tx already exists: {}",
+                        hex::encode(coinbase_tx_id)
+                    );
                 }
             }
 
@@ -306,8 +313,7 @@ async fn main() -> Result<()> {
             {
                 for (tx, proof) in merkle_txs.get_iterator() {
                     // TODO: This should be a transaction
-                    let builder_merkle_proof =
-                        MineMerkleProof::from_merkle_proof(proof, tx.id().to_vec());
+                    let builder_merkle_proof = MineMerkleProof::from_merkle_proof(proof, tx.id());
                     let res = builder_merkle_proof.upsert(&pool).await;
                     if let Err(e) = res {
                         error!("Failed to upsert merkle proof: {}", e);

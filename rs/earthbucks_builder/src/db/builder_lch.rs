@@ -6,13 +6,13 @@ use sqlx::{Error, MySqlPool};
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct MineLch {
-    pub id: String,
+    pub id: Vec<u8>,
     pub version: u32,
-    pub prev_block_id: String,
-    pub merkle_root: String,
+    pub prev_block_id: Vec<u8>,
+    pub merkle_root: Vec<u8>,
     pub timestamp: u64,
-    pub target: String,
-    pub nonce: String,
+    pub target: Vec<u8>,
+    pub nonce: Vec<u8>,
     pub block_num: u64,
     pub domain: String,
     pub created_at: chrono::NaiveDateTime,
@@ -37,13 +37,13 @@ impl MineLch {
 
     pub fn from_block_header(header: &Header, domain: &str) -> Self {
         Self {
-            id: hex::encode(header.id()),
+            id: header.id().to_vec(),
             version: header.version,
-            prev_block_id: hex::encode(header.prev_block_id),
-            merkle_root: hex::encode(header.merkle_root),
+            prev_block_id: header.prev_block_id.to_vec(),
+            merkle_root: header.merkle_root.to_vec(),
             timestamp: header.timestamp,
-            target: hex::encode(header.target),
-            nonce: hex::encode(header.nonce),
+            target: header.target.to_vec(),
+            nonce: header.nonce.to_vec(),
             block_num: header.block_num,
             domain: domain.to_string(),
             created_at: chrono::Utc::now().naive_utc(),
@@ -53,14 +53,11 @@ impl MineLch {
     pub fn to_block_header(&self) -> Header {
         Header::new(
             self.version,
-            hex::decode(&self.prev_block_id)
-                .unwrap()
-                .try_into()
-                .unwrap(),
-            hex::decode(&self.merkle_root).unwrap().try_into().unwrap(),
+            self.prev_block_id.clone().try_into().unwrap(),
+            self.merkle_root.clone().try_into().unwrap(),
             self.timestamp,
-            hex::decode(&self.target).unwrap().try_into().unwrap(),
-            hex::decode(&self.nonce).unwrap().try_into().unwrap(),
+            self.target.clone().try_into().unwrap(),
+            self.nonce.clone().try_into().unwrap(),
             self.block_num,
         )
     }
@@ -143,7 +140,7 @@ impl MineLch {
         Ok(())
     }
 
-    pub async fn get_chain_tip_id(pool: &MySqlPool) -> Option<String> {
+    pub async fn get_chain_tip_id(pool: &MySqlPool) -> Option<Vec<u8>> {
         let row: Result<Option<MineLch>, Error> = sqlx::query_as(
             r#"
             SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
