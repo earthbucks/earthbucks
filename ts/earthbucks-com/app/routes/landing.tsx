@@ -194,7 +194,7 @@ function Slider() {
               }}
             >
               <img
-                src="/earthbucks-coin-1.png"
+                src="/earthbucks-coin.png"
                 alt=""
                 className="h-[36px] w-[36px]"
               />
@@ -330,7 +330,7 @@ function Slider() {
               }}
             ></div>
             <img
-              src="/earthbucks-coin-1.png"
+              src="/earthbucks-coin.png"
               alt=""
               className={classNames(
                 'relative z-[35] h-full',
@@ -408,7 +408,7 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/earthbucks-coin-1.png"
+              src="/earthbucks-coin.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px] rounded-full shadow-lg shadow-[#6d3206] bg-[#6d3206]"
             />
