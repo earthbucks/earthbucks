@@ -387,7 +387,7 @@ function Button({
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
-                    src="/earthbucks-coin-1-bw-192.jpg"
+                    src="/imp-avatar-bw.png"
                     alt=""
                     className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#fef8d6]"
                   />
