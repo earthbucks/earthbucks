@@ -259,7 +259,7 @@ function Slider() {
             >
               <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
               <span className="align-middle text-sm font-semibold text-white">
-                Stack!
+                Stack
               </span>
               <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f09825]" />
             </div>
