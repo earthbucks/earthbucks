@@ -30,3 +30,4 @@
 - ORE is a cryptocurrency with in-browser mining https://ore.supply/
 - list of alternate PoW algorithms https://github.com/sencha-dev/powkit
 - information about heavyhash https://assets.pubpub.org/xi9h9rps/01581688887859.pdf
+- How you looked into what BU did with NeXa for GPU asic resistant code etc
