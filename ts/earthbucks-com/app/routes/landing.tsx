@@ -6,7 +6,7 @@ import { classNames } from '~/util'
 export const meta: MetaFunction = () => {
   return [
     { title: 'EarthBucks' },
-    { name: 'description', content: 'Welcome to ImpStack!' },
+    { name: 'description', content: 'Welcome to EarthBucks!' },
   ]
 }
 
@@ -193,7 +193,11 @@ function Slider() {
                       : undefined,
               }}
             >
-              <img src="/earthbucks-coin-1.png" alt="" className="h-[36px] w-[36px]" />
+              <img
+                src="/earthbucks-coin-1.png"
+                alt=""
+                className="h-[36px] w-[36px]"
+              />
             </div>
             <div
               className={classNames(
@@ -408,6 +412,20 @@ export default function Landing() {
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
+            <div className="hidden dark:block">
+              <img
+                src="/earthbucks-text-white.png"
+                alt="EarthBucks"
+                className="mx-auto block h-[50px]"
+              />
+            </div>
+            <div className="block dark:hidden">
+              <img
+                src="/earthbucks-text-black.png"
+                alt="EarthBucks"
+                className="mx-auto block h-[50px]"
+              />
+            </div>
           </div>
         </div>
       </div>
