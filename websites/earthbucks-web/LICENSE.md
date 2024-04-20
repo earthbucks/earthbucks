@@ -1,1 +1,1 @@
-Copyright (C) 2024 Ryan X. Charles
+Copyright (C) 2024 Ryan X. Charles LLC
