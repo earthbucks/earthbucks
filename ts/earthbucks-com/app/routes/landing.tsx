@@ -372,9 +372,9 @@ function Button({
 
   return (
     <div className="flex h-[60px] w-[320px]">
-      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#556489] p-[1px] shadow-lg shadow-[#556489]">
+      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#6d3206] p-[1px] shadow-lg shadow-[#6d3206]">
         <div className="h-full w-full rounded-full bg-[#fef8d6] p-[3px]">
-          <div className="relative h-full w-full rounded-full bg-[#f09825] shadow-[inset_5px_5px_10px_#556489]">
+          <div className="relative h-full w-full rounded-full bg-[#f09825] shadow-[inset_5px_5px_10px_#6d3206]">
             <img
               src={shirtSrc}
               alt=""
@@ -410,7 +410,7 @@ export default function Landing() {
             <img
               src="/earthbucks-coin-1.png"
               alt=""
-              className="mx-auto mb-4 block h-[200px] w-[200px]"
+              className="mx-auto mb-4 block h-[200px] w-[200px] rounded-full shadow-lg shadow-[#6d3206] bg-[#6d3206]"
             />
             <div className="hidden dark:block">
               <img
