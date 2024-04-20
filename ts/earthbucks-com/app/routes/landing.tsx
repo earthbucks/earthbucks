@@ -5,7 +5,7 @@ import { classNames } from '~/util'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'ImpStack' },
+    { title: 'EarthBucks' },
     { name: 'description', content: 'Welcome to ImpStack!' },
   ]
 }
@@ -193,7 +193,7 @@ function Slider() {
                       : undefined,
               }}
             >
-              <img src="/imp-logo.png" alt="" className="h-[36px] w-[36px]" />
+              <img src="/earthbucks-coin-1.png" alt="" className="h-[36px] w-[36px]" />
             </div>
             <div
               className={classNames(
@@ -213,12 +213,12 @@ function Slider() {
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/heart-gold-128.png"
+                  src="/heart-gold-192.png"
                   alt=""
                   className="h-[36px] w-[36px]"
                 />
                 <img
-                  src="/heart-gold-128.png"
+                  src="/heart-gold-192.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                 />
@@ -326,7 +326,7 @@ function Slider() {
               }}
             ></div>
             <img
-              src="/imp-logo.png"
+              src="/earthbucks-coin-1.png"
               alt=""
               className={classNames(
                 'relative z-[35] h-full',
@@ -383,7 +383,7 @@ function Button({
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
-                    src="/imp-avatar-bw.png"
+                    src="/earthbucks-coin-1-bw-192.jpg"
                     alt=""
                     className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#fef8d6]"
                   />
@@ -404,24 +404,10 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/imp-logo.png"
+              src="/earthbucks-coin-1.png"
               alt=""
               className="mx-auto mb-4 block h-[200px] w-[200px]"
             />
-            <div className="hidden dark:block">
-              <img
-                src="/impstack-text-white.png"
-                alt="ImpStack"
-                className="mx-auto block h-[50px]"
-              />
-            </div>
-            <div className="block dark:hidden">
-              <img
-                src="/impstack-text-black.png"
-                alt="ImpStack"
-                className="mx-auto block h-[50px]"
-              />
-            </div>
           </div>
         </div>
       </div>
