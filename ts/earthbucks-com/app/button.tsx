@@ -354,7 +354,7 @@ function Slider({
 
 export default function Button({
   initialText = "Swipe",
-  processingText = "Processing...",
+  processingText = "Processing",
   successText = "Success!",
   errorText = "Error!",
   onProcessing = () => {},
@@ -370,6 +370,9 @@ export default function Button({
   onError?: () => void;
 }) {
   let bgImageSrc = "/treasure-chest-cropped.png";
+
+  processingText = processingText.replaceAll(".", "");
+  processingText = processingText + "...";
 
   return (
     <div className="flex h-[60px] w-[320px]">
