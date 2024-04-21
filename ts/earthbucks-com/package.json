@@ -15,8 +15,8 @@
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "prettier": {
-    "semi": false,
-    "singleQuote": true,
+    "semi": true,
+    "singleQuote": false,
     "plugins": [
       "prettier-plugin-tailwindcss"
     ]

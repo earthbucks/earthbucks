@@ -1,11 +1,11 @@
-import type { MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'EarthBucks' },
-    { name: 'description', content: 'Welcome to EarthBucks!' },
-  ]
-}
+    { title: "EarthBucks" },
+    { name: "description", content: "Welcome to EarthBucks!" },
+  ];
+};
 
 export default function Index() {
   return (
@@ -45,24 +45,24 @@ export default function Index() {
                 className="underline"
               >
                 Telegram
-              </a>{' '}
-              &middot;{' '}
+              </a>{" "}
+              &middot;{" "}
               <a
                 href="https://discord.gg/dZfyrFk6uh"
                 target="_blank"
                 className="underline"
               >
                 Discord
-              </a>{' '}
-              &middot;{' '}
+              </a>{" "}
+              &middot;{" "}
               <a
                 href="https://x.com/earthbucks_com"
                 target="_blank"
                 className="underline"
               >
                 X (Twitter)
-              </a>{' '}
-              &middot;{' '}
+              </a>{" "}
+              &middot;{" "}
               <a
                 href="https://github.com/earthbucks/earthbucks"
                 target="_blank"
@@ -75,5 +75,5 @@ export default function Index() {
         </div>
       </div>
     </div>
-  )
+  );
 }

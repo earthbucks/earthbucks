@@ -19,8 +19,8 @@
     "tsx": "^4.7.1"
   },
   "prettier": {
-    "semi": false,
-    "singleQuote": true
+    "semi": true,
+    "singleQuote": false
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

@@ -12,8 +12,8 @@
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "license": "MIT",
   "prettier": {
-    "semi": false,
-    "singleQuote": true
+    "semi": true,
+    "singleQuote": false
   },
   "dependencies": {
     "dotenv": "^16.4.5",

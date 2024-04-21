@@ -1,35 +1,35 @@
 // Drizzle does not support MySQL BLOB types by default, so we have to define
 // our own custom types
 
-import { customType } from "drizzle-orm/mysql-core"
+import { customType } from "drizzle-orm/mysql-core";
 
 export const customTinyBlob = customType<{ data: Buffer }>({
   // up to 255 bytes
   dataType() {
-    return 'TINYBLOB'
+    return "TINYBLOB";
   },
   toDriver(data) {
-    return data
+    return data;
   },
-})
+});
 
 export const customBlob = customType<{ data: Buffer }>({
   // up to 64KB
   dataType() {
-    return 'BLOB'
+    return "BLOB";
   },
-})
+});
 
 export const customMediumBlob = customType<{ data: Buffer }>({
   // up to 16MB
   dataType() {
-    return 'MEDIUMBLOB'
+    return "MEDIUMBLOB";
   },
-})
+});
 
 export const customLongBlob = customType<{ data: Buffer }>({
   // up to 4GB
   dataType() {
-    return 'LONGBLOB'
+    return "LONGBLOB";
   },
-})
+});

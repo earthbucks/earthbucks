@@ -1,35 +1,35 @@
-import Tx, { HashCache } from './tx'
-import TxOutputMap from './tx-output-map'
-import ScriptInterpreter from './script-interpreter'
-import { Buffer } from 'buffer'
+import Tx, { HashCache } from "./tx";
+import TxOutputMap from "./tx-output-map";
+import ScriptInterpreter from "./script-interpreter";
+import { Buffer } from "buffer";
 
 export default class TxVerifier {
-  public tx: Tx
-  public txOutMap: TxOutputMap
-  public hashCache: HashCache
+  public tx: Tx;
+  public txOutMap: TxOutputMap;
+  public hashCache: HashCache;
 
   constructor(tx: Tx, txOutMap: TxOutputMap) {
-    this.tx = tx
-    this.txOutMap = txOutMap
-    this.hashCache = new HashCache()
+    this.tx = tx;
+    this.txOutMap = txOutMap;
+    this.hashCache = new HashCache();
   }
 
   verifyInputScript(nIn: number): boolean {
-    const txInput = this.tx.inputs[nIn]
-    const txOutHash = txInput.inputTxId
-    const outputIndex = txInput.inputTxNOut
-    const txOut = this.txOutMap.get(txOutHash, outputIndex)
+    const txInput = this.tx.inputs[nIn];
+    const txOutHash = txInput.inputTxId;
+    const outputIndex = txInput.inputTxNOut;
+    const txOut = this.txOutMap.get(txOutHash, outputIndex);
     if (!txOut) {
-      return false
+      return false;
     }
-    const outputScript = txOut.script
-    const inputScript = txInput.script
+    const outputScript = txOut.script;
+    const inputScript = txInput.script;
     if (!inputScript.isPushOnly()) {
-      return false
+      return false;
     }
     const stack = inputScript.chunks.map(
-      (chunk) => new Uint8Array(chunk.buffer || Buffer.from('')),
-    )
+      (chunk) => new Uint8Array(chunk.buffer || Buffer.from("")),
+    );
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       outputScript,
       this.tx,
@@ -37,37 +37,37 @@ export default class TxVerifier {
       stack,
       txOut.value,
       this.hashCache,
-    )
-    const result = scriptInterpreter.evalScript()
-    return result
+    );
+    const result = scriptInterpreter.evalScript();
+    return result;
   }
 
   verifyScripts(): boolean {
     for (let i = 0; i < this.tx.inputs.length; i++) {
       if (!this.verifyInputScript(i)) {
-        return false
+        return false;
       }
     }
-    return true
+    return true;
   }
 
   verifyOutputValues(): boolean {
-    let totalOutputValue = BigInt(0)
-    let totalInputValue = BigInt(0)
+    let totalOutputValue = BigInt(0);
+    let totalInputValue = BigInt(0);
     for (const output of this.tx.outputs) {
-      totalOutputValue += output.value
+      totalOutputValue += output.value;
     }
     for (const input of this.tx.inputs) {
-      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxNOut)
+      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxNOut);
       if (!txOut) {
-        return false
+        return false;
       }
-      totalInputValue += txOut.value
+      totalInputValue += txOut.value;
     }
-    return totalOutputValue === totalInputValue
+    return totalOutputValue === totalInputValue;
   }
 
   verify(): boolean {
-    return this.verifyScripts() && this.verifyOutputValues()
+    return this.verifyScripts() && this.verifyOutputValues();
   }
 }

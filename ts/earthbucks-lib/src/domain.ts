@@ -1,61 +1,61 @@
 export default class Domain {
-  public domainStr: string
+  public domainStr: string;
 
   constructor(domainStr: string) {
-    this.domainStr = domainStr
+    this.domainStr = domainStr;
   }
 
   static fromString(domainStr: string): Domain {
-    return new Domain(domainStr)
+    return new Domain(domainStr);
   }
 
   toString(): string {
-    return this.domainStr
+    return this.domainStr;
   }
 
   isValid(): boolean {
-    return Domain.isValidDomain(this.domainStr)
+    return Domain.isValidDomain(this.domainStr);
   }
 
   static isValidDomain(domainStr: string): boolean {
-    domainStr = domainStr.trim()
+    domainStr = domainStr.trim();
     if (domainStr.length < 4) {
-      return false
+      return false;
     }
-    if (domainStr.startsWith('.')) {
-      return false
+    if (domainStr.startsWith(".")) {
+      return false;
     }
-    if (domainStr.endsWith('.')) {
-      return false
+    if (domainStr.endsWith(".")) {
+      return false;
     }
-    if (!domainStr.includes('.')) {
-      return false
+    if (!domainStr.includes(".")) {
+      return false;
     }
-    if (domainStr.includes('..')) {
-      return false
+    if (domainStr.includes("..")) {
+      return false;
     }
-    const domainParts = domainStr.split('.')
+    const domainParts = domainStr.split(".");
     if (domainParts.length < 2) {
-      return false
+      return false;
     }
     if (domainParts.length > 10) {
-      return false
+      return false;
     }
     if (domainParts.some((part) => part.length > 63)) {
-      return false
+      return false;
     }
     if (domainParts.some((part) => !part.match(/^[a-z0-9]+$/))) {
-      return false
+      return false;
     }
-    if (domainParts.some((part) => part.startsWith('-'))) {
-      return false
+    if (domainParts.some((part) => part.startsWith("-"))) {
+      return false;
     }
-    if (domainParts.some((part) => part.endsWith('-'))) {
-      return false
+    if (domainParts.some((part) => part.endsWith("-"))) {
+      return false;
     }
-    if (domainParts.some((part) => part.includes('--'))) {
-      return false
+    if (domainParts.some((part) => part.includes("--"))) {
+      return false;
     }
-    return true
+    return true;
   }
 }

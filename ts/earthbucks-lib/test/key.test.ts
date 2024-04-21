@@ -1,35 +1,35 @@
-import { describe, expect, test } from '@jest/globals'
-import Key from '../src/key'
-import fs from 'fs'
-import path from 'path'
-import { Buffer } from 'buffer'
+import { describe, expect, test } from "@jest/globals";
+import Key from "../src/key";
+import fs from "fs";
+import path from "path";
+import { Buffer } from "buffer";
 
-describe('Key', () => {
-  test('Key', () => {
-    const key = Key.fromRandom()
-    expect(key.privateKey).toBeDefined()
-    expect(key.publicKey).toBeDefined()
-  })
+describe("Key", () => {
+  test("Key", () => {
+    const key = Key.fromRandom();
+    expect(key.privateKey).toBeDefined();
+    expect(key.publicKey).toBeDefined();
+  });
 
-  describe('standard test vectors: key.json', () => {
+  describe("standard test vectors: key.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, '../../../json/key.json'),
-      'utf-8',
-    )
+      path.resolve(__dirname, "../../../json/key.json"),
+      "utf-8",
+    );
 
-    test('key pairs', () => {
+    test("key pairs", () => {
       interface KeyPair {
-        priv_key: string
-        pub_key: string
+        priv_key: string;
+        pub_key: string;
       }
-      const keyPairs: KeyPair[] = JSON.parse(data).key_pair
+      const keyPairs: KeyPair[] = JSON.parse(data).key_pair;
 
       for (const pair of keyPairs) {
-        const privKeyBuf = Buffer.from(pair.priv_key, 'hex')
-        const privKey = new Uint8Array(privKeyBuf)
-        const key = new Key(privKey)
-        expect(Buffer.from(key.publicKey).toString('hex')).toBe(pair.pub_key)
+        const privKeyBuf = Buffer.from(pair.priv_key, "hex");
+        const privKey = new Uint8Array(privKeyBuf);
+        const key = new Key(privKey);
+        expect(Buffer.from(key.publicKey).toString("hex")).toBe(pair.pub_key);
       }
-    })
-  })
-})
+    });
+  });
+});

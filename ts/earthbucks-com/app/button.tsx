@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { classNames } from './util'
-import { ChevronDoubleRightIcon } from '@heroicons/react/16/solid'
+import { useEffect, useRef, useState } from "react";
+import { classNames } from "./util";
+import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
 
 function Spinner() {
   return (
-    <div role="status" className={'h-[36px] w-[36px]'}>
+    <div role="status" className={"h-[36px] w-[36px]"}>
       <svg
         aria-hidden="true"
         className={`mr-2 h-[36px] w-[36px] animate-spin fill-black/50 text-[#fef8d6]`}
@@ -23,7 +23,7 @@ function Spinner() {
       </svg>
       <span className="sr-only">Loading...</span>
     </div>
-  )
+  );
 }
 
 function Slider({
@@ -32,141 +32,147 @@ function Slider({
   successText,
   errorText,
 }: {
-  initialText: string
-  processingText: string
-  successText: string
-  errorText: string
+  initialText: string;
+  processingText: string;
+  successText: string;
+  errorText: string;
 }) {
-  const sliderStates = ['initial', 'dragging', 'processing', 'success', 'error']
+  const sliderStates = [
+    "initial",
+    "dragging",
+    "processing",
+    "success",
+    "error",
+  ];
 
-  const [sliderState, setSliderState] = useState(sliderStates[0])
-  const [startX, setStartX] = useState(0)
-  const [buttonX, setButtonX] = useState(0) // Track button's X position
+  const [sliderState, setSliderState] = useState(sliderStates[0]);
+  const [startX, setStartX] = useState(0);
+  const [buttonX, setButtonX] = useState(0); // Track button's X position
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>,
   ) => {
-    e.preventDefault()
-    if (sliderState !== 'initial') return
-    setSliderState('dragging')
-    setStartX(e.clientX - buttonX) // Capture initial position minus current button position to allow for drag continuation
-  }
+    e.preventDefault();
+    if (sliderState !== "initial") return;
+    setSliderState("dragging");
+    setStartX(e.clientX - buttonX); // Capture initial position minus current button position to allow for drag continuation
+  };
 
-  const maxButtonX = 208 // Maximum X position for the button, adjust based on the position of the dotted circle
+  const maxButtonX = 208; // Maximum X position for the button, adjust based on the position of the dotted circle
 
   const handleMouseMove = (e: { clientX: number }) => {
-    if (sliderState !== 'dragging') return
-    let newButtonX = e.clientX - startX
+    if (sliderState !== "dragging") return;
+    let newButtonX = e.clientX - startX;
 
     // Apply constraints
-    newButtonX = Math.max(0, newButtonX) // Prevent moving to the left of the starting point
-    newButtonX = Math.min(newButtonX, maxButtonX) // Prevent moving beyond the dotted circle
+    newButtonX = Math.max(0, newButtonX); // Prevent moving to the left of the starting point
+    newButtonX = Math.min(newButtonX, maxButtonX); // Prevent moving beyond the dotted circle
 
-    setButtonX(newButtonX)
-  }
+    setButtonX(newButtonX);
+  };
 
   const handleMouseUp = () => {
     // Snap to the center of the dotted circle or return to start
     if (buttonX >= maxButtonX) {
-      setSliderState('processing')
-      setButtonX(maxButtonX) // Adjust this value to be the center of the dotted circle
+      setSliderState("processing");
+      setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
       // After 5 seconds, transition to the "success" state
       setTimeout(() => {
-        setSliderState('success')
-      }, 2000)
+        setSliderState("success");
+      }, 2000);
     } else {
-      setSliderState('initial')
-      setButtonX(0) // Return to the starting point
+      setSliderState("initial");
+      setButtonX(0); // Return to the starting point
     }
-  }
+  };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    e.preventDefault() // Prevents the default action to ensure smooth behavior
-    e.stopPropagation() // Prevents the event from bubbling up the DOM tree
-    if (sliderState !== 'initial') return
-    setSliderState('dragging')
+    e.preventDefault(); // Prevents the default action to ensure smooth behavior
+    e.stopPropagation(); // Prevents the event from bubbling up the DOM tree
+    if (sliderState !== "initial") return;
+    setSliderState("dragging");
     // Use touches[0] to get the first touch point
-    const clientX = e.touches[0]?.clientX || 0
-    setStartX(clientX - buttonX)
-  }
+    const clientX = e.touches[0]?.clientX || 0;
+    setStartX(clientX - buttonX);
+  };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    e.preventDefault() // Prevents the default action to ensure smooth behavior
-    e.stopPropagation() // Prevents the event from bubbling up the DOM tree
-    if (sliderState !== 'dragging') return
-    const clientX = e.touches[0]?.clientX || 0
-    let newButtonX = clientX - startX
+    e.preventDefault(); // Prevents the default action to ensure smooth behavior
+    e.stopPropagation(); // Prevents the event from bubbling up the DOM tree
+    if (sliderState !== "dragging") return;
+    const clientX = e.touches[0]?.clientX || 0;
+    let newButtonX = clientX - startX;
 
     // Apply constraints
-    newButtonX = Math.max(0, newButtonX)
-    newButtonX = Math.min(newButtonX, maxButtonX)
+    newButtonX = Math.max(0, newButtonX);
+    newButtonX = Math.min(newButtonX, maxButtonX);
 
-    setButtonX(newButtonX)
-  }
+    setButtonX(newButtonX);
+  };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     // Snap to the center of the dotted circle or return to start
     if (buttonX >= maxButtonX) {
-      setSliderState('processing')
-      setButtonX(maxButtonX) // Adjust this value to be the center of the dotted circle
+      setSliderState("processing");
+      setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
       // After 2 seconds, transition to the "success" state
       setTimeout(() => {
-        setSliderState('success')
-      }, 2000)
+        setSliderState("success");
+      }, 2000);
     } else {
-      setSliderState('initial')
-      setButtonX(0) // Return to the starting point
+      setSliderState("initial");
+      setButtonX(0); // Return to the starting point
     }
-  }
+  };
 
-  const buttonRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   // Combine useEffect hooks for mouse and touch events to avoid duplication
   useEffect(() => {
-    const buttonElement = buttonRef.current
+    const buttonElement = buttonRef.current;
     // Define the native event handler
     const handleNativeTouchStart = (e: TouchEvent) => {
       // Create a React TouchEvent
-      handleTouchStart(e as unknown as React.TouchEvent<HTMLDivElement>)
-    }
+      handleTouchStart(e as unknown as React.TouchEvent<HTMLDivElement>);
+    };
     if (buttonElement) {
-      buttonElement.addEventListener('touchstart', handleNativeTouchStart, {
+      buttonElement.addEventListener("touchstart", handleNativeTouchStart, {
         passive: false,
-      })
+      });
     }
 
-    if (sliderState === 'dragging') {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
+    if (sliderState === "dragging") {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
       // Add touchmove and touchend listeners for mobile support
-      window.addEventListener('touchmove', handleTouchMove as any, {
+      window.addEventListener("touchmove", handleTouchMove as any, {
         passive: false,
-      })
-      window.addEventListener('touchend', handleTouchEnd as any)
+      });
+      window.addEventListener("touchend", handleTouchEnd as any);
     } else {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
       // Remove touchmove and touchend listeners
-      window.removeEventListener('touchmove', handleTouchMove as any)
-      window.removeEventListener('touchend', handleTouchEnd as any)
+      window.removeEventListener("touchmove", handleTouchMove as any);
+      window.removeEventListener("touchend", handleTouchEnd as any);
     }
 
     return () => {
       if (buttonElement) {
-        buttonElement.removeEventListener('touchstart', handleNativeTouchStart)
+        buttonElement.removeEventListener("touchstart", handleNativeTouchStart);
       }
 
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
       // Cleanup for touch events
-      window.removeEventListener('touchmove', handleTouchMove as any)
-      window.removeEventListener('touchend', handleTouchEnd as any)
-    }
-  }, [sliderState, startX, buttonX, maxButtonX])
+      window.removeEventListener("touchmove", handleTouchMove as any);
+      window.removeEventListener("touchend", handleTouchEnd as any);
+    };
+  }, [sliderState, startX, buttonX, maxButtonX]);
 
   return (
     <div className="h-full w-full p-[8px]">
@@ -175,23 +181,23 @@ function Slider({
           <div className="relative h-full flex-shrink">
             <div
               className={classNames(
-                'absolute z-40 m-[-8px] h-[52px] w-[52px] p-[8px]',
-                sliderState === 'dragging'
-                  ? 'rounded-full outline outline-4 outline-[#fef8d6]'
-                  : '',
+                "absolute z-40 m-[-8px] h-[52px] w-[52px] p-[8px]",
+                sliderState === "dragging"
+                  ? "rounded-full outline outline-4 outline-[#fef8d6]"
+                  : "",
               )}
               ref={buttonRef}
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               style={{
                 animation:
-                  buttonX === 0 ? 'manyButtonBounce 1s infinite' : undefined,
+                  buttonX === 0 ? "manyButtonBounce 1s infinite" : undefined,
                 transform: `translateX(${buttonX}px)`, // Use translateX to move the button along X-axis
                 cursor:
-                  sliderState === 'initial'
-                    ? 'grab'
-                    : sliderState === 'dragging'
-                      ? 'grabbing'
+                  sliderState === "initial"
+                    ? "grab"
+                    : sliderState === "dragging"
+                      ? "grabbing"
                       : undefined,
               }}
             >
@@ -203,18 +209,18 @@ function Slider({
             </div>
             <div
               className={classNames(
-                sliderState === 'processing'
-                  ? 'absolute top-0 block h-[36px] w-[36px]'
-                  : 'hidden',
+                sliderState === "processing"
+                  ? "absolute top-0 block h-[36px] w-[36px]"
+                  : "hidden",
               )}
             >
               <Spinner />
             </div>
             <div
               className={classNames(
-                sliderState === 'success'
-                  ? 'absolute top-0 flex h-[36px] w-[36px] items-center'
-                  : 'hidden',
+                sliderState === "success"
+                  ? "absolute top-0 flex h-[36px] w-[36px] items-center"
+                  : "hidden",
               )}
             >
               <div className="relative h-[36px] w-[36px]">
@@ -232,9 +238,9 @@ function Slider({
             </div>
             <div
               className={classNames(
-                sliderState === 'error'
-                  ? 'absolute top-0 flex h-[36px] w-[36px] items-center'
-                  : 'hidden',
+                sliderState === "error"
+                  ? "absolute top-0 flex h-[36px] w-[36px] items-center"
+                  : "hidden",
               )}
             >
               <div className="relative h-[36px] w-[36px]">
@@ -254,9 +260,9 @@ function Slider({
           <div className="flex h-full flex-grow items-center overflow-x-hidden">
             <div
               className={classNames(
-                sliderState === 'initial' || sliderState === 'dragging'
-                  ? 'flex items-center'
-                  : 'hidden',
+                sliderState === "initial" || sliderState === "dragging"
+                  ? "flex items-center"
+                  : "hidden",
               )}
             >
               <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
@@ -268,9 +274,9 @@ function Slider({
 
             <div
               className={classNames(
-                sliderState === 'processing'
-                  ? 'flex animate-pulse items-center'
-                  : 'hidden',
+                sliderState === "processing"
+                  ? "flex animate-pulse items-center"
+                  : "hidden",
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
@@ -279,9 +285,9 @@ function Slider({
             </div>
             <div
               className={classNames(
-                sliderState === 'success'
-                  ? 'flex animate-pulse items-center'
-                  : 'hidden',
+                sliderState === "success"
+                  ? "flex animate-pulse items-center"
+                  : "hidden",
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
@@ -290,9 +296,9 @@ function Slider({
             </div>
             <div
               className={classNames(
-                sliderState === 'error'
-                  ? 'flex animate-pulse items-center'
-                  : 'hidden',
+                sliderState === "error"
+                  ? "flex animate-pulse items-center"
+                  : "hidden",
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
@@ -303,31 +309,31 @@ function Slider({
           <div className="relative z-30 h-full flex-shrink">
             <div
               className={classNames(
-                'aspect-square h-full rounded-full',
-                sliderState === 'initial'
-                  ? 'outline-dotted outline-2 outline-[#f09825]'
-                  : sliderState === 'dragging'
-                    ? 'outline-dashed outline-4 outline-[#fef8d6]'
-                    : 'hidden',
+                "aspect-square h-full rounded-full",
+                sliderState === "initial"
+                  ? "outline-dotted outline-2 outline-[#f09825]"
+                  : sliderState === "dragging"
+                    ? "outline-dashed outline-4 outline-[#fef8d6]"
+                    : "hidden",
               )}
               style={{
                 animation:
-                  sliderState === 'initial' || sliderState === 'dragging'
-                    ? 'buttonSpin 10s linear infinite'
+                  sliderState === "initial" || sliderState === "dragging"
+                    ? "buttonSpin 10s linear infinite"
                     : undefined,
               }}
             ></div>
             <div
               className={classNames(
-                'aspect-square h-full rounded-full',
-                sliderState === 'error'
-                  ? 'outline-dashed outline-2 outline-black'
-                  : 'hidden',
+                "aspect-square h-full rounded-full",
+                sliderState === "error"
+                  ? "outline-dashed outline-2 outline-black"
+                  : "hidden",
               )}
               style={{
                 animation:
-                  sliderState === 'error'
-                    ? 'buttonSpin 10s linear infinite'
+                  sliderState === "error"
+                    ? "buttonSpin 10s linear infinite"
                     : undefined,
               }}
             ></div>
@@ -335,35 +341,35 @@ function Slider({
               src="/earthbucks-coin.png"
               alt=""
               className={classNames(
-                'relative z-[35] h-full',
-                sliderState === 'processing' ? 'block animate-ping' : 'hidden',
+                "relative z-[35] h-full",
+                sliderState === "processing" ? "block animate-ping" : "hidden",
               )}
             />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function Button({
-  initialText = 'Swipe',
-  processingText = 'Processing...',
-  successText = 'Success!',
-  errorText = 'Error!',
+  initialText = "Swipe",
+  processingText = "Processing...",
+  successText = "Success!",
+  errorText = "Error!",
   onProcessing = () => {},
   onSuccess = () => {},
   onError = () => {},
 }: {
-  initialText?: string
-  processingText?: string
-  successText?: string
-  errorText?: string
-  onProcessing?: () => void
-  onSuccess?: () => void
-  onError?: () => void
+  initialText?: string;
+  processingText?: string;
+  successText?: string;
+  errorText?: string;
+  onProcessing?: () => void;
+  onSuccess?: () => void;
+  onError?: () => void;
 }) {
-  let bgImageSrc = '/treasure-chest-cropped.png'
+  let bgImageSrc = "/treasure-chest-cropped.png";
 
   return (
     <div className="flex h-[60px] w-[320px]">
@@ -398,5 +404,5 @@ export default function Button({
         </div>
       </div>
     </div>
-  )
+  );
 }

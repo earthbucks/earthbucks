@@ -1,12 +1,12 @@
-import type { MetaFunction } from '@remix-run/node'
-import Button from '../button'
+import type { MetaFunction } from "@remix-run/node";
+import Button from "../button";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'EarthBucks' },
-    { name: 'description', content: 'Welcome to EarthBucks!' },
-  ]
-}
+    { title: "EarthBucks" },
+    { name: "description", content: "Welcome to EarthBucks!" },
+  ];
+};
 
 export default function Landing() {
   return (
@@ -41,9 +41,9 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button />
+          <Button initialText="Register" />
         </div>
       </div>
     </div>
-  )
+  );
 }
