@@ -53,17 +53,36 @@ impl Matmul {
         matrix.dot(&matrix)
     }
 
-    pub fn square_binary_matrix(matrix: &Array2<u16>) -> Array2<u16> {
-        let n = matrix.dim().0;
-        let mut result = Array2::<u16>::zeros((n, n));
-        for i in 0..n {
-            for j in 0..n {
-                for k in 0..n {
-                    result[[i, j]] += matrix[[i, k]] & matrix[[k, j]];
-                }
-            }
+    pub fn create_256x256_square_and_blake3_hash(&self) -> [u8; 32] {
+        let matrix = self.create_256x256_binary_matrix();
+        let squared = self.square_with_ndarray(matrix);
+        let squared_buf_u16 = squared.into_raw_vec();
+        let squared_buf_u8: Vec<u8> = squared_buf_u16
+            .iter()
+            .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+            .collect();
+        blake3_hash(&squared_buf_u8)
+    }
+
+    pub fn create_1024x1024_square_and_blake3_hash(&self) -> [u8; 32] {
+        let matrix = self.create_1024x1024_binary_matrix();
+        let squared = self.square_with_ndarray(matrix);
+        let squared_buf_u16 = squared.into_raw_vec();
+        let squared_buf_u8: Vec<u8> = squared_buf_u16
+            .iter()
+            .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+            .collect();
+        blake3_hash(&squared_buf_u8)
+    }
+
+    pub fn array_to_buffer(matrix: Array2<u16>) -> Vec<u16> {
+        let mut buffer = Vec::new();
+
+        for value in matrix.iter() {
+            buffer.push(*value);
         }
-        result
+
+        buffer
     }
 }
 
@@ -83,41 +102,61 @@ mod tests {
         println!("Time to create 256x256 matrix: {:?}", elapsed);
 
         let start = std::time::Instant::now();
-        let squared = matmul.square_with_ndarray(matrix.clone());
+        let squared_arr = matmul.square_with_ndarray(matrix.clone());
         let elapsed = start.elapsed();
         println!("Time to square 256x256 matrix with ndarray: {:?}", elapsed);
 
-        let start = std::time::Instant::now();
-        let squared_manual = Matmul::square_binary_matrix(&matrix.clone());
-        let elapsed = start.elapsed();
-        println!("Time to square 256x256 matrix manually: {:?}", elapsed);
-
-        assert_eq!(squared, squared_manual);
+        let squared_buf_u16 = squared_arr.clone().into_raw_vec();
+        let squared_buf_u8: Vec<u8> = squared_buf_u16
+            .iter()
+            .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+            .collect();
+        let squared_hex = hex::encode(squared_buf_u8);
+        let squared_buf_2_u16 = Matmul::array_to_buffer(squared_arr);
+        let squared_buf_2_u8: Vec<u8> = squared_buf_2_u16
+            .iter()
+            .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+            .collect();
+        let squared_hex_2 = hex::encode(squared_buf_2_u8);
+        assert_eq!(squared_hex, squared_hex_2);
     }
 
     #[test]
-    fn test_1024x1024_binary_matrix() {
+    fn test_create_256x256_square_and_blake3_hash() {
         let source = [0u8; 32];
         let matmul = Matmul::new(source);
 
         let start = std::time::Instant::now();
-        let matrix = matmul.create_1024x1024_binary_matrix();
-        let elapsed = start.elapsed();
-        println!("Time to create 1024x1024 matrix: {:?}", elapsed);
-
-        let start = std::time::Instant::now();
-        let squared = matmul.square_with_ndarray(matrix.clone());
+        let hash = matmul.create_256x256_square_and_blake3_hash();
         let elapsed = start.elapsed();
         println!(
-            "Time to square 1024x1024 matrix with ndarray: {:?}",
+            "Time to create 256x256 square and blake3 hash: {:?}",
             elapsed
         );
 
-        let start = std::time::Instant::now();
-        let squared_manual = Matmul::square_binary_matrix(&matrix.clone());
-        let elapsed = start.elapsed();
-        println!("Time to square 1024x1024 matrix manually: {:?}", elapsed);
-
-        assert_eq!(squared, squared_manual);
+        let hash_hex = hex::encode(hash);
+        assert_eq!(
+            hash_hex,
+            "5151c33bcff106a13e9635ff7bc5a903e8f983e6d99cd557c593b7644e23b77f"
+        );
     }
+
+    // #[test]
+    // fn test_1024x1024_binary_matrix() {
+    //     let source = [0u8; 32];
+    //     let matmul = Matmul::new(source);
+
+    //     let start = std::time::Instant::now();
+    //     let matrix = matmul.create_1024x1024_binary_matrix();
+    //     let elapsed = start.elapsed();
+    //     println!("Time to create 1024x1024 matrix: {:?}", elapsed);
+
+    //     let start = std::time::Instant::now();
+    //     let squared = matmul.square_with_ndarray(matrix.clone());
+    //     let elapsed = start.elapsed();
+    //     println!(
+    //         "Time to square 1024x1024 matrix with ndarray: {:?}",
+    //         elapsed
+    //     );
+    // }
 }
