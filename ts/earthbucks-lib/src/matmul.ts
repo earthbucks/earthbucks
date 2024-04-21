@@ -4,19 +4,19 @@ import BufferWriter from "./buffer-writer";
 import { Buffer } from "buffer";
 
 export default class Matmul {
-  source: Uint8Array;
+  seed: Uint8Array;
 
-  constructor(source: Uint8Array) {
-    this.source = source;
+  constructor(seed: Uint8Array) {
+    this.seed = seed;
   }
 
-  blake3Hash(source: Buffer): Buffer {
-    return Buffer.from(blake3Hash(source));
+  blake3Hash(seed: Buffer): Buffer {
+    return Buffer.from(blake3Hash(seed));
   }
 
   createBinaryMatrix(size: number): math.Matrix {
     let matrixData: number[][] = [];
-    let currentHash = this.blake3Hash(Buffer.from(this.source));
+    let currentHash = this.blake3Hash(Buffer.from(this.seed));
 
     for (let i = 0; i < size; i++) {
       let row: number[] = [];

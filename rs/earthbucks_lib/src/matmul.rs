@@ -3,18 +3,18 @@ use crate::blake3::blake3_hash;
 use ndarray::Array2;
 
 pub struct Matmul {
-    source: [u8; 32],
+    seed: [u8; 32],
 }
 
 impl Matmul {
-    pub fn new(source: [u8; 32]) -> Self {
-        Matmul { source }
+    pub fn new(seed: [u8; 32]) -> Self {
+        Matmul { seed: seed }
     }
 
     pub fn create_binary_matrix(&self, size: usize) -> Array2<u16> {
         let mut matrix_data = Vec::new();
 
-        let mut current_hash = blake3_hash(&self.source);
+        let mut current_hash = blake3_hash(&self.seed);
 
         for _ in 0..size {
             for &byte in current_hash.iter() {
@@ -85,8 +85,8 @@ mod tests {
 
     #[test]
     fn test_256x256_binary_matrix() {
-        let source = [0u8; 32];
-        let matmul = Matmul::new(source);
+        let seed = [0u8; 32];
+        let matmul = Matmul::new(seed);
 
         let start = std::time::Instant::now();
         let matrix = matmul.create_256x256_binary_matrix();
@@ -115,8 +115,8 @@ mod tests {
 
     #[test]
     fn test_create_256x256_square_and_blake3_hash() {
-        let source = [0u8; 32];
-        let matmul = Matmul::new(source);
+        let seed = [0u8; 32];
+        let matmul = Matmul::new(seed);
 
         let start = std::time::Instant::now();
         let hash = matmul.create_256x256_square_and_blake3_hash();
@@ -156,8 +156,8 @@ mod tests {
 
     // #[test]
     // fn test_1024x1024_binary_matrix() {
-    //     let source = [0u8; 32];
-    //     let matmul = Matmul::new(source);
+    //     let seed = [0u8; 32];
+    //     let matmul = Matmul::new(seed);
 
     //     let start = std::time::Instant::now();
     //     let matrix = matmul.create_1024x1024_binary_matrix();
