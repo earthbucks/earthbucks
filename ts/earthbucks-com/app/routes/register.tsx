@@ -433,9 +433,6 @@ export default function Landing() {
         42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
         <br />
         <br />
-        ETA June 2024.
-        <br />
-        <br />
         Up to 100 miners on launch day.
         <br />
         <br />
