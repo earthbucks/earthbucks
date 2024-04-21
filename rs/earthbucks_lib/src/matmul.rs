@@ -1,64 +1,44 @@
 use crate::blake3::blake3_hash;
 use crate::buffer_writer::BufferWriter;
 use ndarray::{Array1, Array2};
-// use tensorflow::Tensor;
 
 pub struct Matmul {
     source: [u8; 32],
 }
 
 impl Matmul {
+    pub fn new(source: [u8; 32]) -> Self {
+        Matmul { source }
+    }
+
     pub fn hash_once(&self) -> [u8; 32] {
         blake3_hash(&self.source)
     }
 
-    pub fn gen_vector_32(&self) -> Array1<u32> {
-        let hash0 = blake3_hash(&self.source);
+    pub fn gen_vector_32_u8(&self) -> [u8; 32] {
+        self.hash_once()
+    }
+
+    pub fn gen_vector_32_u32(&self) -> [u32; 32] {
+        let hash0 = self.gen_vector_32_u8();
         let vec_u8 = hash0.to_vec();
-        let vec_u32 = vec_u8.iter().map(|x| *x as u32).collect();
+        let vec_u32 = vec_u8.iter().map(|x| *x as u32).collect::<Vec<u32>>();
+        vec_u32.try_into().unwrap()
+    }
+
+    pub fn gen_vector_32(&self) -> Array1<u32> {
+        let vec_u32 = self.gen_vector_32_u32().to_vec();
         Array1::from_vec(vec_u32)
     }
 
     pub fn gen_matrix_32x32(&self) -> Array2<u32> {
-        // Create a 32x32 matrix where the first column is the source, the second column is the hash of the nonce, and the third column is the hash of the hash, and so on.
-        let hash0 = blake3_hash(&self.source);
-        let hash1 = blake3_hash(&hash0);
-        let hash2 = blake3_hash(&hash1);
-        let hash3 = blake3_hash(&hash2);
-        let hash4 = blake3_hash(&hash3);
-        let hash5 = blake3_hash(&hash4);
-        let hash6 = blake3_hash(&hash5);
-        let hash7 = blake3_hash(&hash6);
-        let hash8 = blake3_hash(&hash7);
-        let hash9 = blake3_hash(&hash8);
-        let hash10 = blake3_hash(&hash9);
-        let hash11 = blake3_hash(&hash10);
-        let hash12 = blake3_hash(&hash11);
-        let hash13 = blake3_hash(&hash12);
-        let hash14 = blake3_hash(&hash13);
-        let hash15 = blake3_hash(&hash14);
-        let hash16 = blake3_hash(&hash15);
-        let hash17 = blake3_hash(&hash16);
-        let hash18 = blake3_hash(&hash17);
-        let hash19 = blake3_hash(&hash18);
-        let hash20 = blake3_hash(&hash19);
-        let hash21 = blake3_hash(&hash20);
-        let hash22 = blake3_hash(&hash21);
-        let hash23 = blake3_hash(&hash22);
-        let hash24 = blake3_hash(&hash23);
-        let hash25 = blake3_hash(&hash24);
-        let hash26 = blake3_hash(&hash25);
-        let hash27 = blake3_hash(&hash26);
-        let hash28 = blake3_hash(&hash27);
-        let hash29 = blake3_hash(&hash28);
-        let hash30 = blake3_hash(&hash29);
-        let hash31 = blake3_hash(&hash30);
-        let hash32 = blake3_hash(&hash31);
-        let hashes: [[u8; 32]; 32] = [
-            hash1, hash2, hash3, hash4, hash5, hash6, hash7, hash8, hash9, hash10, hash11, hash12,
-            hash13, hash14, hash15, hash16, hash17, hash18, hash19, hash20, hash21, hash22, hash23,
-            hash24, hash25, hash26, hash27, hash28, hash29, hash30, hash31, hash32,
-        ];
+        let mut hash = blake3_hash(&self.source);
+        let mut hashes: Vec<[u8; 32]> = Vec::new();
+
+        for _ in 0..32 {
+            hash = blake3_hash(&hash);
+            hashes.push(hash);
+        }
 
         let ndarray_hashes = Array2::from_shape_vec((32, 32), hashes.concat()).unwrap();
         ndarray_hashes.mapv(|x| x as u32)
