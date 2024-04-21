@@ -2,6 +2,7 @@ import { Blake3Hasher } from "@napi-rs/blake-hash";
 import { Buffer } from "buffer";
 
 export function blake3Hash(data: Uint8Array): Uint8Array {
+  // TODO: Use only Buffer
   const hasher = new Blake3Hasher();
   hasher.update(Buffer.from(data));
   const hex = hasher.digest("hex");
