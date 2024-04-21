@@ -1,10 +1,10 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import BlockHeader from "../src/block-header";
+import Header from "../src/header";
 import { Buffer } from "buffer";
 
 describe("BlockHeader", () => {
   test("toU8Vec and fromU8Vec", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -14,7 +14,7 @@ describe("BlockHeader", () => {
       0n,
     );
     const buf = bh1.toU8Vec();
-    const bh2 = BlockHeader.fromU8Vec(buf);
+    const bh2 = Header.fromU8Vec(buf);
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
@@ -25,7 +25,7 @@ describe("BlockHeader", () => {
   });
 
   test("toBuffer", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -35,7 +35,7 @@ describe("BlockHeader", () => {
       0n,
     );
     const buf = bh1.toBuffer();
-    const bh2 = BlockHeader.fromU8Vec(new Uint8Array(buf));
+    const bh2 = Header.fromU8Vec(new Uint8Array(buf));
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
@@ -46,7 +46,7 @@ describe("BlockHeader", () => {
   });
 
   test("isValid", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -59,7 +59,7 @@ describe("BlockHeader", () => {
   });
 
   test("isGenesis", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -72,7 +72,7 @@ describe("BlockHeader", () => {
   });
 
   test("hash", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -87,7 +87,7 @@ describe("BlockHeader", () => {
   });
 
   test("id", () => {
-    const bh1 = new BlockHeader(
+    const bh1 = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -103,7 +103,7 @@ describe("BlockHeader", () => {
 
   describe("fromPrevBlockHeader", () => {
     test("fromPrevBlockHeader", () => {
-      const prevBlockHeader = new BlockHeader(
+      const prevBlockHeader = new Header(
         1,
         new Uint8Array(32),
         new Uint8Array(32),
@@ -113,7 +113,7 @@ describe("BlockHeader", () => {
         0n,
       );
       const prevAdjustmentBlockHeader = null;
-      const bh = BlockHeader.fromPrevBlockHeader(
+      const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       );
@@ -125,16 +125,16 @@ describe("BlockHeader", () => {
     });
 
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
-      const prevBlockHeader = new BlockHeader(
+      const prevBlockHeader = new Header(
         1,
         new Uint8Array(32),
         new Uint8Array(32),
-        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+        Header.BLOCKS_PER_ADJUSTMENT - 1n,
         new Uint8Array(32),
         new Uint8Array(32),
-        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+        Header.BLOCKS_PER_ADJUSTMENT - 1n,
       );
-      const prevAdjustmentBlockHeader = new BlockHeader(
+      const prevAdjustmentBlockHeader = new Header(
         1,
         new Uint8Array(32),
         new Uint8Array(32),
@@ -143,14 +143,12 @@ describe("BlockHeader", () => {
         new Uint8Array(32),
         0n,
       );
-      const bh = BlockHeader.fromPrevBlockHeader(
+      const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       );
-      expect(bh.nBlock).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT);
-      expect(bh.target).toEqual(
-        BlockHeader.adjustTarget(new Uint8Array(32), 0n),
-      );
+      expect(bh.nBlock).toBe(Header.BLOCKS_PER_ADJUSTMENT);
+      expect(bh.target).toEqual(Header.adjustTarget(new Uint8Array(32), 0n));
     });
 
     test("should correctly adjust the target for non-trivial adjustment", () => {
@@ -161,16 +159,16 @@ describe("BlockHeader", () => {
         ),
       );
       const timeDiff = (2016n * 600n) / 2n; // One week
-      const prevBlockHeader = new BlockHeader(
+      const prevBlockHeader = new Header(
         1,
         new Uint8Array(32),
         new Uint8Array(32),
         timeDiff - 1n,
         initialTarget,
         new Uint8Array(32),
-        BlockHeader.BLOCKS_PER_ADJUSTMENT - 1n,
+        Header.BLOCKS_PER_ADJUSTMENT - 1n,
       );
-      const prevAdjustmentBlockHeader = new BlockHeader(
+      const prevAdjustmentBlockHeader = new Header(
         1,
         new Uint8Array(32),
         new Uint8Array(32),
@@ -179,11 +177,11 @@ describe("BlockHeader", () => {
         new Uint8Array(32),
         0n,
       );
-      const bh = BlockHeader.fromPrevBlockHeader(
+      const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       );
-      expect(bh.nBlock).toBe(BlockHeader.BLOCKS_PER_ADJUSTMENT);
+      expect(bh.nBlock).toBe(Header.BLOCKS_PER_ADJUSTMENT);
       expect(Buffer.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
@@ -194,7 +192,7 @@ describe("BlockHeader", () => {
     test("adjustTarget", () => {
       const prevTarget = new Uint8Array(32);
       const timeDiff = 0n;
-      expect(BlockHeader.adjustTarget(prevTarget, timeDiff)).toEqual(
+      expect(Header.adjustTarget(prevTarget, timeDiff)).toEqual(
         new Uint8Array(32),
       );
     });
@@ -205,7 +203,7 @@ describe("BlockHeader", () => {
         "hex",
       );
       const timeDiff = 2016n * 200n; // Less than a week
-      const newTarget = BlockHeader.adjustTarget(
+      const newTarget = Header.adjustTarget(
         Uint8Array.from(targetBuf),
         timeDiff,
       );
@@ -220,7 +218,7 @@ describe("BlockHeader", () => {
         "hex",
       );
       const timeDiff = 2016n * 600n * 3n; // More than four weeks
-      const newTarget = BlockHeader.adjustTarget(
+      const newTarget = Header.adjustTarget(
         Uint8Array.from(targetBuf),
         timeDiff,
       );
@@ -235,7 +233,7 @@ describe("BlockHeader", () => {
         "hex",
       );
       const timeDiff = 2016n * 600n; // Two weeks
-      const newTarget = BlockHeader.adjustTarget(
+      const newTarget = Header.adjustTarget(
         Uint8Array.from(targetBuf),
         timeDiff,
       );

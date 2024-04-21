@@ -1,5 +1,5 @@
 import Block from "./block";
-import BlockHeader from "./block-header";
+import Header from "./header";
 import Tx from "./tx";
 import MerkleTxs from "./merkle-txs";
 import Script from "./script";
@@ -8,11 +8,11 @@ import TxOutput from "./tx-output";
 import { Buffer } from "buffer";
 
 export default class BlockBuilder {
-  public header: BlockHeader;
+  public header: Header;
   public txs: Tx[];
   public merkleTxs: MerkleTxs;
 
-  constructor(header: BlockHeader, txs: Tx[], merkleTxs: MerkleTxs) {
+  constructor(header: Header, txs: Tx[], merkleTxs: MerkleTxs) {
     this.header = header;
     this.txs = txs;
     this.merkleTxs = merkleTxs;
@@ -30,7 +30,7 @@ export default class BlockBuilder {
     outputScript: Script,
     outputAmount: bigint,
   ): BlockBuilder {
-    const header = BlockHeader.fromGenesis(initialTarget);
+    const header = Header.fromGenesis(initialTarget);
     const txs = [];
     const txInput = TxInput.fromCoinbase(outputScript);
     const txOutput = new TxOutput(outputAmount, outputScript);
@@ -43,12 +43,12 @@ export default class BlockBuilder {
   }
 
   static fromPrevBlockHeader(
-    prevBlockHeader: BlockHeader,
-    prevAdjustmentBlockHeader: BlockHeader | null, // exactly 2016 blocks before
+    prevBlockHeader: Header,
+    prevAdjustmentBlockHeader: Header | null, // exactly 2016 blocks before
     outputScript: Script,
     outputAmount: bigint,
   ): BlockBuilder {
-    const header = BlockHeader.fromPrevBlockHeader(
+    const header = Header.fromPrevBlockHeader(
       prevBlockHeader,
       prevAdjustmentBlockHeader,
     );

@@ -3,7 +3,7 @@ import BufferWriter from "./buffer-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 
-export default class BlockHeader {
+export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
 
@@ -45,7 +45,7 @@ export default class BlockHeader {
     return bw.toU8Vec();
   }
 
-  static fromU8Vec(buf: Uint8Array): BlockHeader {
+  static fromU8Vec(buf: Uint8Array): Header {
     const br = new BufferReader(buf);
     const version = br.readUInt32BE();
     const previousBlockHash = br.readU8Vec(32);
@@ -54,7 +54,7 @@ export default class BlockHeader {
     const target = br.readU8Vec(32);
     const nonce = br.readU8Vec(32);
     const index = br.readUInt64BEBigInt();
-    return new BlockHeader(
+    return new Header(
       version,
       previousBlockHash,
       merkleRoot,
@@ -69,11 +69,11 @@ export default class BlockHeader {
     return Buffer.from(this.toU8Vec());
   }
 
-  static fromBuffer(buf: Buffer): BlockHeader {
-    return BlockHeader.fromU8Vec(Uint8Array.from(buf));
+  static fromBuffer(buf: Buffer): Header {
+    return Header.fromU8Vec(Uint8Array.from(buf));
   }
 
-  static fromBufferReader(br: BufferReader): BlockHeader {
+  static fromBufferReader(br: BufferReader): Header {
     const version = br.readUInt32BE();
     const previousBlockHash = br.readU8Vec(32);
     const merkleRoot = br.readU8Vec(32);
@@ -81,7 +81,7 @@ export default class BlockHeader {
     const target = br.readU8Vec(32);
     const nonce = br.readU8Vec(32);
     const index = br.readUInt64BEBigInt();
-    return new BlockHeader(
+    return new Header(
       version,
       previousBlockHash,
       merkleRoot,
@@ -107,13 +107,13 @@ export default class BlockHeader {
     return this.toBuffer().toString("hex");
   }
 
-  static fromString(str: string): BlockHeader {
-    return BlockHeader.fromBuffer(Buffer.from(str, "hex"));
+  static fromString(str: string): Header {
+    return Header.fromBuffer(Buffer.from(str, "hex"));
   }
 
-  static fromGenesis(initialTarget: Uint8Array): BlockHeader {
+  static fromGenesis(initialTarget: Uint8Array): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    return new BlockHeader(
+    return new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -125,15 +125,15 @@ export default class BlockHeader {
   }
 
   static fromPrevBlockHeader(
-    prevBlockHeader: BlockHeader,
-    prevAdjustmentBlockHeader: BlockHeader | null,
-  ): BlockHeader {
+    prevBlockHeader: Header,
+    prevAdjustmentBlockHeader: Header | null,
+  ): Header {
     let target = null;
     const index = prevBlockHeader.nBlock + 1n;
-    if (index % BlockHeader.BLOCKS_PER_ADJUSTMENT === 0n) {
+    if (index % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.nBlock + BlockHeader.BLOCKS_PER_ADJUSTMENT !==
+        prevAdjustmentBlockHeader.nBlock + Header.BLOCKS_PER_ADJUSTMENT !==
           index
       ) {
         throw new Error(
@@ -143,14 +143,14 @@ export default class BlockHeader {
       const timeDiff =
         prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
       const prevTarget = prevBlockHeader.target;
-      target = BlockHeader.adjustTarget(prevTarget, timeDiff);
+      target = Header.adjustTarget(prevTarget, timeDiff);
     } else {
       target = prevBlockHeader.target;
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     const nonce = new Uint8Array(32);
-    return new BlockHeader(
+    return new Header(
       1,
       prevBlockId,
       new Uint8Array(32),
@@ -187,11 +187,11 @@ export default class BlockHeader {
       return false;
     }
     return (
-      BlockHeader.isValidVersion(this.version) &&
-      BlockHeader.isValidPreviousBlockHash(this.prevBlockId) &&
-      BlockHeader.isValidMerkleRoot(this.merkleRoot) &&
-      BlockHeader.isValidNonce(this.nonce) &&
-      BlockHeader.isValidTarget(this.target)
+      Header.isValidVersion(this.version) &&
+      Header.isValidPreviousBlockHash(this.prevBlockId) &&
+      Header.isValidMerkleRoot(this.merkleRoot) &&
+      Header.isValidNonce(this.nonce) &&
+      Header.isValidTarget(this.target)
     );
   }
 
@@ -209,8 +209,7 @@ export default class BlockHeader {
 
   static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
     const target = BigInt("0x" + Buffer.from(targetBuf).toString("hex"));
-    const twoWeeks =
-      BlockHeader.BLOCKS_PER_ADJUSTMENT * BlockHeader.BLOCK_INTERVAL;
+    const twoWeeks = Header.BLOCKS_PER_ADJUSTMENT * Header.BLOCK_INTERVAL;
 
     // To prevent extreme difficulty adjustments, if it took less than 1 week or
     // more than 8 weeks, we still consider it as 1 week or 8 weeks

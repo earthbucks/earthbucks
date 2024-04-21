@@ -1,4 +1,4 @@
-import BlockHeader from "./block-header";
+import Header from "./header";
 import Tx from "./tx";
 import VarInt from "./var-int";
 import BufferWriter from "./buffer-writer";
@@ -7,16 +7,16 @@ import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 
 export default class Block {
-  public header: BlockHeader;
+  public header: Header;
   public txs: Tx[];
 
-  constructor(header: BlockHeader, txs: Tx[]) {
+  constructor(header: Header, txs: Tx[]) {
     this.header = header;
     this.txs = txs;
   }
 
   static fromBufferReader(br: BufferReader): Block {
-    const header = BlockHeader.fromU8Vec(br.readU8Vec(80));
+    const header = Header.fromU8Vec(br.readU8Vec(80));
     const txCountVarInt = VarInt.fromBufferReader(br);
     if (!txCountVarInt.isMinimal()) {
       throw new Error("non-minimally encoded varint");

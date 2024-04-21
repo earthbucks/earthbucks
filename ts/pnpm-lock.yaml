@@ -6,6 +6,8 @@ settings:
 
 importers:
 
+  .: {}
+
   earthbucks-com:
     dependencies:
       '@heroicons/react':
@@ -26,6 +28,9 @@ importers:
       earthbucks-db:
         specifier: workspace:^
         version: link:../earthbucks-db
+      earthbucks-lib:
+        specifier: workspace:^
+        version: link:../earthbucks-lib
       isbot:
         specifier: ^4.1.0
         version: 4.4.0

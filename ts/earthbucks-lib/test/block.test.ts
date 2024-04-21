@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import BlockHeader from "../src/block-header";
+import Header from "../src/header";
 import Block from "../src/block";
 import Tx from "../src/tx";
 import BufferWriter from "../src/buffer-writer";
@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 
 describe("Block", () => {
   test("toBufferWriter", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -24,7 +24,7 @@ describe("Block", () => {
   });
 
   test("toU8Vec", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -40,7 +40,7 @@ describe("Block", () => {
   });
 
   test("fromBufferReader", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -64,7 +64,7 @@ describe("Block", () => {
   });
 
   test("isGenesis", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),

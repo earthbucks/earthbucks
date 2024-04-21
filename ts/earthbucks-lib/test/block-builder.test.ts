@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import BlockHeader from "../src/block-header";
+import Header from "../src/header";
 import Block from "../src/block";
 import Tx from "../src/tx";
 import BufferWriter from "../src/buffer-writer";
@@ -10,7 +10,7 @@ import { Buffer } from "buffer";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -47,7 +47,7 @@ describe("BlockBuilder", () => {
     const outputScript = new Script();
     const outputAmount = 0n;
     const target = new Uint8Array(32);
-    const prevBlockHeader = new BlockHeader(
+    const prevBlockHeader = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),
@@ -72,7 +72,7 @@ describe("BlockBuilder", () => {
   });
 
   test("toBlock", () => {
-    const bh = new BlockHeader(
+    const bh = new Header(
       1,
       new Uint8Array(32),
       new Uint8Array(32),

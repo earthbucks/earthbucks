@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
+// import Header from "earthbucks-lib/src/header";
 
 export const meta: MetaFunction = () => {
   return [
@@ -38,10 +39,13 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 text-center text-black dark:text-white">
         42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+        <br />
+        <br />
+        Take the math test to register or log in.
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Register" />
+          <Button initialText="Compute" />
         </div>
       </div>
     </div>
