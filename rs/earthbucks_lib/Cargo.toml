@@ -18,3 +18,4 @@ num-bigint = "0.4.4"
 num-traits = "0.2.14"
 num-integer = "0.1"
 regex = "1.10.4"
+ndarray = { version = "0.15.6"  }

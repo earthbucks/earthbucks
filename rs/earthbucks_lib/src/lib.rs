@@ -9,6 +9,7 @@ pub mod domain;
 pub mod header;
 pub mod header_chain;
 pub mod key_pair;
+pub mod matmul;
 pub mod merkle_node;
 pub mod merkle_proof;
 pub mod merkle_txs;
