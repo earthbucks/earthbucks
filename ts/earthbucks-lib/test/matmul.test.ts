@@ -1,28 +1,43 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import Matmul from "../src/matmul";
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn test_matmul_32() {
-//         let source = [0u8; 32];
-//         let matmul = Matmul { source };
-//         let res_buf = matmul.matmul_32_buf();
-//         let res_hex = hex::encode(res_buf);
-//         assert_eq!(res_hex, "0007e0dd0007de0a00081c4a00078b3e00080020000a82af00086a210008a2c400070c5c00076ac40008a083000991fd000841ae0008d8210007d8f30007a43c00094a9f000846d30006f7e100079bb8000770190008b8a50007cf8a000866fe000a72d40008979b000aac220009a7720009072600088234000763ab00094c04");
-//     }
-// }
+import { Buffer } from "buffer";
 
 describe("Matmul", () => {
-  test("matmul_32_buf", () => {
-    const source = new Uint8Array(32);
-    const matmul = new Matmul(source);
-    const res_buf = matmul.matmul_32_buf();
-    const res_hex = Buffer.from(res_buf).toString("hex");
-    expect(res_hex).toBe(
-      "0007e0dd0007de0a00081c4a00078b3e00080020000a82af00086a210008a2c400070c5c00076ac40008a083000991fd000841ae0008d8210007d8f30007a43c00094a9f000846d30006f7e100079bb8000770190008b8a50007cf8a000866fe000a72d40008979b000aac220009a7720009072600088234000763ab00094c04",
+  test("createSquareAndBlake3Hash", () => {
+    // expected result for null input:
+    // 5151c33bcff106a13e9635ff7bc5a903e8f983e6d99cd557c593b7644e23b77f
+    let matmul = new Matmul(new Uint8Array(32));
+    let result = matmul.createSquareAndBlake3Hash(256);
+    let expected = result.toString("hex");
+    expect(expected).toBe(
+      "5151c33bcff106a13e9635ff7bc5a903e8f983e6d99cd557c593b7644e23b77f",
+    );
+  });
+
+  test("createSquareAndBlake3Hash by hand", () => {
+    // expected result for null input:
+    // 5151c33bcff106a13e9635ff7bc5a903e8f983e6d99cd557c593b7644e23b77f
+    let matmul = new Matmul(new Uint8Array(32));
+    let matrix = matmul.createBinaryMatrix(256);
+    // print as giant grid of 1s and 0s, because each value is either 1 or 0
+    for (let row of matrix.toArray() as number[][]) {
+      //console.log(row.join(""));
+      break;
+    }
+    let squared = matmul.squareMatrix(matrix);
+    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+    let squaredBufU8: number[] = [];
+
+    for (let x of squaredBufU16) {
+      squaredBufU8.push(x & 0xff);
+      squaredBufU8.push(x >> 8);
+    }
+    //console.log(Buffer.from(squaredBufU8).toString('hex').slice(0, 64));
+
+    let result = matmul.blake3Hash(Buffer.from(squaredBufU8));
+    let expected = result.toString("hex");
+    expect(expected).toBe(
+      "5151c33bcff106a13e9635ff7bc5a903e8f983e6d99cd557c593b7644e23b77f",
     );
   });
 });

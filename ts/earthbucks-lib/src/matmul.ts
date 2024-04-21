@@ -1,6 +1,7 @@
-import * as mathjs from "mathjs";
+import * as math from "mathjs";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import BufferWriter from "./buffer-writer";
+import { Buffer } from "buffer";
 
 export default class Matmul {
   source: Uint8Array;
@@ -9,60 +10,60 @@ export default class Matmul {
     this.source = source;
   }
 
-  hash_once(): Uint8Array {
-    return blake3Hash(this.source);
+  blake3Hash(source: Buffer): Buffer {
+    return Buffer.from(blake3Hash(source));
   }
 
-  gen_vector_32_u8(): Uint8Array {
-    return this.hash_once();
-  }
+  createBinaryMatrix(size: number): math.Matrix {
+    let matrixData: number[][] = [];
+    let currentHash = this.blake3Hash(Buffer.from(this.source));
 
-  gen_vector_32_u32(): Uint32Array {
-    const hash0 = this.gen_vector_32_u8();
-    const vec_u8 = Array.from(hash0);
-    const vec_u32 = new Uint32Array(vec_u8);
-    return vec_u32;
-  }
-
-  gen_vector_32(): math.Matrix {
-    const hash0 = blake3Hash(this.source);
-    const vec_u8 = Array.from(hash0);
-    const vec_u32 = vec_u8.map((x) => x as number);
-    return mathjs.matrix(vec_u32);
-  }
-
-  gen_matrix_32x32(): math.Matrix {
-    let hash = blake3Hash(this.source);
-    const hashes: number[][] = [];
-
-    for (let i = 0; i < 32; i++) {
-      hash = blake3Hash(hash);
-      hashes.push(Array.from(hash));
+    for (let i = 0; i < size; i++) {
+      let row: number[] = [];
+      for (let byte of currentHash) {
+        for (let bit = 0; bit < 8; bit++) {
+          let value = (byte >> bit) & 1;
+          row.push(value);
+        }
+      }
+      matrixData.push(row);
+      currentHash = this.blake3Hash(currentHash);
     }
 
-    return mathjs.matrix(hashes);
+    //return math.transpose(math.matrix(matrixData, "dense", "number"));
+    return math.matrix(matrixData, "dense", "number");
   }
 
-  matmul_32_arr(): math.Matrix {
-    const matrix = this.gen_matrix_32x32();
-    const vector = this.gen_vector_32();
-    const result = mathjs.multiply(matrix, vector);
-    return mathjs.reshape(result, [32, 1]);
+  squareMatrix(matrix: math.Matrix): math.Matrix {
+    return math.multiply(matrix, matrix) as math.Matrix;
   }
 
-  matmul_32_buf(): Uint8Array {
-    const arr = this.matmul_32_arr();
-    const vec: number[] = arr.valueOf() as number[];
-    const buf = new Uint8Array(vec.length * 4);
+  //   pub fn create_256x256_square_and_blake3_hash(&self) -> [u8; 32] {
+  //     let matrix = self.create_256x256_binary_matrix();
+  //     let squared = self.square_matrix(matrix);
+  //     let squared_buf_u16 = squared.into_raw_vec();
+  //     let squared_buf_u8: Vec<u8> = squared_buf_u16
+  //         .iter()
+  //         .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+  //         .collect();
+  //     blake3_hash(&squared_buf_u8)
+  // }
 
-    for (let i = 0; i < vec.length; i++) {
-      const value = vec[i];
-      buf[i * 4 + 0] = (value >> 24) & 0xff;
-      buf[i * 4 + 1] = (value >> 16) & 0xff;
-      buf[i * 4 + 2] = (value >> 8) & 0xff;
-      buf[i * 4 + 3] = value & 0xff;
+  createSquareAndBlake3Hash(size: number): Buffer {
+    let matrix = this.createBinaryMatrix(size);
+    let squared = this.squareMatrix(matrix);
+    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+    let squaredBufU8: number[] = [];
+
+    for (let x of squaredBufU16) {
+      squaredBufU8.push(x & 0xff);
+      squaredBufU8.push(x >> 8);
     }
 
-    return buf;
+    return this.blake3Hash(Buffer.from(squaredBufU8));
+  }
+
+  arrayToBuffer(matrix: math.Matrix): number[] {
+    return matrix.toArray() as number[];
   }
 }
