@@ -17,22 +17,25 @@ impl Matmul {
         Matmul { source }
     }
 
-    pub fn create_256x256_matrix_of_bits(source: &[u8; 32]) -> Array2<u32> {
+    pub fn create_256x256_matrix_of_bits(&self) -> Array2<u16> {
+        // 256x256 matrix squared has worst case of value 256 being stored and
+        // therefore we must use u16 or higher to store each value
+        let source = &self.source;
         let mut matrix_data = Vec::new();
-
+    
         let mut current_hash = blake3_hash(source);
-
-        for _ in 0..32 {
+    
+        for _ in 0..256 {
             for &byte in current_hash.iter() {
                 for bit in 0..8 {
-                    let value = ((byte >> bit) & 1) as u32;
+                    let value = ((byte >> bit) & 1) as u16;
                     matrix_data.push(value);
                 }
             }
             current_hash = blake3_hash(&current_hash);
         }
-
-        Array2::from_shape_vec((32, 32 * 8), matrix_data).unwrap()
+    
+        Array2::from_shape_vec((256, 256), matrix_data).unwrap()
     }
 
     pub fn generate_pseudo_random_u8_vec(&self, len: usize) -> Vec<u8> {
@@ -234,91 +237,122 @@ mod tests {
     // use std::time::Instant;
 
     #[test]
-    fn test_speed_of_matrix_multiplication() {
-        // do not use the library
-        // // create a 1024x1024 matrix of all 1s
-        // let matrix = Array2::from_shape_fn((1024, 1024), |_| 1u32);
-        // // multiply itself once
-        // let start = std::time::Instant::now();
-        // let mut matrix2 = matrix.clone();
-        // for _ in 0..1 {
-        //     matrix2 = matrix2.dot(&matrix);
-        // }
-        // let duration = start.elapsed();
-        // println!("Time elapsed for matrix multiplication: {:?}", duration);
-
-        // // create a 512x512 matrix of all 1s
-        // let matrix = Array2::from_shape_fn((512, 512), |_| 1u32);
-        // // multiply itself once
-        // let start = std::time::Instant::now();
-        // let mut matrix2 = matrix.clone();
-        // for _ in 0..1 {
-        //     matrix2 = matrix2.dot(&matrix);
-        // }
-        // let duration = start.elapsed();
-        // println!("Time elapsed for matrix multiplication: {:?}", duration);
-
-        // create a 512x512 matrix with blake3 by taking each byte and converting to u32
+    fn test_create_256x256_matrix_of_bits() {
         let source = [0u8; 32];
-        let mut hash = blake3_hash(&source);
-        let start = std::time::Instant::now();
-        let mut hashes: Vec<[u8; 32]> = Vec::new();
-        for _ in 0..(16 * 512) {
-            hash = blake3_hash(&hash);
-            hashes.push(hash);
-        }
-        let matrix = Array2::from_shape_vec((512, 512), hashes.concat().iter().map(|x| *x as u32).collect()).unwrap();
-        let duration = start.elapsed();
-        println!("Time elapsed for blake3 matrix: {:?}", duration);
+        let matmul = Matmul::new(source);
+        // let matrix = matmul.create_256x256_matrix_of_bits();
+        // let mut count = 0;
+        // for i in 0..32 {
+        //     for j in 0..256 {
+        //         if matrix[[i, j]] == 1 {
+        //             count += 1;
+        //         }
+        //     }
+        // }
+        // assert_eq!(count, 128);
 
-        // multiply itself once
+        // time creating matrix
         let start = std::time::Instant::now();
-        let mut matrix2 = matrix.clone();
-        for _ in 0..1 {
-            matrix2 = matrix2.dot(&matrix);
-        }
+        let matrix = matmul.create_256x256_matrix_of_bits();
         let duration = start.elapsed();
-        println!("Time elapsed for matrix multiplication: {:?}", duration);
+        println!(
+            "Time elapsed in create_256x256_matrix_of_bits is: {:?}",
+            duration
+        );
 
-        // create a 512 vector with blake3 by taking each byte and converting to u32
-        let mut hash = blake3_hash(&source);
+        // time square
         let start = std::time::Instant::now();
-        let mut hashes: Vec<[u8; 32]> = Vec::new();
-        for _ in 0..16 {
-            hash = blake3_hash(&hash);
-            hashes.push(hash);
-        }
-        let vector = Array1::from_vec(hashes.concat().iter().map(|x| *x as u32).collect());
+        let _ = matrix.dot(&matrix);
         let duration = start.elapsed();
-
-        // multiply the matrix times the vector
-        let start = std::time::Instant::now();
-        let result = matrix.dot(&vector);
-        let duration = start.elapsed();
-        println!("Time elapsed for matrix dot product: {:?}", duration);
-
-        // create a 32x32 matrix with blake3 by taking each byte and converting to u32
-        let mut hash = blake3_hash(&source);
-        let start = std::time::Instant::now();
-        let mut hashes: Vec<[u8; 32]> = Vec::new();
-        for _ in 0..32 {
-            hash = blake3_hash(&hash);
-            hashes.push(hash);
-        }
-        let matrix = Array2::from_shape_vec((32, 32), hashes.concat().iter().map(|x| *x as u64).collect()).unwrap();
-        let duration = start.elapsed();
-        println!("Time elapsed for blake3 matrix: {:?}", duration);
-
-        // multiply matrix times matrix
-        let start = std::time::Instant::now();
-        let mut matrix2 = matrix.clone();
-        for _ in 0..1 {
-            matrix2 = matrix2.dot(&matrix);
-        }
-        let duration = start.elapsed();
-        println!("Time elapsed for matrix multiplication: {:?}", duration);
-
+        println!("Time elapsed in matrix.dot(&matrix) is: {:?}", duration);
     }
+
+    // #[test]
+    // fn test_speed_of_matrix_multiplication() {
+    //     // do not use the library
+    //     // // create a 1024x1024 matrix of all 1s
+    //     // let matrix = Array2::from_shape_fn((1024, 1024), |_| 1u32);
+    //     // // multiply itself once
+    //     // let start = std::time::Instant::now();
+    //     // let mut matrix2 = matrix.clone();
+    //     // for _ in 0..1 {
+    //     //     matrix2 = matrix2.dot(&matrix);
+    //     // }
+    //     // let duration = start.elapsed();
+    //     // println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+    //     // // create a 512x512 matrix of all 1s
+    //     // let matrix = Array2::from_shape_fn((512, 512), |_| 1u32);
+    //     // // multiply itself once
+    //     // let start = std::time::Instant::now();
+    //     // let mut matrix2 = matrix.clone();
+    //     // for _ in 0..1 {
+    //     //     matrix2 = matrix2.dot(&matrix);
+    //     // }
+    //     // let duration = start.elapsed();
+    //     // println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+    //     // create a 512x512 matrix with blake3 by taking each byte and converting to u32
+    //     let source = [0u8; 32];
+    //     let mut hash = blake3_hash(&source);
+    //     let start = std::time::Instant::now();
+    //     let mut hashes: Vec<[u8; 32]> = Vec::new();
+    //     for _ in 0..(16 * 512) {
+    //         hash = blake3_hash(&hash);
+    //         hashes.push(hash);
+    //     }
+    //     let matrix = Array2::from_shape_vec((512, 512), hashes.concat().iter().map(|x| *x as u32).collect()).unwrap();
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for blake3 matrix: {:?}", duration);
+
+    //     // multiply itself once
+    //     let start = std::time::Instant::now();
+    //     let mut matrix2 = matrix.clone();
+    //     for _ in 0..1 {
+    //         matrix2 = matrix2.dot(&matrix);
+    //     }
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+    //     // create a 512 vector with blake3 by taking each byte and converting to u32
+    //     let mut hash = blake3_hash(&source);
+    //     let start = std::time::Instant::now();
+    //     let mut hashes: Vec<[u8; 32]> = Vec::new();
+    //     for _ in 0..16 {
+    //         hash = blake3_hash(&hash);
+    //         hashes.push(hash);
+    //     }
+    //     let vector = Array1::from_vec(hashes.concat().iter().map(|x| *x as u32).collect());
+    //     let duration = start.elapsed();
+
+    //     // multiply the matrix times the vector
+    //     let start = std::time::Instant::now();
+    //     let result = matrix.dot(&vector);
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for matrix dot product: {:?}", duration);
+
+    //     // create a 32x32 matrix with blake3 by taking each byte and converting to u32
+    //     let mut hash = blake3_hash(&source);
+    //     let start = std::time::Instant::now();
+    //     let mut hashes: Vec<[u8; 32]> = Vec::new();
+    //     for _ in 0..32 {
+    //         hash = blake3_hash(&hash);
+    //         hashes.push(hash);
+    //     }
+    //     let matrix = Array2::from_shape_vec((32, 32), hashes.concat().iter().map(|x| *x as u64).collect()).unwrap();
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for blake3 matrix: {:?}", duration);
+
+    //     // multiply matrix times matrix
+    //     let start = std::time::Instant::now();
+    //     let mut matrix2 = matrix.clone();
+    //     for _ in 0..1 {
+    //         matrix2 = matrix2.dot(&matrix);
+    //     }
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+    // }
 
     // #[test]
     // fn test_speed_of_psueodrandom_vs_blake3() {
