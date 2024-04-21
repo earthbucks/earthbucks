@@ -259,7 +259,7 @@ function Slider() {
             >
               <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
               <span className="align-middle text-sm font-semibold text-white">
-                Stack
+                Pre-Register
               </span>
               <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f09825]" />
             </div>
@@ -410,7 +410,7 @@ export default function Landing() {
             <img
               src="/earthbucks-coin.png"
               alt=""
-              className="mx-auto mb-4 block h-[200px] w-[200px] rounded-full shadow-lg shadow-[#6d3206] bg-[#6d3206]"
+              className="mx-auto mb-4 block h-[200px] w-[200px] rounded-full bg-[#6d3206] shadow-lg shadow-[#6d3206]"
             />
             <div className="hidden dark:block">
               <img
@@ -428,6 +428,18 @@ export default function Landing() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="mb-4 text-center text-black dark:text-white">
+        42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+        <br />
+        <br />
+        ETA June 2024.
+        <br />
+        <br />
+        Up to 100 miners on launch day.
+        <br />
+        <br />
+        Pre-register now for free to reserve your spot.
       </div>
       <div className="h-[80px]">
         <div className="mx-auto w-[320px]">
