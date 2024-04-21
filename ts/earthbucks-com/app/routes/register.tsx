@@ -1,7 +1,4 @@
 import type { MetaFunction } from '@remix-run/node'
-import { ChevronDoubleRightIcon } from '@heroicons/react/20/solid'
-import { useEffect, useRef, useState } from 'react'
-import { classNames } from '~/util'
 import Button from '../button'
 
 export const meta: MetaFunction = () => {

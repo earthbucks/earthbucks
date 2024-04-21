@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
-import { classNames } from "./util"
-import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid"
+import { useEffect, useRef, useState } from 'react'
+import { classNames } from './util'
+import { ChevronDoubleRightIcon } from '@heroicons/react/16/solid'
 
 function Spinner() {
   return (
@@ -26,7 +26,17 @@ function Spinner() {
   )
 }
 
-function Slider() {
+function Slider({
+  initialText,
+  processingText,
+  successText,
+  errorText,
+}: {
+  initialText: string
+  processingText: string
+  successText: string
+  errorText: string
+}) {
   const sliderStates = ['initial', 'dragging', 'processing', 'success', 'error']
 
   const [sliderState, setSliderState] = useState(sliderStates[0])
@@ -251,7 +261,7 @@ function Slider() {
             >
               <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
               <span className="align-middle text-sm font-semibold text-white">
-                Pre-Register
+                {initialText}
               </span>
               <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f09825]" />
             </div>
@@ -264,7 +274,7 @@ function Slider() {
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                Stacking...
+                {processingText}
               </span>
             </div>
             <div
@@ -275,7 +285,7 @@ function Slider() {
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                Stacked!
+                {successText}
               </span>
             </div>
             <div
@@ -286,7 +296,7 @@ function Slider() {
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                Error!
+                {errorText}
               </span>
             </div>
           </div>
@@ -303,7 +313,7 @@ function Slider() {
               style={{
                 animation:
                   sliderState === 'initial' || sliderState === 'dragging'
-                    ? 'manyButtonSpin 10s linear infinite'
+                    ? 'buttonSpin 10s linear infinite'
                     : undefined,
               }}
             ></div>
@@ -317,7 +327,7 @@ function Slider() {
               style={{
                 animation:
                   sliderState === 'error'
-                    ? 'manyButtonSpin 10s linear infinite'
+                    ? 'buttonSpin 10s linear infinite'
                     : undefined,
               }}
             ></div>
@@ -337,30 +347,23 @@ function Slider() {
 }
 
 export default function Button({
-  gender,
+  initialText = 'Swipe',
+  processingText = 'Processing...',
+  successText = 'Success!',
+  errorText = 'Error!',
+  onProcessing = () => {},
+  onSuccess = () => {},
+  onError = () => {},
 }: {
-  gender?: 'male' | 'female' | 'ninja' | 'treasurechest'
+  initialText?: string
+  processingText?: string
+  successText?: string
+  errorText?: string
+  onProcessing?: () => void
+  onSuccess?: () => void
+  onError?: () => void
 }) {
-  gender = gender || 'treasurechest'
-  const maleSrc = '/shirt-white-male-cropped.png'
-  const femaleSrc = '/shirt-white-female-cropped.png'
-  const ninjaSrc = '/shirt-ninja-cropped.png'
-  const treasurechestSrc = '/treasure-chest-cropped.png'
-
-  let shirtSrc
-  switch (gender) {
-    case 'treasurechest':
-      shirtSrc = treasurechestSrc
-      break
-    case 'ninja':
-      shirtSrc = ninjaSrc
-      break
-    case 'male':
-      shirtSrc = maleSrc
-      break
-    default:
-      shirtSrc = femaleSrc
-  }
+  let bgImageSrc = '/treasure-chest-cropped.png'
 
   return (
     <div className="flex h-[60px] w-[320px]">
@@ -368,14 +371,19 @@ export default function Button({
         <div className="h-full w-full rounded-full bg-[#fef8d6] p-[3px]">
           <div className="relative h-full w-full rounded-full bg-[#f09825] shadow-[inset_5px_5px_10px_#6d3206]">
             <img
-              src={shirtSrc}
+              src={bgImageSrc}
               alt=""
               className="absolute left-[168px] z-10 h-[52px]"
             />
             <div className="absolute z-20 h-full w-full">
               <div className="flex h-full">
                 <div className="h-full flex-grow">
-                  <Slider />
+                  <Slider
+                    initialText={initialText}
+                    processingText={processingText}
+                    successText={successText}
+                    errorText={errorText}
+                  />
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
