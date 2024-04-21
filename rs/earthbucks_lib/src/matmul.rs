@@ -216,42 +216,112 @@ mod tests {
     // use std::time::Instant;
 
     #[test]
-    fn test_speed_of_psueodrandom_vs_blake3() {
-        // do not use the library for this test - put all code here
-        // initialize seed as [0u8; 32]
+    fn test_speed_of_matrix_multiplication() {
+        // do not use the library
+        // // create a 1024x1024 matrix of all 1s
+        // let matrix = Array2::from_shape_fn((1024, 1024), |_| 1u32);
+        // // multiply itself once
+        // let start = std::time::Instant::now();
+        // let mut matrix2 = matrix.clone();
+        // for _ in 0..1 {
+        //     matrix2 = matrix2.dot(&matrix);
+        // }
+        // let duration = start.elapsed();
+        // println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+        // // create a 512x512 matrix of all 1s
+        // let matrix = Array2::from_shape_fn((512, 512), |_| 1u32);
+        // // multiply itself once
+        // let start = std::time::Instant::now();
+        // let mut matrix2 = matrix.clone();
+        // for _ in 0..1 {
+        //     matrix2 = matrix2.dot(&matrix);
+        // }
+        // let duration = start.elapsed();
+        // println!("Time elapsed for matrix multiplication: {:?}", duration);
+
+        // create a 512x512 matrix with blake3 by taking each byte and converting to u32
         let source = [0u8; 32];
-        // generate 1024x1024 matrix with psuedo random
-        let mut rng = StdRng::from_seed(source);
-        let start = std::time::Instant::now();
-        let array1 = Array2::from_shape_fn((1024, 1024), |_| {
-            let my_u8: u8 = rng.gen();
-            my_u8 as u32
-        });
-        let duration = start.elapsed();
-        println!(
-            "Time elapsed for pseudo random: {:?}",
-            duration
-        );
-        // generate 1024x1024 matrix with blake 3
         let mut hash = blake3_hash(&source);
         let start = std::time::Instant::now();
         let mut hashes: Vec<[u8; 32]> = Vec::new();
-        for _ in 0..(32*1024) {
+        for _ in 0..(16 * 512) {
             hash = blake3_hash(&hash);
             hashes.push(hash);
         }
-        let array2 = Array2::from_shape_vec((1024, 1024), hashes.concat()).unwrap();
+        let matrix = Array2::from_shape_vec((512, 512), hashes.concat().iter().map(|x| *x as u32).collect()).unwrap();
         let duration = start.elapsed();
-        println!("Time elapsed for blake3: {:?}", duration);
+        println!("Time elapsed for blake3 matrix: {:?}", duration);
 
-        // generate a 1024x1024 matrix by copying a single hash many times
+        // multiply itself once
         let start = std::time::Instant::now();
-        let array3 = Array2::from_shape_fn((1024, 1024), |_| {
-            1 as u32
-        });
+        let mut matrix2 = matrix.clone();
+        for _ in 0..1 {
+            matrix2 = matrix2.dot(&matrix);
+        }
         let duration = start.elapsed();
-        println!("Time elapsed for single value: {:?}", duration);
+        println!("Time elapsed for matrix multiplication: {:?}", duration);
+
     }
+
+    // #[test]
+    // fn test_speed_of_psueodrandom_vs_blake3() {
+    //     // do not use the library for this test - put all code here
+    //     // initialize seed as [0u8; 32]
+    //     let source = [0u8; 32];
+    //     // generate 1024x1024 matrix with psuedo random
+    //     let mut rng = StdRng::from_seed(source);
+    //     let start = std::time::Instant::now();
+    //     let array1 = Array2::from_shape_fn((1024, 1024), |_| {
+    //         let my_u8: u8 = rng.gen();
+    //         my_u8 as u32
+    //     });
+    //     let duration = start.elapsed();
+    //     println!(
+    //         "Time elapsed for pseudo random: {:?}",
+    //         duration
+    //     );
+    //     // generate 1024x1024 matrix with blake 3
+    //     let mut hash = blake3_hash(&source);
+    //     let start = std::time::Instant::now();
+    //     let mut hashes: Vec<[u8; 32]> = Vec::new();
+    //     for _ in 0..(32*1024) {
+    //         hash = blake3_hash(&hash);
+    //         hashes.push(hash);
+    //     }
+    //     let array2 = Array2::from_shape_vec((1024, 1024), hashes.concat()).unwrap();
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for blake3: {:?}", duration);
+
+    //     // generate a 1024x1024 matrix by copying a single hash many times
+    //     let start = std::time::Instant::now();
+    //     let array3 = Array2::from_shape_fn((1024, 1024), |_| {
+    //         1 as u32
+    //     });
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for single value: {:?}", duration);
+
+    //     // calculate 1024 vector
+    //     let start = std::time::Instant::now();
+    //     let vector = Array1::from_shape_vec(1024, vec![1u32; 1024]).unwrap();
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for vector: {:?}", duration);
+
+    //     // calculate the dot product of the matrix and the vector
+    //     let start = std::time::Instant::now();
+    //     let result1 = array1.dot(&vector);
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for pseudo random dot product: {:?}", duration);
+
+    //     // multiply the matrix times itself 100 times
+    //     let start = std::time::Instant::now();
+    //     let mut array4 = array1.clone();
+    //     for _ in 0..2 {
+    //         array4 = array4.dot(&array1);
+    //     }
+    //     let duration = start.elapsed();
+    //     println!("Time elapsed for blake3 dot product: {:?}", duration);
+    // }
 
     // #[test]
     // fn test_generate_pseudo_random_1024x1024_u32_array_matmul_buf() {
