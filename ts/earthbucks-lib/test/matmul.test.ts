@@ -13,6 +13,16 @@ describe("Matmul", () => {
     );
   });
 
+  test("matmul400", () => {
+    let matmul = new Matmul(new Uint8Array(32));
+    let result = matmul.matmul400();
+    let expected = result.toString("hex");
+    expect(expected).toBe(
+      "2ada02dbc002c6a7a6aa7c7ac6782c8b9a03537aa559a1ec23f47f390c593337",
+    );
+  
+  })
+
   test("matmul512", () => {
     let matmul = new Matmul(new Uint8Array(32));
     let result = matmul.matmul512();

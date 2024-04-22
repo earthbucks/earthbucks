@@ -69,6 +69,20 @@ export default class Matmul {
     return this.blake3Hash(Buffer.from(squaredBufU8));
   }
 
+  matmul400(): Buffer {
+    let matrix = this.createBinaryMatrix(400);
+    let squared = this.squareMatrix(matrix);
+    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+    let squaredBufU8: number[] = [];
+
+    for (let x of squaredBufU16) {
+      squaredBufU8.push(x & 0xff);
+      squaredBufU8.push(x >> 8);
+    }
+
+    return this.blake3Hash(Buffer.from(squaredBufU8));
+  }
+
   matmul512(): Buffer {
     let matrix = this.createBinaryMatrix(512);
     let squared = this.squareMatrix(matrix);

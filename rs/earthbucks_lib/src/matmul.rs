@@ -54,6 +54,17 @@ impl Matmul {
         blake3_hash(&squared_buf_u8)
     }
 
+    pub fn matmul_400(&self) -> [u8; 32] {
+        let matrix = self.create_binary_matrix(400);
+        let squared = self.square_matrix(matrix);
+        let squared_buf_u16 = squared.into_raw_vec();
+        let squared_buf_u8: Vec<u8> = squared_buf_u16
+            .iter()
+            .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
+            .collect();
+        blake3_hash(&squared_buf_u8)
+    }
+
     pub fn matmul_512(&self) -> [u8; 32] {
         let matrix = self.create_binary_matrix(512);
         let squared = self.square_matrix(matrix);
@@ -106,6 +117,23 @@ mod tests {
         assert_eq!(
             hash_hex,
             "fc4e101ec4a9afaa432a12e8e5475158517a93d5f1b978b35bc392b521cda84b"
+        );
+    }
+
+    #[test]
+    fn test_matmul_400() {
+        let seed = [0u8; 32];
+        let matmul = Matmul::new(seed);
+
+        let start = std::time::Instant::now();
+        let hash = matmul.matmul_400();
+        let elapsed = start.elapsed();
+        println!("Time for matmul-400: {:?}", elapsed);
+
+        let hash_hex = hex::encode(hash);
+        assert_eq!(
+            hash_hex,
+            "2ada02dbc002c6a7a6aa7c7ac6782c8b9a03537aa559a1ec23f47f390c593337"
         );
     }
 
