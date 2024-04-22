@@ -12,12 +12,16 @@ impl Matmul {
 
     pub fn create_binary_matrix(&self, size: usize) -> Array2<u16> {
         let mut matrix_data = Vec::new();
-    
+
         let mut current_hash = blake3_hash(&self.seed);
-        let mut hash_iter = current_hash.iter().cycle();
-    
+        let mut hash_iter = current_hash.iter().peekable();
+
         for _ in 0..size {
             for _ in 0..size {
+                if hash_iter.peek().is_none() {
+                    current_hash = blake3_hash(&current_hash);
+                    hash_iter = current_hash.iter().peekable();
+                }
                 let byte = *hash_iter.next().unwrap();
                 for bit in (0..8).rev() {
                     let value = ((byte >> bit) & 1) as u16;
@@ -30,10 +34,8 @@ impl Matmul {
             if matrix_data.len() >= size * size {
                 break;
             }
-            current_hash = blake3_hash(&current_hash);
-            hash_iter = current_hash.iter().cycle();
         }
-    
+
         Array2::from_shape_vec((size, size), matrix_data).unwrap()
     }
 
@@ -117,10 +119,7 @@ mod tests {
         let start = std::time::Instant::now();
         let hash = matmul.matmul_256a();
         let elapsed = start.elapsed();
-        println!(
-            "Time for matmul-256a: {:?}",
-            elapsed
-        );
+        println!("Time for matmul-256a: {:?}", elapsed);
 
         let hash_hex = hex::encode(hash);
         assert_eq!(
@@ -137,15 +136,12 @@ mod tests {
         let start = std::time::Instant::now();
         let hash = matmul.matmul_256b();
         let elapsed = start.elapsed();
-        println!(
-            "Time for matmul-256b: {:?}",
-            elapsed
-        );
+        println!("Time for matmul-256b: {:?}", elapsed);
 
         let hash_hex = hex::encode(hash);
         assert_eq!(
             hash_hex,
-            "912084a59eab9332d290fa93ca91496d3ce6075927fef6ca724e96ec3c590b8b"
+            "fc4e101ec4a9afaa432a12e8e5475158517a93d5f1b978b35bc392b521cda84b"
         );
     }
 
@@ -157,15 +153,12 @@ mod tests {
         let start = std::time::Instant::now();
         let hash = matmul.matmul_1024();
         let elapsed = start.elapsed();
-        println!(
-            "Time for matmul-1024: {:?}",
-            elapsed
-        );
+        println!("Time for matmul-1024: {:?}", elapsed);
 
         let hash_hex = hex::encode(hash);
         assert_eq!(
             hash_hex,
-            "04c3e8ce51fc457b430605e864cd2c8e2bc55309f6510cd104548bf976801d36"
+            "3d90f78f711c271da4ab7afb11092ac3dc446570792231837f1bd28816dfde1c"
         );
     }
 }

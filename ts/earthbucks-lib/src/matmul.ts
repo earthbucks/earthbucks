@@ -39,10 +39,14 @@ export default class Matmul {
   //     let mut matrix_data = Vec::new();
 
   //     let mut current_hash = blake3_hash(&self.seed);
-  //     let mut hash_iter = current_hash.iter().cycle();
+  //     let mut hash_iter = current_hash.iter().peekable();
 
   //     for _ in 0..size {
   //         for _ in 0..size {
+  //             if hash_iter.peek().is_none() {
+  //                 current_hash = blake3_hash(&current_hash);
+  //                 hash_iter = current_hash.iter().peekable();
+  //             }
   //             let byte = *hash_iter.next().unwrap();
   //             for bit in (0..8).rev() {
   //                 let value = ((byte >> bit) & 1) as u16;
@@ -55,8 +59,6 @@ export default class Matmul {
   //         if matrix_data.len() >= size * size {
   //             break;
   //         }
-  //         current_hash = blake3_hash(&current_hash);
-  //         hash_iter = current_hash.iter().cycle();
   //     }
 
   //     Array2::from_shape_vec((size, size), matrix_data).unwrap()
@@ -65,14 +67,14 @@ export default class Matmul {
   createBinaryMatrix(size: number): math.Matrix {
     let matrixData: number[] = [];
     let currentHash = this.blake3Hash(Buffer.from(this.seed));
-    let hashIter = currentHash[Symbol.iterator]();
+    let hashIter = currentHash.values();
 
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
-        let { value: byte, done } = hashIter.next();
-        if (done) {
+        let byte = hashIter.next().value;
+        if (byte === undefined) {
           currentHash = this.blake3Hash(currentHash);
-          hashIter = currentHash[Symbol.iterator]();
+          hashIter = currentHash.values();
           byte = hashIter.next().value;
         }
         for (let bit = 7; bit >= 0; bit--) {
@@ -89,12 +91,12 @@ export default class Matmul {
       if (matrixData.length >= size * size) {
         break;
       }
-      currentHash = this.blake3Hash(Buffer.from(currentHash));
-      hashIter = currentHash[Symbol.iterator]();
     }
 
     let matrixData2D: number[][] = [];
-    while (matrixData.length) matrixData2D.push(matrixData.splice(0, size));
+    for (let i = 0; i < size; i++) {
+      matrixData2D[i] = matrixData.slice(i * size, i * size + size);
+    }
 
     return math.matrix(matrixData2D, "dense", "number");
   }
@@ -119,6 +121,20 @@ export default class Matmul {
 
   matmul256b(): Buffer {
     let matrix = this.createBinaryMatrix(256);
+    let squared = this.squareMatrix(matrix);
+    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+    let squaredBufU8: number[] = [];
+
+    for (let x of squaredBufU16) {
+      squaredBufU8.push(x & 0xff);
+      squaredBufU8.push(x >> 8);
+    }
+
+    return this.blake3Hash(Buffer.from(squaredBufU8));
+  }
+
+  matmul1024(): Buffer {
+    let matrix = this.createBinaryMatrix(1024);
     let squared = this.squareMatrix(matrix);
     let squaredBufU16 = (squared.toArray() as number[][]).flat();
     let squaredBufU8: number[] = [];
