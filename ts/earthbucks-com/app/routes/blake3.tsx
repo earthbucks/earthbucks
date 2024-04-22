@@ -1,6 +1,11 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
-// import Header from "earthbucks-lib/src/header";
+import Hasher from "../blake3-js/index";
+
+function hash(data: Uint8Array) {
+  let res = Hasher.newRegular().update([0, 1, 2, 3, 4, 5, 6]).finalize() as string;
+  return res
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,6 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
+  console.log(hash(new Uint8Array(0)));
   return (
     <div className="">
       <div className="mb-4 mt-4 flex">

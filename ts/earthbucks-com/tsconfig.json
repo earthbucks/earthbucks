@@ -13,6 +13,7 @@
     "types": ["@remix-run/node", "vite/client"],
     "isolatedModules": true,
     "esModuleInterop": true,
+    // "allowSyntheticDefaultImports": true,
     "noUncheckedIndexedAccess": true,
     "jsx": "react-jsx",
     "module": "ESNext",

@@ -31,11 +31,17 @@ function Slider({
   processingText,
   successText,
   errorText,
+  onProcessing = async () => {},
+  onSuccess = async () => {},
+  onError = async () => {},
 }: {
   initialText: string;
   processingText: string;
   successText: string;
   errorText: string;
+  onProcessing: () => Promise<void>;
+  onSuccess: () => Promise<void>;
+  onError: () => Promise<void>;
 }) {
   const sliderStates = [
     "initial",
@@ -111,6 +117,19 @@ function Slider({
     setButtonX(newButtonX);
   };
 
+  async function handleOnProcessing() {
+    let processingPromise = onProcessing();
+    let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+
+    Promise.all([processingPromise, delayPromise])
+      .then(() => {
+        setSliderState("success");
+      })
+      .catch(() => {
+        setSliderState("error");
+      });
+  }
+
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -119,10 +138,10 @@ function Slider({
       setSliderState("processing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
-      // After 2 seconds, transition to the "success" state
-      setTimeout(() => {
-        setSliderState("success");
-      }, 2000);
+      handleOnProcessing();
+      // setTimeout(() => {
+      //   setSliderState("success");
+      // }, 2000);
     } else {
       setSliderState("initial");
       setButtonX(0); // Return to the starting point
@@ -357,17 +376,17 @@ export default function Button({
   processingText = "Processing",
   successText = "Success!",
   errorText = "Error!",
-  onProcessing = () => {},
-  onSuccess = () => {},
-  onError = () => {},
+  onProcessing = async () => {},
+  onSuccess = async () => {},
+  onError = async () => {},
 }: {
   initialText?: string;
   processingText?: string;
   successText?: string;
   errorText?: string;
-  onProcessing?: () => void;
-  onSuccess?: () => void;
-  onError?: () => void;
+  onProcessing?: () => Promise<void>;
+  onSuccess?: () => Promise<void>;
+  onError?: () => Promise<void>;
 }) {
   let bgImageSrc = "/treasure-chest-cropped.png";
 
@@ -392,6 +411,9 @@ export default function Button({
                     processingText={processingText}
                     successText={successText}
                     errorText={errorText}
+                    onProcessing={onProcessing}
+                    onSuccess={onSuccess}
+                    onError={onError}
                   />
                 </div>
                 <div className="h-full flex-shrink-0">
