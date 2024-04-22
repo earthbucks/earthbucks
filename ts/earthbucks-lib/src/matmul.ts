@@ -14,10 +14,12 @@ export default class Matmul {
     return Buffer.from(blake3Hash(seed));
   }
 
-  createBinaryMatrix(size: number): math.Matrix {
+  createBinary256Matrix(): math.Matrix {
+    let size = 256;
     let matrixData: number[][] = [];
     let currentHash = this.blake3Hash(Buffer.from(this.seed));
 
+    // TODO: To support other sizes, use a 1 dimensional array and then slice
     for (let i = 0; i < size; i++) {
       let row: number[] = [];
       for (let byte of currentHash) {
@@ -30,7 +32,6 @@ export default class Matmul {
       currentHash = this.blake3Hash(currentHash);
     }
 
-    //return math.transpose(math.matrix(matrixData, "dense", "number"));
     return math.matrix(matrixData, "dense", "number");
   }
 
@@ -38,19 +39,8 @@ export default class Matmul {
     return math.multiply(matrix, matrix) as math.Matrix;
   }
 
-  //   pub fn create_256x256_square_and_blake3_hash(&self) -> [u8; 32] {
-  //     let matrix = self.create_256x256_binary_matrix();
-  //     let squared = self.square_matrix(matrix);
-  //     let squared_buf_u16 = squared.into_raw_vec();
-  //     let squared_buf_u8: Vec<u8> = squared_buf_u16
-  //         .iter()
-  //         .flat_map(|&x| vec![(x & 0xFF) as u8, (x >> 8) as u8])
-  //         .collect();
-  //     blake3_hash(&squared_buf_u8)
-  // }
-
-  createSquareAndBlake3Hash(size: number): Buffer {
-    let matrix = this.createBinaryMatrix(size);
+  create256SquareAndBlake3Hash(): Buffer {
+    let matrix = this.createBinary256Matrix();
     let squared = this.squareMatrix(matrix);
     let squaredBufU16 = (squared.toArray() as number[][]).flat();
     let squaredBufU8: number[] = [];
@@ -61,6 +51,10 @@ export default class Matmul {
     }
 
     return this.blake3Hash(Buffer.from(squaredBufU8));
+  }
+
+  matmul256(): Buffer {
+    return this.create256SquareAndBlake3Hash();
   }
 
   arrayToBuffer(matrix: math.Matrix): number[] {
