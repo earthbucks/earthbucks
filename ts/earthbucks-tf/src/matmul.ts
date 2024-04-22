@@ -1,5 +1,5 @@
-import * as math from "mathjs";
-import { blake3Hash } from "./blake3";
+import * as tf from "@tensorflow/tfjs";
+import { blake3Hash } from "earthbucks-lib/src/blake3";
 import { Buffer } from "buffer";
 
 export default class Matmul {
@@ -13,7 +13,7 @@ export default class Matmul {
     return Buffer.from(blake3Hash(seed));
   }
 
-  createBinaryMatrix(size: number): math.Matrix {
+  async createBinaryMatrix(size: number): Promise<tf.Tensor> {
     let matrixData: number[] = [];
     let currentHash = this.blake3Hash(Buffer.from(this.seed));
     let hashIter = currentHash.values();
@@ -42,22 +42,17 @@ export default class Matmul {
       }
     }
 
-    let matrixData2D: number[][] = [];
-    for (let i = 0; i < size; i++) {
-      matrixData2D[i] = matrixData.slice(i * size, i * size + size);
-    }
-
-    return math.matrix(matrixData2D, "dense", "number");
+    return tf.tensor2d(matrixData, [size, size]);
   }
 
-  squareMatrix(matrix: math.Matrix): math.Matrix {
-    return math.multiply(matrix, matrix) as math.Matrix;
+  async squareMatrix(matrix: tf.Tensor): Promise<tf.Tensor> {
+    return tf.matMul(matrix, matrix);
   }
 
-  matmul256(): Buffer {
-    let matrix = this.createBinaryMatrix(256);
-    let squared = this.squareMatrix(matrix);
-    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+  async matmul256(): Promise<Buffer> {
+    let matrix = await this.createBinaryMatrix(256);
+    let squared = await this.squareMatrix(matrix);
+    let squaredBufU16 = squared.dataSync();
     let squaredBufU8: number[] = [];
 
     for (let x of squaredBufU16) {
@@ -68,10 +63,10 @@ export default class Matmul {
     return this.blake3Hash(Buffer.from(squaredBufU8));
   }
 
-  matmul400(): Buffer {
-    let matrix = this.createBinaryMatrix(400);
-    let squared = this.squareMatrix(matrix);
-    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+  async matmul400(): Promise<Buffer> {
+    let matrix = await this.createBinaryMatrix(400);
+    let squared = await this.squareMatrix(matrix);
+    let squaredBufU16 = squared.dataSync();
     let squaredBufU8: number[] = [];
 
     for (let x of squaredBufU16) {
@@ -82,10 +77,10 @@ export default class Matmul {
     return this.blake3Hash(Buffer.from(squaredBufU8));
   }
 
-  matmul512(): Buffer {
-    let matrix = this.createBinaryMatrix(512);
-    let squared = this.squareMatrix(matrix);
-    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+  async matmul512(): Promise<Buffer> {
+    let matrix = await this.createBinaryMatrix(512);
+    let squared = await this.squareMatrix(matrix);
+    let squaredBufU16 = squared.dataSync();
     let squaredBufU8: number[] = [];
 
     for (let x of squaredBufU16) {
@@ -96,10 +91,10 @@ export default class Matmul {
     return this.blake3Hash(Buffer.from(squaredBufU8));
   }
 
-  matmul1024(): Buffer {
-    let matrix = this.createBinaryMatrix(1024);
-    let squared = this.squareMatrix(matrix);
-    let squaredBufU16 = (squared.toArray() as number[][]).flat();
+  async matmul1024(): Promise<Buffer> {
+    let matrix = await this.createBinaryMatrix(1024);
+    let squared = await this.squareMatrix(matrix);
+    let squaredBufU16 = squared.dataSync();
     let squaredBufU8: number[] = [];
 
     for (let x of squaredBufU16) {
