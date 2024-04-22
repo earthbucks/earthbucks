@@ -3,7 +3,6 @@ import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import wasm from "vite-plugin-wasm";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 installGlobals();
 
@@ -12,6 +11,5 @@ export default defineConfig({
     remix(),
     tsconfigPaths(),
     wasm(),
-    nodePolyfills({ include: ["buffer"] }),
   ],
 });
