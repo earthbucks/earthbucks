@@ -2,3 +2,4 @@ packages:
   - 'earthbucks-com'
   - 'earthbucks-db'
   - 'earthbucks-lib'
+  - 'earthbucks-tf'
