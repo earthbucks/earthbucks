@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
-import { createHash, hash } from "blake3";
+import { createHash, hash as blake3Hash } from "blake3";
 import { Buffer } from "buffer";
 
 export const meta: MetaFunction = () => {
@@ -13,13 +13,15 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   if (typeof document === "undefined") {
     // running in a server environment
-    const res = hash(Buffer.from("test"));
-    console.log(res.toString("hex"));
+    const res = blake3Hash(Buffer.from("test"));
+    const buf = Buffer.from(res);
+    console.log(buf.toString("hex"));
   } else {
     // running in a browser environment
-    import("blake3/browser").then(({ createHash, hash }) => {
-      const res = hash(Buffer.from("test"));
-      console.log(res.toString("hex"));
+    import("blake3/browser").then(({ createHash, hash: blake3Hash }) => {
+      const res = blake3Hash(Buffer.from("test"));
+      const buf = Buffer.from(res);
+      console.log(buf.toString("hex"));
     });
   }
   return (

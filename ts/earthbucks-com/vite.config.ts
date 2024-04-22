@@ -7,9 +7,5 @@ import wasm from "vite-plugin-wasm";
 installGlobals();
 
 export default defineConfig({
-  plugins: [
-    remix(),
-    tsconfigPaths(),
-    wasm(),
-  ],
+  plugins: [remix(), tsconfigPaths(), wasm()],
 });
