@@ -1,11 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
-import Hasher from "../blake3-js/index";
-
-function hash(data: Uint8Array) {
-  let res = Hasher.newRegular().update([0, 1, 2, 3, 4, 5, 6]).finalize() as string;
-  return res
-}
+import { createHash, hash } from "blake3";
+import { Buffer } from "buffer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,7 +11,17 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
-  console.log(hash(new Uint8Array(0)));
+  if (typeof document === "undefined") {
+    // running in a server environment
+    const res = hash(Buffer.from("test"));
+    console.log(res.toString("hex"));
+  } else {
+    // running in a browser environment
+    import("blake3/browser").then(({ createHash, hash }) => {
+      const res = hash(Buffer.from("test"));
+      console.log(res.toString("hex"));
+    });
+  }
   return (
     <div className="">
       <div className="mb-4 mt-4 flex">
