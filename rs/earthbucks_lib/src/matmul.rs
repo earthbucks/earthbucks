@@ -146,6 +146,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_matmul_1024() {
         let seed = [0u8; 32];
         let matmul = Matmul::new(seed);

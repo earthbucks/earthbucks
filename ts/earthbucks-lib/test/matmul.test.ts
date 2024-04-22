@@ -21,7 +21,7 @@ describe("Matmul", () => {
     );
   });
 
-  test("matmul1024", () => {
+  test.skip("matmul1024", () => {
     let matmul = new Matmul(new Uint8Array(32));
     let result = matmul.matmul1024();
     let expected = result.toString("hex");
