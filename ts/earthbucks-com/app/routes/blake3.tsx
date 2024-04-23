@@ -49,7 +49,7 @@ class Matmul {
       }
     }
 
-    return matrixData
+    return matrixData;
   }
 
   async createBinaryMatrix(size: number): Promise<tf.Tensor> {
@@ -223,13 +223,30 @@ class Matmul {
     // maxint32 = 2147483647
     let matrix = await this.createBinaryMatrix(1289);
     let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
+    console.time("datasync");
+    let cubedBufInt32 = cubed.dataSync() as Int32Array;
+    console.timeEnd("datasync");
     let cubedBufU8: number[] = [];
 
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
+    // console.time('int32 to u8')
+    // for (let x of cubedBufInt32) {
+    //   cubedBufU8.push((x >> 24) & 0xff);
+    //   cubedBufU8.push((x >> 16) & 0xff);
+    //   cubedBufU8.push((x >> 8) & 0xff);
+    //   cubedBufU8.push(x & 0xff);
+    // }
+    // let buf = Buffer.from(cubedBufU8);
+    // console.timeEnd('int32 to u8')
+    console.time("int32 to u8");
+    let buf = Buffer.alloc(1289 * 1289 * 4);
+    for (let i = 0; i < cubedBufInt32.length; i++) {
+      let x = cubedBufInt32[i] as number;
+      buf[i * 4] = (x >> 24) & 0xff;
+      buf[i * 4 + 1] = (x >> 16) & 0xff;
+      buf[i * 4 + 2] = (x >> 8) & 0xff;
+      buf[i * 4 + 3] = x & 0xff;
     }
+    console.timeEnd("int32 to u8");
 
     return this.blake3Hash(Buffer.from(cubedBufU8));
   }
@@ -252,7 +269,7 @@ export default function Landing() {
     // running in a browser environment
     import("blake3/browser").then(async ({ createHash, hash: blake3Hash }) => {
       function delay(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
       }
       await delay(1000);
       let browserBlake3Hash = (data: Buffer) => {
@@ -260,7 +277,7 @@ export default function Landing() {
         hasher.update(data);
         return Buffer.from(hasher.digest());
       };
-      console.log('begin')
+      console.log("begin");
       // matcube1009
       {
         let seed = Buffer.from("seed");
@@ -291,8 +308,7 @@ export default function Landing() {
         console.timeEnd("matcube1289");
         // console.log(res.toString("hex"));
       }
-      console.log('end')
-
+      console.log("end");
     });
   }
   return (
