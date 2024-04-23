@@ -191,6 +191,32 @@ class Matmul {
     return this.blake3Hash(Buffer.from(cubedBufU8));
   }
 
+  async matcube1009(): Promise<Buffer> {
+    // - 1009 is the smallest prime number greater than 1000. this eliminates
+    //   symmetry when wrapping the pseudorandom hash.
+    // - 1009 also works when stored in int32 (tensorflow default, and smallest
+    //   computational unit)
+    //   - maximum value == 1009^3 == 1,027,243,729
+    //   - maximum int32 value     == 2,147,483,647
+    // - finally, cubing rather than squaring means there is less data sent to
+    //   the GPU per amount of computation, maximizing the computation on the
+    //   GPU rather than memory bandwidth. (cubing is no worse than a power of
+    //   four, because you can optimize that with a square and a square. powers
+    //   greater than 3 become a game of optimizin the order of operations
+    //   rather than just raw computation.)
+    let matrix = await this.createBinaryMatrix(1009);
+    let cubed = await this.cubeMatrix(matrix);
+    let cubedBufU16 = cubed.dataSync();
+    let cubedBufU8: number[] = [];
+
+    for (let x of cubedBufU16) {
+      cubedBufU8.push(x & 0xff);
+      cubedBufU8.push(x >> 8);
+    }
+
+    return this.blake3Hash(Buffer.from(cubedBufU8));
+  }
+
   async matcube1024(): Promise<Buffer> {
     let matrix = await this.createBinaryMatrix(1024);
     let cubed = await this.cubeMatrix(matrix);
@@ -246,94 +272,19 @@ export default function Landing() {
         return Buffer.from(hasher.digest());
       };
       console.log('begin')
-      // matsquare1024
+      // matcube1009
       {
         let seed = Buffer.from("seed");
         let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 1024 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(1024);
-        console.timeEnd("create 1024 matrix arr");
-        console.time("create 1024 matrix");
-        let matrix = await matmul.createBinaryMatrix(1024);
-        console.timeEnd("create 1024 matrix");
-        console.time("matmul1024");
-        let res = await matmul.matmul1024();
-        console.timeEnd("matmul1024");
-        // console.log(res.toString("hex"));
-      }
-      // matcube256
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 256 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(256);
-        console.timeEnd("create 256 matrix arr");
-        console.time("create 256 matrix");
-        let matrix = await matmul.createBinaryMatrix(256);
-        console.timeEnd("create 256 matrix");
-        console.time("matcube256");
-        let res = await matmul.matcube256();
-        console.timeEnd("matcube256");
-        // console.log(res.toString("hex"));
-      }
-      // matcube400
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 400 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(400);
-        console.timeEnd("create 400 matrix arr");
-        console.time("create 400 matrix");
-        let matrix = await matmul.createBinaryMatrix(400);
-        console.timeEnd("create 400 matrix");
-        console.time("matcube400");
-        let res = await matmul.matcube400();
-        console.timeEnd("matcube400");
-        // console.log(res.toString("hex"));
-      }
-      // matcube512
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 512 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(512);
-        console.timeEnd("create 512 matrix arr");
-        console.time("create 512 matrix");
-        let matrix = await matmul.createBinaryMatrix(512);
-        console.timeEnd("create 512 matrix");
-        console.time("matcube512");
-        let res = await matmul.matcube512();
-        console.timeEnd("matcube512");
-        // console.log(res.toString("hex"));
-      }
-      // matcube1024
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 1024 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(1024);
-        console.timeEnd("create 1024 matrix arr");
-        console.time("create 1024 matrix");
-        let matrix = await matmul.createBinaryMatrix(1024);
-        console.timeEnd("create 1024 matrix");
-        console.time("matcube1024");
-        let res = await matmul.matcube1024();
-        console.timeEnd("matcube1024");
-        // console.log(res.toString("hex"));
-      }
-      // matcube2048
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 2048 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(2048);
-        console.timeEnd("create 2048 matrix arr");
-        console.time("create 2048 matrix");
-        let matrix = await matmul.createBinaryMatrix(2048);
-        console.timeEnd("create 2048 matrix");
-        console.time("matcube2048");
-        let res = await matmul.matcube2048();
-        console.timeEnd("matcube2048");
+        console.time("create 1009 matrix arr");
+        let matrixn = await matmul.createBinaryMatrixArr(1009);
+        console.timeEnd("create 1009 matrix arr");
+        console.time("create 1009 matrix");
+        let matrix = await matmul.createBinaryMatrix(1009);
+        console.timeEnd("create 1009 matrix");
+        console.time("matcube1009");
+        let res = await matmul.matcube1009();
+        console.timeEnd("matcube1009");
         // console.log(res.toString("hex"));
       }
       console.log('end')
