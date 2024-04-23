@@ -84,8 +84,8 @@ class Gpupow {
   }
 
   xorInChunks(buffer: Buffer): Buffer {
-  // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
-  // bits (32 bytes)
+    // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
+    // bits (32 bytes)
     let chunkSize = 32;
     let chunks = [];
     for (let i = 0; i < buffer.length; i += chunkSize) {
@@ -102,9 +102,9 @@ class Gpupow {
   }
 
   xorInChunksAlt(buffer: Buffer): Buffer {
-  // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
-  // bits (32 bytes). testing reveals this is not any faster than the other
-  // version.
+    // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
+    // bits (32 bytes). testing reveals this is not any faster than the other
+    // version.
     let chunkSize = 32;
     let result = Buffer.alloc(chunkSize);
     for (let i = 0; i < buffer.length; i += chunkSize) {
@@ -163,8 +163,33 @@ class Gpupow {
     return reducedBuf;
   }
 
+  async reduceMatrixBufferAsync(matrix: tf.Tensor): Promise<Buffer> {
+    let reducedSum = this.reduceMatrixToVectorSum(matrix);
+    let reducedMax = this.reduceMatrixToVectorMax(matrix);
+    let reducedMin = this.reduceMatrixToVectorMin(matrix);
+    let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
+    let reducedSumBuf = Buffer.from(await reducedSum.data());
+    let reducedMaxBuf = Buffer.from(await reducedMax.data());
+    let reducedMinBuf = Buffer.from(await reducedMin.data());
+    let reducedRndBuf = Buffer.from(await reducedRnd.data());
+    let reducedBuf = Buffer.concat([
+      reducedSumBuf,
+      reducedMaxBuf,
+      reducedMinBuf,
+      reducedRndBuf,
+    ]);
+    return reducedBuf;
+  }
+
   reduceMatrixToHashSync(matrix: tf.Tensor): Buffer {
     let reducedBuf = this.reduceMatrixBufferSync(matrix);
+    let xorBuf = this.xorInChunks(reducedBuf);
+    let hash = this.blake3Hash(xorBuf);
+    return hash;
+  }
+
+  async reduceMatrixToHashAsync(matrix: tf.Tensor): Promise<Buffer> {
+    let reducedBuf = await this.reduceMatrixBufferAsync(matrix);
     let xorBuf = this.xorInChunks(reducedBuf);
     let hash = this.blake3Hash(xorBuf);
     return hash;
@@ -192,12 +217,12 @@ class Gpupow {
     // Apply an element-wise float point operation to the matrix that uses all
     // common floating point operations.
     let resultMatrix = floatMatrix
-    .square()
-    .div(sizeFloat)
-    .add(sizeFloat)
-    .sub(floatMatrix)
-    .log()
-    .square()
+      .square()
+      .div(sizeFloat)
+      .add(sizeFloat)
+      .sub(floatMatrix)
+      .log()
+      .square();
     let roundedMatrix = resultMatrix.round();
     let intMatrix = roundedMatrix.toInt();
 
@@ -246,8 +271,31 @@ class Gpupow {
     let matrix = this.createMatrixBits(size);
     let squared = this.squareMatrix(matrix);
     let floated = this.floatSquareDivMatrix(squared);
-    let res = this.reduceMatrixToHashSync(floated);
-    return res;
+    return this.reduceMatrixToHashSync(floated);
+  }
+
+  hashToMatrixToSquaredToReducedToHashAsync(size: number): Promise<Buffer> {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    return this.reduceMatrixToHashAsync(squared);
+  }
+
+  hashToMatrixToSquaredToFloatedToReducedToHashAsync(
+    size: number,
+  ): Promise<Buffer> {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.floatMatrix(squared);
+    return this.reduceMatrixToHashAsync(floated);
+  }
+
+  hashToMatrixToSquaredToFloatSquaredToReducedToHashAsync(
+    size: number,
+  ): Promise<Buffer> {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.floatSquareDivMatrix(squared);
+    return this.reduceMatrixToHashAsync(floated);
   }
 
   // seed -> hash -> bits -> matrix -> square -> reduce -> hash
@@ -266,6 +314,10 @@ class Gpupow {
     return this.hashToMatrixToSquaredToReducedToHashSync(1289);
   }
 
+  int1289Async(): Promise<Buffer> {
+    return this.hashToMatrixToSquaredToReducedToHashAsync(1289);
+  }
+
   // seed -> hash -> bits -> matrix -> square -> float -> reduce -> hash
   //
   // same as above, but also with a round of element-wise floating point
@@ -274,9 +326,17 @@ class Gpupow {
     return this.hashToMatrixToSquaredToFloatedToReducedToHashSync(1289);
   }
 
+  float1289Async(): Promise<Buffer> {
+    return this.hashToMatrixToSquaredToFloatedToReducedToHashAsync(1289);
+  }
+
   // seed -> hash -> bits -> matrix -> square -> float square -> reduce -> hash
   floatrisky(): Buffer {
     return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(1289);
+  }
+
+  floatriskyAsync(): Promise<Buffer> {
+    return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashAsync(1289);
   }
 }
 
@@ -306,119 +366,41 @@ export default function Landing() {
 
   async function onProcessing() {
     console.log("begin");
-    // gpupow floatrisky
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
-      console.time("floatrisky");
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      console.timeEnd("floatrisky");
-      //console.log(res.toString("hex"));
-    }
     // gpupow int1289
     {
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
       console.time("int1289");
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
+      let promises: Promise<Buffer>[] = [];
+      for (let i = 0; i < 200; i++) {
+        promises.push(gpupow.int1289Async());
+      }
+      await Promise.all(promises);
       console.timeEnd("int1289");
-      //console.log(res.toString("hex"));
     }
     // gpupow float1289
     {
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
       console.time("float1289");
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
+      let promises: Promise<Buffer>[] = [];
+      for (let i = 0; i < 200; i++) {
+        promises.push(gpupow.float1289Async());
+      }
+      await Promise.all(promises);
       console.timeEnd("float1289");
-      //console.log(res.toString("hex"));
     }
     // gpupow floatrisky
     {
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
       console.time("floatrisky");
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
-      gpupow.floatrisky();
+      let promises: Promise<Buffer>[] = [];
+      for (let i = 0; i < 200; i++) {
+        promises.push(gpupow.floatriskyAsync());
+      }
+      await Promise.all(promises);
       console.timeEnd("floatrisky");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow int1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
-      console.time("int1289");
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      gpupow.int1289();
-      console.timeEnd("int1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      //console.log(tensor);
-      console.time("float1289");
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      gpupow.float1289();
-      console.timeEnd("float1289");
-      //console.log(res.toString("hex"));
     }
     console.log("end");
   }
