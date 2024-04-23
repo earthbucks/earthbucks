@@ -312,7 +312,9 @@ class Gpupow {
     return this.reduceMatrixToHashSync(floated);
   }
 
-  hashToMatrixToSquaredToFloatDivCubeToReducedToHashAsync(size: number): Promise<Buffer> {
+  hashToMatrixToSquaredToFloatDivCubeToReducedToHashAsync(
+    size: number,
+  ): Promise<Buffer> {
     let matrix = this.createMatrixBits(size);
     let squared = this.squareMatrix(matrix);
     let floated = this.floatDivCubeMatrix(squared);

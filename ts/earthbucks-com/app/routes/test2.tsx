@@ -21,6 +21,46 @@ class Gpupow {
     this.blake3Hash = blake3Hash;
   }
 
+  createHashBitsOfSize(size: number): Buffer {
+    let currentHash = this.blake3Hash(this.seed);
+    let hashIter = currentHash.values();
+    let bits = Buffer.alloc(size * 8); // Allocate buffer of size * 8 bytes
+    let bitIndex = 0;
+
+    for (let i = 0; i < size; i++) {
+      let byte = hashIter.next().value;
+      if (byte === undefined) {
+        // currentHash = this.blake3Hash(currentHash);
+        currentHash = Buffer.from(currentHash);
+        hashIter = currentHash.values();
+        byte = hashIter.next().value;
+      }
+
+      // Split byte into bits and store each bit as a byte in the output buffer
+      for (let bit = 7; bit >= 0; bit--) {
+        bits[bitIndex] = (byte >> bit) & 1;
+        bitIndex++;
+      }
+    }
+
+    return bits; // each byte is either 0 or 1
+  }
+
+  createTensorBitsOfSize(size: number): tf.Tensor {
+    console.time("createHashBitsOfSize");
+    let bits = this.createHashBitsOfSize(size);
+    console.timeEnd("createHashBitsOfSize");
+    // interprets every value in the buffer as a separate int32
+    let tensor = tf.tensor1d(bits, "int32");
+    return tensor;
+  }
+
+  createMatrixBitsOfSize(size: number): tf.Tensor {
+    let tensorBits = this.createTensorBitsOfSize((size * size) / 8);
+    let matrix = tensorBits.reshape([size, size]); // Reshape the tensor into a matrix
+    return matrix;
+  }
+
   createHashBits(): Buffer {
     let currentHash = this.blake3Hash(this.seed);
     let hashIter = currentHash.values();
@@ -46,13 +86,13 @@ class Gpupow {
     // interprets ever value in the buffer as a separate int32
     let tensor = tf.tensor1d(bits, "int32");
 
-    {
-      let count0 = tf.sum(tf.equal(tensor, 0)).dataSync();
-      console.log("tensor count0: " + count0);
+    // {
+    //   let count0 = tf.sum(tf.equal(tensor, 0)).dataSync();
+    //   console.log("tensor count0: " + count0);
 
-      let count1 = tf.sum(tf.equal(tensor, 1)).dataSync();
-      console.log("tensor count1: " + count1);
-    }
+    //   let count1 = tf.sum(tf.equal(tensor, 1)).dataSync();
+    //   console.log("tensor count1: " + count1);
+    // }
     return tensor;
   }
 
@@ -204,10 +244,7 @@ class Gpupow {
     return hash;
   }
 
-  // takes in a binary matrix of size 1289 and returns a different binary matrix
-  // of size 1289 after doing a bunch of work on it. 1289 is the largest prime P
-  // such that a matrix of size PxP can be squared using int32.
-  workOnMatrix(binaryMatrix1289: tf.Tensor): tf.Tensor {
+  workOnMatrix(matrix: tf.Tensor): tf.Tensor {
     // Set the precision of floating point operations to 32-bit
     tf.ENV.set("WEBGL_PACK", false);
     tf.ENV.set("WEBGL_RENDER_FLOAT32_ENABLED", true);
@@ -220,15 +257,19 @@ class Gpupow {
     }
 
     // {
-    //   let count0 = tf.sum(tf.equal(binaryMatrix1289, 0)).dataSync();
+    //   let count0 = tf.sum(tf.equal(matrix, 0)).dataSync();
     //   console.log("binaryMatrix1289 count0: " + count0);
 
-    //   let count1 = tf.sum(tf.equal(binaryMatrix1289, 1)).dataSync();
+    //   let count1 = tf.sum(tf.equal(matrix, 1)).dataSync();
     //   console.log("binaryMatrix1289 count1: " + count1);
+
+    //   // first row
+    //   let firstRow = matrix.slice([0, 0], [1, 1289]);
+    //   console.log("firstRow: " + Array.from(firstRow.dataSync()));
     // }
 
     // integer operations
-    let squaredMatrix = tf.matMul(binaryMatrix1289, binaryMatrix1289);
+    let matrix12 = tf.matMul(matrix, matrix);
     // {
     //   // theoretical: 1289
     //   // actual:      15
@@ -244,7 +285,7 @@ class Gpupow {
     // return squaredMatrix;
 
     // floating point operations
-    let floatMatrix = squaredMatrix.toFloat(); // max element size: 1289^2
+    let floatMatrix = matrix12.toFloat(); // max element size: 1289^2
     // {
     //   // theoretical: 1289
     //   // actual:      15
@@ -253,6 +294,10 @@ class Gpupow {
 
     //   let count0 = tf.sum(tf.equal(floatMatrix, 0)).dataSync();
     //   console.log("floatMatrix count0: " + count0);
+
+    //   // first row
+    //   let firstRow = floatMatrix.slice([0, 0], [1, 1289]);
+    //   console.log("firstRow: " + Array.from(firstRow.dataSync()));
     // }
     let squareFloatMatrix = tf.matMul(floatMatrix, floatMatrix); // max element size: 1289^3
     // {
@@ -266,11 +311,16 @@ class Gpupow {
 
     //   let count0 = tf.sum(tf.equal(squareFloatMatrix, 0)).dataSync();
     //   console.log("squareFloatMatrix count0: " + count0);
+
+    //   // first row
+    //   let firstRow = squareFloatMatrix.slice([0, 0], [1, 1289]);
+    //   console.log("firstRow: " + Array.from(firstRow.dataSync()));
     // }
     let min = squareFloatMatrix.min();
     let subMinMatrix = squareFloatMatrix.sub(min);
     let max = subMinMatrix.max();
-    let divMatrix = subMinMatrix.div(max);
+    let maxDiv1000 = max.div(1000);
+    let divMatrix = subMinMatrix.div(maxDiv1000);
     // {
     //   // theoretical: 1
     //   // actual:      1
@@ -287,9 +337,9 @@ class Gpupow {
 
     //   let count1 = tf.sum(tf.equal(divMatrix, 1)).dataSync();
     //   console.log("divMatrix count1: " + count1);
-      
+
     //   let mean = tf.mean(divMatrix);
-    //   console.log("divMatrix mean: " + mean.dataSync());    
+    //   console.log("divMatrix mean: " + mean.dataSync());
     // }
 
     // coerce the floating point matrix to integers
@@ -311,6 +361,13 @@ class Gpupow {
 
     //   let min = intMatrix.min();
     //   console.log("intMatrix min: " + min.dataSync());
+
+    //   let mean = tf.mean(intMatrix);
+    //   console.log("intMatrix mean: " + mean.dataSync());
+
+    //   // first row
+    //   let firstRow = intMatrix.slice([0, 0], [1, 1289]);
+    //   console.log("firstRow: " + Array.from(firstRow.dataSync()));
     // }
 
     // // square again
@@ -346,7 +403,14 @@ class Gpupow {
     // // test: create a matrix of 1289x1289 of all ones
     // let matrix = tf.ones([1289, 1289]);
 
-    for (let i = 0; i < 1000; i++) {
+    matrix = this.workOnMatrix(matrix);
+    return this.reduceMatrixToHashAsync(matrix);
+  }
+
+  async float1289b(): Promise<Buffer> {
+    let matrix = this.createMatrixBitsOfSize(1289);
+
+    for (let i = 0; i < 1; i++) {
       matrix = this.workOnMatrix(matrix);
     }
     return this.reduceMatrixToHashAsync(matrix);
@@ -379,20 +443,42 @@ export default function Landing() {
 
   async function onProcessing() {
     console.log("begin");
-    // gpupow int1289
+    // // blake 3
+    // {
+    //   let seed = Buffer.from("seed");
+    //   console.time("blake3");
+    //   let hash = blake3Hash(seed);
+    //   for (let i = 0; i < 6490; i++) {
+    //     hash = blake3Hash(hash);
+    //   }
+    //   console.timeEnd("blake3");
+    // }
+    // // gpupow float1289
+    // {
+    //   // let seed = Buffer.from("seed");
+    //   let seed = Buffer.from("seed");
+    //   let gpupow = new Gpupow(seed, blake3Hash);
+    //   console.time("float1289");
+    //   let promises: Promise<Buffer>[] = [];
+    //   for (let i = 0; i < 1; i++) {
+    //     promises.push(gpupow.float1289());
+    //   }
+    //   await Promise.all(promises);
+    //   console.timeEnd("float1289");
+    // }
+    // gpupow float1289b
     {
       // let seed = Buffer.from("seed");
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("int1289");
+      console.time("float1289b");
       let promises: Promise<Buffer>[] = [];
       for (let i = 0; i < 1; i++) {
-        promises.push(gpupow.float1289());
+        promises.push(gpupow.float1289b());
       }
       await Promise.all(promises);
-      console.timeEnd("int1289");
+      console.timeEnd("float1289b");
     }
-
     console.log("end");
   }
   return (
