@@ -119,9 +119,28 @@ class Gpupow {
     return reducedBuf;
   }
 
+  xorInChunks(buffer: Buffer): Buffer {
+    // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
+    // bits (32 bytes)
+    let chunkSize = 32;
+    let chunks = [];
+    for (let i = 0; i < buffer.length; i += chunkSize) {
+      let chunk = buffer.subarray(i, i + chunkSize);
+      chunks.push(chunk);
+    }
+    let result = Buffer.alloc(chunkSize);
+    for (let chunk of chunks) {
+      for (let i = 0; i < chunk.length; i++) {
+        result[i] ^= chunk[i] as number;
+      }
+    }
+    return result;
+  }
+
   async matrixHash(matrix: tf.Tensor): Promise<Buffer> {
     let reducedBuf = await this.matrixReduce(matrix);
-    return this.blake3Hash(reducedBuf);
+    let xorHash = this.xorInChunks(reducedBuf);
+    return this.blake3Hash(xorHash);
   }
 }
 
@@ -165,10 +184,10 @@ export default function Landing() {
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
         matrix = gpupow.matrixCalculation(matrix);
-        console.time("matrixReduce");
         let reducedBuf = await gpupow.matrixReduce(matrix);
-        console.timeEnd("matrixReduce");
+        console.time("matrixReduce");
         let matrixHashBuf = await gpupow.matrixHash(matrix);
+        console.timeEnd("matrixReduce");
       }
     }
     console.log("end");
