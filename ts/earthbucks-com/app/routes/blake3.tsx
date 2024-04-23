@@ -12,7 +12,7 @@ function nodeBlake3Hash(data: Buffer): Buffer {
   return Buffer.from(hasher.digest());
 }
 
-class Matmul {
+class Gpupow {
   seed: Buffer;
   blake3Hash: BufferFunction;
 
@@ -20,235 +20,150 @@ class Matmul {
     this.seed = seed;
     this.blake3Hash = blake3Hash;
   }
-  async createBinaryMatrixArr(size: number): Promise<number[]> {
-    let matrixData: number[] = [];
+
+  createHashBits(): Buffer {
     let currentHash = this.blake3Hash(this.seed);
     let hashIter = currentHash.values();
-
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        let byte = hashIter.next().value;
-        if (byte === undefined) {
-          currentHash = Buffer.from(currentHash);
-          hashIter = currentHash.values();
-          byte = hashIter.next().value;
-        }
-        for (let bit = 7; bit >= 0; bit--) {
-          let value = (byte >> bit) & 1;
-          matrixData.push(value);
-          if (matrixData.length >= size * size) {
-            break;
-          }
-        }
-        if (matrixData.length >= size * size) {
-          break;
-        }
+    let bits = Buffer.alloc(2048);
+    for (let i = 0; i < 32; i++) {
+      let byte = hashIter.next().value;
+      if (byte === undefined) {
+        currentHash = Buffer.from(currentHash);
+        hashIter = currentHash.values();
+        byte = hashIter.next().value;
       }
-      if (matrixData.length >= size * size) {
-        break;
+      for (let bit = 7; bit >= 0; bit--) {
+        let value = (byte >> bit) & 1;
+        bits[i * 8 + (7 - bit)] = value;
       }
     }
-
-    return matrixData;
+    return bits;
   }
 
-  async createBinaryMatrix(size: number): Promise<tf.Tensor> {
-    let matrixData: number[] = [];
-    let currentHash = this.blake3Hash(this.seed);
-    let hashIter = currentHash.values();
-
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        let byte = hashIter.next().value;
-        if (byte === undefined) {
-          currentHash = Buffer.from(currentHash);
-          hashIter = currentHash.values();
-          byte = hashIter.next().value;
-        }
-        for (let bit = 7; bit >= 0; bit--) {
-          let value = (byte >> bit) & 1;
-          matrixData.push(value);
-          if (matrixData.length >= size * size) {
-            break;
-          }
-        }
-        if (matrixData.length >= size * size) {
-          break;
-        }
-      }
-      if (matrixData.length >= size * size) {
-        break;
-      }
-    }
-
-    // tensorflow doesn't support uint16, but it does support int32
-    return tf.tensor2d(matrixData, [size, size], "int32");
+  createTensorBits(): tf.Tensor {
+    let bits = this.createHashBits();
+    let tensor = tf.tensor1d(bits, "int32");
+    // console.log(tensor.shape);
+    return tensor;
   }
 
-  async squareMatrix(matrix: tf.Tensor): Promise<tf.Tensor> {
+  createMatrixBits(size: number): tf.Tensor {
+    let tensorBits = this.createTensorBits();
+    let totalElements = size * size;
+    let repeatTimes = Math.ceil(totalElements / 2048);
+    let longTensor = tf.tile(tensorBits, [repeatTimes]); // Repeat the tensor to have at least 'totalElements' elements
+    let longTensorSliced = longTensor.slice(0, totalElements); // Truncate the tensor to have exactly 'totalElements' elements
+    let matrix = longTensorSliced.reshape([size, size]); // Reshape the tensor into a matrix
+    return matrix;
+  }
+
+  reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
+    return matrix.sum(1);
+  }
+
+  reduceMatrixToVectorMax(matrix: tf.Tensor): tf.Tensor {
+    return matrix.max(1);
+  }
+
+  reduceMatrixToVectorMin(matrix: tf.Tensor): tf.Tensor {
+    return matrix.min(1);
+  }
+
+  reduceMatrixToVectorRnd(matrix: tf.Tensor): tf.Tensor {
+    // - gather the first row of the matrix
+    // - each element of the first row is an index to gather from the
+    //   corresponding column
+    //
+    // this works in the case of squaring a binary matrix, because the minimum
+    // value is zero, and the maximum value is the number of rows
+    let nCols = matrix.shape[1] as number;
+    let nRows = matrix.shape[0] as number;
+    let indices = matrix.slice([0, 0], [1, nCols]);
+    indices = tf.clipByValue(indices, 0, nRows - 1);
+    return matrix.gather(indices.flatten().toInt());
+  }
+
+  reduceMatrixBufferSync(
+    matrix: tf.Tensor,
+  ): Buffer {
+    // the reason for reducing with these four operations is as follows. first
+    // of all, what i would like to do is to hash the output matrix and then
+    // send that back to the CPU. unfortuantely, GPUs do not really have that,
+    // and tensorflow in particular does not support any hash functions. what i
+    // want is to send the result of the matrix calculation back to the CPU
+    // without sending the entire thing. how can i reduce the data, while also
+    // being sure that the output is unique, and is very unlikely to be the same
+    // for two different random inputs? instead of using a hash function, i thus
+    // approximate a hash function by using four independent reduction methods.
+    // the first is to sum all the elements of the matrix. the second is to take
+    // the maximum of each row. the third is to take the minimum of each row.
+    // the fourth is to take a random element from each row. the output is then
+    // the concatenation of the four reductions. this is not a hash function,
+    // but it is a way to reduce the data while also being sure that the output
+    // is unique.
+    //
+    // there are other methods i could have added, such as standard deviation,
+    // variance, or mean, but all of those do not actually add any information
+    // to the four reduction methods provided here. instead, they are just
+    // different ways of expressing the same information (e.g., both std dev,
+    // var, and mean all require computing the sum first). the four reduction
+    // methods provided here are independent of each other, and thus provide a
+    // unique way to reduce the data. they are also as comprehensive as i can
+    // figure to make it without having a hash function provided by tensorflow.
+    //
+    // one final advantage of these methods is that they are all highly
+    // parallelizable (each column can be computed independently, and thus for
+    // an NxN matrix, we have N independent threads), and thus are also suitable
+    // to computation on a GPU.
+    let reducedSum = this.reduceMatrixToVectorSum(matrix);
+    let reducedMax = this.reduceMatrixToVectorMax(matrix);
+    let reducedMin = this.reduceMatrixToVectorMin(matrix);
+    let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
+    let reducedSumBuf = Buffer.from(reducedSum.dataSync());
+    let reducedMaxBuf = Buffer.from(reducedMax.dataSync());
+    let reducedMinBuf = Buffer.from(reducedMin.dataSync());
+    let reducedRndBuf = Buffer.from(reducedRnd.dataSync());
+    let reducedBuf = Buffer.concat([
+      reducedSumBuf,
+      reducedMaxBuf,
+      reducedMinBuf,
+      reducedRndBuf,
+    ]);
+    return reducedBuf;
+  }
+
+  reduceMatrixToHashSync(
+    matrix: tf.Tensor,
+  ): Buffer {
+    let reducedXORBuf = this.reduceMatrixBufferSync(matrix);
+    return this.blake3Hash(reducedXORBuf);
+  }
+
+  squareMatrix(matrix: tf.Tensor): tf.Tensor {
     return tf.matMul(matrix, matrix);
   }
 
-  async cubeMatrix(matrix: tf.Tensor): Promise<tf.Tensor> {
-    return tf.matMul(matrix, await this.squareMatrix(matrix));
+  hashToMatrixToSquaredMatrixToHashSync(
+    size: number,
+  ): Buffer {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    return this.reduceMatrixToHashSync(squared);
   }
 
-  async matmul256(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(256);
-    let squared = await this.squareMatrix(matrix);
-    let squaredBufU16 = squared.dataSync();
-    let squaredBufU8: number[] = [];
-
-    for (let x of squaredBufU16) {
-      squaredBufU8.push(x & 0xff);
-      squaredBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(squaredBufU8));
-  }
-
-  async matmul400(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(400);
-    let squared = await this.squareMatrix(matrix);
-    let squaredBufU16 = squared.dataSync();
-    let squaredBufU8: number[] = [];
-
-    for (let x of squaredBufU16) {
-      squaredBufU8.push(x & 0xff);
-      squaredBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(squaredBufU8));
-  }
-
-  async matmul512(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(512);
-    let squared = await this.squareMatrix(matrix);
-    let squaredBufU16 = squared.dataSync();
-    let squaredBufU8: number[] = [];
-
-    for (let x of squaredBufU16) {
-      squaredBufU8.push(x & 0xff);
-      squaredBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(squaredBufU8));
-  }
-
-  async matmul1024(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(1024);
-    let squared = await this.squareMatrix(matrix);
-    let squaredBufU16 = squared.dataSync();
-    let squaredBufU8: number[] = [];
-
-    for (let x of squaredBufU16) {
-      squaredBufU8.push(x & 0xff);
-      squaredBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(squaredBufU8));
-  }
-
-  async matcube256(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(256);
-    let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
-    let cubedBufU8: number[] = [];
-
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
-  }
-
-  async matcube400(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(400);
-    let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
-    let cubedBufU8: number[] = [];
-
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
-  }
-
-  async matcube512(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(512);
-    let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
-    let cubedBufU8: number[] = [];
-
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
-  }
-
-  async matcube1009(): Promise<Buffer> {
-    // - 1009 is the smallest prime number greater than 1000. this eliminates
-    //   symmetry when wrapping the pseudorandom hash.
-    // - 1009 also works when stored in int32 for cubes (tensorflow default, and
-    //   smallest computational unit)
-    //   - maximum value == 1009^3 == 1,027,243,729
-    //   - maximum int32 value     == 2,147,483,647
-    // - finally, cubing rather than squaring means there is less data sent to
-    //   the GPU per amount of computation, maximizing the computation on the
-    //   GPU rather than memory bandwidth. (cubing is no worse than a power of
-    //   four, because you can optimize that with a square and a square. powers
-    //   greater than 3 become a game of optimizin the order of operations
-    //   rather than just raw computation.)
-    let matrix = await this.createBinaryMatrix(1009);
-    let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
-    let cubedBufU8: number[] = [];
-
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
-  }
-
-  async matcube1289(): Promise<Buffer> {
-    // 1289 is the smallest prime number whose cube fits in int32
-    // 1289 ^ 3 = 2141700569
-    // maxint32 = 2147483647
-    let matrix = await this.createBinaryMatrix(1289);
-    let cubed = await this.cubeMatrix(matrix);
-    console.time("datasync");
-    let cubedBufInt32 = cubed.dataSync() as Int32Array;
-    console.timeEnd("datasync");
-    let cubedBufU8: number[] = [];
-
-    // console.time('int32 to u8')
-    // for (let x of cubedBufInt32) {
-    //   cubedBufU8.push((x >> 24) & 0xff);
-    //   cubedBufU8.push((x >> 16) & 0xff);
-    //   cubedBufU8.push((x >> 8) & 0xff);
-    //   cubedBufU8.push(x & 0xff);
-    // }
-    // let buf = Buffer.from(cubedBufU8);
-    // console.timeEnd('int32 to u8')
-    console.time("int32 to u8");
-    let buf = Buffer.alloc(1289 * 1289 * 4);
-    for (let i = 0; i < cubedBufInt32.length; i++) {
-      let x = cubedBufInt32[i] as number;
-      buf[i * 4] = (x >> 24) & 0xff;
-      buf[i * 4 + 1] = (x >> 16) & 0xff;
-      buf[i * 4 + 2] = (x >> 8) & 0xff;
-      buf[i * 4 + 3] = x & 0xff;
-    }
-    console.timeEnd("int32 to u8");
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
+  // seed -> hash -> bits -> matrix -> square -> reduce -> hash
+  //
+  // all performed with a matrix whose size is 1289, which is the largest prime
+  // number whose cube fits into int32. the reason why the cube matters is that
+  // first we square the matrix, whose max value is 1289^2, but then we also sum
+  // each column in the reduction phase, meaning the true max is a cube. to do
+  // this with a larger number, you would have to use int64, which is not
+  // currently supported by tensorflow.
+  //
+  // -> hashBitMatSquareReduceHash1289
+  // -> hbmsrh1289
+  hbmsrh1289(): Buffer {
+    return this.hashToMatrixToSquaredMatrixToHashSync(1289);
   }
 }
 
@@ -278,37 +193,19 @@ export default function Landing() {
         return Buffer.from(hasher.digest());
       };
       console.log("begin");
-      // matcube1009
+      // gpupow
       {
         let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 1009 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(1009);
-        console.timeEnd("create 1009 matrix arr");
-        console.time("create 1009 matrix");
-        let matrix = await matmul.createBinaryMatrix(1009);
-        console.timeEnd("create 1009 matrix");
-        console.time("matcube1009");
-        let res = await matmul.matcube1009();
-        console.timeEnd("matcube1009");
-        // console.log(res.toString("hex"));
+        let gpupow = new Gpupow(seed, browserBlake3Hash);
+        console.time("create tensor bits");
+        let tensor = gpupow.createTensorBits();
+        console.timeEnd("create tensor bits");
+        console.log(tensor);
+        console.time("hashMatSquareHash1289");
+        let res = gpupow.hbmsrh1289();
+        console.timeEnd("hashMatSquareHash1289");
+        console.log(res.toString("hex"));
       }
-      // matcube1289
-      {
-        let seed = Buffer.from("seed");
-        let matmul = new Matmul(seed, browserBlake3Hash);
-        console.time("create 1289 matrix arr");
-        let matrixn = await matmul.createBinaryMatrixArr(1289);
-        console.timeEnd("create 1289 matrix arr");
-        console.time("create 1289 matrix");
-        let matrix = await matmul.createBinaryMatrix(1289);
-        console.timeEnd("create 1289 matrix");
-        console.time("matcube1289");
-        let res = await matmul.matcube1289();
-        console.timeEnd("matcube1289");
-        // console.log(res.toString("hex"));
-      }
-      console.log("end");
     });
   }
   return (
