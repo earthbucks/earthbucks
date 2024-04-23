@@ -101,7 +101,7 @@ class Gpupow {
     return matrix.gather(indices.flatten().toInt());
   }
 
-  async matrixReduce(matrix: tf.Tensor): Promise<Buffer> {
+  async matrixReduce(matrix: tf.Tensor): Promise<[Buffer, Buffer, Buffer, Buffer]> {
     let reducedSum = this.reduceMatrixToVectorSum(matrix);
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
@@ -110,36 +110,22 @@ class Gpupow {
     let reducedMaxBuf = Buffer.from(await reducedMax.data());
     let reducedMinBuf = Buffer.from(await reducedMin.data());
     let reducedRndBuf = Buffer.from(await reducedRnd.data());
-    let reducedBuf = Buffer.concat([
+    let reducedBufs: [Buffer, Buffer, Buffer, Buffer] = [
       reducedSumBuf,
       reducedMaxBuf,
       reducedMinBuf,
       reducedRndBuf,
-    ]);
-    return reducedBuf;
-  }
-
-  xorInChunks(buffer: Buffer): Buffer {
-    // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
-    // bits (32 bytes)
-    let chunkSize = 32;
-    let chunks = [];
-    for (let i = 0; i < buffer.length; i += chunkSize) {
-      let chunk = buffer.subarray(i, i + chunkSize);
-      chunks.push(chunk);
-    }
-    let result = Buffer.alloc(chunkSize);
-    for (let chunk of chunks) {
-      for (let i = 0; i < chunk.length; i++) {
-        result[i] ^= chunk[i] as number;
-      }
-    }
-    return result;
+    ];
+    return reducedBufs;
   }
 
   async matrixHash(matrix: tf.Tensor): Promise<Buffer> {
-    let reducedBuf = await this.matrixReduce(matrix);
-    let xorHash = this.xorInChunks(reducedBuf);
+    let reducedBufs = await this.matrixReduce(matrix);
+    let hash0 = this.blake3Hash(reducedBufs[0]);
+    let hash1 = this.blake3Hash(reducedBufs[1]);
+    let hash2 = this.blake3Hash(reducedBufs[2]);
+    let hash3 = this.blake3Hash(reducedBufs[3]);
+    let xorHash = Buffer.concat([hash0, hash1, hash2, hash3])
     return this.blake3Hash(xorHash);
   }
 }
