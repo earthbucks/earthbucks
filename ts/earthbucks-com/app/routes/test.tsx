@@ -83,6 +83,39 @@ class Gpupow {
     return matrix.gather(indices.flatten().toInt());
   }
 
+  xorInChunks(buffer: Buffer): Buffer {
+  // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
+  // bits (32 bytes)
+    let chunkSize = 32;
+    let chunks = [];
+    for (let i = 0; i < buffer.length; i += chunkSize) {
+      let chunk = buffer.subarray(i, i + chunkSize);
+      chunks.push(chunk);
+    }
+    let result = Buffer.alloc(chunkSize);
+    for (let chunk of chunks) {
+      for (let i = 0; i < chunk.length; i++) {
+        result[i] ^= chunk[i] as number;
+      }
+    }
+    return result;
+  }
+
+  xorInChunksAlt(buffer: Buffer): Buffer {
+  // take in a buffer of arbitrary length, and xor it to itself in chunks of 256
+  // bits (32 bytes). testing reveals this is not any faster than the other
+  // version.
+    let chunkSize = 32;
+    let result = Buffer.alloc(chunkSize);
+    for (let i = 0; i < buffer.length; i += chunkSize) {
+      let chunk = buffer.subarray(i, i + chunkSize);
+      for (let j = 0; j < chunk.length; j++) {
+        result[j] ^= chunk[j] as number;
+      }
+    }
+    return result;
+  }
+
   reduceMatrixBufferSync(matrix: tf.Tensor): Buffer {
     // the reason for reducing with these four operations is as follows. first
     // of all, what i would like to do is to hash the output matrix and then
@@ -117,10 +150,18 @@ class Gpupow {
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
     let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
+    console.time("dataSync1");
     let reducedSumBuf = Buffer.from(reducedSum.dataSync());
+    console.timeEnd("dataSync1");
+    console.time("dataSync2");
     let reducedMaxBuf = Buffer.from(reducedMax.dataSync());
+    console.timeEnd("dataSync2");
+    console.time("dataSync3");
     let reducedMinBuf = Buffer.from(reducedMin.dataSync());
+    console.timeEnd("dataSync3");
+    console.time("dataSync4");
     let reducedRndBuf = Buffer.from(reducedRnd.dataSync());
+    console.timeEnd("dataSync4");
     let reducedBuf = Buffer.concat([
       reducedSumBuf,
       reducedMaxBuf,
@@ -131,8 +172,16 @@ class Gpupow {
   }
 
   reduceMatrixToHashSync(matrix: tf.Tensor): Buffer {
-    let reducedXORBuf = this.reduceMatrixBufferSync(matrix);
-    return this.blake3Hash(reducedXORBuf);
+    console.time("reduceMatrixBufferSync");
+    let reducedBuf = this.reduceMatrixBufferSync(matrix);
+    console.timeEnd("reduceMatrixBufferSync");
+    console.time("xorInChunks");
+    let xorBuf = this.xorInChunks(reducedBuf);
+    console.timeEnd("xorInChunks");
+    console.time("blake3Hash");
+    let hash = this.blake3Hash(xorBuf);
+    console.timeEnd("blake3Hash");
+    return hash;
   }
 
   squareMatrix(matrix: tf.Tensor): tf.Tensor {
@@ -206,10 +255,19 @@ class Gpupow {
   }
 
   hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(size: number): Buffer {
+    console.time("createMatrixBits");
     let matrix = this.createMatrixBits(size);
+    console.timeEnd("createMatrixBits");
+    console.time("squareMatrix");
     let squared = this.squareMatrix(matrix);
+    console.timeEnd("squareMatrix");
+    console.time("floatSquareDivMatrix");
     let floated = this.floatSquareDivMatrix(squared);
-    return this.reduceMatrixToHashSync(floated);
+    console.timeEnd("floatSquareDivMatrix");
+    console.time("reduceMatrixToHashSync");
+    let res = this.reduceMatrixToHashSync(floated);
+    console.timeEnd("reduceMatrixToHashSync");
+    return res;
   }
 
   // seed -> hash -> bits -> matrix -> square -> reduce -> hash
@@ -269,119 +327,80 @@ export default function Landing() {
   async function onProcessing() {
     console.log("begin");
     // gpupow int1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("int1289");
-      let res = gpupow.int1289();
-      console.timeEnd("int1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("float1289");
-      let res = gpupow.float1289();
-      console.timeEnd("float1289");
-      //console.log(res.toString("hex"));
-    }
+    // {
+    //   let seed = Buffer.from("seed");
+    //   let gpupow = new Gpupow(seed, blake3Hash);
+    //   //console.log(tensor);
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   console.time("int1289");
+    //   gpupow.int1289();
+    //   console.timeEnd("int1289");
+    //   //console.log(res.toString("hex"));
+    // }
+    // // gpupow float1289
+    // {
+    //   let seed = Buffer.from("seed");
+    //   let gpupow = new Gpupow(seed, blake3Hash);
+    //   //console.log(tensor);
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   console.time("float1289");
+    //   gpupow.float1289();
+    //   console.timeEnd("float1289");
+    //   //console.log(res.toString("hex"));
+    // }
     // gpupow float1289b
     {
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
       //console.log(tensor);
       console.time("float1289b");
-      let res = gpupow.float1289b();
+      gpupow.float1289b();
       console.timeEnd("float1289b");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow int1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("int1289");
-      let res = gpupow.int1289();
-      console.timeEnd("int1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("float1289");
-      let res = gpupow.float1289();
-      console.timeEnd("float1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289b
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
       console.time("float1289b");
-      let res = gpupow.float1289b();
+      gpupow.float1289b();
       console.timeEnd("float1289b");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow int1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("int1289");
-      let res = gpupow.int1289();
-      console.timeEnd("int1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
-      console.time("float1289");
-      let res = gpupow.float1289();
-      console.timeEnd("float1289");
-      //console.log(res.toString("hex"));
-    }
-    // gpupow float1289b
-    {
-      let seed = Buffer.from("seed");
-      let gpupow = new Gpupow(seed, blake3Hash);
-      console.time("create tensor bits");
-      let tensor = gpupow.createTensorBits();
-      console.timeEnd("create tensor bits");
-      //console.log(tensor);
       console.time("float1289b");
-      let res = gpupow.float1289b();
+      gpupow.float1289b();
+      console.timeEnd("float1289b");
+      console.time("float1289b");
+      gpupow.float1289b();
+      console.timeEnd("float1289b");
+      console.time("float1289b");
+      gpupow.float1289b();
+      console.timeEnd("float1289b");
+      console.time("float1289b");
+      gpupow.float1289b();
       console.timeEnd("float1289b");
       //console.log(res.toString("hex"));
     }
