@@ -138,6 +138,9 @@ export default function Landing() {
       };
       let seed = Buffer.from("seed");
       let matmul = new Matmul(seed, browserBlake3Hash);
+      console.time("create 1024 matrix")
+      let matrix = await matmul.createBinaryMatrix(1024);
+      console.timeEnd("create 1024 matrix")
       console.time("matmul1024");
       let res = await matmul.matmul1024();
       console.timeEnd("matmul1024");
