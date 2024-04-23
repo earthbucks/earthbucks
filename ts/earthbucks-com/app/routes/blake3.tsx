@@ -139,7 +139,7 @@ class Gpupow {
     return tf.matMul(matrix, matrix);
   }
 
-  applyFloatingPointOp(matrix: tf.Tensor): tf.Tensor {
+  floatMatrix(matrix: tf.Tensor): tf.Tensor {
     // Set the precision of floating point operations to 32-bit
     tf.ENV.set("WEBGL_PACK", false);
     tf.ENV.set("WEBGL_RENDER_FLOAT32_ENABLED", true);
@@ -182,7 +182,7 @@ class Gpupow {
   hashToMatrixToSquaredToFloatedToReducedToHashSync(size: number): Buffer {
     let matrix = this.createMatrixBits(size);
     let squared = this.squareMatrix(matrix);
-    let floated = this.applyFloatingPointOp(squared);
+    let floated = this.floatMatrix(squared);
     return this.reduceMatrixToHashSync(floated);
   }
 
@@ -197,11 +197,16 @@ class Gpupow {
   //
   // -> hashBitMatSquareReduceHash1289
   // -> hbmsrh1289
-  hbmsrh1289(): Buffer {
+  // -> int1289
+  int1289(): Buffer {
     return this.hashToMatrixToSquaredToReducedToHashSync(1289);
   }
 
-  hbmsfrh1289(): Buffer {
+  // seed -> hash -> bits -> matrix -> square -> float -> reduce -> hash
+  //
+  // same as above, but also with a round of element-wise floating point
+  // operations which are expected to be deterministic.
+  float1289(): Buffer {
     return this.hashToMatrixToSquaredToFloatedToReducedToHashSync(1289);
   }
 }
@@ -232,7 +237,7 @@ export default function Landing() {
         return Buffer.from(hasher.digest());
       };
       console.log("begin");
-      // gpupow hbmsrh1289
+      // gpupow int1289
       {
         let seed = Buffer.from("seed");
         let gpupow = new Gpupow(seed, browserBlake3Hash);
@@ -240,12 +245,12 @@ export default function Landing() {
         let tensor = gpupow.createTensorBits();
         console.timeEnd("create tensor bits");
         //console.log(tensor);
-        console.time("hbmsrh1289");
-        let res = gpupow.hbmsrh1289();
-        console.timeEnd("hbmsrh1289");
+        console.time("int1289");
+        let res = gpupow.int1289();
+        console.timeEnd("int1289");
         console.log(res.toString("hex"));
       }
-      // gpupow hbmsfrh1289
+      // gpupow float1289
       {
         let seed = Buffer.from("seed");
         let gpupow = new Gpupow(seed, browserBlake3Hash);
@@ -253,9 +258,9 @@ export default function Landing() {
         let tensor = gpupow.createTensorBits();
         console.timeEnd("create tensor bits");
         //console.log(tensor);
-        console.time("hbmsfrh1289");
-        let res = gpupow.hbmsfrh1289();
-        console.timeEnd("hbmsfrh1289");
+        console.time("float1289");
+        let res = gpupow.float1289();
+        console.timeEnd("float1289");
         console.log(res.toString("hex"));
       }
     });
