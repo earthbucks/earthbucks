@@ -70,15 +70,14 @@ class Gpupow {
   }
 
   matrixCalculation(matrix: tf.Tensor): tf.Tensor {
-    let matrix1 = tf.matMul(tf.matMul(matrix, matrix), matrix);
-    let matrix2 = matrix1.toFloat();
-    let matrix3 = matrix2.sub(matrix2.min());
-    let matrix4 = matrix3.div(matrix3.max());
-    let matrix5 = tf.matMul(tf.matMul(matrix4, matrix4), matrix4);
-    let matrix6 = matrix5.div(1289);
-    let matrix7 = matrix6.round();
-    let matrix8 = matrix7.toInt();
-    return matrix8;
+    matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
+    matrix = matrix.toFloat();
+    matrix = matrix.sub(matrix.min());
+    matrix = matrix.div(matrix.max());
+    matrix = matrix.mul(1289 * 1289);
+    matrix = matrix.round();
+    matrix = matrix.toInt();
+    return matrix;
   }
 
   reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
@@ -101,7 +100,9 @@ class Gpupow {
     return matrix.gather(indices.flatten().toInt());
   }
 
-  async matrixReduce(matrix: tf.Tensor): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async matrixReduce(
+    matrix: tf.Tensor,
+  ): Promise<[Buffer, Buffer, Buffer, Buffer]> {
     let reducedSum = this.reduceMatrixToVectorSum(matrix);
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
@@ -125,7 +126,7 @@ class Gpupow {
     let hash1 = this.blake3Hash(reducedBufs[1]);
     let hash2 = this.blake3Hash(reducedBufs[2]);
     let hash3 = this.blake3Hash(reducedBufs[3]);
-    let xorHash = Buffer.concat([hash0, hash1, hash2, hash3])
+    let xorHash = Buffer.concat([hash0, hash1, hash2, hash3]);
     return this.blake3Hash(xorHash);
   }
 }
