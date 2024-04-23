@@ -194,8 +194,8 @@ class Matmul {
   async matcube1009(): Promise<Buffer> {
     // - 1009 is the smallest prime number greater than 1000. this eliminates
     //   symmetry when wrapping the pseudorandom hash.
-    // - 1009 also works when stored in int32 (tensorflow default, and smallest
-    //   computational unit)
+    // - 1009 also works when stored in int32 for cubes (tensorflow default, and
+    //   smallest computational unit)
     //   - maximum value == 1009^3 == 1,027,243,729
     //   - maximum int32 value     == 2,147,483,647
     // - finally, cubing rather than squaring means there is less data sent to
@@ -217,22 +217,11 @@ class Matmul {
     return this.blake3Hash(Buffer.from(cubedBufU8));
   }
 
-  async matcube1024(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(1024);
-    let cubed = await this.cubeMatrix(matrix);
-    let cubedBufU16 = cubed.dataSync();
-    let cubedBufU8: number[] = [];
-
-    for (let x of cubedBufU16) {
-      cubedBufU8.push(x & 0xff);
-      cubedBufU8.push(x >> 8);
-    }
-
-    return this.blake3Hash(Buffer.from(cubedBufU8));
-  }
-
-  async matcube2048(): Promise<Buffer> {
-    let matrix = await this.createBinaryMatrix(2048);
+  async matcube1289(): Promise<Buffer> {
+    // 1289 is the smallest prime number whose cube fits in int32
+    // 1289 ^ 3 = 2141700569
+    // maxint32 = 2147483647
+    let matrix = await this.createBinaryMatrix(1289);
     let cubed = await this.cubeMatrix(matrix);
     let cubedBufU16 = cubed.dataSync();
     let cubedBufU8: number[] = [];
@@ -285,6 +274,21 @@ export default function Landing() {
         console.time("matcube1009");
         let res = await matmul.matcube1009();
         console.timeEnd("matcube1009");
+        // console.log(res.toString("hex"));
+      }
+      // matcube1289
+      {
+        let seed = Buffer.from("seed");
+        let matmul = new Matmul(seed, browserBlake3Hash);
+        console.time("create 1289 matrix arr");
+        let matrixn = await matmul.createBinaryMatrixArr(1289);
+        console.timeEnd("create 1289 matrix arr");
+        console.time("create 1289 matrix");
+        let matrix = await matmul.createBinaryMatrix(1289);
+        console.timeEnd("create 1289 matrix");
+        console.time("matcube1289");
+        let res = await matmul.matcube1289();
+        console.timeEnd("matcube1289");
         // console.log(res.toString("hex"));
       }
       console.log('end')
