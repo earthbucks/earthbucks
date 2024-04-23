@@ -229,6 +229,31 @@ class Gpupow {
     return intMatrix;
   }
 
+  floatDivCubeMatrix(matrix: tf.Tensor): tf.Tensor {
+    // Set the precision of floating point operations to 32-bit
+    tf.ENV.set("WEBGL_PACK", false);
+    tf.ENV.set("WEBGL_RENDER_FLOAT32_ENABLED", true);
+
+    // Check if 32-bit floating point textures are supported
+    if (!tf.ENV.getBool("WEBGL_RENDER_FLOAT32_ENABLED")) {
+      throw new Error(
+        "This function requires 32-bit floating point textures, which are not supported on this system.",
+      );
+    }
+
+    // Convert the integer matrix to a floating point matrix
+    let floatMatrix = matrix.toFloat();
+    let max = floatMatrix.max();
+    // floating point divide
+    let divMatrix = floatMatrix.div(max);
+    // cube
+    let mulMatrix = divMatrix.mul(divMatrix).mul(divMatrix);
+    // round to integer and convert back to integer
+    let roundedMatrix = mulMatrix.round();
+    let intMatrix = roundedMatrix.toInt();
+    return intMatrix;
+  }
+
   floatSquareDivMatrix(matrix: tf.Tensor): tf.Tensor {
     // Set the precision of floating point operations to 32-bit
     tf.ENV.set("WEBGL_PACK", false);
@@ -280,6 +305,20 @@ class Gpupow {
     return this.reduceMatrixToHashAsync(squared);
   }
 
+  hashToMatrixToSquaredToFloatDivCubeToReducedToHashSync(size: number): Buffer {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.floatDivCubeMatrix(squared);
+    return this.reduceMatrixToHashSync(floated);
+  }
+
+  hashToMatrixToSquaredToFloatDivCubeToReducedToHashAsync(size: number): Promise<Buffer> {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.floatDivCubeMatrix(squared);
+    return this.reduceMatrixToHashAsync(floated);
+  }
+
   hashToMatrixToSquaredToFloatedToReducedToHashAsync(
     size: number,
   ): Promise<Buffer> {
@@ -310,11 +349,11 @@ class Gpupow {
   // -> hashBitMatSquareReduceHash1289
   // -> hbmsrh1289
   // -> int1289
-  int1289(): Buffer {
+  int1289a(): Buffer {
     return this.hashToMatrixToSquaredToReducedToHashSync(1289);
   }
 
-  int1289Async(): Promise<Buffer> {
+  async int1289aAsync(): Promise<Buffer> {
     return this.hashToMatrixToSquaredToReducedToHashAsync(1289);
   }
 
@@ -322,12 +361,20 @@ class Gpupow {
   //
   // same as above, but also with a round of element-wise floating point
   // operations which are expected to be deterministic.
-  float1289(): Buffer {
+  int1289b(): Buffer {
     return this.hashToMatrixToSquaredToFloatedToReducedToHashSync(1289);
   }
 
-  float1289Async(): Promise<Buffer> {
+  async int1289bAsync(): Promise<Buffer> {
     return this.hashToMatrixToSquaredToFloatedToReducedToHashAsync(1289);
+  }
+
+  int1289c(): Buffer {
+    return this.hashToMatrixToSquaredToFloatDivCubeToReducedToHashSync(1289);
+  }
+
+  async int1289cAsync(): Promise<Buffer> {
+    return this.hashToMatrixToSquaredToFloatDivCubeToReducedToHashAsync(1289);
   }
 
   // seed -> hash -> bits -> matrix -> square -> float square -> reduce -> hash
@@ -335,7 +382,7 @@ class Gpupow {
     return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(1289);
   }
 
-  floatriskyAsync(): Promise<Buffer> {
+  async floatriskyAsync(): Promise<Buffer> {
     return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashAsync(1289);
   }
 }
@@ -373,7 +420,7 @@ export default function Landing() {
       console.time("int1289");
       let promises: Promise<Buffer>[] = [];
       for (let i = 0; i < 200; i++) {
-        promises.push(gpupow.int1289Async());
+        promises.push(gpupow.int1289aAsync());
       }
       await Promise.all(promises);
       console.timeEnd("int1289");
@@ -385,10 +432,22 @@ export default function Landing() {
       console.time("float1289");
       let promises: Promise<Buffer>[] = [];
       for (let i = 0; i < 200; i++) {
-        promises.push(gpupow.float1289Async());
+        promises.push(gpupow.int1289bAsync());
       }
       await Promise.all(promises);
       console.timeEnd("float1289");
+    }
+    // gpupow int1289c
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("int1289c");
+      let promises: Promise<Buffer>[] = [];
+      for (let i = 0; i < 200; i++) {
+        promises.push(gpupow.int1289cAsync());
+      }
+      await Promise.all(promises);
+      console.timeEnd("int1289c");
     }
     // gpupow floatrisky
     {
