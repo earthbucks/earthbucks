@@ -69,7 +69,7 @@ class Gpupow {
     return seed.reshape([1289, 1289]);
   }
 
-  matrixCalculation(matrix: tf.Tensor): tf.Tensor {
+  matrixCalculationFloat(matrix: tf.Tensor): tf.Tensor {
     matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
     matrix = matrix.toFloat();
     matrix = matrix.sub(matrix.min());
@@ -79,6 +79,20 @@ class Gpupow {
     matrix = matrix.toInt();
     return matrix;
   }
+
+  matrixCalculationInt(matrix: tf.Tensor): tf.Tensor {
+    matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
+    const minVal = matrix.min();
+    const maxVal = matrix.max();
+    matrix = matrix.sub(minVal);
+    if (maxVal.dataSync()[0] !== minVal.dataSync()[0]) { // Avoid division by zero
+        matrix = matrix.div(maxVal.sub(minVal));
+    }
+    matrix = matrix.mul(1289 * 1289);
+    matrix = matrix.round();
+    matrix = matrix.toInt();
+    return matrix;
+}
 
   reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
     return matrix.sum(1);
@@ -157,24 +171,38 @@ export default function Landing() {
 
   async function onProcessing() {
     console.log("begin");
-    // gpupow matrixHash
+    // gpupow matrixCalculationFloat
     {
       let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
       let workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
       let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
-      for (let i = 0; i < 10; i++) {
-        console.time("blake3");
+      for (let i = 0; i < 1; i++) {
         let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
-        console.timeEnd("blake3");
         gpupow.updateWorkingBlockId(workingBlockId);
         let seed = gpupow.tensorSeed();
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
-        matrix = gpupow.matrixCalculation(matrix);
+        matrix = gpupow.matrixCalculationFloat(matrix);
         let reducedBuf = await gpupow.matrixReduce(matrix);
-        console.time("matrixReduce");
         let matrixHashBuf = await gpupow.matrixHash(matrix);
-        console.timeEnd("matrixReduce");
+        console.log(matrixHashBuf.toString('hex'))
+      }
+    }
+    // gpupow matrixCalculationInt
+    {
+      let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+      let workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
+      let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
+      for (let i = 0; i < 1; i++) {
+        let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
+        gpupow.updateWorkingBlockId(workingBlockId);
+        let seed = gpupow.tensorSeed();
+        let seed1289 = gpupow.tensorSeed1289();
+        let matrix = gpupow.seedToMatrix(seed1289);
+        matrix = gpupow.matrixCalculationInt(matrix);
+        let reducedBuf = await gpupow.matrixReduce(matrix);
+        let matrixHashBuf = await gpupow.matrixHash(matrix);
+        console.log(matrixHashBuf.toString('hex'))
       }
     }
     console.log("end");
