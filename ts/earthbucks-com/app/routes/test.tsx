@@ -153,9 +153,7 @@ class Gpupow {
 
     // Convert the integer matrix to a floating point matrix
     let floatMatrix = matrix.toFloat();
-
     let sizeFloat = tf.scalar(floatMatrix.shape[0]);
-
     // Apply an element-wise float point operation to the matrix that uses all
     // common floating point operations.
     let resultMatrix = floatMatrix
@@ -163,11 +161,32 @@ class Gpupow {
       .div(sizeFloat)
       .add(sizeFloat)
       .sub(floatMatrix);
-
-    // Round the result to a fixed number of decimal places
     let roundedMatrix = resultMatrix.round();
+    let intMatrix = roundedMatrix.toInt();
 
-    // Convert the result back to an integer matrix
+    return intMatrix;
+  }
+
+  floatSquareDivMatrix(matrix: tf.Tensor): tf.Tensor {
+    // Set the precision of floating point operations to 32-bit
+    tf.ENV.set("WEBGL_PACK", false);
+    tf.ENV.set("WEBGL_RENDER_FLOAT32_ENABLED", true);
+
+    // Check if 32-bit floating point textures are supported
+    if (!tf.ENV.getBool("WEBGL_RENDER_FLOAT32_ENABLED")) {
+      throw new Error(
+        "This function requires 32-bit floating point textures, which are not supported on this system.",
+      );
+    }
+
+    // Convert the integer matrix to a floating point matrix
+    let floatMatrix = matrix.toFloat();
+    let sizeFloat = tf.scalar(floatMatrix.shape[0]);
+    // floating point square and divide
+    let resultMatrix = tf.matMul(floatMatrix, floatMatrix);
+    let divMatrix = resultMatrix.div(sizeFloat);
+    // round to integer and convert back to integer
+    let roundedMatrix = divMatrix.round();
     let intMatrix = roundedMatrix.toInt();
 
     return intMatrix;
@@ -183,6 +202,13 @@ class Gpupow {
     let matrix = this.createMatrixBits(size);
     let squared = this.squareMatrix(matrix);
     let floated = this.floatMatrix(squared);
+    return this.reduceMatrixToHashSync(floated);
+  }
+
+  hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(size: number): Buffer {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.floatSquareDivMatrix(squared);
     return this.reduceMatrixToHashSync(floated);
   }
 
@@ -209,6 +235,11 @@ class Gpupow {
   float1289(): Buffer {
     return this.hashToMatrixToSquaredToFloatedToReducedToHashSync(1289);
   }
+
+  // seed -> hash -> bits -> matrix -> square -> float square -> reduce -> hash
+  float1289b(): Buffer {
+    return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(1289);
+  }
 }
 
 export const meta: MetaFunction = () => {
@@ -219,51 +250,142 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
+  let blake3Hash: BufferFunction;
   if (typeof document === "undefined") {
     // running in a server environment
-    // const res = blake3Hash(Buffer.from("test"));
-    // const buf = Buffer.from(res);
-    // console.log(buf.toString("hex"));
+    blake3Hash = nodeBlake3Hash;
   } else {
     // running in a browser environment
-    import("blake3/browser").then(async ({ createHash, hash: blake3Hash }) => {
-      function delay(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
-      await delay(1000);
+    import("blake3/browser").then(async ({ createHash, hash }) => {
       let browserBlake3Hash = (data: Buffer) => {
         const hasher = createHash();
         hasher.update(data);
         return Buffer.from(hasher.digest());
       };
-      console.log("begin");
-      // gpupow int1289
-      {
-        let seed = Buffer.from("seed");
-        let gpupow = new Gpupow(seed, browserBlake3Hash);
-        console.time("create tensor bits");
-        let tensor = gpupow.createTensorBits();
-        console.timeEnd("create tensor bits");
-        //console.log(tensor);
-        console.time("int1289");
-        let res = gpupow.int1289();
-        console.timeEnd("int1289");
-        console.log(res.toString("hex"));
-      }
-      // gpupow float1289
-      {
-        let seed = Buffer.from("seed");
-        let gpupow = new Gpupow(seed, browserBlake3Hash);
-        console.time("create tensor bits");
-        let tensor = gpupow.createTensorBits();
-        console.timeEnd("create tensor bits");
-        //console.log(tensor);
-        console.time("float1289");
-        let res = gpupow.float1289();
-        console.timeEnd("float1289");
-        console.log(res.toString("hex"));
-      }
+      blake3Hash = browserBlake3Hash;
     });
+  }
+
+  async function onProcessing() {
+    console.log("begin");
+    // gpupow int1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("int1289");
+      let res = gpupow.int1289();
+      console.timeEnd("int1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289");
+      let res = gpupow.float1289();
+      console.timeEnd("float1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289b
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289b");
+      let res = gpupow.float1289b();
+      console.timeEnd("float1289b");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow int1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("int1289");
+      let res = gpupow.int1289();
+      console.timeEnd("int1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289");
+      let res = gpupow.float1289();
+      console.timeEnd("float1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289b
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289b");
+      let res = gpupow.float1289b();
+      console.timeEnd("float1289b");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow int1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("int1289");
+      let res = gpupow.int1289();
+      console.timeEnd("int1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289");
+      let res = gpupow.float1289();
+      console.timeEnd("float1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289b
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      console.time("create tensor bits");
+      let tensor = gpupow.createTensorBits();
+      console.timeEnd("create tensor bits");
+      //console.log(tensor);
+      console.time("float1289b");
+      let res = gpupow.float1289b();
+      console.timeEnd("float1289b");
+      //console.log(res.toString("hex"));
+    }
+    console.log("end");
   }
   return (
     <div className="">
@@ -300,7 +422,7 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" />
+          <Button initialText="Compute" onProcessing={onProcessing} />
         </div>
       </div>
     </div>

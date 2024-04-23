@@ -55,6 +55,19 @@ function Slider({
   const [startX, setStartX] = useState(0);
   const [buttonX, setButtonX] = useState(0); // Track button's X position
 
+  async function handleOnProcessing() {
+    let processingPromise = onProcessing();
+    let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+
+    Promise.all([processingPromise, delayPromise])
+      .then(() => {
+        setSliderState("success");
+      })
+      .catch(() => {
+        setSliderState("error");
+      });
+  }
+
   const handleMouseDown = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>,
   ) => {
@@ -83,10 +96,10 @@ function Slider({
       setSliderState("processing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
-      // After 5 seconds, transition to the "success" state
-      setTimeout(() => {
-        setSliderState("success");
-      }, 2000);
+      handleOnProcessing();
+      // setTimeout(() => {
+      //   setSliderState("success");
+      // }, 2000);
     } else {
       setSliderState("initial");
       setButtonX(0); // Return to the starting point
@@ -116,19 +129,6 @@ function Slider({
 
     setButtonX(newButtonX);
   };
-
-  async function handleOnProcessing() {
-    let processingPromise = onProcessing();
-    let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
-
-    Promise.all([processingPromise, delayPromise])
-      .then(() => {
-        setSliderState("success");
-      })
-      .catch(() => {
-        setSliderState("error");
-      });
-  }
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     e.preventDefault();
