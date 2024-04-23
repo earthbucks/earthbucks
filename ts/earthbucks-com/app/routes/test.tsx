@@ -150,18 +150,10 @@ class Gpupow {
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
     let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
-    console.time("dataSync1");
     let reducedSumBuf = Buffer.from(reducedSum.dataSync());
-    console.timeEnd("dataSync1");
-    console.time("dataSync2");
     let reducedMaxBuf = Buffer.from(reducedMax.dataSync());
-    console.timeEnd("dataSync2");
-    console.time("dataSync3");
     let reducedMinBuf = Buffer.from(reducedMin.dataSync());
-    console.timeEnd("dataSync3");
-    console.time("dataSync4");
     let reducedRndBuf = Buffer.from(reducedRnd.dataSync());
-    console.timeEnd("dataSync4");
     let reducedBuf = Buffer.concat([
       reducedSumBuf,
       reducedMaxBuf,
@@ -172,15 +164,9 @@ class Gpupow {
   }
 
   reduceMatrixToHashSync(matrix: tf.Tensor): Buffer {
-    console.time("reduceMatrixBufferSync");
     let reducedBuf = this.reduceMatrixBufferSync(matrix);
-    console.timeEnd("reduceMatrixBufferSync");
-    console.time("xorInChunks");
     let xorBuf = this.xorInChunks(reducedBuf);
-    console.timeEnd("xorInChunks");
-    console.time("blake3Hash");
     let hash = this.blake3Hash(xorBuf);
-    console.timeEnd("blake3Hash");
     return hash;
   }
 
@@ -206,10 +192,12 @@ class Gpupow {
     // Apply an element-wise float point operation to the matrix that uses all
     // common floating point operations.
     let resultMatrix = floatMatrix
-      .square()
-      .div(sizeFloat)
-      .add(sizeFloat)
-      .sub(floatMatrix);
+    .square()
+    .div(sizeFloat)
+    .add(sizeFloat)
+    .sub(floatMatrix)
+    .log()
+    .square()
     let roundedMatrix = resultMatrix.round();
     let intMatrix = roundedMatrix.toInt();
 
@@ -255,18 +243,10 @@ class Gpupow {
   }
 
   hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(size: number): Buffer {
-    console.time("createMatrixBits");
     let matrix = this.createMatrixBits(size);
-    console.timeEnd("createMatrixBits");
-    console.time("squareMatrix");
     let squared = this.squareMatrix(matrix);
-    console.timeEnd("squareMatrix");
-    console.time("floatSquareDivMatrix");
     let floated = this.floatSquareDivMatrix(squared);
-    console.timeEnd("floatSquareDivMatrix");
-    console.time("reduceMatrixToHashSync");
     let res = this.reduceMatrixToHashSync(floated);
-    console.timeEnd("reduceMatrixToHashSync");
     return res;
   }
 
@@ -295,7 +275,7 @@ class Gpupow {
   }
 
   // seed -> hash -> bits -> matrix -> square -> float square -> reduce -> hash
-  float1289b(): Buffer {
+  floatrisky(): Buffer {
     return this.hashToMatrixToSquaredToFloatSquaredToReducedToHashSync(1289);
   }
 }
@@ -326,82 +306,118 @@ export default function Landing() {
 
   async function onProcessing() {
     console.log("begin");
-    // gpupow int1289
-    // {
-    //   let seed = Buffer.from("seed");
-    //   let gpupow = new Gpupow(seed, blake3Hash);
-    //   //console.log(tensor);
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   console.time("int1289");
-    //   gpupow.int1289();
-    //   console.timeEnd("int1289");
-    //   //console.log(res.toString("hex"));
-    // }
-    // // gpupow float1289
-    // {
-    //   let seed = Buffer.from("seed");
-    //   let gpupow = new Gpupow(seed, blake3Hash);
-    //   //console.log(tensor);
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   console.time("float1289");
-    //   gpupow.float1289();
-    //   console.timeEnd("float1289");
-    //   //console.log(res.toString("hex"));
-    // }
-    // gpupow float1289b
+    // gpupow floatrisky
     {
       let seed = Buffer.from("seed");
       let gpupow = new Gpupow(seed, blake3Hash);
       //console.log(tensor);
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
-      console.time("float1289b");
-      gpupow.float1289b();
-      console.timeEnd("float1289b");
+      console.time("floatrisky");
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      console.timeEnd("floatrisky");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow int1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      //console.log(tensor);
+      console.time("int1289");
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      console.timeEnd("int1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      //console.log(tensor);
+      console.time("float1289");
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      console.timeEnd("float1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow floatrisky
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      //console.log(tensor);
+      console.time("floatrisky");
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      gpupow.floatrisky();
+      console.timeEnd("floatrisky");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow int1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      //console.log(tensor);
+      console.time("int1289");
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      gpupow.int1289();
+      console.timeEnd("int1289");
+      //console.log(res.toString("hex"));
+    }
+    // gpupow float1289
+    {
+      let seed = Buffer.from("seed");
+      let gpupow = new Gpupow(seed, blake3Hash);
+      //console.log(tensor);
+      console.time("float1289");
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      gpupow.float1289();
+      console.timeEnd("float1289");
       //console.log(res.toString("hex"));
     }
     console.log("end");
