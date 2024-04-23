@@ -83,9 +83,7 @@ class Gpupow {
     return matrix.gather(indices.flatten().toInt());
   }
 
-  reduceMatrixBufferSync(
-    matrix: tf.Tensor,
-  ): Buffer {
+  reduceMatrixBufferSync(matrix: tf.Tensor): Buffer {
     // the reason for reducing with these four operations is as follows. first
     // of all, what i would like to do is to hash the output matrix and then
     // send that back to the CPU. unfortuantely, GPUs do not really have that,
@@ -132,9 +130,7 @@ class Gpupow {
     return reducedBuf;
   }
 
-  reduceMatrixToHashSync(
-    matrix: tf.Tensor,
-  ): Buffer {
+  reduceMatrixToHashSync(matrix: tf.Tensor): Buffer {
     let reducedXORBuf = this.reduceMatrixBufferSync(matrix);
     return this.blake3Hash(reducedXORBuf);
   }
@@ -143,12 +139,51 @@ class Gpupow {
     return tf.matMul(matrix, matrix);
   }
 
-  hashToMatrixToSquaredMatrixToHashSync(
-    size: number,
-  ): Buffer {
+  applyFloatingPointOp(matrix: tf.Tensor): tf.Tensor {
+    // Set the precision of floating point operations to 32-bit
+    tf.ENV.set("WEBGL_PACK", false);
+    tf.ENV.set("WEBGL_RENDER_FLOAT32_ENABLED", true);
+
+    // Check if 32-bit floating point textures are supported
+    if (!tf.ENV.getBool("WEBGL_RENDER_FLOAT32_ENABLED")) {
+      throw new Error(
+        "This function requires 32-bit floating point textures, which are not supported on this system.",
+      );
+    }
+
+    // Convert the integer matrix to a floating point matrix
+    let floatMatrix = matrix.toFloat();
+
+    let sizeFloat = tf.scalar(floatMatrix.shape[0]);
+
+    // Apply an element-wise float point operation to the matrix that uses all
+    // common floating point operations.
+    let resultMatrix = floatMatrix
+      .square()
+      .div(sizeFloat)
+      .add(sizeFloat)
+      .sub(floatMatrix);
+
+    // Round the result to a fixed number of decimal places
+    let roundedMatrix = resultMatrix.round();
+
+    // Convert the result back to an integer matrix
+    let intMatrix = roundedMatrix.toInt();
+
+    return intMatrix;
+  }
+
+  hashToMatrixToSquaredToReducedToHashSync(size: number): Buffer {
     let matrix = this.createMatrixBits(size);
     let squared = this.squareMatrix(matrix);
     return this.reduceMatrixToHashSync(squared);
+  }
+
+  hashToMatrixToSquaredToFloatedToReducedToHashSync(size: number): Buffer {
+    let matrix = this.createMatrixBits(size);
+    let squared = this.squareMatrix(matrix);
+    let floated = this.applyFloatingPointOp(squared);
+    return this.reduceMatrixToHashSync(floated);
   }
 
   // seed -> hash -> bits -> matrix -> square -> reduce -> hash
@@ -163,7 +198,11 @@ class Gpupow {
   // -> hashBitMatSquareReduceHash1289
   // -> hbmsrh1289
   hbmsrh1289(): Buffer {
-    return this.hashToMatrixToSquaredMatrixToHashSync(1289);
+    return this.hashToMatrixToSquaredToReducedToHashSync(1289);
+  }
+
+  hbmsfrh1289(): Buffer {
+    return this.hashToMatrixToSquaredToFloatedToReducedToHashSync(1289);
   }
 }
 
@@ -193,17 +232,30 @@ export default function Landing() {
         return Buffer.from(hasher.digest());
       };
       console.log("begin");
-      // gpupow
+      // gpupow hbmsrh1289
       {
         let seed = Buffer.from("seed");
         let gpupow = new Gpupow(seed, browserBlake3Hash);
         console.time("create tensor bits");
         let tensor = gpupow.createTensorBits();
         console.timeEnd("create tensor bits");
-        console.log(tensor);
-        console.time("hashMatSquareHash1289");
+        //console.log(tensor);
+        console.time("hbmsrh1289");
         let res = gpupow.hbmsrh1289();
-        console.timeEnd("hashMatSquareHash1289");
+        console.timeEnd("hbmsrh1289");
+        console.log(res.toString("hex"));
+      }
+      // gpupow hbmsfrh1289
+      {
+        let seed = Buffer.from("seed");
+        let gpupow = new Gpupow(seed, browserBlake3Hash);
+        console.time("create tensor bits");
+        let tensor = gpupow.createTensorBits();
+        console.timeEnd("create tensor bits");
+        //console.log(tensor);
+        console.time("hbmsfrh1289");
+        let res = gpupow.hbmsfrh1289();
+        console.timeEnd("hbmsfrh1289");
         console.log(res.toString("hex"));
       }
     });
