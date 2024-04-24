@@ -34,7 +34,8 @@ function Slider({
   onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
-  onFinished = async () => {},
+  onFinishedSuccess = async () => {},
+  onFinishedError = async () => {},
 }: {
   initialText: string;
   computingText: string;
@@ -43,7 +44,8 @@ function Slider({
   onComputing?: () => Promise<void>;
   onSuccess?: () => Promise<void>;
   onError?: () => Promise<void>;
-  onFinished?: () => Promise<void>;
+  onFinishedSuccess?: () => Promise<void>;
+  onFinishedError?: () => Promise<void>;
 }) {
   const sliderStates = [
     "initial",
@@ -69,7 +71,7 @@ function Slider({
         await onSuccess();
         setTimeout(async () => {
           setSliderState("finished-success");
-          await onFinished();
+          await onFinishedSuccess();
         }, 4000);
       })
       .catch(async () => {
@@ -77,7 +79,7 @@ function Slider({
         await onError();
         setTimeout(async () => {
           setSliderState("finished-error");
-          await onFinished();
+          await onFinishedError();
         }, 4000);
       });
   }
@@ -452,6 +454,8 @@ export default function Button({
   onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
+  onFinishedSuccess = async () => {},
+  onFinishedError = async () => {},
 }: {
   initialText?: string;
   computingText?: string;
@@ -460,6 +464,8 @@ export default function Button({
   onComputing?: () => Promise<void>;
   onSuccess?: () => Promise<void>;
   onError?: () => Promise<void>;
+  onFinishedSuccess?: () => Promise<void>;
+  onFinishedError?: () => Promise<void>;
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
@@ -480,6 +486,8 @@ export default function Button({
                     onComputing={onComputing}
                     onSuccess={onSuccess}
                     onError={onError}
+                    onFinishedSuccess={onFinishedSuccess}
+                    onFinishedError={onFinishedError}
                   />
                 </div>
                 <div className="h-full flex-shrink-0">
