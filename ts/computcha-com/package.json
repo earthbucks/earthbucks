@@ -39,6 +39,7 @@
     "mysql2": "^3.9.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
@@ -60,7 +61,7 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2",
-    "vite": "^5.1.6",
+    "vite": "^5.2.10",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {

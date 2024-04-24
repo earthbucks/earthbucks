@@ -4,7 +4,7 @@ type BufferFunction = (input: Buffer) => Buffer;
 
 let myBlake3Hash: BufferFunction;
 
-// running in a browser environment
+// // running in a browser environment
 import("blake3/browser").then(async ({ createHash, hash }) => {
   let browserBlake3Hash = (data: Buffer) => {
     const hasher = createHash();
@@ -23,6 +23,7 @@ self.onmessage = async (event) => {
       console.log("Worker received hash request");
       let { buf } = event.data.buf;
       let resHash = myBlake3Hash(buf);
+      // let resHash = buf;
       console.log("worker: " + resHash.toString("hex"));
       self.postMessage({ type: "result", data: resHash });
       break;
