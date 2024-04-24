@@ -73,15 +73,38 @@ class Gpupow {
     return seed.reshape([1289, 1289]);
   }
 
+  // matrixCalculation(matrix: tf.Tensor): tf.Tensor {
+  //   matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
+  //   matrix = matrix.toFloat();
+  //   matrix = matrix.sub(matrix.min());
+  //   matrix = matrix.div(matrix.max());
+  //   matrix = matrix.mul(1289);
+  //   matrix = matrix.round();
+  //   matrix = matrix.toInt();
+  //   return matrix;
+  // }
+
   matrixCalculation(matrix: tf.Tensor): tf.Tensor {
-    matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
-    matrix = matrix.toFloat();
-    matrix = matrix.sub(matrix.min());
-    matrix = matrix.div(matrix.max());
-    matrix = matrix.mul(1289);
-    matrix = matrix.round();
-    matrix = matrix.toInt();
-    return matrix;
+    return tf.tidy(() => {
+      const matrix1 = tf.matMul(tf.matMul(matrix, matrix), matrix);
+      const matrix2 = matrix1.toFloat();
+      matrix1.dispose();
+      const min = matrix2.min();
+      const matrix3 = matrix2.sub(min);
+      min.dispose();
+      matrix2.dispose();
+      const max = matrix3.max();
+      const matrix4 = matrix3.div(max);
+      max.dispose();
+      matrix3.dispose();
+      const matrix5 = matrix4.mul(1289);
+      matrix4.dispose();
+      const matrix6 = matrix5.round();
+      matrix5.dispose();
+      const matrix7 = matrix6.toInt();
+      matrix6.dispose();
+      return matrix7;
+    });
   }
 
   reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
