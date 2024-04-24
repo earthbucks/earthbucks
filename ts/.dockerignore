@@ -1,5 +1,9 @@
 node_modules
+**/node_modules
 
 /.cache
+**/.cache
 /build
+**/build
 .env
+**/.env
