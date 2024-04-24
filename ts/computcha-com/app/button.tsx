@@ -34,14 +34,16 @@ function Slider({
   onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
+  onFinished = async () => {},
 }: {
   initialText: string;
   computingText: string;
   successText: string;
   errorText: string;
-  onComputing: () => Promise<void>;
-  onSuccess: () => Promise<void>;
-  onError: () => Promise<void>;
+  onComputing?: () => Promise<void>;
+  onSuccess?: () => Promise<void>;
+  onError?: () => Promise<void>;
+  onFinished?: () => Promise<void>;
 }) {
   const sliderStates = [
     "initial",
@@ -49,6 +51,8 @@ function Slider({
     "computing",
     "success",
     "error",
+    "finished-error",
+    "finished-success",
   ];
 
   const [sliderState, setSliderState] = useState(sliderStates[0]);
@@ -60,11 +64,21 @@ function Slider({
     let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
 
     Promise.all([computingPromise, delayPromise])
-      .then(() => {
+      .then(async () => {
         setSliderState("success");
+        await onSuccess();
+        setTimeout(async () => {
+          setSliderState("finished-success");
+          await onFinished();
+        }, 4000);
       })
-      .catch(() => {
+      .catch(async () => {
         setSliderState("error");
+        await onError();
+        setTimeout(async () => {
+          setSliderState("finished-error");
+          await onFinished();
+        }, 4000);
       });
   }
 
@@ -257,6 +271,21 @@ function Slider({
             </div>
             <div
               className={classNames(
+                sliderState === "finished-success"
+                  ? "absolute top-0 flex h-[36px] w-[36px] items-center"
+                  : "hidden",
+              )}
+            >
+              <div className="relative h-[36px] w-[36px]">
+                <img
+                  src="/pink-heart-128.png"
+                  alt=""
+                  className="h-[36px] w-[36px]"
+                />
+              </div>
+            </div>
+            <div
+              className={classNames(
                 sliderState === "error"
                   ? "absolute top-0 flex h-[36px] w-[36px] items-center"
                   : "hidden",
@@ -272,6 +301,21 @@ function Slider({
                   src="/error-2-96.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
+                />
+              </div>
+            </div>
+            <div
+              className={classNames(
+                sliderState === "finished-error"
+                  ? "absolute top-0 flex h-[36px] w-[36px] items-center"
+                  : "hidden",
+              )}
+            >
+              <div className="relative h-[36px] w-[36px]">
+                <img
+                  src="/error-2-96.png"
+                  alt=""
+                  className="h-[36px] w-[36px]"
                 />
               </div>
             </div>
@@ -313,10 +357,33 @@ function Slider({
                 {successText}
               </span>
             </div>
+
+            <div
+              className={classNames(
+                sliderState === "finished-success"
+                  ? "flex items-center"
+                  : "hidden",
+              )}
+            >
+              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+                {successText}
+              </span>
+            </div>
             <div
               className={classNames(
                 sliderState === "error"
                   ? "flex animate-pulse items-center"
+                  : "hidden",
+              )}
+            >
+              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+                {errorText}
+              </span>
+            </div>
+            <div
+              className={classNames(
+                sliderState === "finished-error"
+                  ? "flex items-center"
                   : "hidden",
               )}
             >
@@ -342,8 +409,11 @@ function Slider({
                     : undefined,
               }}
             >
-              <img src="/compute-circle-128.png" alt="" className="w-[40px] h-20px]" />
-
+              <img
+                src="/compute-circle-128.png"
+                alt=""
+                className="h-20px] w-[40px]"
+              />
             </div>
             <div
               className={classNames(
@@ -391,7 +461,6 @@ export default function Button({
   onSuccess?: () => Promise<void>;
   onError?: () => Promise<void>;
 }) {
-
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
 

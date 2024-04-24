@@ -16,7 +16,7 @@ export default function Index() {
             <img
               src="/computcha-bottlecap.png"
               alt=""
-              className="mx-auto mb-4 block w-[100px] aspect-square"
+              className="mx-auto mb-4 block aspect-square w-[100px]"
             />
             <div className="hidden dark:block">
               <img
