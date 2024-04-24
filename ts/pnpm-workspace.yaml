@@ -1,6 +1,6 @@
 packages:
-  - 'earthbucks-com'
   - 'computcha-com'
+  - 'earthbucks-com'
   - 'earthbucks-db'
   - 'earthbucks-lib'
   - 'earthbucks-tf'

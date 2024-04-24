@@ -75,7 +75,8 @@ class Gpupow {
     matrix = matrix.toFloat();
     matrix = matrix.sub(matrix.min());
     matrix = matrix.div(matrix.max());
-    matrix = matrix.mul(1289 * 1289);
+    matrix = matrix.exp();
+    matrix = matrix.mul(1289);
     matrix = matrix.round();
     matrix = matrix.toInt();
     return matrix;
