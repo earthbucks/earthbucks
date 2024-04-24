@@ -36,7 +36,9 @@ export default function Index() {
             <div className="mt-4 text-center text-black dark:text-white">
               Proof-of-GPU in a web browser.
               <br />
-              <Link className="underline" to="/demo">Try the demo.</Link>
+              <Link className="underline" to="/demo">
+                Try the demo.
+              </Link>
             </div>
           </div>
         </div>

@@ -1,1 +1,1 @@
-declare module 'rollup-plugin-off-main-thread';
+declare module "rollup-plugin-off-main-thread";

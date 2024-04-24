@@ -15,8 +15,6 @@ myBlake3Hash = browserBlake3Hash;
 
 self.onmessage = async (event) => {
   switch (event.data.type) {
-    case "init":
-      break;
     case "hash":
       let { buf } = event.data;
       let resHash = myBlake3Hash(buf);
