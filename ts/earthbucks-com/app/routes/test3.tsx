@@ -154,6 +154,7 @@ export const meta: MetaFunction = () => {
 
 export default function Landing() {
   let blake3Hash: BufferFunction;
+  let worker: Worker;
   if (typeof document === "undefined") {
     // running in a server environment
     blake3Hash = nodeBlake3Hash;
@@ -167,10 +168,20 @@ export default function Landing() {
       };
       blake3Hash = browserBlake3Hash;
     });
+    worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {type: "module"});
   }
 
   async function onProcessing() {
     console.log("begin");
+    // hash-browser
+    {
+      let buf = Buffer.from("hello");
+      worker.postMessage({ type: "hash", buf });
+      worker.onmessage = (event) => {
+        let buf = Buffer.from(event.data.data);
+        console.log('client: ' + buf.toString('hex'));
+      };
+    }
     // gpupow matrixCalculationFloat
     {
       let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
