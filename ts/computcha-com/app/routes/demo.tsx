@@ -195,15 +195,6 @@ export default function Landing() {
 
   async function onComputing() {
     console.log("begin");
-    // hash-browser
-    {
-      let buf = Buffer.from("hello");
-      worker.postMessage({ type: "hash", buf });
-      worker.onmessage = (event) => {
-        let buf = Buffer.from(event.data.data);
-        console.log("client: " + buf.toString("hex"));
-      };
-    }
     // gpupow matrixCalculationFloat
     {
       let previousBlockIds = [
@@ -218,26 +209,7 @@ export default function Landing() {
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
         matrix = gpupow.matrixCalculationFloat(matrix);
-        let reducedBuf = await gpupow.matrixReduce(matrix);
-        let matrixHashBuf = await gpupow.matrixHash(matrix);
-        console.log(matrixHashBuf.toString("hex"));
-      }
-    }
-    // gpupow matrixCalculationInt
-    {
-      let previousBlockIds = [
-        await asyncBlake3(Buffer.from("previousBlockId")),
-      ];
-      let workingBlockId = await asyncBlake3(Buffer.from("workingBlockId"));
-      let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
-      for (let i = 0; i < 1; i++) {
-        let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
-        gpupow.updateWorkingBlockId(workingBlockId);
-        let seed = gpupow.tensorSeed();
-        let seed1289 = gpupow.tensorSeed1289();
-        let matrix = gpupow.seedToMatrix(seed1289);
-        matrix = gpupow.matrixCalculationInt(matrix);
-        let reducedBuf = await gpupow.matrixReduce(matrix);
+        // let reducedBuf = await gpupow.matrixReduce(matrix);
         let matrixHashBuf = await gpupow.matrixHash(matrix);
         console.log(matrixHashBuf.toString("hex"));
       }
