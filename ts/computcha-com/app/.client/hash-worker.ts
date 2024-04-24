@@ -4,7 +4,6 @@ type BufferFunction = (input: Buffer) => Buffer;
 
 let myBlake3Hash: BufferFunction;
 
-// // running in a browser environment
 import("blake3/browser").then(async ({ createHash, hash }) => {
   let browserBlake3Hash = (data: Buffer) => {
     const hasher = createHash();

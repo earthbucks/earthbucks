@@ -70,28 +70,12 @@ class Gpupow {
     return seed.reshape([1289, 1289]);
   }
 
-  matrixCalculationFloat(matrix: tf.Tensor): tf.Tensor {
+  matrixCalculation(matrix: tf.Tensor): tf.Tensor {
     matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
     matrix = matrix.toFloat();
     matrix = matrix.sub(matrix.min());
     matrix = matrix.div(matrix.max());
-    matrix = matrix.exp();
     matrix = matrix.mul(1289);
-    matrix = matrix.round();
-    matrix = matrix.toInt();
-    return matrix;
-  }
-
-  matrixCalculationInt(matrix: tf.Tensor): tf.Tensor {
-    matrix = tf.matMul(tf.matMul(matrix, matrix), matrix);
-    const minVal = matrix.min();
-    const maxVal = matrix.max();
-    matrix = matrix.sub(minVal);
-    if (maxVal.dataSync()[0] !== minVal.dataSync()[0]) {
-      // Avoid division by zero
-      matrix = matrix.div(maxVal.sub(minVal));
-    }
-    matrix = matrix.mul(1289 * 1289);
     matrix = matrix.round();
     matrix = matrix.toInt();
     return matrix;
@@ -180,6 +164,7 @@ export default function Landing() {
     // worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
     //   type: "module",
     // });
+
     // async function hashInWorker(buf: Buffer): Promise<Buffer> {
     //   return new Promise((resolve) => {
     //     worker.postMessage({ type: "hash", buf });
@@ -210,7 +195,7 @@ export default function Landing() {
         let seed = gpupow.tensorSeed();
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
-        matrix = gpupow.matrixCalculationFloat(matrix);
+        matrix = gpupow.matrixCalculation(matrix);
         // let reducedBuf = await gpupow.matrixReduce(matrix);
         let matrixHashBuf = await gpupow.matrixHash(matrix);
         console.log(matrixHashBuf.toString("hex"));
