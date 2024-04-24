@@ -178,7 +178,7 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   let blake3Hash: BufferFunction;
   let asyncBlake3: AsyncBufferFunction;
-  // let worker: Worker;
+  let worker: Worker;
   if (typeof document === "undefined") {
     // running in a server environment
 
@@ -197,23 +197,23 @@ export default function Landing() {
       blake3Hash = browserBlake3Hash;
     });
 
-    // worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
-    //   type: "module",
-    // });
+    worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
+      type: "module",
+    });
 
-    // async function hashInWorker(buf: Buffer): Promise<Buffer> {
-    //   return new Promise((resolve) => {
-    //     worker.postMessage({ type: "hash", buf });
-    //     worker.onmessage = (event) => {
-    //       let buf = Buffer.from(event.data.data);
-    //       resolve(buf);
-    //     };
-    //   });
-    // }
+    async function hashInWorker(buf: Buffer): Promise<Buffer> {
+      return new Promise((resolve) => {
+        worker.postMessage({ type: "hash", buf });
+        worker.onmessage = (event) => {
+          let buf = Buffer.from(event.data.data);
+          resolve(buf);
+        };
+      });
+    }
 
-    // asyncBlake3 = async (data: Buffer) => {
-    //   return hashInWorker(data);
-    // };
+    asyncBlake3 = async (data: Buffer) => {
+      return hashInWorker(data);
+    };
   }
 
   async function onComputing() {
@@ -236,11 +236,11 @@ export default function Landing() {
         let matrix = gpupow.seedToMatrix(seed1289);
         matrix = gpupow.matrixCalculation(matrix);
         let reducedBufs = await gpupow.matrixReduce(matrix);
-        // gpupow.reducedBufsHashAsync(reducedBufs).then((matrixHashBuf) => {
-        //   console.log(matrixHashBuf.toString("hex"));
-        // });
-        let matrixHashBuf = gpupow.reducedBufsHash(reducedBufs);
-        console.log(matrixHashBuf.toString("hex"));
+        gpupow.reducedBufsHashAsync(reducedBufs).then((matrixHashBuf) => {
+          console.log(matrixHashBuf.toString("hex"));
+        });
+        // let matrixHashBuf = gpupow.reducedBufsHash(reducedBufs)
+        // console.log(matrixHashBuf.toString("hex"))
       }
       console.timeEnd("gpupow matrixCalculationFloat");
     }
