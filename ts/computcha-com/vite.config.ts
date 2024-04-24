@@ -13,13 +13,6 @@ export default defineConfig({
     plugins: () => [
       wasm(),
       topLevelAwait()
-    ]
+    ],
   },
-  build: {
-    rollupOptions: {
-      output: {
-        format: "esm"
-      }
-    }
-  }
 });

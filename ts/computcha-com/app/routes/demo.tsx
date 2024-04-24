@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
-import { createHash, hash as blake3Hash } from "blake3";
+import { createHash, hash as blake3Hash, hash } from "blake3";
 import { Buffer } from "buffer";
 import * as tf from "@tensorflow/tfjs";
 
@@ -19,11 +19,13 @@ class Gpupow {
   workingTensor: tf.Tensor;
   previousTensor: tf.Tensor;
   blake3Hash: BufferFunction;
+  asyncBlake3: AsyncBufferFunction;
 
   constructor(
     workingBlockId: Buffer,
     previousBlockIds: Buffer[],
     blake3Hash: BufferFunction,
+    asyncBlake3: AsyncBufferFunction,
   ) {
     this.workingBlockId = workingBlockId;
     this.previousBlockIds = previousBlockIds;
@@ -32,6 +34,7 @@ class Gpupow {
       Buffer.concat(previousBlockIds),
     );
     this.blake3Hash = blake3Hash;
+    this.asyncBlake3 = asyncBlake3;
   }
 
   updateWorkingBlockId(workingBlockId: Buffer) {
@@ -121,14 +124,24 @@ class Gpupow {
     return reducedBufs;
   }
 
-  async matrixHash(matrix: tf.Tensor): Promise<Buffer> {
-    let reducedBufs = await this.matrixReduce(matrix);
+  reducedBufsHash(reducedBufs: [Buffer, Buffer, Buffer, Buffer]): Buffer {
     let hash0 = this.blake3Hash(reducedBufs[0]);
     let hash1 = this.blake3Hash(reducedBufs[1]);
     let hash2 = this.blake3Hash(reducedBufs[2]);
     let hash3 = this.blake3Hash(reducedBufs[3]);
-    let xorHash = Buffer.concat([hash0, hash1, hash2, hash3]);
-    return this.blake3Hash(xorHash);
+    let concatted = Buffer.concat([hash0, hash1, hash2, hash3]);
+    return this.blake3Hash(concatted);
+  }
+
+  async reducedBufsHashAsync(
+    reducedBufs: [Buffer, Buffer, Buffer, Buffer],
+  ): Promise<Buffer> {
+    let hash0 = await this.asyncBlake3(reducedBufs[0]);
+    let hash1 = await this.asyncBlake3(reducedBufs[1]);
+    let hash2 = await this.asyncBlake3(reducedBufs[2]);
+    let hash3 = await this.asyncBlake3(reducedBufs[3]);
+    let concatted = Buffer.concat([hash0, hash1, hash2, hash3]);
+    return this.asyncBlake3(concatted);
   }
 }
 
@@ -141,15 +154,15 @@ export const meta: MetaFunction = () => {
 
 export default function Landing() {
   let blake3Hash: BufferFunction;
-  // let asyncBlake3: AsyncBufferFunction;
+  let asyncBlake3: AsyncBufferFunction;
   let worker: Worker;
   if (typeof document === "undefined") {
     // running in a server environment
 
     blake3Hash = nodeBlake3Hash;
-    // asyncBlake3 = async (data: Buffer) => {
-    //   return blake3Hash(data);
-    // };
+    asyncBlake3 = async (data: Buffer) => {
+      return blake3Hash(data);
+    };
   } else {
     // running in a browser environment
     import("blake3/browser").then(async ({ createHash, hash }) => {
@@ -161,45 +174,63 @@ export default function Landing() {
       blake3Hash = browserBlake3Hash;
     });
 
-    // worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
-    //   type: "module",
-    // });
+    worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
+      type: "module",
+    });
 
-    // async function hashInWorker(buf: Buffer): Promise<Buffer> {
-    //   return new Promise((resolve) => {
-    //     worker.postMessage({ type: "hash", buf });
-    //     worker.onmessage = (event) => {
-    //       let buf = Buffer.from(event.data.data);
-    //       resolve(buf);
-    //     };
-    //   });
-    // }
+    async function hashInWorker(buf: Buffer): Promise<Buffer> {
+      return new Promise((resolve) => {
+        worker.postMessage({ type: "hash", buf });
+        worker.onmessage = (event) => {
+          let buf = Buffer.from(event.data.data);
+          // console.log('resolving with: ' + buf.toString("hex"))
+          resolve(buf);
+        };
+      });
+    }
 
-    // asyncBlake3 = async (data: Buffer) => {
-    //   return hashInWorker(data);
-    // };
+    asyncBlake3 = async (data: Buffer) => {
+      return hashInWorker(data);
+    };
   }
 
   async function onComputing() {
     console.log("begin");
     // gpupow matrixCalculationFloat
     {
-      let previousBlockIds = [
-        blake3Hash(Buffer.from("previousBlockId")),
-      ];
-      let workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-      let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
+      console.time("gpupow matrixCalculationFloat");
       for (let i = 0; i < 100; i++) {
+        let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
         let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
-        gpupow.updateWorkingBlockId(workingBlockId);
+        let gpupow = new Gpupow(
+          workingBlockId,
+          previousBlockIds,
+          blake3Hash,
+          asyncBlake3,
+        );
         let seed = gpupow.tensorSeed();
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
         matrix = gpupow.matrixCalculation(matrix);
-        // let reducedBuf = await gpupow.matrixReduce(matrix);
-        let matrixHashBuf = await gpupow.matrixHash(matrix);
-        console.log(matrixHashBuf.toString("hex"));
+
+        // version 1:
+        // let reducedBufs = await gpupow.matrixReduce(matrix);
+        // let matrixHashBuf = await gpupow.reducedBufsHashAsync(reducedBufs);
+        // console.log(matrixHashBuf.toString("hex"));
+
+        // version 2 (broken):
+        // gpupow.matrixReduce(matrix).then(async (reducedBufs) => {
+        //   let matrixHashBuf = await gpupow.reducedBufsHashAsync(reducedBufs);
+        //   console.log(matrixHashBuf.toString("hex"));
+        // });
+
+        // version 3:
+        let reducedBufs = await gpupow.matrixReduce(matrix);
+        gpupow.reducedBufsHashAsync(reducedBufs).then((matrixHashBuf) => {
+          console.log(matrixHashBuf.toString("hex"));
+        });
       }
+      console.timeEnd("gpupow matrixCalculationFloat");
     }
     console.log("end");
   }
