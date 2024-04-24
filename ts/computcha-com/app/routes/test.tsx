@@ -193,7 +193,7 @@ export default function Landing() {
     };
   }
 
-  async function onProcessing() {
+  async function onComputing() {
     console.log("begin");
     // hash-browser
     {
@@ -276,7 +276,7 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onProcessing={onProcessing} />
+          <Button initialText="Compute" onComputing={onComputing} />
         </div>
       </div>
     </div>

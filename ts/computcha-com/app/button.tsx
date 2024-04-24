@@ -28,7 +28,7 @@ function Spinner() {
 
 function Slider({
   initialText,
-  processingText,
+  computingText,
   successText,
   errorText,
   onComputing = async () => {},
@@ -36,7 +36,7 @@ function Slider({
   onError = async () => {},
 }: {
   initialText: string;
-  processingText: string;
+  computingText: string;
   successText: string;
   errorText: string;
   onComputing: () => Promise<void>;
@@ -46,7 +46,7 @@ function Slider({
   const sliderStates = [
     "initial",
     "dragging",
-    "processing",
+    "computing",
     "success",
     "error",
   ];
@@ -56,10 +56,10 @@ function Slider({
   const [buttonX, setButtonX] = useState(0); // Track button's X position
 
   async function handleOnComputing() {
-    let processingPromise = onComputing();
+    let computingPromise = onComputing();
     let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
 
-    Promise.all([processingPromise, delayPromise])
+    Promise.all([computingPromise, delayPromise])
       .then(() => {
         setSliderState("success");
       })
@@ -93,7 +93,7 @@ function Slider({
   const handleMouseUp = () => {
     // Snap to the center of the dotted circle or return to start
     if (buttonX >= maxButtonX) {
-      setSliderState("processing");
+      setSliderState("computing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
       handleOnComputing();
@@ -135,7 +135,7 @@ function Slider({
     e.stopPropagation();
     // Snap to the center of the dotted circle or return to start
     if (buttonX >= maxButtonX) {
-      setSliderState("processing");
+      setSliderState("computing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
       handleOnComputing();
@@ -228,7 +228,7 @@ function Slider({
             </div>
             <div
               className={classNames(
-                sliderState === "processing"
+                sliderState === "computing"
                   ? "absolute top-0 block h-[36px] w-[36px]"
                   : "hidden",
               )}
@@ -293,13 +293,13 @@ function Slider({
 
             <div
               className={classNames(
-                sliderState === "processing"
+                sliderState === "computing"
                   ? "flex animate-pulse items-center"
                   : "hidden",
               )}
             >
               <span className="ml-[40px] align-middle text-sm font-semibold text-white">
-                {processingText}
+                {computingText}
               </span>
             </div>
             <div
@@ -364,7 +364,7 @@ function Slider({
               alt=""
               className={classNames(
                 "relative z-[35] h-full",
-                sliderState === "processing" ? "block animate-ping" : "hidden",
+                sliderState === "computing" ? "block animate-ping" : "hidden",
               )}
             />
           </div>
@@ -376,15 +376,15 @@ function Slider({
 
 export default function Button({
   initialText = "Swipe",
-  processingText = "Computing",
-  successText = "Success!",
+  computingText = "Computing",
+  successText = "Computed!",
   errorText = "Error!",
   onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
 }: {
   initialText?: string;
-  processingText?: string;
+  computingText?: string;
   successText?: string;
   errorText?: string;
   onComputing?: () => Promise<void>;
@@ -392,8 +392,8 @@ export default function Button({
   onError?: () => Promise<void>;
 }) {
 
-  processingText = processingText.replaceAll(".", "");
-  processingText = processingText + "...";
+  computingText = computingText.replaceAll(".", "");
+  computingText = computingText + "...";
 
   return (
     <div className="flex h-[60px] w-[320px]">
@@ -405,7 +405,7 @@ export default function Button({
                 <div className="h-full flex-grow">
                   <Slider
                     initialText={initialText}
-                    processingText={processingText}
+                    computingText={computingText}
                     successText={successText}
                     errorText={errorText}
                     onComputing={onComputing}
