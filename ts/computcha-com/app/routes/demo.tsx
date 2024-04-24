@@ -199,15 +199,17 @@ export default function Landing() {
     // gpupow matrixCalculationFloat
     {
       console.time("gpupow matrixCalculationFloat");
-      for (let i = 0; i < 100; i++) {
         let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
-        let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
+        let workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
         let gpupow = new Gpupow(
           workingBlockId,
           previousBlockIds,
           blake3Hash,
           asyncBlake3,
         );
+      for (let i = 0; i < 100; i++) {
+        let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
+        gpupow.updateWorkingBlockId(workingBlockId);
         let seed = gpupow.tensorSeed();
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
