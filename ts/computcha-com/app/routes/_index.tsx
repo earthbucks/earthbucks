@@ -14,9 +14,9 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/computcha-bottlecap.png"
+              src="/computcha-logo.png"
               alt=""
-              className="mx-auto mb-4 block aspect-square w-[100px]"
+              className="mx-auto mb-4 block aspect-square w-[120px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]"
             />
             <div className="hidden dark:block">
               <img
@@ -32,41 +32,8 @@ export default function Index() {
                 className="mx-auto block w-[300px]"
               />
             </div>
-            <div className="mb-4 text-center text-black dark:text-white">
-              Please prove compute to register or log in.
-              <br />
-              <br />
-              <a
-                href="https://t.me/+e-PoBNNgdDU3MDUx"
-                target="_blank"
-                className="underline"
-              >
-                Telegram
-              </a>{" "}
-              &middot;{" "}
-              <a
-                href="https://discord.gg/dZfyrFk6uh"
-                target="_blank"
-                className="underline"
-              >
-                Discord
-              </a>{" "}
-              &middot;{" "}
-              <a
-                href="https://x.com/earthbucks_com"
-                target="_blank"
-                className="underline"
-              >
-                X (Twitter)
-              </a>{" "}
-              &middot;{" "}
-              <a
-                href="https://github.com/earthbucks/earthbucks"
-                target="_blank"
-                className="underline"
-              >
-                GitHub
-              </a>
+            <div className="mt-4 text-center text-black dark:text-white">
+              Proof-of-GPU-compute in a web browser.
             </div>
           </div>
         </div>
