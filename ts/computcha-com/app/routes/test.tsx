@@ -250,9 +250,9 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/computcha-bottlecap.png"
+              src="/computcha-logo.png"
               alt=""
-              className="mx-auto mb-4 block aspect-square w-[100px]"
+              className="mx-auto mb-4 block aspect-square w-[120px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]"
             />
             <div className="hidden dark:block">
               <img
