@@ -31,7 +31,7 @@ function Slider({
   processingText,
   successText,
   errorText,
-  onProcessing = async () => {},
+  onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
 }: {
@@ -39,7 +39,7 @@ function Slider({
   processingText: string;
   successText: string;
   errorText: string;
-  onProcessing: () => Promise<void>;
+  onComputing: () => Promise<void>;
   onSuccess: () => Promise<void>;
   onError: () => Promise<void>;
 }) {
@@ -55,8 +55,8 @@ function Slider({
   const [startX, setStartX] = useState(0);
   const [buttonX, setButtonX] = useState(0); // Track button's X position
 
-  async function handleOnProcessing() {
-    let processingPromise = onProcessing();
+  async function handleOnComputing() {
+    let processingPromise = onComputing();
     let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
 
     Promise.all([processingPromise, delayPromise])
@@ -96,7 +96,7 @@ function Slider({
       setSliderState("processing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
-      handleOnProcessing();
+      handleOnComputing();
       // setTimeout(() => {
       //   setSliderState("success");
       // }, 2000);
@@ -138,7 +138,7 @@ function Slider({
       setSliderState("processing");
       setButtonX(maxButtonX); // Adjust this value to be the center of the dotted circle
 
-      handleOnProcessing();
+      handleOnComputing();
       // setTimeout(() => {
       //   setSliderState("success");
       // }, 2000);
@@ -376,10 +376,10 @@ function Slider({
 
 export default function Button({
   initialText = "Swipe",
-  processingText = "Processing",
+  processingText = "Computing",
   successText = "Success!",
   errorText = "Error!",
-  onProcessing = async () => {},
+  onComputing = async () => {},
   onSuccess = async () => {},
   onError = async () => {},
 }: {
@@ -387,7 +387,7 @@ export default function Button({
   processingText?: string;
   successText?: string;
   errorText?: string;
-  onProcessing?: () => Promise<void>;
+  onComputing?: () => Promise<void>;
   onSuccess?: () => Promise<void>;
   onError?: () => Promise<void>;
 }) {
@@ -408,7 +408,7 @@ export default function Button({
                     processingText={processingText}
                     successText={successText}
                     errorText={errorText}
-                    onProcessing={onProcessing}
+                    onComputing={onComputing}
                     onSuccess={onSuccess}
                     onError={onError}
                   />
