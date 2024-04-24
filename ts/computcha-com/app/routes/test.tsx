@@ -211,7 +211,7 @@ export default function Landing() {
       ];
       let workingBlockId = await asyncBlake3(Buffer.from("workingBlockId"));
       let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 100; i++) {
         let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
         gpupow.updateWorkingBlockId(workingBlockId);
         let seed = gpupow.tensorSeed();
@@ -269,7 +269,9 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Please compute to register or log in.
+              EarthBucks proof-of-GPU demonstration.
+              <br />
+              Watch your browser console.
             </div>
           </div>
         </div>
