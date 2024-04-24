@@ -86,14 +86,15 @@ class Gpupow {
     const minVal = matrix.min();
     const maxVal = matrix.max();
     matrix = matrix.sub(minVal);
-    if (maxVal.dataSync()[0] !== minVal.dataSync()[0]) { // Avoid division by zero
-        matrix = matrix.div(maxVal.sub(minVal));
+    if (maxVal.dataSync()[0] !== minVal.dataSync()[0]) {
+      // Avoid division by zero
+      matrix = matrix.div(maxVal.sub(minVal));
     }
     matrix = matrix.mul(1289 * 1289);
     matrix = matrix.round();
     matrix = matrix.toInt();
     return matrix;
-}
+  }
 
   reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
     return matrix.sum(1);
@@ -162,7 +163,7 @@ export default function Landing() {
     blake3Hash = nodeBlake3Hash;
     asyncBlake3 = async (data: Buffer) => {
       return blake3Hash(data);
-    }
+    };
   } else {
     // running in a browser environment
     import("blake3/browser").then(async ({ createHash, hash }) => {
@@ -174,7 +175,9 @@ export default function Landing() {
       blake3Hash = browserBlake3Hash;
     });
 
-    worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {type: "module"});
+    worker = new Worker(new URL("../.client/hash-worker.ts", import.meta.url), {
+      type: "module",
+    });
     async function hashInWorker(buf: Buffer): Promise<Buffer> {
       return new Promise((resolve) => {
         worker.postMessage({ type: "hash", buf });
@@ -187,7 +190,7 @@ export default function Landing() {
 
     asyncBlake3 = async (data: Buffer) => {
       return hashInWorker(data);
-    }
+    };
   }
 
   async function onProcessing() {
@@ -198,12 +201,14 @@ export default function Landing() {
       worker.postMessage({ type: "hash", buf });
       worker.onmessage = (event) => {
         let buf = Buffer.from(event.data.data);
-        console.log('client: ' + buf.toString('hex'));
+        console.log("client: " + buf.toString("hex"));
       };
     }
     // gpupow matrixCalculationFloat
     {
-      let previousBlockIds = [await asyncBlake3(Buffer.from("previousBlockId"))];
+      let previousBlockIds = [
+        await asyncBlake3(Buffer.from("previousBlockId")),
+      ];
       let workingBlockId = await asyncBlake3(Buffer.from("workingBlockId"));
       let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
       for (let i = 0; i < 1; i++) {
@@ -215,12 +220,14 @@ export default function Landing() {
         matrix = gpupow.matrixCalculationFloat(matrix);
         let reducedBuf = await gpupow.matrixReduce(matrix);
         let matrixHashBuf = await gpupow.matrixHash(matrix);
-        console.log(matrixHashBuf.toString('hex'))
+        console.log(matrixHashBuf.toString("hex"));
       }
     }
     // gpupow matrixCalculationInt
     {
-      let previousBlockIds = [await asyncBlake3(Buffer.from("previousBlockId"))];
+      let previousBlockIds = [
+        await asyncBlake3(Buffer.from("previousBlockId")),
+      ];
       let workingBlockId = await asyncBlake3(Buffer.from("workingBlockId"));
       let gpupow = new Gpupow(workingBlockId, previousBlockIds, blake3Hash);
       for (let i = 0; i < 1; i++) {
@@ -232,7 +239,7 @@ export default function Landing() {
         matrix = gpupow.matrixCalculationInt(matrix);
         let reducedBuf = await gpupow.matrixReduce(matrix);
         let matrixHashBuf = await gpupow.matrixHash(matrix);
-        console.log(matrixHashBuf.toString('hex'))
+        console.log(matrixHashBuf.toString("hex"));
       }
     }
     console.log("end");
@@ -243,32 +250,29 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/earthbucks-coin.png"
+              src="/computcha-bottlecap.png"
               alt=""
-              className="mx-auto mb-4 block h-[200px] w-[200px] rounded-full bg-[#6d3206] shadow-lg shadow-[#6d3206]"
+              className="mx-auto mb-4 block aspect-square w-[100px]"
             />
             <div className="hidden dark:block">
               <img
-                src="/earthbucks-text-white.png"
+                src="/computcha-text-white.png"
                 alt="Computcha"
-                className="mx-auto block h-[50px]"
+                className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/earthbucks-text-black.png"
+                src="/computcha-text-black.png"
                 alt="Computcha"
-                className="mx-auto block h-[50px]"
+                className="mx-auto block w-[300px]"
               />
+            </div>
+            <div className="mt-4 text-center text-black dark:text-white">
+              Please prove compute to register or log in.
             </div>
           </div>
         </div>
-      </div>
-      <div className="mb-4 mt-4 text-center text-black dark:text-white">
-        42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
-        <br />
-        <br />
-        Take the math test to register or log in.
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">

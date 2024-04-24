@@ -7,7 +7,7 @@ function Spinner() {
     <div role="status" className={"h-[36px] w-[36px]"}>
       <svg
         aria-hidden="true"
-        className={`mr-2 h-[36px] w-[36px] animate-spin fill-black/50 text-[#fef8d6]`}
+        className={`mr-2 h-[36px] w-[36px] animate-spin fill-black/50 text-[#42f6eb]`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -195,14 +195,14 @@ function Slider({
 
   return (
     <div className="h-full w-full p-[8px]">
-      <div className="h-full w-full rounded-full bg-black/60 ring-2 ring-[#f09825]/70">
+      <div className="h-full w-full rounded-full bg-black/60 ring-2 ring-[#42f6eb]/70">
         <div className="flex h-full">
           <div className="relative h-full flex-shrink">
             <div
               className={classNames(
                 "absolute z-40 m-[-8px] h-[52px] w-[52px] p-[8px]",
                 sliderState === "dragging"
-                  ? "rounded-full outline outline-4 outline-[#fef8d6]"
+                  ? "rounded-full outline outline-4 outline-[#42f6eb]"
                   : "",
               )}
               ref={buttonRef}
@@ -221,7 +221,7 @@ function Slider({
               }}
             >
               <img
-                src="/earthbucks-coin.png"
+                src="/computcha-bottlecap.png"
                 alt=""
                 className="h-[36px] w-[36px]"
               />
@@ -244,12 +244,12 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/heart-gold-192.png"
+                  src="/pink-heart-128.png"
                   alt=""
                   className="h-[36px] w-[36px]"
                 />
                 <img
-                  src="/heart-gold-192.png"
+                  src="/pink-heart-128.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                 />
@@ -284,11 +284,11 @@ function Slider({
                   : "hidden",
               )}
             >
-              <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#f09825]" />
+              <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#42f6eb]" />
               <span className="align-middle text-sm font-semibold text-white">
                 {initialText}
               </span>
-              <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#f09825]" />
+              <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#42f6eb]" />
             </div>
 
             <div
@@ -330,9 +330,9 @@ function Slider({
               className={classNames(
                 "aspect-square h-full rounded-full",
                 sliderState === "initial"
-                  ? "outline-dotted outline-2 outline-[#f09825]"
+                  ? "outline-dotted outline-2 outline-[#42f6eb]"
                   : sliderState === "dragging"
-                    ? "outline-dashed outline-4 outline-[#fef8d6]"
+                    ? "outline-dashed outline-4 outline-[#42f6eb]"
                     : "hidden",
               )}
               style={{
@@ -341,7 +341,10 @@ function Slider({
                     ? "buttonSpin 10s linear infinite"
                     : undefined,
               }}
-            ></div>
+            >
+              <img src="/compute-circle-128.png" alt="" className="w-[40px] h-20px]" />
+
+            </div>
             <div
               className={classNames(
                 "aspect-square h-full rounded-full",
@@ -357,7 +360,7 @@ function Slider({
               }}
             ></div>
             <img
-              src="/earthbucks-coin.png"
+              src="/computcha-bottlecap.png"
               alt=""
               className={classNames(
                 "relative z-[35] h-full",
@@ -388,21 +391,15 @@ export default function Button({
   onSuccess?: () => Promise<void>;
   onError?: () => Promise<void>;
 }) {
-  let bgImageSrc = "/treasure-chest-cropped.png";
 
   processingText = processingText.replaceAll(".", "");
   processingText = processingText + "...";
 
   return (
     <div className="flex h-[60px] w-[320px]">
-      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#6d3206] p-[1px] shadow-lg shadow-[#6d3206]">
-        <div className="h-full w-full rounded-full bg-[#fef8d6] p-[3px]">
-          <div className="relative h-full w-full rounded-full bg-[#f09825] shadow-[inset_5px_5px_10px_#6d3206]">
-            <img
-              src={bgImageSrc}
-              alt=""
-              className="absolute left-[168px] z-10 h-[52px]"
-            />
+      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]">
+        <div className="h-full w-full rounded-full bg-[#42f6eb] p-[3px]">
+          <div className="relative h-full w-full rounded-full bg-[#12b3ec] shadow-[inset_5px_5px_10px_#020a2c]">
             <div className="absolute z-20 h-full w-full">
               <div className="flex h-full">
                 <div className="h-full flex-grow">
@@ -420,7 +417,7 @@ export default function Button({
                   <img
                     src="/imp-avatar-bw.png"
                     alt=""
-                    className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#fef8d6]"
+                    className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#42f6eb]"
                   />
                 </div>
               </div>
