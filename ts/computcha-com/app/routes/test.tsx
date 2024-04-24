@@ -269,7 +269,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Please prove compute to register or log in.
+              Please compute to register or log in.
             </div>
           </div>
         </div>
