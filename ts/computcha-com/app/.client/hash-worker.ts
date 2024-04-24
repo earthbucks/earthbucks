@@ -16,15 +16,10 @@ myBlake3Hash = browserBlake3Hash;
 self.onmessage = async (event) => {
   switch (event.data.type) {
     case "init":
-      // console.log("Worker initialized");
       break;
     case "hash":
-      //console.log("Worker received hash request");
       let { buf } = event.data;
-      //console.log("worker: " + buf.toString());
       let resHash = myBlake3Hash(buf);
-      // let resHash = buf;
-      //console.log("worker: " + resHash.toString("hex"));
       self.postMessage({ type: "result", data: resHash });
       break;
     default:

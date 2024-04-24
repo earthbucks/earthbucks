@@ -183,7 +183,6 @@ export default function Landing() {
         worker.postMessage({ type: "hash", buf });
         worker.onmessage = (event) => {
           let buf = Buffer.from(event.data.data);
-          // console.log('resolving with: ' + buf.toString("hex"))
           resolve(buf);
         };
       });
@@ -210,23 +209,9 @@ export default function Landing() {
       for (let i = 0; i < 100; i++) {
         let workingBlockId = blake3Hash(Buffer.from("workingBlockId" + i));
         gpupow.updateWorkingBlockId(workingBlockId);
-        let seed = gpupow.tensorSeed();
         let seed1289 = gpupow.tensorSeed1289();
         let matrix = gpupow.seedToMatrix(seed1289);
         matrix = gpupow.matrixCalculation(matrix);
-
-        // version 1:
-        // let reducedBufs = await gpupow.matrixReduce(matrix);
-        // let matrixHashBuf = await gpupow.reducedBufsHashAsync(reducedBufs);
-        // console.log(matrixHashBuf.toString("hex"));
-
-        // version 2 (broken):
-        // gpupow.matrixReduce(matrix).then(async (reducedBufs) => {
-        //   let matrixHashBuf = await gpupow.reducedBufsHashAsync(reducedBufs);
-        //   console.log(matrixHashBuf.toString("hex"));
-        // });
-
-        // version 3:
         let reducedBufs = await gpupow.matrixReduce(matrix);
         gpupow.reducedBufsHashAsync(reducedBufs).then((matrixHashBuf) => {
           console.log(matrixHashBuf.toString("hex"));
