@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -33,7 +34,9 @@ export default function Index() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Proof-of-GPU-compute in a web browser.
+              Proof-of-GPU in a web browser.
+              <br />
+              <Link className="underline" to="/demo">Try the demo.</Link>
             </div>
           </div>
         </div>
