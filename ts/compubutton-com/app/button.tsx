@@ -448,7 +448,7 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "gold" | "computcha"
+type buttonColor = "standard" | "pay" | "compute" | "crypto"
 
 export default function Button({
   initialText = "Swipe",
@@ -460,7 +460,7 @@ export default function Button({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  buttonColor = "standard"
+  type: buttonColor = "standard"
 }: {
   initialText?: string;
   computingText?: string;
@@ -471,7 +471,7 @@ export default function Button({
   onError?: () => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
-  buttonColor?: buttonColor
+  type?: buttonColor
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
@@ -479,10 +479,12 @@ export default function Button({
   let buttonSrc = ""
   if (buttonColor === "standard") {
     buttonSrc = "/button-128.png"
-  } else if (buttonColor === "gold") {
+  } else if (buttonColor === "pay") {
     buttonSrc = "/gold-button-2-128.png"
-  } else if (buttonColor === "computcha") {
+  } else if (buttonColor === "compute") {
     buttonSrc = "/computcha-bottlecap-128.png"
+  } else if (buttonColor === "crypto") {
+    buttonSrc = "/black-button-128.png"
   }
 
   return (

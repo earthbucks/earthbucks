@@ -285,12 +285,17 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} buttonColor="gold" />
+          <Button initialText="Compute" onComputing={onComputing} type="pay" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} buttonColor="computcha" />
+          <Button initialText="Compute" onComputing={onComputing} type="compute" />
+        </div>
+      </div>
+      <div className="mb-4 mt-4 h-[80px]">
+        <div className="mx-auto w-[320px]">
+          <Button initialText="Compute" onComputing={onComputing} type="crypto" />
         </div>
       </div>
     </div>
