@@ -456,7 +456,7 @@ export default function Button({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  mode: buttonColor = "standard",
+  mode: buttonMode = "standard",
 }: {
   initialText?: string;
   computingText?: string;
@@ -473,16 +473,16 @@ export default function Button({
   computingText = computingText + "...";
 
   let buttonSrc = "";
-  if (buttonColor === "standard") {
+  if (buttonMode === "standard") {
     buttonSrc = "/button-128.png";
-  } else if (buttonColor === "pay") {
+  } else if (buttonMode === "pay") {
     buttonSrc = "/gold-button-2-128.png";
-  } else if (buttonColor === "pow") {
+  } else if (buttonMode === "pow") {
     buttonSrc = "/computcha-bottlecap-128.png";
-  } else if (buttonColor === "secret") {
+  } else if (buttonMode === "secret") {
     buttonSrc = "/black-button-128.png";
-  } else if (buttonColor == "ai") {
-    buttonSrc = "/ai-button-128.png";
+  } else if (buttonMode == "ai") {
+    buttonSrc = "/artintellica-button-128.png";
   }
 
   return (

@@ -283,18 +283,18 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Pay" onComputing={onComputing} mode="pay" />
+          <Button initialText="Compubux" onComputing={onComputing} mode="pay" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="POW" onComputing={onComputing} mode="pow" />
+          <Button initialText="Computcha" onComputing={onComputing} mode="pow" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
           <Button
-            initialText="Secret"
+            initialText="Compusecret"
             onComputing={onComputing}
             mode="secret"
           />
@@ -302,7 +302,7 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="AI" onComputing={onComputing} mode="ai" />
+          <Button initialText="Artintellica" onComputing={onComputing} mode="ai" />
         </div>
       </div>
     </div>
