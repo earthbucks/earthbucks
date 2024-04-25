@@ -271,7 +271,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Button types demonstration.
+              Button modes demonstration.
             </div>
           </div>
         </div>
