@@ -476,7 +476,7 @@ export default function Button({
   if (buttonMode === "standard") {
     buttonSrc = "/button-128.png";
   } else if (buttonMode === "pay") {
-    buttonSrc = "/gold-button-2-128.png";
+    buttonSrc = "/gold-button-4-128.png";
   } else if (buttonMode === "pow") {
     buttonSrc = "/computcha-bottlecap-128.png";
   } else if (buttonMode === "secret") {
