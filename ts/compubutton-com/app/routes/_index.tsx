@@ -171,8 +171,8 @@ class Gpupow {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Compubutton" },
-    { name: "description", content: "Welcome to Compubutton!" },
+    { title: "CompuButton" },
+    { name: "description", content: "Welcome to CompuButton!" },
   ];
 };
 
@@ -260,29 +260,25 @@ export default function Landing() {
             <div className="hidden dark:block">
               <img
                 src="/compubutton-text-white.png"
-                alt="Compubutton"
+                alt="CompuButton"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/compubutton-text-black.png"
-                alt="Compubutton"
+                alt="CompuButton"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              The most advanced button in the history of the world!
+              Coming soon.
               <br />
-              <br />
-              Coming soon. Please follow{" "}
+              Please follow{" "}
               <a href="https://earthbucks.com" className="underline">
                 EarthBucks
               </a>{" "}
               for updates.
-              <br />
-              <br />
-              Copyright &copy; 2024 Ryan X. Charles LLC
             </div>
           </div>
         </div>
