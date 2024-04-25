@@ -273,21 +273,15 @@ export default function Landing() {
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
               The most advanced button in the history of the world!
-              <br /><br />
-              Try the demo below. Watchin your browser console.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mb-4 mt-4 h-[80px]">
-        <div className="mx-auto w-[320px]">
-          <Button initialText="Computcha" successText="Solved!" onComputing={onComputing} mode="pow" />
-        </div>
-      </div>
-      <div className="mb-4 mt-4 flex">
-        <div className="mx-auto">
-          <div className="inline-block align-middle">
-            <div className="text-center text-black dark:text-white">
+              <br />
+              <br />
+              Coming soon. Please follow{" "}
+              <a href="https://earthbucks.com" className="underline">
+                EarthBucks
+              </a>{" "}
+              for updates.
+              <br />
+              <br />
               Copyright &copy; 2024 Ryan X. Charles LLC
             </div>
           </div>
