@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "deploy:computcha-com": "fly deploy --config fly-computcha-com.toml --dockerfile fly-computcha-com-Dockerfile",
+    "deploy:compubutton-com": "fly deploy --config fly-compubutton-com.toml --dockerfile fly-compubutton-com-Dockerfile",
     "deploy:earthbucks-com": "fly deploy --config fly-earthbucks-com.toml --dockerfile fly-earthbucks-com-Dockerfile"
   }
 }
