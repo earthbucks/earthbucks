@@ -272,8 +272,6 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              The most advanced button in the world!
-              <br /><br />
               Please solve the computcha to register or log in.
             </div>
           </div>
