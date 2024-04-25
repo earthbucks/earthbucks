@@ -444,7 +444,7 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai";
+type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai" | "credits";
 
 export default function Button({
   initialText = "Swipe",
@@ -483,6 +483,8 @@ export default function Button({
     buttonSrc = "/black-button-128.png";
   } else if (buttonMode == "ai") {
     buttonSrc = "/artintellica-button-128.png";
+  } else if (buttonMode == "credits") {
+    buttonSrc = "/ai-button-128.png";
   }
 
   return (

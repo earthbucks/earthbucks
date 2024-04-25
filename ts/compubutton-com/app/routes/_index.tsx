@@ -3,6 +3,7 @@ import Button from "../button";
 import { createHash, hash as blake3Hash, hash } from "blake3";
 import { Buffer } from "buffer";
 import * as tf from "@tensorflow/tfjs";
+import { Link } from "@remix-run/react";
 
 type BufferFunction = (input: Buffer) => Buffer;
 type AsyncBufferFunction = (input: Buffer) => Promise<Buffer>;
@@ -272,7 +273,7 @@ export default function Landing() {
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
               The most advanced button in the history of the world!
-              <br />
+              <br /><br />
               Please solve the computcha to register or log in.
             </div>
           </div>
@@ -287,7 +288,7 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <div className="text-center text-black dark:text-white">
-              Copyright &copy; 2024 Ryan X. Charles LLC
+              Copyright &copy; 2024 <Link to="/about" className="underline">Ryan X. Charles LLC</Link>
             </div>
           </div>
         </div>
