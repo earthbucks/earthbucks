@@ -271,31 +271,38 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              EarthBucks proof-of-GPU demonstration.
-              <br />
-              Watch your browser console.
+              Button types demonstration.
             </div>
           </div>
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} />
+          <Button initialText="Standard" onComputing={onComputing} />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} type="pay" />
+          <Button initialText="Pay" onComputing={onComputing} mode="pay" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} type="compute" />
+          <Button initialText="POW" onComputing={onComputing} mode="pow" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} type="crypto" />
+          <Button
+            initialText="Secret"
+            onComputing={onComputing}
+            mode="secret"
+          />
+        </div>
+      </div>
+      <div className="mb-4 mt-4 h-[80px]">
+        <div className="mx-auto w-[320px]">
+          <Button initialText="AI" onComputing={onComputing} mode="ai" />
         </div>
       </div>
     </div>

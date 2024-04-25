@@ -238,11 +238,7 @@ function Slider({
                       : undefined,
               }}
             >
-              <img
-                src={buttonSrc}
-                alt=""
-                className="h-[36px] w-[36px]"
-              />
+              <img src={buttonSrc} alt="" className="h-[36px] w-[36px]" />
             </div>
             <div
               className={classNames(
@@ -448,7 +444,7 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "pay" | "compute" | "crypto"
+type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai";
 
 export default function Button({
   initialText = "Swipe",
@@ -460,7 +456,7 @@ export default function Button({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  type: buttonColor = "standard"
+  mode: buttonColor = "standard",
 }: {
   initialText?: string;
   computingText?: string;
@@ -471,20 +467,22 @@ export default function Button({
   onError?: () => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
-  type?: buttonColor
+  mode?: buttonColor;
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
 
-  let buttonSrc = ""
+  let buttonSrc = "";
   if (buttonColor === "standard") {
-    buttonSrc = "/button-128.png"
+    buttonSrc = "/button-128.png";
   } else if (buttonColor === "pay") {
-    buttonSrc = "/gold-button-2-128.png"
-  } else if (buttonColor === "compute") {
-    buttonSrc = "/computcha-bottlecap-128.png"
-  } else if (buttonColor === "crypto") {
-    buttonSrc = "/black-button-128.png"
+    buttonSrc = "/gold-button-2-128.png";
+  } else if (buttonColor === "pow") {
+    buttonSrc = "/computcha-bottlecap-128.png";
+  } else if (buttonColor === "secret") {
+    buttonSrc = "/black-button-128.png";
+  } else if (buttonColor == "ai") {
+    buttonSrc = "/ai-button-128.png";
   }
 
   return (
