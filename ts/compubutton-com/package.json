@@ -1,0 +1,70 @@
+{
+  "name": "compubutton-com",
+  "license": "UNLICENSED",
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "remix vite:dev --port=3000",
+    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "start": "PORT=3000 remix-serve ./build/server/index.js",
+    "typecheck": "tsc",
+    "deploy": "fly deploy",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": false,
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.1.1",
+    "@remix-run/node": "^2.8.1",
+    "@remix-run/react": "^2.8.1",
+    "@remix-run/serve": "^2.8.1",
+    "@tensorflow/tfjs": "^4.18.0",
+    "blake3": "2.1.7",
+    "blake3-js": "^0.0.5",
+    "blake3-wasm": "2.1.5",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.4.5",
+    "earthbucks-db": "workspace:^",
+    "earthbucks-lib": "workspace:^",
+    "earthbucks-tf": "workspace:^",
+    "isbot": "^4.1.0",
+    "mysql2": "^3.9.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vite-plugin-top-level-await-worker": "=1.4.1",
+    "vite-plugin-wasm": "^3.3.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.2",
+    "@remix-run/dev": "^2.8.1",
+    "@types/react": "^18.2.65",
+    "@types/react-dom": "^18.2.21",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "postcss": "^8.4.35",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.2",
+    "vite": "^5.2.10",
+    "vite-tsconfig-paths": "^4.2.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

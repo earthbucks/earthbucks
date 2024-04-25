@@ -1,4 +1,5 @@
 packages:
+  - 'compubutton-com'
   - 'computcha-com'
   - 'earthbucks-com'
   - 'earthbucks-db'
