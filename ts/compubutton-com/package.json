@@ -39,7 +39,7 @@
     "mysql2": "^3.9.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite-plugin-top-level-await-worker": "=1.4.1",
+    "vite-plugin-top-level-await-worker": "=1.4.3",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {

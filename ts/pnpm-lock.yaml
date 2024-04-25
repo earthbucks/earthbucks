@@ -62,8 +62,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       vite-plugin-top-level-await-worker:
-        specifier: '=1.4.1'
-        version: 1.4.1(vite@5.2.10)
+        specifier: '=1.4.3'
+        version: 1.4.3(vite@5.2.10)
       vite-plugin-wasm:
         specifier: ^3.3.0
         version: 3.3.0(vite@5.2.10)
@@ -10385,6 +10385,20 @@ packages:
 
   /vite-plugin-top-level-await-worker@1.4.1(vite@5.2.10):
     resolution: {integrity: sha512-TbcT0SCtBjXRgWoXVZMofkQoF/etBKGmUnhl8mKQ8B8qDKV/ej9AO4ngXe75BVKGzigGVAJJGwTkT+X1IiX/JQ==}
+    peerDependencies:
+      vite: '>=2.8'
+    dependencies:
+      '@rollup/plugin-virtual': 3.0.2(rollup@4.16.4)
+      '@swc/core': 1.5.0
+      rollup: 4.16.4
+      uuid: 9.0.1
+      vite: 5.2.10
+    transitivePeerDependencies:
+      - '@swc/helpers'
+    dev: false
+
+  /vite-plugin-top-level-await-worker@1.4.3(vite@5.2.10):
+    resolution: {integrity: sha512-LKzZf4SP65EedkX6Z/fpLsLaiLIdE3akYsIUuWcY4yynl3SvF0m8KV+HL9rbq1AuKJ0EraK4+8Eni59BCGdZBg==}
     peerDependencies:
       vite: '>=2.8'
     dependencies:
