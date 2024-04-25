@@ -274,7 +274,7 @@ export default function Landing() {
             <div className="mt-4 text-center text-black dark:text-white">
               The most advanced button in the history of the world!
               <br /><br />
-              Try the demo below. Watchin your browser console.
+              Please solve the computcha to register or log in.
             </div>
           </div>
         </div>
