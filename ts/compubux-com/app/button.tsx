@@ -36,7 +36,6 @@ function Slider({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  buttonSrc = "/button-128.png",
 }: {
   initialText: string;
   computingText: string;
@@ -47,7 +46,6 @@ function Slider({
   onError?: () => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
-  buttonSrc?: string;
 }) {
   const sliderStates = [
     "initial",
@@ -239,7 +237,7 @@ function Slider({
               }}
             >
               <img
-                src={buttonSrc}
+                src="/button-128.png"
                 alt=""
                 className="h-[36px] w-[36px]"
               />
@@ -434,7 +432,7 @@ function Slider({
               }}
             ></div>
             <img
-              src={buttonSrc}
+              src="/button-128.png"
               alt=""
               className={classNames(
                 "relative z-[35] h-full",
@@ -448,8 +446,6 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "gold" | "computcha"
-
 export default function Button({
   initialText = "Swipe",
   computingText = "Computing",
@@ -460,7 +456,6 @@ export default function Button({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  buttonColor = "standard"
 }: {
   initialText?: string;
   computingText?: string;
@@ -471,19 +466,9 @@ export default function Button({
   onError?: () => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
-  buttonColor?: buttonColor
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
-
-  let buttonSrc = ""
-  if (buttonColor === "standard") {
-    buttonSrc = "/button-128.png"
-  } else if (buttonColor === "gold") {
-    buttonSrc = "/gold-button-2-128.png"
-  } else if (buttonColor === "computcha") {
-    buttonSrc = "/computcha-bottlecap-128.png"
-  }
 
   return (
     <div className="flex h-[60px] w-[320px]">
@@ -503,7 +488,6 @@ export default function Button({
                     onError={onError}
                     onFinishedSuccess={onFinishedSuccess}
                     onFinishedError={onFinishedError}
-                    buttonSrc={buttonSrc}
                   />
                 </div>
                 <div className="h-full flex-shrink-0">
