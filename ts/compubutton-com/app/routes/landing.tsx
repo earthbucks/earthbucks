@@ -279,7 +279,12 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[60px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Computcha" successText="Solved!" onComputing={onComputing} mode="pow" />
+          <Button
+            initialText="Computcha"
+            successText="Solved!"
+            onComputing={onComputing}
+            mode="pow"
+          />
         </div>
       </div>
       <div className="mb-4 mt-4 flex">

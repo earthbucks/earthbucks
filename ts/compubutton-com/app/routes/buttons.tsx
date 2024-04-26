@@ -284,7 +284,11 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="EarthBucks" onComputing={onComputing} mode="pay" />
+          <Button
+            initialText="EarthBucks"
+            onComputing={onComputing}
+            mode="pay"
+          />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">

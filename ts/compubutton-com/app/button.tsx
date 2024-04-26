@@ -44,7 +44,7 @@ function Slider({
   errorText: string;
   onComputing?: () => Promise<void>;
   onSuccess?: () => Promise<void>;
-  onError?: () => Promise<void>;
+  onError?: (err: Error) => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
   buttonSrc?: string;
@@ -76,9 +76,9 @@ function Slider({
           await onFinishedSuccess();
         }, 4000);
       })
-      .catch(async () => {
+      .catch(async (error) => {
         setSliderState("error");
-        await onError();
+        await onError(error);
         setTimeout(async () => {
           setSliderState("finished-error");
           await onFinishedError();
@@ -464,7 +464,7 @@ export default function Button({
   errorText?: string;
   onComputing?: () => Promise<void>;
   onSuccess?: () => Promise<void>;
-  onError?: () => Promise<void>;
+  onError?: (err: Error) => Promise<void>;
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
   mode?: buttonColor;
@@ -475,10 +475,10 @@ export default function Button({
   let buttonSrc = "";
   if (buttonMode === "standard") {
     buttonSrc = "/button-128.png";
-  // } else if (buttonMode === "pay") {
-  //   buttonSrc = "/compubux-coin-128.png";
+    // } else if (buttonMode === "pay") {
+    //   buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pay") {
-    buttonSrc = "/earthbucks-coin-128.png"
+    buttonSrc = "/earthbucks-coin-128.png";
   } else if (buttonMode === "pow") {
     buttonSrc = "/computcha-bottlecap-128.png";
   } else if (buttonMode === "secret") {
