@@ -475,8 +475,10 @@ export default function Button({
   let buttonSrc = "";
   if (buttonMode === "standard") {
     buttonSrc = "/button-128.png";
+  // } else if (buttonMode === "pay") {
+  //   buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pay") {
-    buttonSrc = "/compubux-coin-128.png";
+    buttonSrc = "/earthbucks-coin-128.png"
   } else if (buttonMode === "pow") {
     buttonSrc = "/computcha-bottlecap-128.png";
   } else if (buttonMode === "secret") {
