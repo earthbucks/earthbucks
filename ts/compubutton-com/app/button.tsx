@@ -476,7 +476,7 @@ export default function Button({
   if (buttonMode === "standard") {
     buttonSrc = "/button-128.png";
   } else if (buttonMode === "pay") {
-    buttonSrc = "/gold-button-4-128.png";
+    buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pow") {
     buttonSrc = "/computcha-bottlecap-128.png";
   } else if (buttonMode === "secret") {
@@ -484,7 +484,7 @@ export default function Button({
   } else if (buttonMode == "ai") {
     buttonSrc = "/artintellica-button-128.png";
   } else if (buttonMode == "credits") {
-    buttonSrc = "/ai-button-128.png";
+    buttonSrc = "/washington-button-128.png";
   }
 
   return (
