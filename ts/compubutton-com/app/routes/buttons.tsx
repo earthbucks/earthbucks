@@ -220,7 +220,8 @@ export default function Landing() {
     console.log("begin");
     // gpupow matrixCalculationFloat
     {
-      console.time("gpupow matrixCalculationFloat");
+      let timeMs = new Date().getTime();
+      console.time("gpupow matrixCalculationFloat " + timeMs);
       let previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
       let workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
       let gpupow = new Gpupow(
@@ -242,7 +243,7 @@ export default function Landing() {
         // let matrixHashBuf = gpupow.reducedBufsHash(reducedBufs)
         // console.log(matrixHashBuf.toString("hex"))
       }
-      console.timeEnd("gpupow matrixCalculationFloat");
+      console.timeEnd("gpupow matrixCalculationFloat " + timeMs);
     }
     console.log("end");
   }
