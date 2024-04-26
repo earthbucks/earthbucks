@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.18.0",
+    "blake3": "2.1.7",
+    "blake3-wasm": "2.1.5",
     "earthbucks-lib": "workspace:^"
   },
   "devDependencies": {

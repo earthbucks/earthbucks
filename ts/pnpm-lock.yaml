@@ -28,9 +28,6 @@ importers:
       blake3:
         specifier: 2.1.7
         version: 2.1.7
-      blake3-js:
-        specifier: ^0.0.5
-        version: 0.0.5
       blake3-wasm:
         specifier: 2.1.5
         version: 2.1.5
@@ -426,6 +423,12 @@ importers:
       '@tensorflow/tfjs':
         specifier: ^4.18.0
         version: 4.18.0(seedrandom@3.0.5)
+      blake3:
+        specifier: 2.1.7
+        version: 2.1.7
+      blake3-wasm:
+        specifier: 2.1.5
+        version: 2.1.5
       earthbucks-lib:
         specifier: workspace:^
         version: link:../earthbucks-lib
