@@ -43,7 +43,7 @@ export default class Matmul {
     }
 
     // tensorflow doesn't support uint16, but it does support int32
-    return tf.tensor2d(matrixData, [size, size], 'int32');
+    return tf.tensor2d(matrixData, [size, size], "int32");
   }
 
   async squareMatrix(matrix: tf.Tensor): Promise<tf.Tensor> {

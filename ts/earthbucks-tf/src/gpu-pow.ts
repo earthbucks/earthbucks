@@ -4,23 +4,6 @@ import * as tf from "@tensorflow/tfjs";
 type BufferFunction = (input: Buffer) => Buffer;
 type AsyncBufferFunction = (input: Buffer) => Promise<Buffer>;
 
-// Using a prime number for the size of the matrix guarantees that replicated
-// data does not repeat on subsequent rows. For instance, for 256 bits of
-// pseudorandom data, a 256x256 matrix would have the same data on every row.
-// This known pattern can be used to reduce the number of operations needed to
-// calculate the matrix. But by using a prime size, such as 257, each row has
-// unique data. This makes it non-obvious how to optimize the matrix
-// calculations, which is the point of the algorithm.
-//
-// - 257: The smallest prime number bigger than 256
-// - 1031: The smallest prime number bigger than 1024
-// - 1289: The largest prime number whose cube fits into int32
-// - 1624: The size of a matrix whose square has the same number of operations
-//   as the cube of the 1289 matrix
-// - 1627 the next highest prime number after the number 1624
-// - 9973: largest prime less than 10,000
-// - 46337: largest prime whose square is an int32 (too big to compute)
-
 export default class GpuPow {
   previousBlockIds: Buffer[];
   workingBlockId: tf.Tensor;
@@ -96,7 +79,7 @@ export default class GpuPow {
       matrix2.dispose();
       const max = matrix3.max();
       const matrix4 = matrix3.div(max); // divide by max; new max is 1
-      const matrix5 = matrix4.exp(); // use exp to spread out values; new max is e^1
+      const matrix5 = matrix4.exp(); // use exp to spread out values; new min is 1 and new max is e^1
       matrix4.dispose();
       const min2 = matrix5.min();
       const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
@@ -148,10 +131,12 @@ export default class GpuPow {
     // TensorFlow. We need to find a way to send the result of the computation
     // back from the GPU to the CPU without using a lot of bandwidth. The idea
     // is to use four independent reduction methods: Sum, Max, Min, and Random.
-    // This is like a pseudo hash function. Each of these methods will reduce
-    // the matrix to a vector of size N. We can then convert the vector to a
-    // buffer and send it back to the CPU. The CPU can then hash the buffers to
-    // get the final result.
+    // This is like a pseudo hash function. Although they are not secure like a
+    // cryptographic hash function, by using four of them, we make it very
+    // unlikely to produce fake output without just doing the matrix
+    // calculation. Each of these methods will reduce the matrix to a vector of
+    // size N. We can then convert the vector to a buffer and send it back to
+    // the CPU. The CPU can then hash the buffers to get the final result.
     let reducedSum = this.reduceMatrixToVectorSum(matrix);
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
@@ -181,16 +166,41 @@ export default class GpuPow {
     let reducedBufs = await this.matrixReduce(matrix);
     tf.tidy(() => {
       matrix.dispose();
-    })
-    return reducedBufs
+    });
+    return reducedBufs;
   }
 
   async algo257(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+    // Using a prime number for the size of the matrix guarantees that replicated
+    // data does not repeat on subsequent rows. For instance, for 256 bits of
+    // pseudorandom data, a 256x256 matrix would have the same data on every row.
+    // This known pattern can be used to reduce the number of operations needed to
+    // calculate the matrix. But by using a prime size, such as 257, each row has
+    // unique data. This makes it non-obvious how to optimize the matrix
+    // calculations, which is the point of the algorithm.
+    //
+    // - 17: The smallest prime number whose square is bigger than 256
+    // - 257: The smallest prime number bigger than 256
+    // - 1031: The smallest prime number bigger than 1024
+    // - 1289: The largest prime number whose cube fits into int32
+    // - 1624: The size of a matrix whose square has the same number of operations
+    //   as the cube of the 1289 matrix
+    // - 1627 the next highest prime number after the number 1624
+    // - 9973: largest prime less than 10,000
+    // - 46337: largest prime whose square is an int32
     return this.algo(257);
+  }
+
+  async algo17(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+    return this.algo(17);
   }
 
   async algo1031(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
     return this.algo(1031);
+  }
+
+  async algo1289(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+    return this.algo(1289);
   }
 
   async algo1627(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
