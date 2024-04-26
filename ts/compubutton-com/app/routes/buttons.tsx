@@ -170,8 +170,8 @@ class Gpupow {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "CompuButton" },
-    { name: "description", content: "Welcome to CompuButton!" },
+    { title: "Compubutton" },
+    { name: "description", content: "Welcome to Compubutton!" },
   ];
 };
 
@@ -259,14 +259,14 @@ export default function Landing() {
             <div className="hidden dark:block">
               <img
                 src="/compubutton-text-white.png"
-                alt="CompuButton"
+                alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/compubutton-text-black.png"
-                alt="CompuButton"
+                alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />
             </div>

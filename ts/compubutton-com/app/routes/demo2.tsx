@@ -21,8 +21,8 @@ function nodeBlake3Hash(data: Buffer): Buffer {
 class Gpupow {
   workingBlockId: Buffer;
   previousBlockIds: Buffer[];
-  workingTensor: tf.Tensor;
-  previousTensor: tf.Tensor;
+  workingSeed: tf.Tensor;
+  steadySeed: tf.Tensor;
   blake3Hash: BufferFunction;
   asyncBlake3: AsyncBufferFunction;
 
@@ -34,8 +34,8 @@ class Gpupow {
   ) {
     this.workingBlockId = workingBlockId;
     this.previousBlockIds = previousBlockIds;
-    this.workingTensor = this.tensorFromBufferBits(workingBlockId);
-    this.previousTensor = this.tensorFromBufferBits(
+    this.workingSeed = this.tensorFromBufferBits(workingBlockId);
+    this.steadySeed = this.tensorFromBufferBits(
       Buffer.concat(previousBlockIds),
     );
     this.blake3Hash = blake3Hash;
@@ -44,7 +44,7 @@ class Gpupow {
 
   updateWorkingBlockId(workingBlockId: Buffer) {
     this.workingBlockId = workingBlockId;
-    this.workingTensor = this.tensorFromBufferBits(workingBlockId);
+    this.workingSeed = this.tensorFromBufferBits(workingBlockId);
   }
 
   tensorFromBufferBits(buffer: Buffer): tf.Tensor {
@@ -63,7 +63,7 @@ class Gpupow {
   }
 
   tensorSeed(): tf.Tensor {
-    return tf.concat([this.workingTensor, this.previousTensor]);
+    return tf.concat([this.workingSeed, this.steadySeed]);
   }
 
   tensorSeed1289(): tf.Tensor {
@@ -245,8 +245,8 @@ class Gpupow {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "CompuButton" },
-    { name: "description", content: "Welcome to CompuButton!" },
+    { title: "Compubutton" },
+    { name: "description", content: "Welcome to Compubutton!" },
   ];
 };
 
@@ -360,14 +360,14 @@ export default function Landing() {
             <div className="hidden dark:block">
               <img
                 src="/compubutton-text-white.png"
-                alt="CompuButton"
+                alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src="/compubutton-text-black.png"
-                alt="CompuButton"
+                alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />
             </div>
