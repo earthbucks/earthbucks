@@ -43,16 +43,16 @@ export default class PrivKey {
   }
 
   toStringFmt(): string {
-    return 'prv' + bs58.encode(this.buf);
+    return 'ebxprv' + bs58.encode(this.buf);
   }
 
   static fromStringFmt(str: string): PrivKey {
-    if (!str.startsWith('prv')) {
+    if (!str.startsWith('ebxprv')) {
       throw new Error("Invalid private key format");
     }
     let decoded: Buffer
     try {
-      decoded = Buffer.from(bs58.decode(str.slice(3)));
+      decoded = Buffer.from(bs58.decode(str.slice(6)));
     } catch (e) {
       throw new Error("Invalid base58 encoding");
     }

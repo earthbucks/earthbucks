@@ -64,14 +64,14 @@ impl PrivKey {
     }
 
     pub fn to_string_fmt(&self) -> String {
-        "prv".to_string() + &bs58::encode(&self.buf).into_string()
+        "ebxprv".to_string() + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<Self, String> {
-        if !s.starts_with("prv") {
+        if !s.starts_with("ebxprv") {
             return Err("Invalid private key format".to_string());
         }
-        let buf = bs58::decode(&s[3..])
+        let buf = bs58::decode(&s[6..])
             .into_vec()
             .map_err(|_| "Invalid base58 encoding".to_string())?;
         PrivKey::from_u8_vec(buf)
@@ -160,11 +160,11 @@ mod tests {
 
     #[test]
     fn test_to_from_string_format() {
-        assert!(PrivKey::is_valid("prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
-        assert!(!PrivKey::is_valid("prGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
-        assert!(!PrivKey::is_valid("prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"));
+        assert!(PrivKey::is_valid("ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
+        assert!(!PrivKey::is_valid("ebxprGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
+        assert!(!PrivKey::is_valid("ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"));
 
-        let str = "prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
+        let str = "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
         let priv_key = PrivKey::from_string_fmt(str).unwrap();
         assert_eq!(priv_key.to_string_fmt(), str);
     }
