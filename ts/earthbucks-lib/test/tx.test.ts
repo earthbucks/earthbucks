@@ -7,7 +7,7 @@ import BufferReader from "../src/buffer-reader";
 import BufferWriter from "../src/buffer-writer";
 import { blake3Hash } from "../src/blake3";
 import TxSignature from "../src/tx-signature";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import { Buffer } from "buffer";
 
 describe("Tx", () => {
@@ -377,7 +377,7 @@ describe("Tx", () => {
         expect(Buffer.from(signature.toU8Vec()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = new Key(privateKey).publicKey;
+        const publicKey = new KeyPair(privateKey).publicKey;
         const result = tx.verifyNoCache(
           inputIndex,
           publicKey,
@@ -435,7 +435,7 @@ describe("Tx", () => {
         expect(Buffer.from(signature.toU8Vec()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = new Key(privateKey).publicKey;
+        const publicKey = new KeyPair(privateKey).publicKey;
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,

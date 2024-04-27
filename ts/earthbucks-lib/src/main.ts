@@ -1,4 +1,4 @@
-import Key from "./key";
+import KeyPair from "./key-pair";
 import Pkh from "./pkh";
 import { Buffer } from "buffer";
 
@@ -13,7 +13,7 @@ function main() {
   switch (args[0]) {
     case "key":
       {
-        const key = Key.fromRandom();
+        const key = KeyPair.fromRandom();
         const privateKeyHex = Buffer.from(key.privateKey).toString("hex");
         const publicKeyHex = Buffer.from(key.publicKey).toString("hex");
 
@@ -24,7 +24,7 @@ function main() {
     case "pkh":
       {
         // Generate a new private key
-        const key = Key.fromRandom();
+        const key = KeyPair.fromRandom();
         const publicKey = key.publicKey;
 
         // Get the corresponding pkh

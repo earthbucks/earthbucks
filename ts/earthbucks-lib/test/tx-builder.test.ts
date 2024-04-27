@@ -3,7 +3,7 @@ import TxBuilder from "../src/tx-builder";
 import TxOutputMap from "../src/tx-output-map";
 import TxOutput from "../src/tx-output";
 import Script from "../src/script";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
 import PkhKeyMap from "../src/pkh-key-map";
 import { Buffer } from "buffer";
@@ -18,7 +18,7 @@ describe("TxBuilder", () => {
     pkhKeyMap = new PkhKeyMap();
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
-      const key = Key.fromRandom();
+      const key = KeyPair.fromRandom();
       const pkh = new Pkh(key.publicKey);
       pkhKeyMap.add(key, pkh.pkh);
       const script = Script.fromAddressOutput(pkh.pkh);
@@ -31,7 +31,7 @@ describe("TxBuilder", () => {
   });
 
   test("should build a valid tx when input is enough to cover the output", () => {
-    const key = Key.fromRandom();
+    const key = KeyPair.fromRandom();
     const pkh = new Pkh(key.publicKey);
     const script = Script.fromAddressOutput(pkh.pkh);
     const output = new TxOutput(BigInt(50), script);

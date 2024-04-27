@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import fs from "fs";
 import path from "path";
 import Pkh from "../src/pkh";
@@ -7,7 +7,7 @@ import { Buffer } from "buffer";
 
 describe("Pkh", () => {
   test("Pkh", () => {
-    const key = Key.fromRandom();
+    const key = KeyPair.fromRandom();
     const pkh = new Pkh(key.publicKey);
     expect(pkh.pkh).toBeDefined();
   });

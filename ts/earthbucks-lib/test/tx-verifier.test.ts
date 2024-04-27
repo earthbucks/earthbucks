@@ -3,7 +3,7 @@ import TxBuilder from "../src/tx-builder";
 import TxOutputMap from "../src/tx-output-map";
 import TxOutput from "../src/tx-output";
 import Script from "../src/script";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
 import PkhKeyMap from "../src/pkh-key-map";
 import TxSigner from "../src/tx-signer";
@@ -21,7 +21,7 @@ describe("TxVerifier", () => {
     pkhKeyMap = new PkhKeyMap();
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
-      const key = Key.fromRandom();
+      const key = KeyPair.fromRandom();
       const pkh = new Pkh(key.publicKey);
       pkhKeyMap.add(key, pkh.pkh);
       const script = Script.fromAddressOutput(pkh.pkh);
@@ -34,7 +34,7 @@ describe("TxVerifier", () => {
   });
 
   test("should sign and verify a tx", () => {
-    const key = Key.fromRandom();
+    const key = KeyPair.fromRandom();
     const pkh = new Pkh(key.publicKey);
     const script = Script.fromAddressOutput(pkh.pkh);
     txBuilder.addOutput(BigInt(50), Script.fromString(""));
@@ -64,7 +64,7 @@ describe("TxVerifier", () => {
   });
 
   test("should sign and verify a tx with two inputs", () => {
-    const key = Key.fromRandom();
+    const key = KeyPair.fromRandom();
     const pkh = new Pkh(key.publicKey);
     const script = Script.fromAddressOutput(pkh.pkh);
     txBuilder.addOutput(BigInt(100), Script.fromString(""));

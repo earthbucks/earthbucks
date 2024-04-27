@@ -2,7 +2,7 @@ import secp256k1 from "secp256k1";
 import crypto from "crypto";
 import { Buffer } from "buffer";
 
-export default class Key {
+export default class KeyPair {
   private _privateKey: Uint8Array;
   private _publicKey: Uint8Array;
 
@@ -19,11 +19,11 @@ export default class Key {
     return this._publicKey;
   }
 
-  static fromRandom(): Key {
+  static fromRandom(): KeyPair {
     let privateKey;
     do {
       privateKey = crypto.randomBytes(32);
     } while (!secp256k1.privateKeyVerify(privateKey));
-    return new Key(privateKey);
+    return new KeyPair(privateKey);
   }
 }

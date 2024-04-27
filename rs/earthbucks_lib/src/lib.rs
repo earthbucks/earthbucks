@@ -22,6 +22,7 @@ pub mod script;
 pub mod script_chunk;
 pub mod script_interpreter;
 pub mod script_num;
+pub mod strict_hex;
 pub mod tx;
 pub mod tx_builder;
 pub mod tx_input;

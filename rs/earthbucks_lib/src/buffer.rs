@@ -1,4 +1,5 @@
 use hex;
+use std::ops::{Deref, DerefMut};
 
 pub struct Buffer {
     pub data: Vec<u8>,
@@ -38,6 +39,20 @@ impl Buffer {
     }
 }
 
+impl Deref for Buffer {
+    type Target = Vec<u8>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl DerefMut for Buffer {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
+    }
+}
+
 // test
 #[cfg(test)]
 mod tests {
@@ -72,5 +87,18 @@ mod tests {
     fn test_buffer_5() {
         let buffer = Buffer::from_hex("fff");
         assert_eq!(buffer.to_hex(), "ff");
+    }
+
+    #[test]
+    fn test_vector_operations() {
+        let mut buffer = Buffer::from_hex("1234");
+        buffer.push(0x56);
+        assert_eq!(buffer.to_hex(), "123456");
+        buffer.pop();
+        assert_eq!(buffer.to_hex(), "1234");
+        buffer.extend_from_slice(&[0x56, 0x78]);
+        assert_eq!(buffer.to_hex(), "12345678");
+        buffer.truncate(1);
+        assert_eq!(buffer.to_hex(), "12");
     }
 }

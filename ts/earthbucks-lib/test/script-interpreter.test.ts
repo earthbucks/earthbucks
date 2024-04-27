@@ -6,7 +6,7 @@ import TxInput from "../src/tx-input";
 import TxOutput from "../src/tx-output";
 import fs from "fs";
 import path from "path";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
 import TxSignature from "../src/tx-signature";
 import { Buffer } from "buffer";
@@ -136,7 +136,7 @@ describe("ScriptInterpreter", () => {
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
       const outputPrivKeyBuf = Buffer.from(outputPrivKeyHex, "hex");
       const outputPrivKeyU8Vec = new Uint8Array(outputPrivKeyBuf);
-      const outputKey = new Key(outputPrivKeyU8Vec);
+      const outputKey = new KeyPair(outputPrivKeyU8Vec);
       const outputPubKey = outputKey.publicKey;
       expect(Buffer.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
@@ -195,7 +195,7 @@ describe("ScriptInterpreter", () => {
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map(
-        (privKey) => new Key(privKey).publicKey,
+        (privKey) => new KeyPair(privKey).publicKey,
       );
 
       // Create a multisig output script

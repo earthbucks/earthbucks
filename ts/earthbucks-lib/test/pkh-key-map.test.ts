@@ -1,18 +1,18 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import PkhKeyMap from "../src/pkh-key-map";
 import Pkh from "../src/pkh";
-import Key from "../src/key";
+import KeyPair from "../src/key-pair";
 import { Buffer } from "buffer";
 
 describe("PkhKeyMap", () => {
   let pkhKeyMap: PkhKeyMap;
-  let key: Key;
+  let key: KeyPair;
   let pkh: Pkh;
   let pkhU8Vec: Uint8Array;
 
   beforeEach(() => {
     pkhKeyMap = new PkhKeyMap();
-    key = Key.fromRandom();
+    key = KeyPair.fromRandom();
     pkh = new Pkh(key.publicKey);
     pkhU8Vec = pkh.pkh;
   });
@@ -41,7 +41,7 @@ describe("PkhKeyMap", () => {
 
   test("values method should return all Key values", () => {
     const key1 = key;
-    const key2 = Key.fromRandom();
+    const key2 = KeyPair.fromRandom();
     const pkh2 = new Pkh(key2.publicKey);
     const pkhU8Vec2 = pkh2.pkh;
     pkhKeyMap.add(key1, pkhU8Vec);

@@ -3,7 +3,6 @@ import Matmul from "../src/matmul";
 import { Buffer } from "buffer";
 
 describe("Matmul", () => {
-
   test("matmul256", () => {
     let matmul = new Matmul(new Uint8Array(32));
     let result = matmul.matmul256();
@@ -20,8 +19,7 @@ describe("Matmul", () => {
     expect(expected).toBe(
       "2ada02dbc002c6a7a6aa7c7ac6782c8b9a03537aa559a1ec23f47f390c593337",
     );
-  
-  })
+  });
 
   test("matmul512", () => {
     let matmul = new Matmul(new Uint8Array(32));

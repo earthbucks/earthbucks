@@ -1,5 +1,5 @@
 import Tx from "./tx";
-import Key from "./key";
+import KeyPair from "./key-pair";
 import Pkh from "./pkh";
 import PkhKeyMap from "./pkh-key-map";
 import TxOutputMap from "./tx-output-map";
