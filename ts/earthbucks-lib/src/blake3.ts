@@ -1,14 +1,10 @@
-import { Blake3Hasher } from "@napi-rs/blake-hash";
+import { hash } from "blake3";
 import { Buffer } from "buffer";
 
-export function blake3Hash(data: Uint8Array): Uint8Array {
-  // TODO: Use only Buffer
-  const hasher = new Blake3Hasher();
-  hasher.update(Buffer.from(data));
-  const hex = hasher.digest("hex");
-  return new Uint8Array(Buffer.from(hex, "hex"));
+export function blake3Hash(data: Buffer | Uint8Array): Buffer {
+  return hash(data) as Buffer;
 }
 
-export function doubleBlake3Hash(data: Uint8Array): Uint8Array {
+export function doubleBlake3Hash(data: Buffer | Uint8Array): Buffer {
   return blake3Hash(blake3Hash(data));
 }

@@ -417,12 +417,15 @@ importers:
 
   earthbucks-lib:
     dependencies:
-      '@napi-rs/blake-hash':
-        specifier: ^1.3.4
-        version: 1.3.4
       '@types/secp256k1':
         specifier: ^4.0.6
         version: 4.0.6
+      blake3:
+        specifier: 2.1.7
+        version: 2.1.7
+      blake3-wasm:
+        specifier: 2.1.5
+        version: 2.1.5
       bs58:
         specifier: ^5.0.0
         version: 5.0.0
@@ -2146,122 +2149,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@napi-rs/blake-hash-android-arm64@1.3.4:
-    resolution: {integrity: sha512-JBw027mnw8D3pp9SU7gjFmAGXCrxOe7f10n8lqpI7u1gdEYUIaP00V0aGsZs41NvfHEejw9ZCrWV1UNlediZDQ==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [android]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-darwin-arm64@1.3.4:
-    resolution: {integrity: sha512-03iiCw/gOJc8sRX5B4RwQE+q+riN9uVqn7VBRT1fUM6Ipi6v4MQQq5rqmk9fNw5IQ2cy3pd2EknwHdDERZLZNg==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-darwin-x64@1.3.4:
-    resolution: {integrity: sha512-8mDkt9Tt5fpgpXq8KTp3CtFn/emx3bC2M1DWLcTsrLI3NCM+nzaCvrUlO/e7GyebPFIZqQDUGaHJ/QattpQ92g==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-freebsd-x64@1.3.4:
-    resolution: {integrity: sha512-DKqeD4IOhchjLxCNNJ+k2Gu9ySmpBDkNYSeAizdxTTvnCzvajBMvRNAlwGgilH7D2gwPNX9hlR4EMW2SKpfHCw==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [freebsd]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-linux-arm64-gnu@1.3.4:
-    resolution: {integrity: sha512-7HV+HPtByIleTPyh3idXtzlot9BWzJDrfbzsLgv6TYvfmQS6cXNgXNJkgNRtUt4HrSmQw1e361u2HmXp4ToPIA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-linux-arm64-musl@1.3.4:
-    resolution: {integrity: sha512-0UA3Oar9anV2lIK5L63mDTzdQj4wUvnhst4qna0H6Q1IWw2m1x+sJgDFcaxOvYYygwOGGx2HVnkvZlM6If4P6A==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-linux-x64-gnu@1.3.4:
-    resolution: {integrity: sha512-SqMu5/KKtnTmSQ5NueJDugdE6U70mPEYrlcgzyMCnubOy5O2NeJo7brAo/KGM1b9ySPAyFLdZqmZxFcd/QfuXQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-linux-x64-musl@1.3.4:
-    resolution: {integrity: sha512-CZY6t5XTgbY0eCWpi9yjMZQ/PPylSgf41cCj+FmhORuIH6c9X/OgFkvhTnaq81nj35qwir3cVraP5NwgbfG5vQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-win32-arm64-msvc@1.3.4:
-    resolution: {integrity: sha512-Kaj9LBzxWmkKYoHzt7TqXBgWBvZHUduvGcONz5t7UAY4Qj/m7QCCoM5pAh8qY0uNKAK+ZBapg+BANW349QH2mQ==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-win32-ia32-msvc@1.3.4:
-    resolution: {integrity: sha512-sUDL5ml/VKA3O8xY1qea7ZL8Gyj3xMb7CJ4YGZnAaH/mHjoUCKMz5IsNOCj857v8DOY9OOVj1ba6s68/0rjvvQ==}
-    engines: {node: '>= 10'}
-    cpu: [ia32]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash-win32-x64-msvc@1.3.4:
-    resolution: {integrity: sha512-NR/T+zhX0YdVZaQnTQ6QDQoa8NlFyTY+fp9HqggL/VMWF9Ci8e3Qz8FQk74gJyJp0U768q96wpRre7cA0yGkCA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@napi-rs/blake-hash@1.3.4:
-    resolution: {integrity: sha512-gX8SMiwLjylN6VOZHgRPGltWJIE0iakJHzOlqAb8pr6Zn+SlfB8E+GbYi9tOm+DsosCaMdr+Glp8fzWI7k1pZw==}
-    engines: {node: '>= 10'}
-    optionalDependencies:
-      '@napi-rs/blake-hash-android-arm64': 1.3.4
-      '@napi-rs/blake-hash-darwin-arm64': 1.3.4
-      '@napi-rs/blake-hash-darwin-x64': 1.3.4
-      '@napi-rs/blake-hash-freebsd-x64': 1.3.4
-      '@napi-rs/blake-hash-linux-arm64-gnu': 1.3.4
-      '@napi-rs/blake-hash-linux-arm64-musl': 1.3.4
-      '@napi-rs/blake-hash-linux-x64-gnu': 1.3.4
-      '@napi-rs/blake-hash-linux-x64-musl': 1.3.4
-      '@napi-rs/blake-hash-win32-arm64-msvc': 1.3.4
-      '@napi-rs/blake-hash-win32-ia32-msvc': 1.3.4
-      '@napi-rs/blake-hash-win32-x64-msvc': 1.3.4
-    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

@@ -3,9 +3,10 @@ import { Buffer } from "buffer";
 
 // public key hash
 export default class Pkh {
-  private _pkh: Uint8Array;
+  private _pkh: Buffer;
 
-  constructor(publicKey: Uint8Array) {
+  constructor(publicKey: Buffer | Uint8Array) {
+    // TODO: Remove Uint8Array type from publicKey
     this._pkh = doubleBlake3Hash(publicKey);
   }
 
