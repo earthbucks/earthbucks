@@ -429,6 +429,9 @@ importers:
       blake3-wasm:
         specifier: 2.1.5
         version: 2.1.5
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
       earthbucks-lib:
         specifier: workspace:^
         version: link:../earthbucks-lib
