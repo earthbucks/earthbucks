@@ -79,7 +79,7 @@ export default class GpuPow {
       matrix2.dispose();
       const max = matrix3.max();
       const matrix4 = matrix3.div(max); // divide by max; new max is 1
-      const matrix5 = matrix4.exp(); // use exp to spread out values; new min is 1 and new max is e^1
+      const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
       matrix4.dispose();
       const min2 = matrix5.min();
       const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
@@ -209,6 +209,10 @@ export default class GpuPow {
 
   async algo9973(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
     return this.algo(9973);
+  }
+
+  async algo46337(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+    return this.algo(46337);
   }
 
   reducedBufsHash(
