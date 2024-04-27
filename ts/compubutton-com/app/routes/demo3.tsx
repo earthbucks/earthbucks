@@ -24,7 +24,7 @@ export default function Landing() {
       for (let i = 0; i < 100; i++) {
         let workingBlockId = blake3Sync(Buffer.from("workingBlockId" + i));
         gpupow.updateWorkingBlockId(workingBlockId);
-        let reducedBufs = await gpupow.algo9973();
+        let reducedBufs = await gpupow.algo1627();
         gpupow
           .reducedBufsHashAsync(reducedBufs, blake3Async)
           .then((matrixHashBuf) => {
