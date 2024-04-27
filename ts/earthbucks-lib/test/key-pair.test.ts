@@ -4,11 +4,11 @@ import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";
 
-describe("Key", () => {
-  test("Key", () => {
-    const key = KeyPair.fromRandom();
-    expect(key.privateKey).toBeDefined();
-    expect(key.publicKey).toBeDefined();
+describe("KeyPair", () => {
+  test("Keypair", () => {
+    const keypair = KeyPair.fromRandom();
+    expect(keypair.privateKey).toBeDefined();
+    expect(keypair.publicKey).toBeDefined();
   });
 
   describe("standard test vectors: key.json", () => {
@@ -18,11 +18,11 @@ describe("Key", () => {
     );
 
     test("key pairs", () => {
-      interface KeyPair {
+      interface KeyPairJSON {
         priv_key: string;
         pub_key: string;
       }
-      const keyPairs: KeyPair[] = JSON.parse(data).key_pair;
+      const keyPairs: KeyPairJSON[] = JSON.parse(data).key_pair;
 
       for (const pair of keyPairs) {
         const privKeyBuf = Buffer.from(pair.priv_key, "hex");
