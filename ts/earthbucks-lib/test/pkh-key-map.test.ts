@@ -13,7 +13,7 @@ describe("PkhKeyMap", () => {
   beforeEach(() => {
     pkhKeyMap = new PkhKeyMap();
     key = KeyPair.fromRandom();
-    pkh = new Pkh(key.publicKey);
+    pkh = new Pkh(Buffer.from(key.publicKey));
     pkhU8Vec = pkh.pkh;
   });
 
@@ -42,7 +42,7 @@ describe("PkhKeyMap", () => {
   test("values method should return all Key values", () => {
     const key1 = key;
     const key2 = KeyPair.fromRandom();
-    const pkh2 = new Pkh(key2.publicKey);
+    const pkh2 = new Pkh(Buffer.from(key2.publicKey));
     const pkhU8Vec2 = pkh2.pkh;
     pkhKeyMap.add(key1, pkhU8Vec);
     pkhKeyMap.add(key2, pkhU8Vec2);

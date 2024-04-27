@@ -1,6 +1,4 @@
 import Tx from "./tx";
-import KeyPair from "./key-pair";
-import Pkh from "./pkh";
 import PkhKeyMap from "./pkh-key-map";
 import TxOutputMap from "./tx-output-map";
 import TxSignature from "./tx-signature";
