@@ -23,6 +23,10 @@ export default class PrivKey {
     return Buffer.from(secp256k1.publicKeyCreate(this.buf));
   }
 
+  toPubKeyHex(): string {
+    return this.toPubKeyBuffer().toString("hex");
+  }
+
   static fromBuffer(buf: Buffer): PrivKey {
     if (buf.length !== 32) {
       throw new Error("Invalid private key length");
