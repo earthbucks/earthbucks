@@ -1,8 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import { Buffer } from "buffer";
-import GpuPow from "earthbucks-tf/src/pow-gpu";
-import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
+import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,24 +13,18 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   async function onComputing() {
     console.log("begin");
-    // gpupow matrixCalculationFloat
     {
-      console.time("gpupow matrixCalculationFloat");
-      let previousBlockIds = [blake3Sync(Buffer.from("previousBlockId"))];
-      let workingBlockId = blake3Sync(Buffer.from("workingBlockId"));
-      let gpupow = new GpuPow(workingBlockId, previousBlockIds);
-
-      for (let i = 0; i < 100; i++) {
-        let workingBlockId = blake3Sync(Buffer.from("workingBlockId" + i));
-        gpupow.updateWorkingBlockId(workingBlockId);
-        let reducedBufs = await gpupow.algo1627();
-        gpupow
-          .reducedBufsHashAsync(reducedBufs, blake3Async)
-          .then((matrixHashBuf) => {
-            console.log(matrixHashBuf.toString("hex"));
-          });
-      }
-      console.timeEnd("gpupow matrixCalculationFloat");
+      console.time("blake3PowAsync");
+      let nonce = blake3Sync(Buffer.from("nonce 5"));
+      let target = Buffer.from(
+        "00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "hex",
+      );
+      let res = await blake3PowAsync(nonce, target);
+      console.log(res.toString("hex"));
+      let resHash = blake3Sync(res);
+      console.log(resHash.toString("hex"));
+      console.timeEnd("blake3PowAsync");
     }
     console.log("end");
   }

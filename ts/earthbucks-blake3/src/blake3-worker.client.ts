@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import * as blake3browser from "blake3/browser";
 let { createHash, hash } = blake3browser;
+import SimplePow from "./simple-pow";
 
 type BufferFunction = (input: Buffer) => Buffer;
 
@@ -19,6 +20,11 @@ self.onmessage = async (event) => {
       let { buf } = event.data;
       let resHash = myBlake3Hash(buf);
       self.postMessage({ type: "result", data: resHash });
+      break;
+    case "pow":
+      let { nonce, target } = event.data;
+      let resPow = SimplePow(nonce, target, myBlake3Hash);
+      self.postMessage({ type: "result", data: resPow });
       break;
     default:
       throw new Error(`Unrecognized message type: ${event.data.type}`);
