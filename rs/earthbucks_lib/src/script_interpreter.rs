@@ -1136,7 +1136,7 @@ mod tests {
                 .map(|priv_key| {
                     PrivKey::from_u8_vec(priv_key.clone())
                         .unwrap()
-                        .to_pub_key_buf()
+                        .to_pub_key_buffer()
                         .unwrap()
                         .clone()
                         .to_vec()

@@ -14,6 +14,7 @@
   "dependencies": {
     "@napi-rs/blake-hash": "^1.3.4",
     "@types/secp256k1": "^4.0.6",
+    "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "mathjs": "^12.4.1",
     "secp256k1": "^5.0.0",

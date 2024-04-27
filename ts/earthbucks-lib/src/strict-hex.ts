@@ -15,3 +15,6 @@ export function decode(hex: string): Buffer {
   const buffer = Buffer.from(hex, "hex");
   return buffer;
 }
+
+let StrictHex = { encode, decode, isValid };
+export default StrictHex;

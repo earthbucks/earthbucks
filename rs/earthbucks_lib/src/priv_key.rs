@@ -1,4 +1,5 @@
-use crate::buffer::Buffer;
+use crate::strict_hex;
+use bs58;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 
@@ -23,7 +24,7 @@ impl PrivKey {
         }
     }
 
-    pub fn to_pub_key_buf(&self) -> Result<[u8; 33], String> {
+    pub fn to_pub_key_buffer(&self) -> Result<[u8; 33], String> {
         let secret_key = SecretKey::from_slice(&self.buf);
         if secret_key.is_err() {
             return Err("Invalid secret key".to_string());
@@ -31,6 +32,11 @@ impl PrivKey {
         let secp = Secp256k1::new();
         let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key.unwrap());
         Ok(public_key_obj.serialize())
+    }
+
+    pub fn to_pub_key_hex(&self) -> Result<String, String> {
+        let pub_key_buf = self.to_pub_key_buffer()?;
+        Ok(strict_hex::encode(&pub_key_buf))
     }
 
     pub fn from_buffer(buffer: &[u8; 32]) -> Self {
@@ -53,16 +59,27 @@ impl PrivKey {
     }
 
     pub fn from_hex(hex: &str) -> Result<Self, String> {
-        let priv_key_vec = Buffer::from_hex(hex).data;
+        let priv_key_vec: Vec<u8> = strict_hex::decode(hex)?;
         PrivKey::from_u8_vec(priv_key_vec)
     }
 
     pub fn to_string_fmt(&self) -> String {
-        self.to_hex()
+        "prv".to_string() + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<Self, String> {
-        PrivKey::from_hex(s)
+        if !s.starts_with("prv") {
+            return Err("Invalid private key format".to_string());
+        }
+        let buf = bs58::decode(&s[3..])
+            .into_vec()
+            .map_err(|_| "Invalid base58 encoding".to_string())?;
+        PrivKey::from_u8_vec(buf)
+    }
+
+    pub fn is_valid(s: &str) -> bool {
+        let res = Self::from_string_fmt(s);
+        res.is_ok()
     }
 }
 
@@ -79,7 +96,7 @@ mod tests {
     #[test]
     fn test_to_pub_key_buf() {
         let priv_key = PrivKey::from_random();
-        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
+        let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
         println!("pub_key_buf: {}", hex::encode(pub_key_buf));
     }
 
@@ -133,11 +150,22 @@ mod tests {
         let priv_key =
             PrivKey::from_hex("2ef930fed143c0b92b485c29aaaba97d09cab882baafdb9ea1e55dec252cd09f")
                 .unwrap();
-        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
-        let pub_key_hex = Buffer::from(pub_key_buf.to_vec()).to_hex();
+        let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
+        let pub_key_hex = strict_hex::encode(&pub_key_buf);
         assert_eq!(
             pub_key_hex,
             "03f9bd9639017196c2558c96272d0ea9511cd61157185c98ae3109a28af058db7b"
         );
+    }
+
+    #[test]
+    fn test_to_from_string_format() {
+        assert!(PrivKey::is_valid("prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
+        assert!(!PrivKey::is_valid("prGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
+        assert!(!PrivKey::is_valid("prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"));
+
+        let str = "prvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
+        let priv_key = PrivKey::from_string_fmt(str).unwrap();
+        assert_eq!(priv_key.to_string_fmt(), str);
     }
 }

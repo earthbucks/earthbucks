@@ -116,7 +116,7 @@ mod tests {
         let key_pairs: JsonKeyPairs = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in key_pairs.key_pair {
-            let priv_key: PrivKey = PrivKey::from_string_fmt(&pair.priv_key).unwrap();
+            let priv_key: PrivKey = PrivKey::from_hex(&pair.priv_key).unwrap();
             let key_pair = KeyPair::from_priv_key(&priv_key);
             let pub_key = key_pair.unwrap().pub_key;
 

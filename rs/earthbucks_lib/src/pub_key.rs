@@ -22,7 +22,7 @@ impl PubKey {
     }
 
     pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
-        let pub_key_buf = priv_key.to_pub_key_buf();
+        let pub_key_buf = priv_key.to_pub_key_buffer();
         if pub_key_buf.is_err() {
             return Err(pub_key_buf.err().unwrap());
         }

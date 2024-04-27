@@ -1,7 +1,6 @@
 use hex;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::error::Error;
 
 lazy_static! {
     static ref RE: Regex = Regex::new(r"^[0-9a-f]*$").unwrap();
@@ -15,12 +14,15 @@ pub fn encode(data: &[u8]) -> String {
     hex::encode(data)
 }
 
-pub fn decode(hex: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+pub fn decode(hex: &str) -> Result<Vec<u8>, String> {
     if !is_valid(hex) {
         return Err("Invalid hex string".into());
     }
-    let data = hex::decode(hex)?;
-    Ok(data)
+    let res = hex::decode(hex);
+    if res.is_err() {
+        return Err("Invalid hex string".into());
+    }
+    Ok(res.unwrap())
 }
 
 #[cfg(test)]

@@ -674,7 +674,7 @@ mod tests {
         // let public_key = key.public_key();
 
         let priv_key = PrivKey::from_u8_vec(private_key).unwrap();
-        let pub_key_buf = priv_key.to_pub_key_buf().unwrap();
+        let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
 
         // Act
         let result =
@@ -730,7 +730,7 @@ mod tests {
         let hash_cache_2 = &mut HashCache::new();
         let pub_key_buf = PrivKey::from_u8_vec(private_key)
             .unwrap()
-            .to_pub_key_buf()
+            .to_pub_key_buffer()
             .unwrap();
 
         // Act
