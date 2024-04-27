@@ -10,19 +10,19 @@ describe("PrivKey", () => {
   test("to/from string format", () => {
     expect(
       PrivKey.isValidStringFmt(
-        "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes",
+        "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ",
       ),
     ).toBe(true);
     expect(
       PrivKey.isValidStringFmt(
-        "ebxprGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes",
+        "ebxprv78675b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ",
       ),
     ).toBe(false);
     expect(
-      PrivKey.isValidStringFmt("ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"),
+      PrivKey.isValidStringFmt("ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjx"),
     ).toBe(false);
 
-    let str = "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
+    let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
     let privKey2 = PrivKey.fromStringFmt(str);
     expect(privKey2.toStringFmt()).toBe(str);
   });

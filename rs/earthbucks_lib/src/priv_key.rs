@@ -64,16 +64,25 @@ impl PrivKey {
     }
 
     pub fn to_string_fmt(&self) -> String {
-        "ebxprv".to_string() + &bs58::encode(&self.buf).into_string()
+        let check_buf = blake3::hash(&self.buf);
+        let check_sum = &check_buf.as_bytes()[0..4];
+        let check_hex = strict_hex::encode(check_sum);
+        "ebxprv".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<Self, String> {
         if !s.starts_with("ebxprv") {
             return Err("Invalid private key format".to_string());
         }
-        let buf = bs58::decode(&s[6..])
+        let check_sum = strict_hex::decode(&s[6..14])?;
+        let buf = bs58::decode(&s[14..])
             .into_vec()
             .map_err(|_| "Invalid base58 encoding".to_string())?;
+        let check_buf = blake3::hash(&buf);
+        let expected_check_sum = &check_buf.as_bytes()[0..4];
+        if check_sum != expected_check_sum {
+            return Err("Invalid checksum".to_string());
+        }
         PrivKey::from_u8_vec(buf)
     }
 
@@ -161,16 +170,16 @@ mod tests {
     #[test]
     fn test_to_from_string_format() {
         assert!(PrivKey::is_valid_string_fmt(
-            "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"
+            "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ"
         ));
         assert!(!PrivKey::is_valid_string_fmt(
-            "ebxprGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"
+            "ebxpr786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ"
         ));
         assert!(!PrivKey::is_valid_string_fmt(
-            "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"
+            "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjx"
         ));
 
-        let str = "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
+        let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
         let priv_key = PrivKey::from_string_fmt(str).unwrap();
         assert_eq!(priv_key.to_string_fmt(), str);
     }
