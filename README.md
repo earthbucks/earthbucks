@@ -6,6 +6,8 @@
 
 Genesis block in 2024.
 
+Estimated launch in July.
+
 Website: [earthbucks.com](https://earthbucks.com)
 
 For more information, please see the [prompt](./docs/prompt.md), which is
@@ -13,21 +15,28 @@ designed to be used by an AI for questions and answers about EarthBucks.
 
 ## Software Architecture
 
+Rust is used for consensus-critical code. TypeScript is used for everything
+else. The library is implemented in both Rust and TypeScript.
+
 Rust (rs):
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
+- earthbucks_tf (tensorflow methods for GPU POW)
+- earthbucks_client (works with API)
 - earthbucks_builder (build blocks, build merkle trees, validate txs, validate blocks)
 - earthbucks_follower (follow block headers, validate txs + merkle proofs)
 
 TypeScript (ts):
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
+- earthbucks-tf (tensorflow methods for GPU POW)
 - earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
-- earthbucks-com (main app, mining pool and wallet, works with builder, database)
-- earthbucks-builder-api (builder api, works with builder)
-- earthbucks-follower-api (follower api, works with follower)
+- earthbucks-api (works with builder and/or follower and/or wallet, via client)
+- earthbucks-com (mine, information, not a wallet)
 - earthbucks-wallet (wallet, works with follower)
 - earthbucks-explorer (block explorer, works with builder)
+- compubutton-com (button, AI, etc., not open source)
+- ryanxcharles-com (KYC, not open source)
 
 ## Mining Network Architecture
 
