@@ -35,7 +35,7 @@ impl HeaderChain {
         let domain_buf = domain.as_bytes();
         let script_chunk_domain = ScriptChunk::from_data(domain_buf.to_vec());
         let input_script = Script::new(vec![script_chunk_domain]);
-        let output_script = Script::from_pkh_output(&pkh.pkh);
+        let output_script = Script::from_pkh_output(&pkh.buf);
         let output_amount = Header::coinbase_amount(building_block_n as u64);
         Tx::from_coinbase(
             input_script,

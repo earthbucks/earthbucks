@@ -21,11 +21,11 @@ fn main() {
             "pkh" => {
                 let key = KeyPair::from_random();
                 let public_key = key.pub_key.buf;
-                let pkh = pkh::Pkh::from_pub_key_buf(public_key.to_vec());
+                let pkh = pkh::Pkh::from_pub_key_buffer(public_key.to_vec());
 
                 let private_key_hex = key.priv_key.to_hex();
                 let public_key_hex = key.pub_key.to_hex();
-                let pkh_hex = hex::encode(pkh.pkh());
+                let pkh_hex = hex::encode(pkh.to_u8_vec());
 
                 println!("Private key: {}", private_key_hex);
                 println!("Public key: {}", public_key_hex);

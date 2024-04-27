@@ -98,9 +98,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = KeyPair::from_random();
-            let pkh = Pkh::new(key.pub_key.buf.to_vec());
-            pkh_key_map.add(key.clone(), &pkh.pkh.clone());
-            let script = Script::from_pkh_output(&pkh.pkh.clone());
+            let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
+            pkh_key_map.add(key.clone(), &pkh.buf.clone());
+            let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
@@ -153,9 +153,9 @@ mod tests {
         // generate 5 keys, 5 outputs, and add them to the txOutMap
         for i in 0..5 {
             let key = KeyPair::from_random();
-            let pkh = Pkh::new(key.pub_key.buf.to_vec());
-            pkh_key_map.add(key.clone(), &pkh.pkh.clone());
-            let script = Script::from_pkh_output(&pkh.pkh.clone());
+            let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
+            pkh_key_map.add(key.clone(), &pkh.buf.clone());
+            let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }

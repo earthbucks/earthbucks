@@ -49,7 +49,7 @@ impl EnvConfig {
 
         let coinbase_pkh_str =
             env::var("COINBASE_PKH").map_err(|_| "Missing coinbase pkh".to_string())?;
-        let coinbase_pkh: Pkh = Pkh::from_string(&coinbase_pkh_str)
+        let coinbase_pkh: Pkh = Pkh::from_hex(&coinbase_pkh_str)
             .map_err(|e| format!("Invalid coinbase pkh: {}", e))?;
 
         let admin_pub_key_str =

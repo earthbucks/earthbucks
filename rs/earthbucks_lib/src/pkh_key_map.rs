@@ -45,8 +45,8 @@ mod tests {
         let mut pkh_key_map = PkhKeyMap::new();
         let key = KeyPair::from_random();
         let key_clone = key.clone();
-        let pkh = Pkh::new(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.pkh;
+        let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
+        let pkh_u8_vec = pkh.buf;
         pkh_key_map.add(key.clone(), &pkh_u8_vec);
         let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
         assert_eq!(
@@ -60,8 +60,8 @@ mod tests {
         let mut pkh_key_map = PkhKeyMap::new();
         let key = KeyPair::from_random();
         let key_clone = key.clone();
-        let pkh = Pkh::new(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.pkh;
+        let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
+        let pkh_u8_vec = pkh.buf;
         pkh_key_map.add(key.clone(), &pkh_u8_vec);
         pkh_key_map.remove(&pkh_u8_vec);
         assert!(pkh_key_map.get(&pkh_u8_vec).is_none());
@@ -72,8 +72,8 @@ mod tests {
         let mut pkh_key_map = PkhKeyMap::new();
         let key = KeyPair::from_random();
         let key_clone = key.clone();
-        let pkh = Pkh::new(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.pkh;
+        let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
+        let pkh_u8_vec = pkh.buf;
         pkh_key_map.add(key.clone(), &pkh_u8_vec);
         let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
         assert_eq!(
@@ -87,12 +87,12 @@ mod tests {
         let mut pkh_key_map = PkhKeyMap::new();
         let key1 = KeyPair::from_random();
         let key1_clone = key1.clone();
-        let pkh1 = Pkh::new(key1_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec1 = pkh1.pkh;
+        let pkh1 = Pkh::from_pub_key_buffer(key1_clone.pub_key.buf.to_vec());
+        let pkh_u8_vec1 = pkh1.buf;
         let key2 = KeyPair::from_random();
         let key2_clone = key2.clone();
-        let pkh2 = Pkh::new(key2_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec2 = pkh2.pkh;
+        let pkh2 = Pkh::from_pub_key_buffer(key2_clone.pub_key.buf.to_vec());
+        let pkh_u8_vec2 = pkh2.buf;
         pkh_key_map.add(key1.clone(), &pkh_u8_vec1);
         pkh_key_map.add(key2.clone(), &pkh_u8_vec2);
         let values: Vec<&KeyPair> = pkh_key_map.values().collect();

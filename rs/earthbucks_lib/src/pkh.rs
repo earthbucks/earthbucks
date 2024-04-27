@@ -1,37 +1,57 @@
 use crate::blake3::double_blake3_hash;
-use crate::buffer::Buffer;
+use crate::strict_hex;
+use bs58;
 
 #[derive(Debug, Clone)]
 pub struct Pkh {
-    pub pkh: [u8; 32],
+    pub buf: [u8; 32],
 }
 
 impl Pkh {
-    pub fn new(public_key: Vec<u8>) -> Self {
-        let pkh = double_blake3_hash(&public_key);
-        Self { pkh }
-    }
-
-    pub fn from_pub_key_buf(public_key: Vec<u8>) -> Self {
-        Self::new(public_key)
+    pub fn from_pub_key_buffer(pub_key_buf: Vec<u8>) -> Self {
+        let buf = double_blake3_hash(&pub_key_buf);
+        Self { buf }
     }
 
     pub fn from_hex(hex: &str) -> Result<Self, String> {
-        let pkh_buf = Buffer::from_hex(hex).to_u8_vec();
+        let pkh_buf = strict_hex::decode(hex)?.to_vec();
         if pkh_buf.len() != 32 {
             return Err("Invalid pkh length".to_string());
         }
         Ok(Self {
-            pkh: pkh_buf.try_into().unwrap(),
+            buf: pkh_buf.try_into().unwrap(),
         })
     }
 
-    pub fn from_string(hex: &str) -> Result<Self, String> {
-        Self::from_hex(hex)
+    pub fn to_u8_vec(&self) -> &[u8; 32] {
+        &self.buf
     }
 
-    pub fn pkh(&self) -> &[u8; 32] {
-        &self.pkh
+    pub fn from_u8_vec(buf: &[u8; 32]) -> Self {
+        Self { buf: *buf }
+    }
+
+    pub fn to_string_fmt(&self) -> String {
+        "ebxpkh".to_string() + &bs58::encode(&self.buf).into_string()
+    }
+
+    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
+        if !s.starts_with("ebxpkh") {
+            return Err("Invalid prefix".to_string());
+        }
+        let buf = bs58::decode(&s[6..])
+            .into_vec()
+            .map_err(|_| "Invalid base58")?;
+        if buf.len() != 32 {
+            return Err("Invalid pkh length".to_string());
+        }
+        Ok(Self {
+            buf: buf.try_into().unwrap(),
+        })
+    }
+
+    pub fn is_valid_string_fmt(s: &str) -> bool {
+        Self::from_string_fmt(s).is_ok()
     }
 }
 
@@ -56,10 +76,10 @@ mod tests {
         expected_pkh.copy_from_slice(&expected_pkh_vec[..]);
 
         // Create a new Address instance
-        let pkh = Pkh::new(pub_key);
+        let pkh = Pkh::from_pub_key_buffer(pub_key);
 
         // Check that the pkh matches the expected pkh
-        assert_eq!(pkh.pkh(), &expected_pkh);
+        assert_eq!(pkh.to_u8_vec(), &expected_pkh);
     }
 
     #[derive(Deserialize)]
@@ -91,10 +111,30 @@ mod tests {
             expected_pkh.copy_from_slice(&expected_pkh_vec[..]);
 
             // Create a new Address instance
-            let pkh = Pkh::new(pub_key);
+            let pkh = Pkh::from_pub_key_buffer(pub_key);
 
             // Check that the pkh matches the expected pkh
-            assert_eq!(pkh.pkh(), &expected_pkh);
+            assert_eq!(pkh.to_u8_vec(), &expected_pkh);
         }
+    }
+
+    #[test]
+    fn test_pkh_string_fmt() {
+        assert!(Pkh::is_valid_string_fmt(
+            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+        ));
+        assert!(!Pkh::is_valid_string_fmt(
+            "ebxpkDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+        ));
+        assert!(!Pkh::is_valid_string_fmt(
+            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2D"
+        ));
+
+        let pkh =
+            Pkh::from_string_fmt("ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1").unwrap();
+        assert_eq!(
+            pkh.to_string_fmt(),
+            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+        );
     }
 }

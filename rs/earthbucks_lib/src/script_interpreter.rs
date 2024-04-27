@@ -1071,8 +1071,8 @@ mod tests {
                 hex::encode(output_pub_key),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
-            let output_pkh = Pkh::new(output_pub_key.to_vec());
-            let output_script = Script::from_pkh_output(output_pkh.pkh());
+            let output_pkh = Pkh::from_pub_key_buffer(output_pub_key.to_vec());
+            let output_script = Script::from_pkh_output(output_pkh.to_u8_vec());
             let output_amount = 100;
             let output_tx_id = vec![0; 32];
             let output_tx_index = 0;
