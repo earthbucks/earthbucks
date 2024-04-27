@@ -77,7 +77,7 @@ impl PrivKey {
         PrivKey::from_u8_vec(buf)
     }
 
-    pub fn is_valid(s: &str) -> bool {
+    pub fn is_valid_string_fmt(s: &str) -> bool {
         let res = Self::from_string_fmt(s);
         res.is_ok()
     }
@@ -160,9 +160,15 @@ mod tests {
 
     #[test]
     fn test_to_from_string_format() {
-        assert!(PrivKey::is_valid("ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
-        assert!(!PrivKey::is_valid("ebxprGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"));
-        assert!(!PrivKey::is_valid("ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"));
+        assert!(PrivKey::is_valid_string_fmt(
+            "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"
+        ));
+        assert!(!PrivKey::is_valid_string_fmt(
+            "ebxprGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes"
+        ));
+        assert!(!PrivKey::is_valid_string_fmt(
+            "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaM"
+        ));
 
         let str = "ebxprvGQLKEaBEbcUSiqW1d5xadmN6iHjLP8DDMaMogoHUtzes";
         let priv_key = PrivKey::from_string_fmt(str).unwrap();

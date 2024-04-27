@@ -1,5 +1,6 @@
-use crate::buffer::Buffer;
 use crate::priv_key::PrivKey;
+use crate::strict_hex;
+use bs58;
 use secp256k1::PublicKey;
 
 #[derive(Debug, Clone)]
@@ -34,21 +35,32 @@ impl PubKey {
     }
 
     pub fn from_hex(hex: &str) -> Result<PubKey, String> {
-        let pub_key_buf = Buffer::from_hex(hex).data;
+        let pub_key_buf = strict_hex::decode(hex)?;
         PubKey::from_u8_vec(pub_key_buf)
     }
 
     pub fn to_string_fmt(&self) -> String {
-        self.to_hex()
+        "ebxpub".to_string() + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<PubKey, String> {
-        PubKey::from_hex(s)
+        if !s.starts_with("ebxpub") {
+            return Err("Invalid format".to_string());
+        }
+        let buf = bs58::decode(&s[6..])
+            .into_vec()
+            .map_err(|_| "Invalid base58")?;
+        PubKey::from_u8_vec(buf)
     }
 
     pub fn is_valid(&self) -> bool {
         let public_key_obj = PublicKey::from_slice(&self.buf);
         public_key_obj.is_ok()
+    }
+
+    pub fn is_valid_string_fmt(s: &str) -> bool {
+        let res = Self::from_string_fmt(s);
+        res.is_ok()
     }
 }
 
@@ -75,7 +87,20 @@ mod tests {
     fn test_is_not_valid() {
         // valid: 035b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219
         let invalid = "065b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219";
-        let pub_key = PubKey::from_string_fmt(invalid).unwrap();
+        let pub_key = PubKey::from_hex(invalid).unwrap();
         assert!(!pub_key.is_valid());
+    }
+
+    #[test]
+    fn test_to_from_string_format() {
+        assert!(PubKey::is_valid_string_fmt(
+            "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V"
+        ));
+        assert!(!PubKey::is_valid_string_fmt(
+            "ebxpucrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V"
+        ));
+        assert!(!PubKey::is_valid_string_fmt(
+            "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWu"
+        ));
     }
 }

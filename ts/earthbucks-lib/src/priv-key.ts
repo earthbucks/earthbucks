@@ -5,7 +5,7 @@ import StrictHex from "./strict-hex";
 import bs58 from "bs58";
 
 export default class PrivKey {
-  buf: Buffer
+  buf: Buffer;
 
   constructor(buf: Buffer) {
     this.buf = buf;
@@ -43,14 +43,14 @@ export default class PrivKey {
   }
 
   toStringFmt(): string {
-    return 'ebxprv' + bs58.encode(this.buf);
+    return "ebxprv" + bs58.encode(this.buf);
   }
 
   static fromStringFmt(str: string): PrivKey {
-    if (!str.startsWith('ebxprv')) {
+    if (!str.startsWith("ebxprv")) {
       throw new Error("Invalid private key format");
     }
-    let decoded: Buffer
+    let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(6)));
     } catch (e) {
@@ -59,8 +59,8 @@ export default class PrivKey {
     return PrivKey.fromBuffer(decoded);
   }
 
-  static isValid(str: string): boolean {
-    let privKey: PrivKey
+  static isValidStringFmt(str: string): boolean {
+    let privKey: PrivKey;
     try {
       privKey = PrivKey.fromStringFmt(str);
     } catch (e) {
