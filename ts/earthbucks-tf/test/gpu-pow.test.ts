@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import GpuPow from "../src/gpu-pow";
+import GpuPow from "../src/pow-gpu";
 import { Buffer } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 
@@ -78,7 +78,7 @@ describe("GpuPow", () => {
     expect(res.toString("hex")).toBe(
       "56a298c46c3288bd16fddc207c6d98bb9c95f261341327d6c2a26686e68c3012",
     );
-  })
+  });
 
   test.skip("algo1627", async () => {
     const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
