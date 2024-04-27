@@ -28,12 +28,12 @@ function main() {
         const publicKey = key.publicKey;
 
         // Get the corresponding pkh
-        const pkh = new Pkh(publicKey);
+        const pkh = Pkh.fromPubKeyBuffer(publicKey);
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privateKey).toString("hex");
         const publicKeyHex = Buffer.from(publicKey).toString("hex");
-        const pkhHex = Buffer.from(pkh.pkh).toString("hex");
+        const pkhHex = Buffer.from(pkh.buf).toString("hex");
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
         console.log(`Address: ${pkhHex}`);

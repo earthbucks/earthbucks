@@ -3,9 +3,14 @@ import { Buffer } from "buffer";
 
 // public key hash
 export default class Pkh {
-  pkh: Buffer;
+  buf: Buffer;
 
-  constructor(publicKey: Buffer) {
-    this.pkh = doubleBlake3Hash(publicKey);
+  constructor(pkhBuf: Buffer) {
+    this.buf = pkhBuf;
+  }
+
+  static fromPubKeyBuffer(publicKey: Buffer): Pkh {
+    let pkhBuf = doubleBlake3Hash(publicKey);
+    return new Pkh(pkhBuf);
   }
 }

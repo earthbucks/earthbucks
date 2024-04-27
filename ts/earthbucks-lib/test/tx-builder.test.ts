@@ -19,9 +19,9 @@ describe("TxBuilder", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = new Pkh(Buffer.from(key.publicKey));
-      pkhKeyMap.add(key, pkh.pkh);
-      const script = Script.fromAddressOutput(pkh.pkh);
+      const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+      pkhKeyMap.add(key, pkh.buf);
+      const script = Script.fromAddressOutput(pkh.buf);
       const output = new TxOutput(BigInt(100), script);
       txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
     }
@@ -32,8 +32,8 @@ describe("TxBuilder", () => {
 
   test("should build a valid tx when input is enough to cover the output", () => {
     const key = KeyPair.fromRandom();
-    const pkh = new Pkh(Buffer.from(key.publicKey));
-    const script = Script.fromAddressOutput(pkh.pkh);
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
     txBuilder.addOutput(BigInt(50), Script.fromString(""));
 

@@ -22,9 +22,9 @@ describe("TxVerifier", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = new Pkh(Buffer.from(key.publicKey));
-      pkhKeyMap.add(key, pkh.pkh);
-      const script = Script.fromAddressOutput(pkh.pkh);
+      const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+      pkhKeyMap.add(key, pkh.buf);
+      const script = Script.fromAddressOutput(pkh.buf);
       const output = new TxOutput(BigInt(100), script);
       txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
     }
@@ -35,8 +35,8 @@ describe("TxVerifier", () => {
 
   test("should sign and verify a tx", () => {
     const key = KeyPair.fromRandom();
-    const pkh = new Pkh(Buffer.from(key.publicKey));
-    const script = Script.fromAddressOutput(pkh.pkh);
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const script = Script.fromAddressOutput(pkh.buf);
     txBuilder.addOutput(BigInt(50), Script.fromString(""));
 
     const tx = txBuilder.build();
@@ -65,8 +65,8 @@ describe("TxVerifier", () => {
 
   test("should sign and verify a tx with two inputs", () => {
     const key = KeyPair.fromRandom();
-    const pkh = new Pkh(Buffer.from(key.publicKey));
-    const script = Script.fromAddressOutput(pkh.pkh);
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const script = Script.fromAddressOutput(pkh.buf);
     txBuilder.addOutput(BigInt(100), Script.fromString(""));
     txBuilder.addOutput(BigInt(100), Script.fromString(""));
 

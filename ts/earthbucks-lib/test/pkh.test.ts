@@ -8,8 +8,8 @@ import { Buffer } from "buffer";
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = new Pkh(Buffer.from(key.publicKey));
-    expect(pkh.pkh).toBeDefined();
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    expect(pkh.buf).toBeDefined();
   });
 
   describe("standard test vectors: pkh.json", () => {
@@ -28,8 +28,8 @@ describe("Pkh", () => {
       for (const pair of pkhPairs) {
         const pubKeyBuf = Buffer.from(pair.pub_key, "hex");
         const pubKey = new Uint8Array(pubKeyBuf);
-        const pkh = new Pkh(Buffer.from(pubKey));
-        expect(Buffer.from(pkh.pkh).toString("hex")).toBe(pair.pkh);
+        const pkh = Pkh.fromPubKeyBuffer(Buffer.from(pubKey));
+        expect(Buffer.from(pkh.buf).toString("hex")).toBe(pair.pkh);
       }
     });
   });
