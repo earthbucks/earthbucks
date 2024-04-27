@@ -29,6 +29,7 @@ Rust (rs):
 TypeScript (ts):
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
+- earthbucks-blake3 (async blake3 in a web worker)
 - earthbucks-tf (tensorflow methods for GPU POW)
 - earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
 - earthbucks-api (works with builder and/or follower and/or wallet, via client)

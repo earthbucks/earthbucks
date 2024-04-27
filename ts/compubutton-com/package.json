@@ -30,6 +30,7 @@
     "blake3-wasm": "2.1.5",
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
+    "earthbucks-blake3": "workspace:^",
     "earthbucks-db": "workspace:^",
     "earthbucks-lib": "workspace:^",
     "earthbucks-tf": "workspace:^",

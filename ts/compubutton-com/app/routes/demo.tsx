@@ -2,7 +2,7 @@ import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import { Buffer } from "buffer";
 import GpuPow from "earthbucks-tf/src/pow-gpu";
-import { blake3Sync, blake3Async } from "../blake3-async";
+import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
 
 export const meta: MetaFunction = () => {
   return [

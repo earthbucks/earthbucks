@@ -46,42 +46,27 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button
-            initialText="EarthBucks"
-            mode="pay"
-          />
+          <Button initialText="EarthBucks" mode="pay" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Computcha"
-            mode="pow"
-          />
+          <Button initialText="Computcha" mode="pow" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Compusecret"
-            mode="secret"
-          />
+          <Button initialText="Compusecret" mode="secret" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Compucredits"
-            mode="credits"
-          />
+          <Button initialText="Compucredits" mode="credits" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Artintellica"
-            mode="ai"
-          />
+          <Button initialText="Artintellica" mode="ai" />
         </div>
       </div>
     </div>
