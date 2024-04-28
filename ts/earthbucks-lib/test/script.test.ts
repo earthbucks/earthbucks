@@ -44,15 +44,15 @@ describe("Script", () => {
     expect(script.toString()).toBe("0xff 0xff");
   });
 
-  it("should correctly convert between string and Uint8Array for two PUSHDATA2 operations", () => {
+  it("should correctly convert between string and Buffer for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
     const initialScript = new Script();
     initialScript.fromString("0xffff 0xffff");
 
-    // Convert the Script to a Uint8Array
+    // Convert the Script to a Buffer
     const arr = initialScript.toBuffer();
 
-    // Create a new Script from the Uint8Array
+    // Create a new Script from the Buffer
     const finalScript = new Script();
     finalScript.fromU8Vec(arr);
 

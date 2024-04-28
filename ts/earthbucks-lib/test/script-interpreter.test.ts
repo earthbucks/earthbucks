@@ -189,7 +189,7 @@ describe("ScriptInterpreter", () => {
         "b78467b0ea6afa6c42c94333dcece978829bdb7ba7b97a2273b72cdc6be8c553",
       ];
 
-      // Convert private keys to Uint8Array format
+      // Convert private keys to Buffer format
       const privKeysU8Vec = privKeysHex.map((hex) => Buffer.from(hex, "hex"));
 
       // Generate public keys

@@ -144,7 +144,7 @@ export default class ScriptInterpreter {
             this.errStr = "unbalanced conditional";
             this.returnSuccess = false;
             this.returnValue =
-              this.stack[this.stack.length - 1] || new Uint8Array();
+              this.stack[this.stack.length - 1] || Buffer.alloc(0);
             return false;
           }
           this.ifStack[this.ifStack.length - 1] =
@@ -899,11 +899,11 @@ export default class ScriptInterpreter {
       this.pc++;
     }
     if (this.errStr) {
-      this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array();
+      this.returnValue = this.stack[this.stack.length - 1] || Buffer.alloc(0);
       this.returnSuccess = false;
       return this.returnSuccess;
     }
-    this.returnValue = this.stack[this.stack.length - 1] || new Uint8Array();
+    this.returnValue = this.stack[this.stack.length - 1] || Buffer.alloc(0);
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue);
     return this.returnSuccess;
   }

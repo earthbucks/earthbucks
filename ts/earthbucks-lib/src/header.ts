@@ -157,19 +157,19 @@ export default class Header {
     return version === 1;
   }
 
-  static isValidPreviousBlockHash(previousBlockHash: Uint8Array): boolean {
+  static isValidPreviousBlockHash(previousBlockHash: Buffer): boolean {
     return previousBlockHash.length === 32;
   }
 
-  static isValidMerkleRoot(merkleRoot: Uint8Array): boolean {
+  static isValidMerkleRoot(merkleRoot: Buffer): boolean {
     return merkleRoot.length === 32;
   }
 
-  static isValidNonce(nonce: Uint8Array): boolean {
+  static isValidNonce(nonce: Buffer): boolean {
     return nonce.length === 32;
   }
 
-  static isValidTarget(target: Uint8Array): boolean {
+  static isValidTarget(target: Buffer): boolean {
     return target.length === 32;
   }
 

@@ -4,7 +4,7 @@ export default class BufferReader {
   private buf: Buffer;
   private pos: number;
 
-  constructor(buf: Uint8Array) {
+  constructor(buf: Buffer) {
     // create a Buffer with the same memory as the ArrayBuffer
     this.buf = Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength);
     this.pos = 0;
@@ -128,7 +128,7 @@ export default class BufferReader {
     }
   }
 
-  readVarIntBuf(): Uint8Array {
+  readVarIntBuf(): Buffer {
     const first = this.buf.readUInt8(this.pos);
     switch (first) {
       case 0xfd:

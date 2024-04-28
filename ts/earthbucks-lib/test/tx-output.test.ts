@@ -20,7 +20,7 @@ describe("TxOutput", () => {
   });
 
   describe("fromU8Vec and toBuffer", () => {
-    test("should create a TxOutput from a Uint8Array", () => {
+    test("should create a TxOutput from a Buffer", () => {
       const value = BigInt(100);
       const script = Script.fromString(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",

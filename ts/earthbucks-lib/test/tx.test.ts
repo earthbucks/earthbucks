@@ -191,7 +191,7 @@ describe("Tx", () => {
 
       const result = tx.hashPrevouts();
 
-      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
         "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
@@ -210,7 +210,7 @@ describe("Tx", () => {
 
       const result = tx.hashSequence();
 
-      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
         "5c9bc5bfc9fe60992fb5432ba6d5da1b5e232127b6a5678f93063b2d766cfbf5",
@@ -229,7 +229,7 @@ describe("Tx", () => {
 
       const result = tx.hashOutputs();
 
-      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
         "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
@@ -257,7 +257,7 @@ describe("Tx", () => {
         TxSignature.SIGHASH_ALL,
       );
 
-      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
         "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
@@ -287,7 +287,7 @@ describe("Tx", () => {
         hashCache,
       );
 
-      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
         "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",

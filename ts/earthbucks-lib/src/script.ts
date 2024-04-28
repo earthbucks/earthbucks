@@ -31,7 +31,7 @@ export default class Script {
     return Buffer.concat(bufArray);
   }
 
-  fromU8Vec(arr: Uint8Array): this {
+  fromU8Vec(arr: Buffer): this {
     const reader = new BufferReader(arr);
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
@@ -55,7 +55,7 @@ export default class Script {
     return this;
   }
 
-  static fromU8Vec(arr: Uint8Array): Script {
+  static fromU8Vec(arr: Buffer): Script {
     return new Script().fromU8Vec(arr);
   }
 

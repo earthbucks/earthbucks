@@ -75,7 +75,7 @@ describe("VarInt", () => {
   });
 
   describe("toBuffer", () => {
-    it("should return a Uint8Array", () => {
+    it("should return a Buffer", () => {
       // Arrange
       const n: number = 123;
 
@@ -83,7 +83,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toBuffer()).toBeInstanceOf(Uint8Array);
+      expect(varInt.toBuffer()).toBeInstanceOf(Buffer);
     });
   });
 

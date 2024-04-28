@@ -97,7 +97,7 @@ describe("BufferReader", () => {
   test("readUInt64BEBigInt returns correct value and updates position", () => {
     // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0x0123456789ABCDEF
     bufferReader = new BufferReader(
-      new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+      Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
     const result = bufferReader.readUInt64BEBigInt();
@@ -112,7 +112,7 @@ describe("BufferReader", () => {
   test("readUInt64LEBigInt returns correct value and updates position", () => {
     // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0xEFCDAB8967452301 in little-endian order
     bufferReader = new BufferReader(
-      new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+      Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
     const result = bufferReader.readUInt64LEBigInt();

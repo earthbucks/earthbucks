@@ -43,11 +43,11 @@ export default class Block {
     return bw;
   }
 
-  toBuffer(): Uint8Array {
+  toBuffer(): Buffer {
     return this.toBufferWriter(new BufferWriter()).toBuffer();
   }
 
-  static fromU8Vec(buf: Uint8Array): Block {
+  static fromU8Vec(buf: Buffer): Block {
     return Block.fromBufferReader(new BufferReader(buf));
   }
 

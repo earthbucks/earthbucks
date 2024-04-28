@@ -3,8 +3,8 @@ import { Buffer } from "buffer";
 export default class BufferWriter {
   bufs: Buffer[];
 
-  constructor(arrs?: Uint8Array[]) {
-    this.bufs = arrs ? arrs.map((arr) => Buffer.from(arr)) : [];
+  constructor(bufs?: Buffer[]) {
+    this.bufs = bufs ? bufs.map((arr) => Buffer.from(arr)) : [];
   }
 
   getLength(): number {

@@ -33,7 +33,7 @@ export default class Tx {
     this.lockNum = lockNum;
   }
 
-  static fromU8Vec(buf: Uint8Array): Tx {
+  static fromU8Vec(buf: Buffer): Tx {
     const reader = new BufferReader(buf);
     const version = reader.readUInt8();
     const numInputs = reader.readVarIntNum();
@@ -207,7 +207,7 @@ export default class Tx {
     script: Buffer,
     amount: bigint,
     hashType: number,
-  ): Uint8Array {
+  ): Buffer {
     const hashCache = new HashCache();
     const preimage = this.sighashPreimage(
       inputIndex,
