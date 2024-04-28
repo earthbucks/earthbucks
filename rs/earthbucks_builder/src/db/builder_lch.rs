@@ -60,7 +60,7 @@ impl MineLch {
     }
 
     pub fn to_block_header(&self) -> Header {
-        Header{
+        Header {
             version: self.version,
             prev_block_id: self.prev_block_id.clone().try_into().unwrap(),
             merkle_root: self.merkle_root.clone().try_into().unwrap(),
@@ -77,7 +77,7 @@ impl MineLch {
     pub async fn get(pool: &MySqlPool, id: Vec<u8>) -> Result<Self, Error> {
         let row: Self = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, domain, created_at
             FROM builder_lch
             WHERE id = ?
             "#,
@@ -91,7 +91,7 @@ impl MineLch {
     pub async fn get_longest_chain(pool: &MySqlPool) -> Result<HeaderChain, Error> {
         let rows: Vec<MineLch> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, domain, created_at
             FROM builder_lch
             ORDER BY block_num ASC
             "#,
@@ -108,7 +108,7 @@ impl MineLch {
     pub async fn get_chain_tip(pool: &MySqlPool) -> Result<Option<Header>, Error> {
         let row: Option<MineLch> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, domain, created_at
             FROM builder_lch
             ORDER BY block_num DESC
             LIMIT 1
@@ -125,16 +125,19 @@ impl MineLch {
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO builder_lch (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO builder_lch (id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, domain)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 version = VALUES(version),
                 prev_block_id = VALUES(prev_block_id),
                 merkle_root = VALUES(merkle_root),
                 timestamp = VALUES(timestamp),
+                block_num = VALUES(block_num),
                 target = VALUES(target),
                 nonce = VALUES(nonce),
-                block_num = VALUES(block_num),
+                work_algo = VALUES(work_algo),
+                work_ser = VALUES(work_ser),
+                work_par = VALUES(work_par),
                 domain = VALUES(domain)
             "#,
         )
@@ -143,9 +146,12 @@ impl MineLch {
         .bind(&self.prev_block_id)
         .bind(&self.merkle_root)
         .bind(self.timestamp)
+        .bind(self.block_num)
         .bind(&self.target)
         .bind(&self.nonce)
-        .bind(self.block_num)
+        .bind(self.work_algo)
+        .bind(&self.work_ser)
+        .bind(&self.work_par)
         .bind(&self.domain)
         .execute(pool)
         .await?;
@@ -155,7 +161,7 @@ impl MineLch {
     pub async fn get_chain_tip_id(pool: &MySqlPool) -> Option<Vec<u8>> {
         let row: Result<Option<MineLch>, Error> = sqlx::query_as(
             r#"
-            SELECT id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, domain, created_at
+            SELECT id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, domain, created_at
             FROM builder_lch
             ORDER BY block_num DESC
             LIMIT 1

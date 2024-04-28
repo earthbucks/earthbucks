@@ -44,7 +44,7 @@ impl MineHeader {
     }
 
     pub fn to_block_header(&self) -> Header {
-        Header{
+        Header {
             version: self.version,
             prev_block_id: self.prev_block_id.clone().try_into().unwrap(),
             merkle_root: self.merkle_root.clone().try_into().unwrap(),
@@ -105,25 +105,11 @@ impl MineHeader {
         Ok(rows)
     }
 
-    // pub async fn get_voting_headers(pool: &MySqlPool) -> Result<Vec<MineHeader>, Error> {
-    //     let rows: Vec<MineHeader> = sqlx::query_as(
-    //         r#"
-    //         SELECT * FROM builder_header
-    //         WHERE is_header_valid = TRUE AND is_block_valid = TRUE AND is_vote_valid IS NULL
-    //         ORDER BY target ASC
-    //         "#,
-    //     )
-    //     .fetch_all(pool)
-    //     .await?;
-
-    //     Ok(rows)
-    // }
-
     pub async fn save(&self, pool: &MySqlPool) -> Result<(), Error> {
         sqlx::query(
             r#"
-            INSERT INTO builder_header (id, version, prev_block_id, merkle_root, timestamp, target, nonce, block_num, is_header_valid, is_block_valid, is_vote_valid, domain, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO builder_header (id, version, prev_block_id, merkle_root, timestamp, block_num, target, nonce, work_algo, work_ser, work_par, is_header_valid, is_block_valid, is_vote_valid, domain, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
         .bind(&self.id)
@@ -131,9 +117,12 @@ impl MineHeader {
         .bind(&self.prev_block_id)
         .bind(&self.merkle_root)
         .bind(self.timestamp)
+        .bind(self.block_num)
         .bind(&self.target)
         .bind(&self.nonce)
-        .bind(self.block_num)
+        .bind(self.work_algo)
+        .bind(&self.work_ser)
+        .bind(&self.work_par)
         .bind(self.is_header_valid)
         .bind(self.is_block_valid)
         .bind(self.is_vote_valid)
