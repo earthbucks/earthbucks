@@ -1,4 +1,4 @@
-use crate::blake3::double_blake3_hash;
+use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::strict_hex;
 use bs58;
 
@@ -32,16 +32,26 @@ impl Pkh {
     }
 
     pub fn to_string_fmt(&self) -> String {
-        "ebxpkh".to_string() + &bs58::encode(&self.buf).into_string()
+        let check_buf = blake3_hash(&self.buf);
+        let check_sum = &check_buf[0..4];
+        let check_hex = strict_hex::encode(check_sum);
+        "ebxpkh".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<Self, String> {
         if !s.starts_with("ebxpkh") {
-            return Err("Invalid prefix".to_string());
+            return Err("Invalid pkh prefix".to_string());
         }
-        let buf = bs58::decode(&s[6..])
+        let check_sum = strict_hex::decode(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
+
+        let buf = bs58::decode(&s[14..])
             .into_vec()
-            .map_err(|_| "Invalid base58")?;
+            .map_err(|_| "Invalid pkh base58")?;
+        let check_buf = blake3_hash(&buf);
+        let expected_check_sum = &check_buf[0..4];
+        if check_sum != expected_check_sum {
+            return Err("Invalid pkh checksum".to_string());
+        }
         if buf.len() != 32 {
             return Err("Invalid pkh length".to_string());
         }
@@ -121,20 +131,21 @@ mod tests {
     #[test]
     fn test_pkh_string_fmt() {
         assert!(Pkh::is_valid_string_fmt(
-            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+            "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         ));
         assert!(!Pkh::is_valid_string_fmt(
-            "ebxpkDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+            "ebxpk31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         ));
         assert!(!Pkh::is_valid_string_fmt(
-            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2D"
+            "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN"
         ));
 
         let pkh =
-            Pkh::from_string_fmt("ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1").unwrap();
+            Pkh::from_string_fmt("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4")
+                .unwrap();
         assert_eq!(
             pkh.to_string_fmt(),
-            "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"
+            "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         );
     }
 }

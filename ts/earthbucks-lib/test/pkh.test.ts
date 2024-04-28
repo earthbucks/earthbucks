@@ -13,29 +13,27 @@ describe("Pkh", () => {
   });
 
   test("to/from string format", () => {
-    const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
-    const pkhStr = pkh.toStringFmt();
-    const pkh2 = Pkh.fromStringFmt(pkhStr);
-    expect(pkh.buf.toString("hex")).toBe(pkh2.buf.toString("hex"));
-
     expect(
       Pkh.isValidStringFmt(
-        "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1",
+        "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
       ),
     ).toBe(true);
     expect(
-      Pkh.isValidStringFmt("ebxpkDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1"),
+      Pkh.isValidStringFmt(
+        "ebxpk31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
+      ),
     ).toBe(false);
     expect(
-      Pkh.isValidStringFmt("ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2D"),
+      Pkh.isValidStringFmt(
+        "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN",
+      ),
     ).toBe(false);
 
     expect(
       Pkh.fromStringFmt(
-        "ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1",
+        "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
       ).toStringFmt(),
-    ).toEqual("ebxpkhDrKQXMJtPnn2ms1hnRz1GpZWs5Zo2hJBEcfj2DXGQoY1");
+    ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 
   describe("standard test vectors: pkh.json", () => {

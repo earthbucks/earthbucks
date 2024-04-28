@@ -19,7 +19,9 @@ describe("PrivKey", () => {
       ),
     ).toBe(false);
     expect(
-      PrivKey.isValidStringFmt("ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjx"),
+      PrivKey.isValidStringFmt(
+        "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjx",
+      ),
     ).toBe(false);
 
     let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
