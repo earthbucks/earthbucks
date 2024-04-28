@@ -7,13 +7,13 @@ import { Buffer } from "buffer";
 describe("TxOutputMap", () => {
   let txOutputMap: TxOutputMap;
   let txOutput: TxOutput;
-  let txIdHash: Uint8Array;
+  let txIdHash: Buffer;
   let outputIndex: number;
 
   beforeEach(() => {
     txOutputMap = new TxOutputMap();
     txOutput = new TxOutput(BigInt(100), Script.fromString(""));
-    txIdHash = new Uint8Array([1, 2, 3, 4]);
+    txIdHash = Buffer.from([1, 2, 3, 4]);
     outputIndex = 0;
   });
 

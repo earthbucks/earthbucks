@@ -23,7 +23,7 @@ describe("TxSigner", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+      const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toBuffer()));
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromAddressOutput(pkh.buf);
       const output = new TxOutput(BigInt(100), script);
@@ -36,7 +36,7 @@ describe("TxSigner", () => {
 
   test("should sign a tx", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toBuffer()));
     const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
     txBuilder.addOutput(BigInt(50), Script.fromString(""));
@@ -54,9 +54,9 @@ describe("TxSigner", () => {
     const txInput = tx.inputs[0];
     const txOutput = txOutMap.get(txInput.inputTxId, txInput.inputTxNOut);
     const execScript = txOutput?.script as Script;
-    const sigBuf = txInput.script.chunks[0].buffer as Uint8Array;
+    const sigBuf = txInput.script.chunks[0].buf as Buffer;
     expect(sigBuf?.length).toBe(65);
-    const pubKeyBuf = txInput.script.chunks[1].buffer as Uint8Array;
+    const pubKeyBuf = txInput.script.chunks[1].buf as Buffer;
     expect(pubKeyBuf?.length).toBe(33);
 
     const stack = [sigBuf, pubKeyBuf];
@@ -77,7 +77,7 @@ describe("TxSigner", () => {
 
   test("should sign two inputs", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toBuffer()));
     const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
     txBuilder.addOutput(BigInt(100), Script.fromString(""));
@@ -99,9 +99,9 @@ describe("TxSigner", () => {
     const txInput1 = tx.inputs[0];
     const txOutput1 = txOutMap.get(txInput1.inputTxId, txInput1.inputTxNOut);
     const execScript1 = txOutput1?.script as Script;
-    const sigBuf1 = txInput1.script.chunks[0].buffer as Uint8Array;
+    const sigBuf1 = txInput1.script.chunks[0].buf as Buffer;
     expect(sigBuf1?.length).toBe(65);
-    const pubKeyBuf1 = txInput1.script.chunks[1].buffer as Uint8Array;
+    const pubKeyBuf1 = txInput1.script.chunks[1].buf as Buffer;
     expect(pubKeyBuf1?.length).toBe(33);
 
     const stack1 = [sigBuf1, pubKeyBuf1];
@@ -122,9 +122,9 @@ describe("TxSigner", () => {
     const txInput2 = tx.inputs[1];
     const txOutput2 = txOutMap.get(txInput2.inputTxId, txInput2.inputTxNOut);
     const execScript2 = txOutput2?.script as Script;
-    const sigBuf2 = txInput2.script.chunks[0].buffer as Uint8Array;
+    const sigBuf2 = txInput2.script.chunks[0].buf as Buffer;
     expect(sigBuf2?.length).toBe(65);
-    const pubKeyBuf2 = txInput2.script.chunks[1].buffer as Uint8Array;
+    const pubKeyBuf2 = txInput2.script.chunks[1].buf as Buffer;
     expect(pubKeyBuf2?.length).toBe(33);
 
     const stack2 = [sigBuf2, pubKeyBuf2];

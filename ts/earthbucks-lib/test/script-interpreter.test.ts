@@ -9,6 +9,8 @@ import path from "path";
 import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
 import TxSignature from "../src/tx-signature";
+import PubKey from "../src/pub-key";
+import PrivKey from "../src/priv-key";
 import { Buffer } from "buffer";
 
 describe("ScriptInterpreter", () => {
@@ -17,7 +19,7 @@ describe("ScriptInterpreter", () => {
   beforeEach(() => {
     tx = new Tx(
       1,
-      [new TxInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
+      [new TxInput(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
       [new TxOutput(BigInt(0), new Script())],
       BigInt(0),
     );
@@ -135,9 +137,8 @@ describe("ScriptInterpreter", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
       const outputPrivKeyBuf = Buffer.from(outputPrivKeyHex, "hex");
-      const outputPrivKeyU8Vec = new Uint8Array(outputPrivKeyBuf);
-      const outputKey = new KeyPair(outputPrivKeyU8Vec);
-      const outputPubKey = outputKey.publicKey;
+      const outputKey = KeyPair.fromPrivKeyBuffer(outputPrivKeyBuf);
+      const outputPubKey = outputKey.pubKey.toBuffer();
       expect(Buffer.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
@@ -156,13 +157,13 @@ describe("ScriptInterpreter", () => {
 
       const sig = tx.signNoCache(
         0,
-        outputPrivKeyU8Vec,
-        outputScript.toU8Vec(),
+        outputPrivKeyBuf,
+        outputScript.toBuffer(),
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
 
-      const stack = [sig.toU8Vec(), outputPubKey];
+      const stack = [sig.toBuffer(), outputPubKey];
       const hashCache = new HashCache();
 
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
@@ -189,13 +190,11 @@ describe("ScriptInterpreter", () => {
       ];
 
       // Convert private keys to Uint8Array format
-      const privKeysU8Vec = privKeysHex.map(
-        (hex) => new Uint8Array(Buffer.from(hex, "hex")),
-      );
+      const privKeysU8Vec = privKeysHex.map((hex) => Buffer.from(hex, "hex"));
 
       // Generate public keys
-      const pubKeys = privKeysU8Vec.map(
-        (privKey) => new KeyPair(privKey).publicKey,
+      const pubKeys = privKeysU8Vec.map((privKey) =>
+        PrivKey.fromBuffer(privKey).toPubKeyBuffer(),
       );
 
       // Create a multisig output script
@@ -222,11 +221,11 @@ describe("ScriptInterpreter", () => {
             .signNoCache(
               0,
               privKey,
-              outputScript.toU8Vec(),
+              outputScript.toBuffer(),
               outputAmount,
               TxSignature.SIGHASH_ALL,
             )
-            .toU8Vec(),
+            .toBuffer(),
         );
 
       // Create a stack with the signatures
@@ -271,7 +270,7 @@ describe("ScriptInterpreter", () => {
       beforeEach(() => {
         tx = new Tx(
           1,
-          [new TxInput(new Uint8Array(), 0, new Script(), 0xffffffff)],
+          [new TxInput(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
           [new TxOutput(BigInt(0), new Script())],
           BigInt(0),
         );

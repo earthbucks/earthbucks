@@ -26,7 +26,7 @@ export default class BlockBuilder {
   }
 
   static fromGenesis(
-    initialTarget: Uint8Array,
+    initialTarget: Buffer,
     outputScript: Script,
     outputAmount: bigint,
   ): BlockBuilder {

@@ -15,22 +15,12 @@ export default class BufferWriter {
     return len;
   }
 
-  toU8Vec(): Uint8Array {
-    const buffer = Buffer.concat(this.bufs);
-    return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-  }
-
   toBuffer(): Buffer {
     return Buffer.concat(this.bufs);
   }
 
   writeBuffer(buf: Buffer): this {
     this.bufs.push(buf);
-    return this;
-  }
-
-  writeU8Vec(arr: Uint8Array): this {
-    this.bufs.push(Buffer.from(arr));
     return this;
   }
 
@@ -129,17 +119,17 @@ export default class BufferWriter {
 
   writeVarIntNum(n: number): this {
     const buf = BufferWriter.varIntBufNum(n);
-    this.writeU8Vec(buf);
+    this.writeBuffer(buf);
     return this;
   }
 
   writeVarIntBigInt(bn: bigint): this {
     const buf = BufferWriter.varIntBufBigInt(bn);
-    this.writeU8Vec(buf);
+    this.writeBuffer(buf);
     return this;
   }
 
-  static varIntBufNum(n: number): Uint8Array {
+  static varIntBufNum(n: number): Buffer {
     let buf: Buffer;
     if (n < 253) {
       buf = Buffer.alloc(1);
@@ -158,11 +148,10 @@ export default class BufferWriter {
       buf.writeInt32BE(n & -1, 1);
       buf.writeUInt32BE(Math.floor(n / 0x100000000), 5);
     }
-    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
-    return arr;
+    return buf;
   }
 
-  static varIntBufBigInt(bn: bigint): Uint8Array {
+  static varIntBufBigInt(bn: bigint): Buffer {
     let buf: Buffer;
     const n = Number(bn);
     if (n < 253) {
@@ -182,7 +171,6 @@ export default class BufferWriter {
       bw.writeUInt64BEBigInt(bn);
       buf = bw.toBuffer();
     }
-    const arr = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
-    return arr;
+    return buf;
   }
 }

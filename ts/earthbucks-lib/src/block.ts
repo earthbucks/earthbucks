@@ -16,7 +16,7 @@ export default class Block {
   }
 
   static fromBufferReader(br: BufferReader): Block {
-    const header = Header.fromU8Vec(br.readU8Vec(80));
+    const header = Header.fromBuffer(br.readBuffer(80));
     const txCountVarInt = VarInt.fromBufferReader(br);
     if (!txCountVarInt.isMinimal()) {
       throw new Error("non-minimally encoded varint");
@@ -35,16 +35,16 @@ export default class Block {
   }
 
   toBufferWriter(bw: BufferWriter): BufferWriter {
-    bw.writeU8Vec(this.header.toU8Vec());
+    bw.writeBuffer(this.header.toBuffer());
     bw.writeVarIntNum(this.txs.length);
     this.txs.forEach((tx) => {
-      bw.writeU8Vec(tx.toU8Vec());
+      bw.writeBuffer(tx.toBuffer());
     });
     return bw;
   }
 
-  toU8Vec(): Uint8Array {
-    return this.toBufferWriter(new BufferWriter()).toU8Vec();
+  toBuffer(): Uint8Array {
+    return this.toBufferWriter(new BufferWriter()).toBuffer();
   }
 
   static fromU8Vec(buf: Uint8Array): Block {

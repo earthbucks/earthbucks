@@ -12,11 +12,11 @@ describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);
@@ -30,12 +30,12 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = new Uint8Array(32);
+    const target = Buffer.alloc(32);
     const outputScript = new Script();
     const outputAmount = 0n;
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version).toBe(1);
-    expect(bb.header.prevBlockId).toEqual(new Uint8Array(32));
+    expect(bb.header.prevBlockId).toEqual(Buffer.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
@@ -46,14 +46,14 @@ describe("BlockBuilder", () => {
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
     const outputAmount = 0n;
-    const target = new Uint8Array(32);
+    const target = Buffer.alloc(32);
     const prevBlockHeader = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
       target,
-      new Uint8Array(32),
+      Buffer.alloc(32),
       0n,
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
@@ -74,11 +74,11 @@ describe("BlockBuilder", () => {
   test("toBlock", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);

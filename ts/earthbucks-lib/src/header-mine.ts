@@ -10,7 +10,7 @@ export default class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = crypto.getRandomValues(new Uint8Array(32));
+    this.header.nonce = crypto.getRandomValues(Buffer.alloc(32));
   }
 
   getIdHashNum(): HashNum {
@@ -31,7 +31,7 @@ export default class HeaderMine {
     return lowest;
   }
 
-  getLowestNonceForNTimes(n: number): Uint8Array {
+  getLowestNonceForNTimes(n: number): Buffer {
     let lowest = this.getIdHashNum();
     let nonce = this.header.nonce;
     for (let i = 0; i < n; i++) {

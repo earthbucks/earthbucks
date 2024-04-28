@@ -26,7 +26,7 @@ export default class TxSigner {
     if (!txOut.script.isAddressOutput()) {
       return false;
     }
-    const pkh = txOut.script.chunks[2].buffer as Uint8Array;
+    const pkh = txOut.script.chunks[2].buf as Buffer;
     const inputScript = txInput.script;
     if (!inputScript.isAddressInput()) {
       return false;
@@ -35,25 +35,25 @@ export default class TxSigner {
     if (!key) {
       return false;
     }
-    const pubKey = key.publicKey;
+    const pubKey = key.pubKey.toBuffer();
     if (pubKey.length !== 33) {
       return false;
     }
-    inputScript.chunks[1].buffer = Buffer.from(pubKey);
-    const outputScriptBuf = txOut.script.toU8Vec();
+    inputScript.chunks[1].buf = Buffer.from(pubKey);
+    const outputScriptBuf = txOut.script.toBuffer();
     const outputAmount = txOut.value;
     const sig = this.tx.signNoCache(
       nIn,
-      key.privateKey,
+      key.privKey.toBuffer(),
       outputScriptBuf,
       outputAmount,
       TxSignature.SIGHASH_ALL,
     );
-    const sigBuf = sig.toU8Vec();
+    const sigBuf = sig.toBuffer();
     if (sigBuf.length !== 65) {
       return false;
     }
-    inputScript.chunks[0].buffer = Buffer.from(sigBuf);
+    inputScript.chunks[0].buf = Buffer.from(sigBuf);
     txInput.script = inputScript;
     return true;
   }

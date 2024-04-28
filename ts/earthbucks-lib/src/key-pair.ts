@@ -1,28 +1,28 @@
-import secp256k1 from "secp256k1";
-import crypto from "crypto";
+import PrivKey from "./priv-key";
+import PubKey from "./pub-key";
 
 export default class KeyPair {
-  private _privateKey: Uint8Array;
-  private _publicKey: Uint8Array;
+  privKey: PrivKey;
+  pubKey: PubKey;
 
-  constructor(privateKey: Uint8Array) {
-    this._privateKey = privateKey;
-    this._publicKey = secp256k1.publicKeyCreate(privateKey);
+  constructor(privKey: PrivKey, pubKey: PubKey) {
+    this.privKey = privKey;
+    this.pubKey = pubKey;
   }
 
-  get privateKey(): Uint8Array {
-    return this._privateKey;
+  static fromPrivKey(privKey: PrivKey): KeyPair {
+    let pubKey = PubKey.fromPrivKey(privKey);
+    return new KeyPair(privKey, pubKey);
   }
 
-  get publicKey(): Uint8Array {
-    return this._publicKey;
+  static fromPrivKeyBuffer(privKeyBuf: Buffer | Uint8Array) {
+    let privKey = PrivKey.fromBuffer(Buffer.from(privKeyBuf));
+    let pubKey = PubKey.fromPrivKey(privKey);
+    return new KeyPair(privKey, pubKey);
   }
 
   static fromRandom(): KeyPair {
-    let privateKey;
-    do {
-      privateKey = crypto.randomBytes(32);
-    } while (!secp256k1.privateKeyVerify(privateKey));
-    return new KeyPair(privateKey);
+    let privKey = PrivKey.fromRandom();
+    return KeyPair.fromPrivKey(privKey);
   }
 }

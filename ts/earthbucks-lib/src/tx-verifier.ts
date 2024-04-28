@@ -28,7 +28,7 @@ export default class TxVerifier {
       return false;
     }
     const stack = inputScript.chunks.map(
-      (chunk) => new Uint8Array(chunk.buffer || Buffer.from("")),
+      (chunk) => chunk.buf || Buffer.from(""),
     );
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       outputScript,

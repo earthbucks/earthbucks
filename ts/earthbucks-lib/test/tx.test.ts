@@ -36,7 +36,7 @@ describe("Tx", () => {
     const lockNum = BigInt(0);
 
     const tx = new Tx(version, inputs, outputs, lockNum);
-    const result = Tx.fromU8Vec(tx.toU8Vec());
+    const result = Tx.fromU8Vec(tx.toBuffer());
     expect(tx.toBuffer().toString("hex")).toEqual(
       result.toBuffer().toString("hex"),
     );
@@ -53,7 +53,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = Tx.fromU8Vec(tx.toU8Vec());
+      const result = Tx.fromU8Vec(tx.toBuffer());
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
@@ -158,7 +158,7 @@ describe("Tx", () => {
       const lockNum = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockNum);
-      const expectedHash = blake3Hash(tx.toU8Vec());
+      const expectedHash = blake3Hash(tx.toBuffer());
       expect(tx.blake3Hash()).toEqual(expectedHash);
     });
   });
@@ -173,7 +173,7 @@ describe("Tx", () => {
       const lockNum = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockNum);
-      const expectedHash = blake3Hash(blake3Hash(tx.toU8Vec()));
+      const expectedHash = blake3Hash(blake3Hash(tx.toBuffer()));
       expect(tx.id()).toEqual(expectedHash);
     });
   });
@@ -249,7 +249,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockNum);
 
       const script = Script.fromString("");
-      const scriptU8Vec = script.toU8Vec();
+      const scriptU8Vec = script.toBuffer();
       const result = tx.sighashNoCache(
         0,
         scriptU8Vec,
@@ -277,7 +277,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockNum);
 
       const script = Script.fromString("");
-      const scriptU8Vec = script.toU8Vec();
+      const scriptU8Vec = script.toBuffer();
       const hashCache = new HashCache();
       const result = tx.sighashWithCache(
         0,
@@ -298,13 +298,11 @@ describe("Tx", () => {
       it("should generate a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = new Uint8Array(
-          Buffer.from(
-            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-            "hex",
-          ),
+        const privateKey = Buffer.from(
+          "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+          "hex",
         );
-        const script = new Uint8Array([]);
+        const script = Buffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
@@ -327,7 +325,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toU8Vec()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
       });
@@ -335,13 +333,11 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = new Uint8Array(
-          Buffer.from(
-            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-            "hex",
-          ),
+        const privateKey = Buffer.from(
+          "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+          "hex",
         );
-        const script = new Uint8Array([]);
+        const script = Buffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
@@ -374,10 +370,11 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toU8Vec()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = new KeyPair(privateKey).publicKey;
+        const publicKey =
+          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toBuffer();
         const result = tx.verifyNoCache(
           inputIndex,
           publicKey,
@@ -391,13 +388,11 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = new Uint8Array(
-          Buffer.from(
-            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-            "hex",
-          ),
+        const privateKey = Buffer.from(
+          "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+          "hex",
         );
-        const script = new Uint8Array([]);
+        const script = Buffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
@@ -432,10 +427,11 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toU8Vec()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = new KeyPair(privateKey).publicKey;
+        const publicKey =
+          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toBuffer();
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,

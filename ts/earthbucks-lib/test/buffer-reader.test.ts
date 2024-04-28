@@ -4,10 +4,10 @@ import { Buffer } from "buffer";
 
 describe("BufferReader", () => {
   let bufferReader: BufferReader;
-  let testBuffer: Uint8Array;
+  let testBuffer: Buffer;
 
   beforeEach(() => {
-    testBuffer = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+    testBuffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
     bufferReader = new BufferReader(testBuffer);
   });
 
@@ -24,13 +24,13 @@ describe("BufferReader", () => {
 
   test("read returns correct subarray", () => {
     const len = 4;
-    const result = bufferReader.readU8Vec(len);
-    expect(result).toEqual(new Uint8Array(testBuffer.buffer, 0, len));
+    const result = bufferReader.readBuffer(len);
+    expect(result).toEqual(testBuffer.subarray(0, len));
   });
 
   test("read updates position", () => {
     const len = 4;
-    bufferReader.readU8Vec(len);
+    bufferReader.readBuffer(len);
     expect(bufferReader["pos"]).toBe(len);
   });
 
@@ -169,29 +169,25 @@ describe("BufferReader", () => {
   test("readVarIntBuf", () => {
     let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(Buffer.from([0xfd, 0x00, 0x01])),
+      Buffer.from([0xfd, 0x00, 0x01]),
     );
 
     bufferReader = new BufferReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01])),
+      Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
 
     bufferReader = new BufferReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(
-        Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
-      ),
+      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
 
     bufferReader = new BufferReader(Buffer.from([0x01]));
-    expect(bufferReader.readVarIntBuf()).toEqual(
-      new Uint8Array(Buffer.from([0x01])),
-    );
+    expect(bufferReader.readVarIntBuf()).toEqual(Buffer.from([0x01]));
   });
 
   test("readVarIntBigInt", () => {

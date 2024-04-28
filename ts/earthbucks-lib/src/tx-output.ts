@@ -13,11 +13,11 @@ export default class TxOutput {
     this.script = script;
   }
 
-  static fromU8Vec(buf: Uint8Array): TxOutput {
+  static fromBuffer(buf: Buffer): TxOutput {
     const reader = new BufferReader(buf);
     const value = reader.readUInt64BEBigInt();
     const scriptLen = reader.readVarIntNum();
-    const scriptArr = reader.readU8Vec(scriptLen);
+    const scriptArr = reader.readBuffer(scriptLen);
     const script = Script.fromU8Vec(scriptArr);
     return new TxOutput(value, script);
   }
@@ -25,21 +25,17 @@ export default class TxOutput {
   static fromBufferReader(reader: BufferReader): TxOutput {
     const value = reader.readUInt64BEBigInt();
     const scriptLen = reader.readVarIntNum();
-    const scriptArr = reader.readU8Vec(scriptLen);
+    const scriptArr = reader.readBuffer(scriptLen);
     const script = Script.fromU8Vec(scriptArr);
     return new TxOutput(value, script);
   }
 
-  toU8Vec(): Uint8Array {
+  toBuffer(): Buffer {
     const writer = new BufferWriter();
     writer.writeUInt64BEBigInt(this.value);
-    const scriptBuf = this.script.toU8Vec();
-    writer.writeU8Vec(VarInt.fromNumber(scriptBuf.length).toU8Vec());
-    writer.writeU8Vec(scriptBuf);
-    return writer.toU8Vec();
-  }
-
-  toBuffer(): Buffer {
-    return Buffer.from(this.toU8Vec());
+    const scriptBuf = this.script.toBuffer();
+    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toBuffer());
+    writer.writeBuffer(scriptBuf);
+    return writer.toBuffer();
   }
 }

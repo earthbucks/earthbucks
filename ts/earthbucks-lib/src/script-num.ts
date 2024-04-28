@@ -30,10 +30,6 @@ export default class ScriptNum {
     return new ScriptNum().fromBuffer(buffer);
   }
 
-  static fromU8Vec(u8vec: Uint8Array): ScriptNum {
-    return new ScriptNum().fromBuffer(Buffer.from(u8vec));
-  }
-
   toBuffer(): Buffer {
     const num = this.num;
     if (num >= 0n) {
@@ -56,10 +52,6 @@ export default class ScriptNum {
       }
       return Buffer.from(hex, "hex");
     }
-  }
-
-  toU8Vec(): Uint8Array {
-    return new Uint8Array(this.toBuffer());
   }
 
   toString(): string {

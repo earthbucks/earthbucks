@@ -20,6 +20,10 @@ export default class PrivKey {
     return new PrivKey(privateKey);
   }
 
+  toBuffer(): Buffer {
+    return this.buf;
+  }
+
   toPubKeyBuffer(): Buffer {
     return Buffer.from(secp256k1.publicKeyCreate(this.buf));
   }

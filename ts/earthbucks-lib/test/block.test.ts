@@ -10,49 +10,49 @@ describe("Block", () => {
   test("toBufferWriter", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
     const bw = block.toBufferWriter(new BufferWriter());
-    expect(bw.toU8Vec().length).toBeGreaterThan(0);
+    expect(bw.toBuffer().length).toBeGreaterThan(0);
   });
 
-  test("toU8Vec", () => {
+  test("toBuffer", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const u8vec = block.toU8Vec();
+    const u8vec = block.toBuffer();
     expect(u8vec.length).toBeGreaterThan(0);
   });
 
   test("fromBufferReader", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
     const bw = block.toBufferWriter(new BufferWriter());
-    const br = new BufferReader(bw.toU8Vec());
+    const br = new BufferReader(bw.toBuffer());
     const block2 = Block.fromBufferReader(br);
     expect(block2.header.version).toBe(bh.version);
     expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);
@@ -66,11 +66,11 @@ describe("Block", () => {
   test("isGenesis", () => {
     const bh = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       0n,
     );
     const tx = new Tx(1, [], [], 0n);

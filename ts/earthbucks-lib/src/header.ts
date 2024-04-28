@@ -8,20 +8,20 @@ export default class Header {
   static readonly BLOCK_INTERVAL = 600n; // seconds
 
   version: number; // uint32
-  prevBlockId: Uint8Array; // 256 bits
-  merkleRoot: Uint8Array; // 256 bits
+  prevBlockId: Buffer; // 256 bits
+  merkleRoot: Buffer; // 256 bits
   timestamp: bigint; // uint64
-  target: Uint8Array; // 256 bits
-  nonce: Uint8Array; // 256 bits
+  target: Buffer; // 256 bits
+  nonce: Buffer; // 256 bits
   nBlock: bigint; // uint64
 
   constructor(
     version: number,
-    prevBlockId: Uint8Array,
-    merkleRoot: Uint8Array,
+    prevBlockId: Buffer,
+    merkleRoot: Buffer,
     timestamp: bigint,
-    target: Uint8Array,
-    nonce: Uint8Array,
+    target: Buffer,
+    nonce: Buffer,
     nBlock: bigint,
   ) {
     this.version = version;
@@ -33,26 +33,26 @@ export default class Header {
     this.nBlock = nBlock;
   }
 
-  toU8Vec(): Uint8Array {
+  toBuffer(): Buffer {
     const bw = new BufferWriter();
     bw.writeUInt32BE(this.version);
-    bw.writeU8Vec(this.prevBlockId);
-    bw.writeU8Vec(this.merkleRoot);
+    bw.writeBuffer(this.prevBlockId);
+    bw.writeBuffer(this.merkleRoot);
     bw.writeUInt64BEBigInt(this.timestamp);
-    bw.writeU8Vec(this.target);
-    bw.writeU8Vec(this.nonce);
+    bw.writeBuffer(this.target);
+    bw.writeBuffer(this.nonce);
     bw.writeUInt64BEBigInt(this.nBlock);
-    return bw.toU8Vec();
+    return bw.toBuffer();
   }
 
-  static fromU8Vec(buf: Uint8Array): Header {
+  static fromBuffer(buf: Buffer): Header {
     const br = new BufferReader(buf);
     const version = br.readUInt32BE();
-    const previousBlockHash = br.readU8Vec(32);
-    const merkleRoot = br.readU8Vec(32);
+    const previousBlockHash = br.readBuffer(32);
+    const merkleRoot = br.readBuffer(32);
     const timestamp = br.readUInt64BEBigInt();
-    const target = br.readU8Vec(32);
-    const nonce = br.readU8Vec(32);
+    const target = br.readBuffer(32);
+    const nonce = br.readBuffer(32);
     const index = br.readUInt64BEBigInt();
     return new Header(
       version,
@@ -65,21 +65,13 @@ export default class Header {
     );
   }
 
-  toBuffer(): Buffer {
-    return Buffer.from(this.toU8Vec());
-  }
-
-  static fromBuffer(buf: Buffer): Header {
-    return Header.fromU8Vec(Uint8Array.from(buf));
-  }
-
   static fromBufferReader(br: BufferReader): Header {
     const version = br.readUInt32BE();
-    const previousBlockHash = br.readU8Vec(32);
-    const merkleRoot = br.readU8Vec(32);
+    const previousBlockHash = br.readBuffer(32);
+    const merkleRoot = br.readBuffer(32);
     const timestamp = br.readUInt64BEBigInt();
-    const target = br.readU8Vec(32);
-    const nonce = br.readU8Vec(32);
+    const target = br.readBuffer(32);
+    const nonce = br.readBuffer(32);
     const index = br.readUInt64BEBigInt();
     return new Header(
       version,
@@ -94,11 +86,11 @@ export default class Header {
 
   toBufferWriter(bw: BufferWriter): BufferWriter {
     bw.writeUInt32BE(this.version);
-    bw.writeU8Vec(this.prevBlockId);
-    bw.writeU8Vec(this.merkleRoot);
+    bw.writeBuffer(this.prevBlockId);
+    bw.writeBuffer(this.merkleRoot);
     bw.writeUInt64BEBigInt(this.timestamp);
-    bw.writeU8Vec(this.target);
-    bw.writeU8Vec(this.nonce);
+    bw.writeBuffer(this.target);
+    bw.writeBuffer(this.nonce);
     bw.writeUInt64BEBigInt(this.nBlock);
     return bw;
   }
@@ -111,15 +103,15 @@ export default class Header {
     return Header.fromBuffer(Buffer.from(str, "hex"));
   }
 
-  static fromGenesis(initialTarget: Uint8Array): Header {
+  static fromGenesis(initialTarget: Buffer): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       timestamp,
       initialTarget,
-      new Uint8Array(32),
+      Buffer.alloc(32),
       0n,
     );
   }
@@ -149,11 +141,11 @@ export default class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = new Uint8Array(32);
+    const nonce = Buffer.alloc(32);
     return new Header(
       1,
       prevBlockId,
-      new Uint8Array(32),
+      Buffer.alloc(32),
       timestamp,
       target,
       nonce,
@@ -199,15 +191,15 @@ export default class Header {
     return this.nBlock === 0n && this.prevBlockId.every((byte) => byte === 0);
   }
 
-  hash(): Uint8Array {
-    return blake3Hash(this.toU8Vec());
+  hash(): Buffer {
+    return blake3Hash(this.toBuffer());
   }
 
-  id(): Uint8Array {
-    return doubleBlake3Hash(this.toU8Vec());
+  id(): Buffer {
+    return doubleBlake3Hash(this.toBuffer());
   }
 
-  static adjustTarget(targetBuf: Uint8Array, timeDiff: bigint): Uint8Array {
+  static adjustTarget(targetBuf: Buffer, timeDiff: bigint): Buffer {
     const target = BigInt("0x" + Buffer.from(targetBuf).toString("hex"));
     const twoWeeks = Header.BLOCKS_PER_ADJUSTMENT * Header.BLOCK_INTERVAL;
 
@@ -227,6 +219,6 @@ export default class Header {
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );
-    return Uint8Array.from(newTargetBuf);
+    return newTargetBuf;
   }
 }

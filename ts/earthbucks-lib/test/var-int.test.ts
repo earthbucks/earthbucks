@@ -74,7 +74,7 @@ describe("VarInt", () => {
     });
   });
 
-  describe("toU8Vec", () => {
+  describe("toBuffer", () => {
     it("should return a Uint8Array", () => {
       // Arrange
       const n: number = 123;
@@ -83,7 +83,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toU8Vec()).toBeInstanceOf(Uint8Array);
+      expect(varInt.toBuffer()).toBeInstanceOf(Uint8Array);
     });
   });
 

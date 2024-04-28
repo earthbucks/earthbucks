@@ -27,10 +27,6 @@ export default class VarInt {
     return new this().fromNumber(num);
   }
 
-  toU8Vec() {
-    return new Uint8Array(this.buf);
-  }
-
   toBuffer() {
     return this.buf;
   }

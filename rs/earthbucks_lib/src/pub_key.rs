@@ -22,6 +22,10 @@ impl PubKey {
         Ok(PubKey::new(pub_key))
     }
 
+    pub fn to_buffer(&self) -> &[u8; 33] {
+        &self.buf
+    }
+
     pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
         let pub_key_buf = priv_key.to_pub_key_buffer();
         if pub_key_buf.is_err() {

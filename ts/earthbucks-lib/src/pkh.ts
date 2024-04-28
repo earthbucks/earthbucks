@@ -2,6 +2,7 @@ import { doubleBlake3Hash, blake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
 import StrictHex from "./strict-hex";
+import PubKey from "./pub-key";
 
 // public key hash
 export default class Pkh {
@@ -14,6 +15,10 @@ export default class Pkh {
   static fromPubKeyBuffer(publicKey: Buffer): Pkh {
     let pkhBuf = doubleBlake3Hash(publicKey);
     return new Pkh(pkhBuf);
+  }
+
+  static fromPubKey(pubKey: PubKey): Pkh {
+    return Pkh.fromPubKeyBuffer(pubKey.toBuffer());
   }
 
   static fromBuffer(buf: Buffer): Pkh {

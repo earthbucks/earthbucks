@@ -8,18 +8,18 @@ export default class PkhKeyMap {
     this.map = new Map<string, KeyPair>();
   }
 
-  add(key: KeyPair, pkhU8Vec: Uint8Array): void {
-    const pkhHex = Buffer.from(pkhU8Vec).toString("hex");
+  add(key: KeyPair, pkhBuf: Buffer): void {
+    const pkhHex = pkhBuf.toString("hex");
     this.map.set(pkhHex, key);
   }
 
-  remove(pkhU8Vec: Uint8Array): void {
-    const pkhHex = Buffer.from(pkhU8Vec).toString("hex");
+  remove(pkhU8Vec: Buffer): void {
+    const pkhHex = pkhU8Vec.toString("hex");
     this.map.delete(pkhHex);
   }
 
-  get(pkhU8Vec: Uint8Array): KeyPair | undefined {
-    const pkhHex = Buffer.from(pkhU8Vec).toString("hex");
+  get(pkhU8Vec: Buffer): KeyPair | undefined {
+    const pkhHex = pkhU8Vec.toString("hex");
     return this.map.get(pkhHex);
   }
 

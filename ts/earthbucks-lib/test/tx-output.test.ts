@@ -19,14 +19,14 @@ describe("TxOutput", () => {
     });
   });
 
-  describe("fromU8Vec and toU8Vec", () => {
+  describe("fromU8Vec and toBuffer", () => {
     test("should create a TxOutput from a Uint8Array", () => {
       const value = BigInt(100);
       const script = Script.fromString(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       );
       const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromU8Vec(txOutput.toU8Vec());
+      const result = TxOutput.fromBuffer(txOutput.toBuffer());
       expect(txOutput.toBuffer().toString("hex")).toEqual(
         result.toBuffer().toString("hex"),
       );
@@ -37,7 +37,7 @@ describe("TxOutput", () => {
       const value = BigInt(100);
       const script = Script.fromString(`${data} DOUBLEBLAKE3`);
       const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromU8Vec(txOutput.toU8Vec());
+      const result = TxOutput.fromBuffer(txOutput.toBuffer());
       expect(txOutput.toBuffer().toString("hex")).toEqual(
         result.toBuffer().toString("hex"),
       );

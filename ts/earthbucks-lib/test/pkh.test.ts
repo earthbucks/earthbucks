@@ -4,11 +4,12 @@ import fs from "fs";
 import path from "path";
 import Pkh from "../src/pkh";
 import { Buffer } from "buffer";
+import PubKey from "../src/pub-key";
 
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.publicKey));
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toBuffer()));
     expect(pkh.buf).toBeDefined();
   });
 
@@ -50,10 +51,9 @@ describe("Pkh", () => {
       const pkhPairs: AddressPair[] = JSON.parse(data).pkh;
 
       for (const pair of pkhPairs) {
-        const pubKeyBuf = Buffer.from(pair.pub_key, "hex");
-        const pubKey = new Uint8Array(pubKeyBuf);
-        const pkh = Pkh.fromPubKeyBuffer(Buffer.from(pubKey));
-        expect(Buffer.from(pkh.buf).toString("hex")).toBe(pair.pkh);
+        const pubKey = PubKey.fromStringFmt(pair.pub_key);
+        const pkh = Pkh.fromPubKey(pubKey);
+        expect(pkh.toStringFmt()).toBe(pair.pkh);
       }
     });
   });

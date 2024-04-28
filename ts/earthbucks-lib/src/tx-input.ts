@@ -2,15 +2,16 @@ import BufferWriter from "./buffer-writer";
 import BufferReader from "./buffer-reader";
 import Script from "./script";
 import VarInt from "./var-int";
+import { Buffer } from "buffer";
 
 export default class TxInput {
-  public inputTxId: Uint8Array;
+  public inputTxId: Buffer;
   public inputTxNOut: number;
   public script: Script;
   public sequence: number;
 
   constructor(
-    inputTxId: Uint8Array,
+    inputTxId: Buffer,
     inputTxNOut: number,
     script: Script,
     sequence: number,
@@ -21,38 +22,34 @@ export default class TxInput {
     this.sequence = sequence;
   }
 
-  static fromU8Vec(buf: Uint8Array): TxInput {
+  static fromBuffer(buf: Buffer): TxInput {
     const reader = new BufferReader(buf);
-    const inputTxHash = reader.readU8Vec(32);
+    const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
-    const script = Script.fromU8Vec(reader.readU8Vec(scriptLen));
+    const script = Script.fromU8Vec(reader.readBuffer(scriptLen));
     const sequence = reader.readUInt32LE();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
   static fromBufferReader(reader: BufferReader): TxInput {
-    const inputTxHash = reader.readU8Vec(32);
+    const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
-    const script = Script.fromU8Vec(reader.readU8Vec(scriptLen));
+    const script = Script.fromU8Vec(reader.readBuffer(scriptLen));
     const sequence = reader.readUInt32LE();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
-  toU8Vec(): Uint8Array {
-    const writer = new BufferWriter();
-    writer.writeU8Vec(this.inputTxId);
-    writer.writeUInt32LE(this.inputTxNOut);
-    const scriptBuf = this.script.toU8Vec();
-    writer.writeU8Vec(VarInt.fromNumber(scriptBuf.length).toU8Vec());
-    writer.writeU8Vec(scriptBuf);
-    writer.writeUInt32LE(this.sequence);
-    return writer.toU8Vec();
-  }
-
   toBuffer(): Buffer {
-    return Buffer.from(this.toU8Vec());
+    const writer = new BufferWriter();
+    writer.writeBuffer(this.inputTxId);
+    writer.writeUInt32LE(this.inputTxNOut);
+    const scriptBuf = this.script.toBuffer();
+    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toBuffer());
+    writer.writeBuffer(scriptBuf);
+    writer.writeUInt32LE(this.sequence);
+    return writer.toBuffer();
   }
 
   isNull(): boolean {
@@ -71,6 +68,6 @@ export default class TxInput {
   }
 
   static fromCoinbase(script: Script): TxInput {
-    return new TxInput(new Uint8Array(32), 0xffffffff, script, 0xffffffff);
+    return new TxInput(Buffer.alloc(32), 0xffffffff, script, 0xffffffff);
   }
 }

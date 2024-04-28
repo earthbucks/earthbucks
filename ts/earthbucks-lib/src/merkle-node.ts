@@ -4,21 +4,21 @@ import { Buffer } from "buffer";
 export default class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
-  public hashedData: Uint8Array;
+  public hashedData: Buffer;
 
   constructor(
     left: MerkleNode | null,
     right: MerkleNode | null,
-    hashedData: Uint8Array,
+    hashedData: Buffer,
   ) {
     this.left = left;
     this.right = right;
     this.hashedData = hashedData;
   }
 
-  public hash(): Uint8Array {
+  public hash(): Buffer {
     if (this.left || this.right) {
-      const leftData = this.left ? this.left.hash() : new Uint8Array();
+      const leftData = this.left ? this.left.hash() : Buffer.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
       return doubleBlake3Hash(Buffer.concat([leftData, rightData]));
     } else {
@@ -26,7 +26,7 @@ export default class MerkleNode {
     }
   }
 
-  static fromU8Vecs(hashedDatas: Uint8Array[]): MerkleNode {
+  static fromU8Vecs(hashedDatas: Buffer[]): MerkleNode {
     if (hashedDatas.length === 0) {
       throw new Error("Cannot create MerkleNode from empty array");
     }

@@ -21,7 +21,7 @@ describe("TxInput", () => {
 
   describe("fromBufferReader", () => {
     test("fromBufferReader", () => {
-      const inputTxHash = new Uint8Array(Buffer.alloc(32));
+      const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
       const sequence = 0xffffffff;

@@ -4,15 +4,15 @@ import BufferReader from "./buffer-reader";
 import { Buffer } from "buffer";
 
 export default class MerkleProof {
-  public root: Uint8Array;
-  public proof: Array<[Uint8Array, boolean]>;
+  public root: Buffer;
+  public proof: Array<[Buffer, boolean]>;
 
-  constructor(root: Uint8Array, proof: Array<[Uint8Array, boolean]>) {
+  constructor(root: Buffer, proof: Array<[Buffer, boolean]>) {
     this.root = root;
     this.proof = proof;
   }
 
-  public verify(hashedData: Uint8Array): boolean {
+  public verify(hashedData: Buffer): boolean {
     let hash = hashedData;
     for (const [sibling, isLeft] of this.proof) {
       hash = isLeft
@@ -22,13 +22,11 @@ export default class MerkleProof {
     return Buffer.compare(hash, this.root) === 0;
   }
 
-  static verifyProof(data: Uint8Array, proof: MerkleProof, root: Uint8Array) {
+  static verifyProof(data: Buffer, proof: MerkleProof, root: Buffer) {
     return Buffer.compare(proof.root, root) === 0 || proof.verify(data);
   }
 
-  static generateProofsAndRoot(
-    hashedDatas: Uint8Array[],
-  ): [Uint8Array, MerkleProof[]] {
+  static generateProofsAndRoot(hashedDatas: Buffer[]): [Buffer, MerkleProof[]] {
     if (hashedDatas.length === 0) {
       throw new Error("Cannot create Merkle tree from empty array");
     }
@@ -69,24 +67,24 @@ export default class MerkleProof {
     return [root, proofs];
   }
 
-  toU8Vec() {
+  toBuffer() {
     const bw = new BufferWriter();
-    bw.writeU8Vec(this.root);
+    bw.writeBuffer(this.root);
     bw.writeVarIntNum(this.proof.length);
     for (const [sibling, isLeft] of this.proof) {
-      bw.writeU8Vec(sibling);
+      bw.writeBuffer(sibling);
       bw.writeUInt8(isLeft ? 1 : 0);
     }
-    return bw.toU8Vec();
+    return bw.toBuffer();
   }
 
-  static fromU8Vec(u8: Uint8Array): MerkleProof {
-    const br = new BufferReader(u8);
-    const root = br.readU8Vec(32);
-    const proof: Array<[Uint8Array, boolean]> = [];
+  static fromU8Vec(buf: Buffer): MerkleProof {
+    const br = new BufferReader(buf);
+    const root = br.readBuffer(32);
+    const proof: Array<[Buffer, boolean]> = [];
     const proofLength = br.readVarIntNum();
     for (let i = 0; i < proofLength; i++) {
-      const sibling = br.readU8Vec(32);
+      const sibling = br.readBuffer(32);
       const isLeft = br.readUInt8() === 1;
       proof.push([sibling, isLeft]);
     }
@@ -94,7 +92,7 @@ export default class MerkleProof {
   }
 
   toString(): string {
-    const u8vec = this.toU8Vec();
+    const u8vec = this.toBuffer();
     const hex = Buffer.from(u8vec).toString("hex");
     return hex;
   }

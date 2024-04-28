@@ -1,4 +1,5 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
+use crate::pub_key;
 use crate::strict_hex;
 use bs58;
 
@@ -11,6 +12,10 @@ impl Pkh {
     pub fn from_pub_key_buffer(pub_key_buf: Vec<u8>) -> Self {
         let buf = double_blake3_hash(&pub_key_buf);
         Self { buf }
+    }
+
+    pub fn from_pub_key(pub_key: pub_key::PubKey) -> Self {
+        Self::from_pub_key_buffer(pub_key.to_buffer().to_vec())
     }
 
     pub fn from_hex(hex: &str) -> Result<Self, String> {
@@ -67,6 +72,8 @@ impl Pkh {
 
 #[cfg(test)]
 mod tests {
+    use crate::pub_key::PubKey;
+
     use super::*;
     use hex;
     use serde::Deserialize;
@@ -104,31 +111,6 @@ mod tests {
     }
 
     #[test]
-    fn test_pkh_pairs() {
-        // Read the JSON file
-        let data = fs::read_to_string("../../json/pkh.json").expect("Unable to read file");
-
-        // Parse the JSON data
-        let pkh_data: PkhData = serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        for pair in pkh_data.pkh {
-            // Convert hex to bytes
-            let pub_key = hex::decode(&pair.pub_key).expect("Decoding failed");
-            let expected_pkh_vec = hex::decode(&pair.pkh).expect("Decoding failed");
-
-            // Convert Vec<u8> to [u8; 32]
-            let mut expected_pkh = [0; 32];
-            expected_pkh.copy_from_slice(&expected_pkh_vec[..]);
-
-            // Create a new Address instance
-            let pkh = Pkh::from_pub_key_buffer(pub_key);
-
-            // Check that the pkh matches the expected pkh
-            assert_eq!(pkh.to_u8_vec(), &expected_pkh);
-        }
-    }
-
-    #[test]
     fn test_pkh_string_fmt() {
         assert!(Pkh::is_valid_string_fmt(
             "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
@@ -147,5 +129,24 @@ mod tests {
             pkh.to_string_fmt(),
             "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         );
+    }
+
+    #[test]
+    fn test_pkh_pairs() {
+        // Read the JSON file
+        let data = fs::read_to_string("../../json/pkh.json").expect("Unable to read file");
+
+        // Parse the JSON data
+        let pkh_data: PkhData = serde_json::from_str(&data).expect("Unable to parse JSON");
+
+        for pair in pkh_data.pkh {
+            let pub_key = PubKey::from_string_fmt(&pair.pub_key).unwrap();
+
+            // Create a new Address instance
+            let pkh = Pkh::from_pub_key(pub_key);
+
+            // Check that the pkh matches the expected pkh
+            assert_eq!(pkh.to_string_fmt(), pair.pkh);
+        }
     }
 }

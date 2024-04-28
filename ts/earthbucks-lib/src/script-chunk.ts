@@ -4,16 +4,16 @@ import { Buffer } from "buffer";
 
 export default class ScriptChunk {
   opcode: number;
-  buffer?: Buffer;
+  buf?: Buffer;
 
-  constructor(opcode: number = 0, arr?: Uint8Array) {
+  constructor(opcode: number = 0, buf?: Buffer) {
     this.opcode = opcode;
-    this.buffer = arr ? Buffer.from(arr.buffer) : undefined;
+    this.buf = buf;
   }
 
   toString(): string {
-    if (this.buffer) {
-      return `0x${this.buffer.toString("hex")}`;
+    if (this.buf) {
+      return `0x${this.buf.toString("hex")}`;
     } else {
       const name = OPCODE_TO_NAME[this.opcode];
       if (name !== undefined) {
@@ -26,8 +26,8 @@ export default class ScriptChunk {
 
   fromString(str: string): this {
     if (str.startsWith("0x")) {
-      this.buffer = Buffer.from(str.slice(2), "hex");
-      const len = this.buffer.length;
+      this.buf = Buffer.from(str.slice(2), "hex");
+      const len = this.buf.length;
       const onebytelen = len <= 0xff;
       const twobytelen = len <= 0xffff;
       const fourbytelen = len <= 0xffffffff;
@@ -51,7 +51,7 @@ export default class ScriptChunk {
         throw new Error("invalid opcode");
       }
 
-      this.buffer = undefined;
+      this.buf = undefined;
     }
     return this;
   }
@@ -60,69 +60,65 @@ export default class ScriptChunk {
     return new ScriptChunk().fromString(str);
   }
 
-  toU8Vec(): Uint8Array {
+  toBuffer(): Buffer {
     const opcode = this.opcode;
-    if (opcode === OP.PUSHDATA1 && this.buffer) {
-      const buffer = Buffer.concat([
+    if (opcode === OP.PUSHDATA1 && this.buf) {
+      return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt8(this.buffer.length).toBuffer(),
-        this.buffer,
+        new BufferWriter().writeUInt8(this.buf.length).toBuffer(),
+        this.buf,
       ]);
-      return new Uint8Array(buffer);
-    } else if (opcode === OP.PUSHDATA2 && this.buffer) {
-      const buffer = Buffer.concat([
+    } else if (opcode === OP.PUSHDATA2 && this.buf) {
+      return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt16BE(this.buffer.length).toBuffer(),
-        this.buffer,
+        new BufferWriter().writeUInt16BE(this.buf.length).toBuffer(),
+        this.buf,
       ]);
-      return new Uint8Array(buffer);
-    } else if (opcode === OP.PUSHDATA4 && this.buffer) {
-      const buffer = Buffer.concat([
+    } else if (opcode === OP.PUSHDATA4 && this.buf) {
+      return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt32BE(this.buffer.length).toBuffer(),
-        this.buffer,
+        new BufferWriter().writeUInt32BE(this.buf.length).toBuffer(),
+        this.buf,
       ]);
-      return new Uint8Array(buffer);
     }
-    return new Uint8Array([opcode]);
+    return Buffer.from([opcode]);
   }
 
-  fromU8Vec(arr: Uint8Array): this {
-    const buf = Buffer.from(arr.buffer, arr.byteOffset, arr.byteLength);
-    const opcode = arr[0];
+  fromBuffer(buf: Buffer): this {
+    const opcode = buf[0];
     if (opcode === OP.PUSHDATA1) {
-      const len = arr[1];
-      if (arr.byteLength < len + 2) {
+      const len = buf[1];
+      if (buf.byteLength < len + 2) {
         throw new Error("Buffer length is other than expected");
       }
       this.opcode = opcode;
-      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 2, len);
+      this.buf = Buffer.from(buf.buffer, buf.byteOffset + 2, len);
     } else if (opcode === OP.PUSHDATA2) {
       const len = buf.readUInt16BE(1);
-      if (arr.byteLength < len + 3) {
+      if (buf.byteLength < len + 3) {
         throw new Error("Buffer length is other than expected");
       }
       this.opcode = opcode;
-      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 3, len);
+      this.buf = Buffer.from(buf.buffer, buf.byteOffset + 3, len);
     } else if (opcode === OP.PUSHDATA4) {
       const len = buf.readUInt32BE(1);
-      if (arr.byteLength < len + 5) {
+      if (buf.byteLength < len + 5) {
         throw new Error("Buffer length is other than expected");
       }
       this.opcode = opcode;
-      this.buffer = Buffer.from(arr.buffer, arr.byteOffset + 5, len);
+      this.buf = Buffer.from(buf.buffer, buf.byteOffset + 5, len);
     } else {
       this.opcode = opcode;
-      this.buffer = undefined;
+      this.buf = undefined;
     }
     return this;
   }
 
-  static fromU8Vec(arr: Uint8Array): ScriptChunk {
-    return new ScriptChunk().fromU8Vec(arr);
+  static fromBuffer(buf: Buffer): ScriptChunk {
+    return new ScriptChunk().fromBuffer(buf);
   }
 
-  static fromData(data: Uint8Array): ScriptChunk {
+  static fromData(data: Buffer): ScriptChunk {
     const len = data.length;
     if (len <= 0xff) {
       return new ScriptChunk(OP.PUSHDATA1, data);

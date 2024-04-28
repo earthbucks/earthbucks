@@ -26,10 +26,9 @@ export default class Script {
     return this.chunks.map((chunk) => chunk.toString()).join(" ");
   }
 
-  toU8Vec(): Uint8Array {
-    const bufArray = this.chunks.map((chunk) => chunk.toU8Vec());
-    const buf = Buffer.concat(bufArray);
-    return new Uint8Array(buf);
+  toBuffer(): Buffer {
+    const bufArray = this.chunks.map((chunk) => chunk.toBuffer());
+    return Buffer.concat(bufArray);
   }
 
   fromU8Vec(arr: Uint8Array): this {
@@ -46,8 +45,8 @@ export default class Script {
         } else if (len === OP.PUSHDATA4) {
           len = reader.readUInt32LE();
         }
-        chunk.buffer = Buffer.from(reader.readU8Vec(len));
-        if (chunk.buffer.length !== len) {
+        chunk.buf = Buffer.from(reader.readBuffer(len));
+        if (chunk.buf.length !== len) {
           throw new Error("invalid buffer length");
         }
       }
@@ -60,7 +59,7 @@ export default class Script {
     return new Script().fromU8Vec(arr);
   }
 
-  static fromAddressOutput(pkh: Uint8Array): Script {
+  static fromAddressOutput(pkh: Buffer): Script {
     return new Script([
       new ScriptChunk(OP.DUP),
       new ScriptChunk(OP.DOUBLEBLAKE3),
@@ -76,16 +75,16 @@ export default class Script {
       this.chunks[0].opcode === OP.DUP &&
       this.chunks[1].opcode === OP.DOUBLEBLAKE3 &&
       this.chunks[2].opcode === OP.PUSHDATA1 &&
-      this.chunks[2].buffer?.length === 32 &&
+      this.chunks[2].buf?.length === 32 &&
       this.chunks[3].opcode === OP.EQUALVERIFY &&
       this.chunks[4].opcode === OP.CHECKSIG
     );
   }
 
-  static fromAddressInput(sig: Uint8Array, pubKey: Uint8Array): Script {
+  static fromAddressInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
     return new Script([
-      ScriptChunk.fromData(sig),
-      ScriptChunk.fromData(pubKey),
+      ScriptChunk.fromData(sigBuf),
+      ScriptChunk.fromData(pubKeyBuf),
     ]);
   }
 
@@ -93,9 +92,9 @@ export default class Script {
     return (
       this.chunks.length === 2 &&
       this.chunks[0].opcode === OP["PUSHDATA1"] &&
-      this.chunks[0].buffer?.length === 65 &&
+      this.chunks[0].buf?.length === 65 &&
       this.chunks[1].opcode === OP["PUSHDATA1"] &&
-      this.chunks[1].buffer?.length === 33
+      this.chunks[1].buf?.length === 33
     );
   }
 
@@ -110,7 +109,7 @@ export default class Script {
     ]);
   }
 
-  static fromMultiSigOutput(m: number, pubKeys: Uint8Array[]): Script {
+  static fromMultiSigOutput(m: number, pubKeys: Buffer[]): Script {
     return new Script([
       ScriptChunk.fromSmallNumber(m),
       ...pubKeys.map(ScriptChunk.fromData),
@@ -119,8 +118,8 @@ export default class Script {
     ]);
   }
 
-  static fromMultiSigInput(sigs: Uint8Array[]): Script {
-    return new Script(sigs.map(ScriptChunk.fromData));
+  static fromMultiSigInput(sigBufs: Buffer[]): Script {
+    return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
   isPushOnly(): boolean {

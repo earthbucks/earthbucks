@@ -6,11 +6,11 @@ describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {
     const header = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       BigInt(0),
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       BigInt(0),
     );
     const headerMine = new HeaderMine(header);
@@ -22,11 +22,11 @@ describe("HeaderMine", () => {
   test("getLowestNonceForNTimes", () => {
     const header = new Header(
       1,
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       BigInt(0),
-      new Uint8Array(32),
-      new Uint8Array(32),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
       BigInt(0),
     );
     const headerMine = new HeaderMine(header);

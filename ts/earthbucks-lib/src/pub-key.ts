@@ -22,6 +22,10 @@ export default class PubKey {
     return new PubKey(buf);
   }
 
+  toBuffer(): Buffer {
+    return this.buf;
+  }
+
   toHex(): string {
     return this.buf.toString("hex");
   }

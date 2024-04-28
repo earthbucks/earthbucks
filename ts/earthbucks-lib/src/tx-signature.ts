@@ -7,20 +7,20 @@ export default class TxSignature {
   static readonly SIGHASH_ANYONECANPAY = 0x00000080;
 
   hashType: number;
-  sigBuf: Uint8Array;
+  sigBuf: Buffer;
 
-  constructor(hashType: number, sigBuf: Uint8Array) {
+  constructor(hashType: number, sigBuf: Buffer) {
     this.hashType = hashType;
     this.sigBuf = sigBuf;
   }
 
-  toU8Vec(): Uint8Array {
+  toBuffer(): Buffer {
     const hashTypeBuf = Buffer.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType);
-    return new Uint8Array(Buffer.concat([hashTypeBuf, this.sigBuf]));
+    return Buffer.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromU8Vec(u8vec: Uint8Array): TxSignature {
+  static fromU8Vec(u8vec: Buffer): TxSignature {
     const hashType = u8vec[0];
     const sigBuf = u8vec.slice(1);
     return new TxSignature(hashType, sigBuf);

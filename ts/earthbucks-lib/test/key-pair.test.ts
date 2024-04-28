@@ -1,19 +1,20 @@
 import { describe, expect, test } from "@jest/globals";
 import KeyPair from "../src/key-pair";
+import PrivKey from "../src/priv-key";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";
 
 describe("KeyPair", () => {
-  test("Keypair", () => {
+  test("KeyPair", () => {
     const keypair = KeyPair.fromRandom();
-    expect(keypair.privateKey).toBeDefined();
-    expect(keypair.publicKey).toBeDefined();
+    expect(keypair.privKey.toBuffer()).toBeDefined();
+    expect(keypair.pubKey.toBuffer()).toBeDefined();
   });
 
-  describe("standard test vectors: key.json", () => {
+  describe("standard test vectors: key-pair.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../../../json/key.json"),
+      path.resolve(__dirname, "../../../json/key-pair.json"),
       "utf-8",
     );
 
@@ -26,9 +27,9 @@ describe("KeyPair", () => {
 
       for (const pair of keyPairs) {
         const privKeyBuf = Buffer.from(pair.priv_key, "hex");
-        const privKey = new Uint8Array(privKeyBuf);
-        const key = new KeyPair(privKey);
-        expect(Buffer.from(key.publicKey).toString("hex")).toBe(pair.pub_key);
+        const privKey = PrivKey.fromStringFmt(pair.priv_key);
+        const key = KeyPair.fromPrivKey(privKey);
+        expect(key.pubKey.toStringFmt()).toBe(pair.pub_key);
       }
     });
   });

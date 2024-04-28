@@ -4,7 +4,7 @@ import { Buffer } from "buffer";
 
 export default class MerkleTxs {
   public txs: Tx[];
-  public root: Uint8Array;
+  public root: Buffer;
   public proofs: MerkleProof[];
 
   constructor(txs: Tx[]) {
