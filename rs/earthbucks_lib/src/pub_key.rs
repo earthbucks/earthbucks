@@ -72,7 +72,7 @@ mod tests {
     fn test_from_priv_key() {
         let priv_key = PrivKey::from_random();
         let pub_key = PubKey::from_priv_key(&priv_key).unwrap();
-        println!("priv_key: {}", priv_key.to_hex());
+        println!("priv_key: {}", priv_key.to_string_fmt());
         println!("pub_key: {}", pub_key.to_hex());
     }
 

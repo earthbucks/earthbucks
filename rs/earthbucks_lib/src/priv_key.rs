@@ -54,10 +54,6 @@ impl PrivKey {
         Ok(PrivKey::new(priv_key))
     }
 
-    pub fn to_hex(&self) -> String {
-        hex::encode(self.buf)
-    }
-
     pub fn from_hex(hex: &str) -> Result<Self, String> {
         let priv_key_vec: Vec<u8> = strict_hex::decode(hex)?;
         PrivKey::from_u8_vec(priv_key_vec)
@@ -99,7 +95,7 @@ mod tests {
     #[test]
     fn test_from_random() {
         let priv_key = PrivKey::from_random();
-        println!("priv_key: {}", priv_key.to_hex());
+        println!("priv_key: {}", priv_key.to_string_fmt());
     }
 
     #[test]
@@ -112,14 +108,14 @@ mod tests {
     #[test]
     fn test_to_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_hex();
+        let hex = priv_key.to_string_fmt();
         println!("hex: {}", hex);
     }
 
     #[test]
     fn test_from_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_hex();
+        let hex = priv_key.to_string_fmt();
         let priv_key2 = PrivKey::from_hex(&hex).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }

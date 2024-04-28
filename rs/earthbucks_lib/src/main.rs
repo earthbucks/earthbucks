@@ -12,24 +12,24 @@ fn main() {
         2 => match args[1].as_str() {
             "key" => {
                 let key = KeyPair::from_random();
-                let private_key_hex = key.priv_key.to_hex();
-                let public_key_hex = key.pub_key.to_hex();
+                let priv_key_str = key.priv_key.to_string_fmt();
+                let pub_key_str = key.pub_key.to_string_fmt();
 
-                println!("Private key: {}", private_key_hex);
-                println!("Public key: {}", public_key_hex);
+                println!("Private key: {}", priv_key_str);
+                println!("Public key: {}", pub_key_str);
             }
             "pkh" => {
                 let key = KeyPair::from_random();
                 let public_key = key.pub_key.buf;
                 let pkh = pkh::Pkh::from_pub_key_buffer(public_key.to_vec());
 
-                let private_key_hex = key.priv_key.to_hex();
-                let public_key_hex = key.pub_key.to_hex();
-                let pkh_hex = hex::encode(pkh.to_u8_vec());
+                let prv_key_str = key.priv_key.to_string_fmt();
+                let pub_key_str = key.pub_key.to_string_fmt();
+                let pkh_str = pkh.to_string_fmt();
 
-                println!("Private key: {}", private_key_hex);
-                println!("Public key: {}", public_key_hex);
-                println!("Address: {}", pkh_hex);
+                println!("Private key: {}", prv_key_str);
+                println!("Public key: {}", pub_key_str);
+                println!("Address: {}", pkh_str);
             }
             _ => {
                 println!("Invalid argument. Please provide key or pkh");
