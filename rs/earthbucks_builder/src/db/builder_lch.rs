@@ -11,9 +11,12 @@ pub struct MineLch {
     pub prev_block_id: Vec<u8>,
     pub merkle_root: Vec<u8>,
     pub timestamp: u64,
+    pub block_num: u64,
     pub target: Vec<u8>,
     pub nonce: Vec<u8>,
-    pub block_num: u64,
+    pub work_algo: u64,
+    pub work_ser: Vec<u8>,
+    pub work_par: Vec<u8>,
     pub domain: String,
     pub created_at: chrono::NaiveDateTime,
 }
@@ -27,9 +30,12 @@ impl MineLch {
             prev_block_id: header.prev_block_id.clone(),
             merkle_root: header.merkle_root.clone(),
             timestamp: header.timestamp,
+            block_num: header.block_num,
             target: header.target.clone(),
             nonce: header.nonce.clone(),
-            block_num: header.block_num,
+            work_algo: header.work_algo,
+            work_ser: header.work_ser.clone(),
+            work_par: header.work_par.clone(),
             domain: header.domain.clone(),
             created_at: chrono::Utc::now().naive_utc(),
         }
@@ -45,21 +51,27 @@ impl MineLch {
             target: header.target.to_vec(),
             nonce: header.nonce.to_vec(),
             block_num: header.block_num,
+            work_algo: header.work_algo,
+            work_ser: header.work_ser.to_vec(),
+            work_par: header.work_par.to_vec(),
             domain: domain.to_string(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_block_header(&self) -> Header {
-        Header::new(
-            self.version,
-            self.prev_block_id.clone().try_into().unwrap(),
-            self.merkle_root.clone().try_into().unwrap(),
-            self.timestamp,
-            self.target.clone().try_into().unwrap(),
-            self.nonce.clone().try_into().unwrap(),
-            self.block_num,
-        )
+        Header{
+            version: self.version,
+            prev_block_id: self.prev_block_id.clone().try_into().unwrap(),
+            merkle_root: self.merkle_root.clone().try_into().unwrap(),
+            timestamp: self.timestamp,
+            block_num: self.block_num,
+            target: self.target.clone().try_into().unwrap(),
+            nonce: self.nonce.clone().try_into().unwrap(),
+            work_algo: self.work_algo,
+            work_ser: self.work_ser.clone().try_into().unwrap(),
+            work_par: self.work_par.clone().try_into().unwrap(),
+        }
     }
 
     pub async fn get(pool: &MySqlPool, id: Vec<u8>) -> Result<Self, Error> {

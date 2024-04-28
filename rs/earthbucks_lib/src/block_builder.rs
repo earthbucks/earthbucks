@@ -50,7 +50,18 @@ mod tests {
 
     #[test]
     fn test_from_block() {
-        let bh = Header::new(1, [0u8; 32], [0u8; 32], 0, [0u8; 32], [0u8; 32], 0);
+        let bh = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         let tx = Tx::new(1, vec![], vec![], 0);
         let block = Block::new(bh.clone(), vec![tx]);
         let bb = BlockBuilder::from_block(block);

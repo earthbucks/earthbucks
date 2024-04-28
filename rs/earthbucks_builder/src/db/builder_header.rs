@@ -8,9 +8,12 @@ pub struct MineHeader {
     pub prev_block_id: Vec<u8>,
     pub merkle_root: Vec<u8>,
     pub timestamp: u64,
+    pub block_num: u64,
     pub target: Vec<u8>,
     pub nonce: Vec<u8>,
-    pub block_num: u64,
+    pub work_algo: u64,
+    pub work_ser: Vec<u8>,
+    pub work_par: Vec<u8>,
     pub is_header_valid: Option<bool>,
     pub is_block_valid: Option<bool>,
     pub is_vote_valid: Option<bool>,
@@ -26,9 +29,12 @@ impl MineHeader {
             prev_block_id: header.prev_block_id.to_vec(),
             merkle_root: header.merkle_root.to_vec(),
             timestamp: header.timestamp,
+            block_num: header.block_num,
             target: header.target.to_vec(),
             nonce: header.nonce.to_vec(),
-            block_num: header.block_num,
+            work_algo: header.work_algo,
+            work_ser: header.work_ser.to_vec(),
+            work_par: header.work_par.to_vec(),
             is_header_valid: None,
             is_block_valid: None,
             is_vote_valid: None,
@@ -38,15 +44,18 @@ impl MineHeader {
     }
 
     pub fn to_block_header(&self) -> Header {
-        Header::new(
-            self.version,
-            self.prev_block_id.clone().try_into().unwrap(),
-            self.merkle_root.clone().try_into().unwrap(),
-            self.timestamp,
-            self.target.clone().try_into().unwrap(),
-            self.nonce.clone().try_into().unwrap(),
-            self.block_num,
-        )
+        Header{
+            version: self.version,
+            prev_block_id: self.prev_block_id.clone().try_into().unwrap(),
+            merkle_root: self.merkle_root.clone().try_into().unwrap(),
+            timestamp: self.timestamp,
+            block_num: self.block_num,
+            target: self.target.clone().try_into().unwrap(),
+            nonce: self.nonce.clone().try_into().unwrap(),
+            work_algo: self.work_algo,
+            work_ser: self.work_ser.clone().try_into().unwrap(),
+            work_par: self.work_par.clone().try_into().unwrap(),
+        }
     }
 
     pub async fn get(id: &Vec<u8>, pool: &MySqlPool) -> Result<Self, Error> {

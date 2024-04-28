@@ -6,31 +6,42 @@ import { Buffer } from "buffer";
 export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
+  static readonly BLOCK_HEADER_SIZE = 220;
+  static readonly INITIAL_TARGET = Buffer.alloc(32, 0xff);
 
   version: number; // uint32
   prevBlockId: Buffer; // 256 bits
   merkleRoot: Buffer; // 256 bits
   timestamp: bigint; // uint64
+  blockNum: bigint; // uint64
   target: Buffer; // 256 bits
   nonce: Buffer; // 256 bits
-  nBlock: bigint; // uint64
+  workAlgo: bigint; // uint64
+  workSer: Buffer; // 256 bits
+  workPar: Buffer; // 256 bits
 
   constructor(
     version: number,
     prevBlockId: Buffer,
     merkleRoot: Buffer,
     timestamp: bigint,
+    blockNum: bigint,
     target: Buffer,
     nonce: Buffer,
-    nBlock: bigint,
+    workAlgo: bigint,
+    workSer: Buffer,
+    workPar: Buffer,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
     this.merkleRoot = merkleRoot;
     this.timestamp = timestamp;
+    this.blockNum = blockNum;
     this.target = target;
     this.nonce = nonce;
-    this.nBlock = nBlock;
+    this.workAlgo = workAlgo;
+    this.workSer = workSer;
+    this.workPar = workPar;
   }
 
   toBuffer(): Buffer {
@@ -39,9 +50,12 @@ export default class Header {
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
     bw.writeUInt64BEBigInt(this.timestamp);
+    bw.writeUInt64BEBigInt(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BEBigInt(this.nBlock);
+    bw.writeUInt64BEBigInt(this.workAlgo);
+    bw.writeBuffer(this.workSer);
+    bw.writeBuffer(this.workPar);
     return bw.toBuffer();
   }
 
@@ -51,17 +65,23 @@ export default class Header {
     const previousBlockHash = br.readBuffer(32);
     const merkleRoot = br.readBuffer(32);
     const timestamp = br.readUInt64BEBigInt();
+    const blockNum = br.readUInt64BEBigInt();
     const target = br.readBuffer(32);
     const nonce = br.readBuffer(32);
-    const index = br.readUInt64BEBigInt();
+    const workAlgo = br.readUInt64BEBigInt();
+    const workSer = br.readBuffer(32);
+    const workPar = br.readBuffer(32);
     return new Header(
       version,
       previousBlockHash,
       merkleRoot,
       timestamp,
+      blockNum,
       target,
       nonce,
-      index,
+      workAlgo,
+      workSer,
+      workPar,
     );
   }
 
@@ -70,17 +90,23 @@ export default class Header {
     const previousBlockHash = br.readBuffer(32);
     const merkleRoot = br.readBuffer(32);
     const timestamp = br.readUInt64BEBigInt();
+    const blockNum = br.readUInt64BEBigInt();
     const target = br.readBuffer(32);
     const nonce = br.readBuffer(32);
-    const index = br.readUInt64BEBigInt();
+    const workAlgo = br.readUInt64BEBigInt();
+    const workSer = br.readBuffer(32);
+    const workPar = br.readBuffer(32);
     return new Header(
       version,
       previousBlockHash,
       merkleRoot,
       timestamp,
+      blockNum,
       target,
       nonce,
-      index,
+      workAlgo,
+      workSer,
+      workPar,
     );
   }
 
@@ -89,9 +115,12 @@ export default class Header {
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
     bw.writeUInt64BEBigInt(this.timestamp);
+    bw.writeUInt64BEBigInt(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BEBigInt(this.nBlock);
+    bw.writeUInt64BEBigInt(this.workAlgo);
+    bw.writeBuffer(this.workSer);
+    bw.writeBuffer(this.workPar);
     return bw;
   }
 
@@ -110,9 +139,12 @@ export default class Header {
       Buffer.alloc(32),
       Buffer.alloc(32),
       timestamp,
+      0n,
       initialTarget,
       Buffer.alloc(32),
       0n,
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
   }
 
@@ -121,12 +153,12 @@ export default class Header {
     prevAdjustmentBlockHeader: Header | null,
   ): Header {
     let target = null;
-    const index = prevBlockHeader.nBlock + 1n;
-    if (index % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
+    const blockNum = prevBlockHeader.blockNum + 1n;
+    if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.nBlock + Header.BLOCKS_PER_ADJUSTMENT !==
-          index
+        prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
+          blockNum
       ) {
         throw new Error(
           "must provide previous adjustment block header 2016 blocks before",
@@ -142,14 +174,20 @@ export default class Header {
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     const nonce = Buffer.alloc(32);
+    const workAlgo = prevBlockHeader.workAlgo;
+    const workSer = Buffer.alloc(32);
+    const workPar = Buffer.alloc(32);
     return new Header(
       1,
       prevBlockId,
       Buffer.alloc(32),
       timestamp,
+      blockNum,
       target,
       nonce,
-      index,
+      workAlgo,
+      workSer,
+      workPar,
     );
   }
 
@@ -175,7 +213,7 @@ export default class Header {
 
   isValid(): boolean {
     const len = this.toBuffer().length;
-    if (len !== 148) {
+    if (len !== Header.BLOCK_HEADER_SIZE) {
       return false;
     }
     return (
@@ -188,7 +226,7 @@ export default class Header {
   }
 
   isGenesis(): boolean {
-    return this.nBlock === 0n && this.prevBlockId.every((byte) => byte === 0);
+    return this.blockNum === 0n && this.prevBlockId.every((byte) => byte === 0);
   }
 
   hash(): Buffer {

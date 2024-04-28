@@ -32,9 +32,12 @@ export const BuilderHeader = mysqlTable(
       mode: "bigint",
       unsigned: true,
     }).notNull(),
+    blockNum: bigint("block_num", { mode: "bigint", unsigned: true }).notNull(),
     target: binary("target", { length: 32 }).notNull(),
     nonce: binary("nonce", { length: 32 }).notNull(),
-    blockNum: bigint("block_num", { mode: "bigint", unsigned: true }).notNull(),
+    workAlgo: bigint("work_algo", { mode: "bigint", unsigned: true }).notNull(),
+    workSer: binary("work_ser", { length: 32 }).notNull(),
+    workPar: binary("work_par", { length: 32 }).notNull(),
     // database metadata
     isHeaderValid: tinyint("is_header_valid"),
     isBlockValid: tinyint("is_block_valid"),
@@ -67,9 +70,12 @@ export const BuilderLch = mysqlTable(
       mode: "bigint",
       unsigned: true,
     }).notNull(),
+    blockNum: bigint("block_num", { mode: "bigint", unsigned: true }).notNull(),
     target: binary("target", { length: 32 }).notNull(),
     nonce: binary("nonce", { length: 32 }).notNull(),
-    blockNum: bigint("block_num", { mode: "bigint", unsigned: true }).notNull(),
+    workAlgo: bigint("work_algo", { mode: "bigint", unsigned: true }).notNull(),
+    workSer: binary("work_ser", { length: 32 }).notNull(),
+    workPar: binary("work_par", { length: 32 }).notNull(),
     // database metadata
     domain: varchar("domain", { length: 255 }).notNull(),
     createdAt: datetime("created_at", { mode: "string" })

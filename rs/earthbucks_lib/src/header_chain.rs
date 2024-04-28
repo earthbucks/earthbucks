@@ -65,7 +65,18 @@ mod tests {
     #[test]
     fn test_add() {
         let mut chain = HeaderChain::new();
-        let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
+        let header = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         chain.add(header);
         assert_eq!(chain.headers.len(), 1);
     }
@@ -73,7 +84,18 @@ mod tests {
     #[test]
     fn test_get_tip() {
         let mut chain = HeaderChain::new();
-        let header = Header::new(1, [0; 32], [0; 32], 1, [0; 32], [0; 32], 1);
+        let header = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         chain.add(header);
         assert_eq!(chain.get_tip().unwrap().version, 1);
     }

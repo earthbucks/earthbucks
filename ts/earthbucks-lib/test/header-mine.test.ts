@@ -9,9 +9,12 @@ describe("HeaderMine", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       BigInt(0),
+      BigInt(0),
       Buffer.alloc(32),
       Buffer.alloc(32),
       BigInt(0),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const headerMine = new HeaderMine(header);
     const lowest = headerMine.getLowestIdForNTimes(10);
@@ -25,9 +28,12 @@ describe("HeaderMine", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       BigInt(0),
+      BigInt(0),
       Buffer.alloc(32),
       Buffer.alloc(32),
       BigInt(0),
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const headerMine = new HeaderMine(header);
     const nonce = headerMine.getLowestNonceForNTimes(10);

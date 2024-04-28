@@ -9,38 +9,21 @@ use std::time::{SystemTime, UNIX_EPOCH};
 pub struct Header {
     pub version: u32,            // uint32
     pub prev_block_id: [u8; 32], // 256 bits
+    pub timestamp: u64,          // uint64 (seconds)
+    pub block_num: u64,          // uint64
     pub merkle_root: [u8; 32],   // 256 bits
-    pub timestamp: u64,          // uint64
     pub target: [u8; 32],        // 32 bits
     pub nonce: [u8; 32],         // 256 bits
-    pub block_num: u64,          // uint64
+    pub work_algo: u64,          // uint64
+    pub work_ser: [u8; 32],      // 256 bits
+    pub work_par: [u8; 32],      // 256 bits
 }
 
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
-    pub const BLOCK_HEADER_SIZE: usize = 148;
+    pub const BLOCK_HEADER_SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
-
-    pub fn new(
-        version: u32,
-        prev_block_id: [u8; 32],
-        merkle_root: [u8; 32],
-        timestamp: u64,
-        target: [u8; 32],
-        nonce: [u8; 32],
-        block_num: u64,
-    ) -> Header {
-        Header {
-            version,
-            prev_block_id,
-            merkle_root,
-            timestamp,
-            target,
-            nonce,
-            block_num,
-        }
-    }
 
     pub fn to_u8_vec(&self) -> Vec<u8> {
         let mut bw = BufferWriter::new();
@@ -48,9 +31,12 @@ impl Header {
         bw.write_u8_vec(self.prev_block_id.to_vec());
         bw.write_u8_vec(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
+        bw.write_u64_be(self.block_num);
         bw.write_u8_vec(self.target.to_vec());
         bw.write_u8_vec(self.nonce.to_vec());
-        bw.write_u64_be(self.block_num);
+        bw.write_u64_be(self.work_algo);
+        bw.write_u8_vec(self.work_ser.to_vec());
+        bw.write_u8_vec(self.work_par.to_vec());
         bw.to_u8_vec()
     }
 
@@ -60,21 +46,27 @@ impl Header {
         }
         let mut br = BufferReader::new(buf);
         let version = br.read_u32_be();
-        let previous_block_hash: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let prev_block_id: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let merkle_root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let timestamp = br.read_u64_be();
+        let block_num = br.read_u64_be();
         let target: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let nonce: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
-        let index = br.read_u64_be();
-        Ok(Header::new(
+        let work_algo = br.read_u64_be();
+        let work_ser: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let work_par: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        Ok(Self {
             version,
-            previous_block_hash,
+            prev_block_id,
             merkle_root,
             timestamp,
+            block_num,
             target,
             nonce,
-            index,
-        ))
+            work_algo,
+            work_ser,
+            work_par,
+        })
     }
 
     pub fn from_buffer_reader(br: &mut BufferReader) -> Result<Header, &'static str> {
@@ -82,21 +74,27 @@ impl Header {
             panic!("Invalid block header size");
         }
         let version = br.read_u32_be();
-        let previous_block_hash: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let prev_block_id: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let merkle_root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let timestamp = br.read_u64_be();
+        let block_num = br.read_u64_be();
         let target: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let nonce: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
-        let index = br.read_u64_be();
-        Ok(Header::new(
+        let work_algo = br.read_u64_be();
+        let work_ser: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let work_par: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        Ok(Self {
             version,
-            previous_block_hash,
+            prev_block_id,
             merkle_root,
             timestamp,
+            block_num,
             target,
             nonce,
-            index,
-        ))
+            work_algo,
+            work_ser,
+            work_par,
+        })
     }
 
     pub fn to_buffer_writer(&self) -> BufferWriter {
@@ -105,9 +103,12 @@ impl Header {
         bw.write_u8_vec(self.prev_block_id.to_vec());
         bw.write_u8_vec(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
+        bw.write_u64_be(self.block_num);
         bw.write_u8_vec(self.target.to_vec());
         bw.write_u8_vec(self.nonce.to_vec());
-        bw.write_u64_be(self.block_num);
+        bw.write_u64_be(self.work_algo);
+        bw.write_u8_vec(self.work_ser.to_vec());
+        bw.write_u8_vec(self.work_par.to_vec());
         bw
     }
 
@@ -214,9 +215,12 @@ impl Header {
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp,
+            block_num: 0,
             target: initial_target,
             nonce: [0; 32],
-            block_num: 0,
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
         }
     }
 
@@ -243,20 +247,27 @@ impl Header {
         if new_target_res.is_err() {
             return Err("new target error".to_string());
         }
+        let prev_block = lch.last().unwrap();
         let new_target = new_target_res.unwrap();
-        let prev_block_id = lch.last().unwrap().id();
+        let prev_block_id = prev_block.id();
         let block_num = lch.len() as u64;
         let timestamp = new_timestamp;
         let nonce = [0u8; 32];
-        Ok(Self::new(
-            1,
+        let work_algo = prev_block.work_algo;
+        let work_ser = [0u8; 32];
+        let work_par = [0u8; 32];
+        Ok(Self {
+            version: 1,
             prev_block_id,
-            [0u8; 32],
+            merkle_root: [0u8; 32],
             timestamp,
-            new_target,
-            nonce,
             block_num,
-        ))
+            target: new_target,
+            nonce,
+            work_algo,
+            work_ser,
+            work_par,
+        })
     }
 
     pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<[u8; 32], String> {
@@ -330,7 +341,18 @@ mod tests {
 
     #[test]
     fn test_to_u8_vec_and_from_u8_vec() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         let buf = bh1.to_u8_vec();
         let bh2 = Header::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
@@ -344,7 +366,18 @@ mod tests {
 
     #[test]
     fn test_to_buffer() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         let buf = bh1.to_u8_vec();
         let bh2 = Header::from_u8_vec(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
@@ -358,35 +391,79 @@ mod tests {
 
     #[test]
     fn test_is_valid() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         assert!(bh1.is_valid_in_isolation());
     }
 
     #[test]
     fn test_is_genesis() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         assert!(bh1.is_genesis());
     }
 
     #[test]
     fn test_hash() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         let hash = bh1.hash();
         let hex = hex::encode(hash);
         assert_eq!(
             hex,
-            "ec821c0b0375d4e80eca5fb437652b2d53f32a613d4349d665a67406ba0d239e"
+            "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00"
         );
     }
 
     #[test]
     fn test_id() {
-        let bh1 = Header::new(1, [0; 32], [0; 32], 0, [0; 32], [0; 32], 0);
+        let bh1 = Header {
+            version: 1,
+            prev_block_id: [0; 32],
+            merkle_root: [0; 32],
+            timestamp: 0,
+            block_num: 0,
+            target: [0; 32],
+            nonce: [0; 32],
+            work_algo: 0,
+            work_ser: [0; 32],
+            work_par: [0; 32],
+        };
         let id = bh1.id();
         let hex = hex::encode(id);
         assert_eq!(
             hex,
-            "8bbebda6265eb4265ff52f6e744d2859e6ef58c640e1df355072c4a9541b8aba"
+            "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e"
         );
     }
 

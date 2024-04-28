@@ -13,9 +13,12 @@ describe("Block", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -29,9 +32,12 @@ describe("Block", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -45,9 +51,12 @@ describe("Block", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -60,7 +69,7 @@ describe("Block", () => {
     expect(block2.header.timestamp).toBe(bh.timestamp);
     expect(block2.header.target).toEqual(bh.target);
     expect(block2.header.nonce).toEqual(bh.nonce);
-    expect(block2.header.nBlock).toBe(bh.nBlock);
+    expect(block2.header.blockNum).toBe(bh.blockNum);
   });
 
   test("isGenesis", () => {
@@ -69,9 +78,12 @@ describe("Block", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
       0n,
+      Buffer.alloc(32),
+      Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
