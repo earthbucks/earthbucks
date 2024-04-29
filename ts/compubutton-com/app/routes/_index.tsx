@@ -1,5 +1,4 @@
 import type { MetaFunction } from "@remix-run/node";
-import Button from "~/button";
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,7 +33,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              The most advanced button in the world!
+              Welcome to the most advanced button in the world!
               <br />
               <br />
               Copyright &copy; 2024 Ryan X. Charles LLC

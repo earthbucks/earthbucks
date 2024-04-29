@@ -453,7 +453,14 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "pay" | "computcha" | "secret" | "ai" | "credits" | "mine";
+type buttonColor =
+  | "standard"
+  | "pay"
+  | "computcha"
+  | "secret"
+  | "ai"
+  | "credits"
+  | "mine";
 
 export default function Button({
   initialText = "Swipe",
