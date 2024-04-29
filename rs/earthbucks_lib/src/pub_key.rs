@@ -1,3 +1,4 @@
+use crate::blake3::blake3_hash;
 use crate::priv_key::PrivKey;
 use crate::strict_hex;
 use bs58;
@@ -44,16 +45,26 @@ impl PubKey {
     }
 
     pub fn to_string_fmt(&self) -> String {
-        "ebxpub".to_string() + &bs58::encode(&self.buf).into_string()
+        let check_hash = blake3_hash(&self.buf);
+        let check_sum = &check_hash[0..4];
+        let check_hex = hex::encode(check_sum);
+        "ebxpub".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
     pub fn from_string_fmt(s: &str) -> Result<PubKey, String> {
         if !s.starts_with("ebxpub") {
             return Err("Invalid format".to_string());
         }
-        let buf = bs58::decode(&s[6..])
+        let check_str = &s[6..14];
+        let check_buf = strict_hex::decode(check_str).map_err(|_| "Invalid hex pub key")?;
+        let buf = bs58::decode(&s[14..])
             .into_vec()
             .map_err(|_| "Invalid base58")?;
+        let check_hash = blake3_hash(&buf);
+        let check_sum = &check_hash[0..4];
+        if check_buf != check_sum {
+            return Err("Invalid checksum".to_string());
+        }
         PubKey::from_u8_vec(buf)
     }
 
@@ -98,13 +109,13 @@ mod tests {
     #[test]
     fn test_to_from_string_format() {
         assert!(PubKey::is_valid_string_fmt(
-            "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V"
+            "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo"
         ));
         assert!(!PubKey::is_valid_string_fmt(
-            "ebxpucrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V"
+            "ebxpu5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo"
         ));
         assert!(!PubKey::is_valid_string_fmt(
-            "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWu"
+            "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYV"
         ));
     }
 }

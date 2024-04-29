@@ -845,9 +845,9 @@ as, Bitcoin.
 
 An example key is as follows:
 
-- Priv Key: ebxprva1cc8cc0585uRg3djTCddTDzpEmEF6u2TvE5PecQX6L3fAauMw3r
-- Pub Key: ebxpub2BCHfmRmcV8HsF9bqERx3iXPe3aVouNJ5JTfY5wDzrB9S
-- PKH: ebxpkh68a5813d662qzDgB2uqdi3MFiaXSEXpsMBGBn8pKXCf16C2wuyCy
+- Priv Key: ebxprv38726588FxbBLchUEt8sNkrytJuqwvwoCuZfhX5X9vdhU8keU2xu
+- Pub Key: ebxpub174fc268mgoT8kLwT7HPWncsMk9AqoMeoifmQKBdMLC7jAb7r2Yd
+- PKH: ebxpkhefeb7e43AL6r2PSJn3CsS6yMwxKyNvu9GkPEnN9peSaFVsN6dAxp
 
 These formats are designed to be as friendly as possible for random data.
 However, the user is not expected to see this data on a regular basis. The only

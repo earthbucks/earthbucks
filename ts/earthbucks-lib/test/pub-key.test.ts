@@ -6,31 +6,32 @@ describe("PubKey", () => {
   test("PubKey", () => {
     const privKey = PrivKey.fromRandom();
     const pubKey = PubKey.fromPrivKey(privKey);
+    console.log(pubKey.toStringFmt());
     expect(pubKey).toBeDefined();
   });
 
   test("to/from string format", () => {
     expect(
       PubKey.isValidStringFmt(
-        "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V",
+        "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
       ),
     ).toBe(true);
     expect(
       PubKey.isValidStringFmt(
-        "ebxpucrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V",
+        "ebxpu5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
       ),
     ).toBe(false);
     expect(
       PubKey.isValidStringFmt(
-        "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBE",
+        "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYV",
       ),
     ).toBe(false);
 
     let pubKey = PubKey.fromStringFmt(
-      "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V",
+      "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
     expect(pubKey.toStringFmt()).toEqual(
-      "ebxpubcrjFAsCKzHRpw5St4Rjh5xb5SQpCaoDryB8dfWuBEF3V",
+      "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
   });
 });
