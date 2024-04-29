@@ -64,7 +64,7 @@ export default function Landing() {
             initialText="Computcha"
             successText="Solved!"
             onComputing={onComputing}
-            mode="pow"
+            mode="computcha"
           />
         </div>
       </div>
