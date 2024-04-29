@@ -1,7 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import Button from "../button";
-import { Buffer } from "buffer";
-import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
+import Button from "~/button";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,23 +9,6 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
-  async function onComputing() {
-    console.log("begin");
-    {
-      console.time("blake3PowAsync");
-      let nonce = blake3Sync(Buffer.from("nonce 5"));
-      let target = Buffer.from(
-        "00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        "hex",
-      );
-      let res = await blake3PowAsync(nonce, target);
-      console.log(res.toString("hex"));
-      let resHash = blake3Sync(res);
-      console.log(resHash.toString("hex"));
-      console.timeEnd("blake3PowAsync");
-    }
-    console.log("end");
-  }
   return (
     <div className="">
       <div className="mb-4 mt-4 flex">
@@ -53,25 +34,11 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Please solve the computcha to register or log in.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mb-4 mt-4 h-[60px]">
-        <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Computcha"
-            successText="Solved!"
-            onComputing={onComputing}
-            mode="pow"
-          />
-        </div>
-      </div>
-      <div className="mb-4 mt-4 flex">
-        <div className="mx-auto">
-          <div className="inline-block align-middle">
-            <div className="text-center text-black dark:text-white">
+             The most advanced button in the world!
+              <br />
+              <br />
+              <Button initialText="Log in" /><br />
+              <Button initialText="Register" /><br />
               Copyright &copy; 2024 Ryan X. Charles LLC
             </div>
           </div>
