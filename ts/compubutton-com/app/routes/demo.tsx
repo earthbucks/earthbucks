@@ -1,7 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import { Buffer } from "buffer";
-import GpuPow from "earthbucks-tf/src/pow-gpu";
+import PowGpu from "../.client/pow-gpu";
 import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
 
 export const meta: MetaFunction = () => {
@@ -19,7 +19,7 @@ export default function Landing() {
       console.time("gpupow matrixCalculationFloat");
       let previousBlockIds = [blake3Sync(Buffer.from("previousBlockId"))];
       let workingBlockId = blake3Sync(Buffer.from("workingBlockId"));
-      let gpupow = new GpuPow(workingBlockId, previousBlockIds);
+      let gpupow = new PowGpu(workingBlockId, previousBlockIds);
 
       for (let i = 0; i < 100; i++) {
         let workingBlockId = blake3Sync(Buffer.from("workingBlockId" + i));

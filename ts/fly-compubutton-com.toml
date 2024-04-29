@@ -4,7 +4,7 @@
 #
 
 app = 'compubutton'
-primary_region = 'iad'
+primary_region = 'dfw'
 
 [build]
 
