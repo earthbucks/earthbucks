@@ -31,7 +31,7 @@ if (typeof document === "undefined") {
 
 } else {
   // running in a browser environment
-  import("blake3/browser").then(async ({ createHash, hash }) => {
+  await import("blake3/browser").then(async ({ createHash, hash }) => {
     let browserBlake3Hash = (data: Buffer) => {
       const hasher = createHash();
       hasher.update(data);
