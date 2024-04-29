@@ -12,23 +12,6 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
-  async function onComputing() {
-    console.log("begin");
-    {
-      console.time("blake3PowAsync");
-      let nonce = blake3Sync(Buffer.from("nonce 5"));
-      let target = Buffer.from(
-        "00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        "hex",
-      );
-      let res = await blake3PowAsync(nonce, target);
-      console.log(res.toString("hex"));
-      let resHash = blake3Sync(res);
-      console.log(resHash.toString("hex"));
-      console.timeEnd("blake3PowAsync");
-    }
-    console.log("end");
-  }
   return (
     <div className="">
       <div className="mb-4 mt-4 flex">
@@ -63,14 +46,13 @@ export default function Landing() {
 
       <div className="mx-auto max-w-[400px]">
         <div className="mb-4 text-center text-black dark:text-white">
-          Please solve the computcha to log in or register.
+          Please insert your email address to register or log in.
         </div>
         <div className="mx-auto w-[320px]">
           <Button
-            initialText="Computcha"
+            initialText="Verify email"
             successText="Solved!"
-            onComputing={onComputing}
-            mode="computcha"
+            mode="standard"
           />
         </div>
       </div>
