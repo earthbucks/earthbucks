@@ -33,13 +33,9 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
+              Easily add AI to websites.
+              <br /><br />
               Coming soon.
-              <br />
-              Please follow{" "}
-              <a href="https://earthbucks.com" className="underline">
-                EarthBucks
-              </a>{" "}
-              for updates.
             </div>
           </div>
         </div>

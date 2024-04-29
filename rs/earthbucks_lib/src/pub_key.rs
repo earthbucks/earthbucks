@@ -100,7 +100,6 @@ mod tests {
 
     #[test]
     fn test_is_not_valid() {
-        // valid: 035b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219
         let invalid = "065b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219";
         let pub_key = PubKey::from_hex(invalid).unwrap();
         assert!(!pub_key.is_valid());
