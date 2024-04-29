@@ -53,7 +53,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-              Please solve the computcha to log in.
+              Please solve the computcha to register.
             </div>
           </div>
         </div>

@@ -37,6 +37,7 @@ function Slider({
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
   buttonSrc = "/button-128.png",
+  delayComputedMs = 0,
 }: {
   initialText: string;
   computingText: string;
@@ -48,6 +49,7 @@ function Slider({
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
   buttonSrc?: string;
+  delayComputedMs?: number;
 }) {
   const sliderStates = [
     "initial",
@@ -65,7 +67,9 @@ function Slider({
 
   async function handleOnComputing() {
     let computingPromise = onComputing();
-    let delayPromise = new Promise((resolve) => setTimeout(resolve, 2000));
+    let delayPromise = new Promise((resolve) =>
+      setTimeout(resolve, delayComputedMs),
+    );
 
     Promise.all([computingPromise, delayPromise])
       .then(async () => {

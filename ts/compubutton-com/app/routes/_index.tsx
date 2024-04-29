@@ -34,7 +34,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
-             The most advanced button in the world!
+              The most advanced button in the world!
               <br />
               <br />
               Copyright &copy; 2024 Ryan X. Charles LLC
