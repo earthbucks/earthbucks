@@ -1,7 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
-import { Buffer } from "buffer";
-import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import React, { useEffect, useState } from "react";
 import KeyPair from "earthbucks-lib/src/key-pair";
 
@@ -31,6 +29,13 @@ export default function Landing() {
         key, it cannot be recovered. Never show your private key to anyone but
         Compubutton and your password manager. Please save your key pair in your
         password manager to continue.
+        <br />
+        {keyPair ? (
+          <div>
+            {keyPair.pubKey.toStringFmt()}<br />
+            {keyPair.privKey.toStringFmt()}
+            </div>
+        ) : null}
       </div>
       <div className="mx-auto w-[320px]">
         <Button initialText="Log in" />
