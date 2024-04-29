@@ -466,6 +466,7 @@ export default function Button({
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
   mode: buttonMode = "standard",
+  delayComputedMs = 0,
 }: {
   initialText?: string;
   computingText?: string;
@@ -477,6 +478,7 @@ export default function Button({
   onFinishedSuccess?: () => Promise<void>;
   onFinishedError?: () => Promise<void>;
   mode?: buttonColor;
+  delayComputedMs?: number;
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
@@ -531,6 +533,7 @@ export default function Button({
                     onFinishedSuccess={onFinishedSuccess}
                     onFinishedError={onFinishedError}
                     buttonSrc={buttonSrc}
+                    delayComputedMs={delayComputedMs}
                   />
                 </div>
                 <div className="h-full flex-shrink-0">
