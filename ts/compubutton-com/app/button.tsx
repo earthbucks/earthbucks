@@ -453,7 +453,7 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai" | "credits";
+type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai" | "credits" | "mine";
 
 export default function Button({
   initialText = "Swipe",
@@ -498,6 +498,8 @@ export default function Button({
     buttonSrc = "/artintellica-button-128.png";
   } else if (buttonMode == "credits") {
     buttonSrc = "/washington-button-128.png";
+  } else if (buttonMode == "mine") {
+    buttonSrc = "/mining-button-128.png";
   }
 
   let MAX_TEXT_LEN = 16;

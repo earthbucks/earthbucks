@@ -69,7 +69,7 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Compute" onComputing={onComputing} />
+          <Button initialText="Compute" mode="mine" onComputing={onComputing} />
         </div>
       </div>
     </div>
