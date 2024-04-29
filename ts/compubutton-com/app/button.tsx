@@ -326,10 +326,11 @@ function Slider({
                 sliderState === "initial" || sliderState === "dragging"
                   ? "flex items-center"
                   : "hidden",
+                "",
               )}
             >
               <ChevronDoubleRightIcon className="ml-[34px] inline-block h-6 w-6 text-[#42f6eb]" />
-              <span className="align-middle text-sm font-semibold text-white">
+              <span className="inline-block max-w-[120px] overflow-hidden align-middle text-sm font-semibold text-white">
                 {initialText}
               </span>
               <ChevronDoubleRightIcon className="inline-block h-6 w-6 text-[#42f6eb]" />
@@ -342,7 +343,7 @@ function Slider({
                   : "hidden",
               )}
             >
-              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
                 {computingText}
               </span>
             </div>
@@ -353,7 +354,8 @@ function Slider({
                   : "hidden",
               )}
             >
-              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
+                {" "}
                 {successText}
               </span>
             </div>
@@ -365,7 +367,8 @@ function Slider({
                   : "hidden",
               )}
             >
-              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
+                {" "}
                 {successText}
               </span>
             </div>
@@ -376,7 +379,8 @@ function Slider({
                   : "hidden",
               )}
             >
-              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
+                {" "}
                 {errorText}
               </span>
             </div>
@@ -387,7 +391,8 @@ function Slider({
                   : "hidden",
               )}
             >
-              <span className="ml-[40px] align-middle text-sm font-semibold text-white">
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
+                {" "}
                 {errorText}
               </span>
             </div>
@@ -487,6 +492,20 @@ export default function Button({
     buttonSrc = "/artintellica-button-128.png";
   } else if (buttonMode == "credits") {
     buttonSrc = "/washington-button-128.png";
+  }
+
+  let MAX_TEXT_LEN = 16;
+  if (initialText.length > MAX_TEXT_LEN) {
+    initialText = initialText.slice(0, MAX_TEXT_LEN);
+  }
+  if (computingText.length > MAX_TEXT_LEN) {
+    computingText = computingText.slice(0, MAX_TEXT_LEN);
+  }
+  if (successText.length > MAX_TEXT_LEN) {
+    successText = successText.slice(0, MAX_TEXT_LEN);
+  }
+  if (errorText.length > MAX_TEXT_LEN) {
+    errorText = errorText.slice(0, MAX_TEXT_LEN);
   }
 
   return (
