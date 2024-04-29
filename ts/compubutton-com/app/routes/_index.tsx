@@ -1,6 +1,10 @@
-import type { MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
 import Button from "~/button";
 import Footer from "~/components/footer";
 import { Buffer } from "buffer";
@@ -16,27 +20,12 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   const navigate = useNavigate();
 
-  async function onSuccess() {
-    console.log("login");
-    navigate("/login");
+  async function onSignin() {
+    navigate("/signin");
   }
 
-  async function onComputing() {
-    console.log("begin");
-    {
-      console.time("blake3PowAsync");
-      let nonce = blake3Sync(Buffer.from("nonce 5"));
-      let target = Buffer.from(
-        "00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        "hex",
-      );
-      let res = await blake3PowAsync(nonce, target);
-      console.log(res.toString("hex"));
-      let resHash = blake3Sync(res);
-      console.log(resHash.toString("hex"));
-      console.timeEnd("blake3PowAsync");
-    }
-    console.log("end");
+  async function onRegister() {
+    navigate("/register");
   }
   return (
     <div className="">
@@ -70,18 +59,14 @@ export default function Landing() {
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <div className="mx-auto max-w-[400px]">
-        <div className="mb-4 text-center text-black dark:text-white">
-          Please solve the computcha to log in or register.
+        <div className="my-4 text-center text-black dark:text-white">
+          Please sign in or register to continue.
         </div>
-        <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Computcha"
-            computingText="Computing..."
-            successText="Solved!"
-            mode="computcha"
-            onComputing={onComputing}
-            onSuccess={onSuccess}
-          />
+        <div className="mx-auto my-4 w-[320px]">
+          <Button initialText="Sign in" onSuccess={onSignin} />
+        </div>
+        <div className="mx-auto my-4 w-[320px]">
+          <Button initialText="Register" onSuccess={onRegister} />
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />

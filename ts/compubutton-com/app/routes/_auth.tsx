@@ -1,8 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
-import Button from "../button";
-import { Buffer } from "buffer";
-import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Footer from "~/components/footer";
+import { Outlet } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -44,18 +42,7 @@ export default function Landing() {
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
 
-      <div className="mx-auto max-w-[400px]">
-        <div className="mb-4 text-center text-black dark:text-white">
-          Please insert your email address to register or log in.
-        </div>
-        <div className="mx-auto w-[320px]">
-          <Button
-            initialText="Verify email"
-            successText="Solved!"
-            mode="standard"
-          />
-        </div>
-      </div>
+      <Outlet />
 
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <Footer />
