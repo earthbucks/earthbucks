@@ -453,7 +453,7 @@ function Slider({
   );
 }
 
-type buttonColor = "standard" | "pay" | "pow" | "secret" | "ai" | "credits" | "mine";
+type buttonColor = "standard" | "pay" | "computcha" | "secret" | "ai" | "credits" | "mine";
 
 export default function Button({
   initialText = "Swipe",
@@ -490,7 +490,7 @@ export default function Button({
     //   buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pay") {
     buttonSrc = "/earthbucks-coin-128.png";
-  } else if (buttonMode === "pow") {
+  } else if (buttonMode === "computcha") {
     buttonSrc = "/computcha-bottlecap-128.png";
   } else if (buttonMode === "secret") {
     buttonSrc = "/black-button-128.png";

@@ -51,7 +51,12 @@ export default function Landing() {
       </div>
       <div className="mb-4 mt-4 h-[80px]">
         <div className="mx-auto w-[320px]">
-          <Button initialText="Computcha" mode="pow" />
+          <Button initialText="Computcha" mode="computcha" />
+        </div>
+      </div>
+      <div className="mb-4 mt-4 h-[80px]">
+        <div className="mx-auto w-[320px]">
+          <Button initialText="Computcha" mode="mine" />
         </div>
       </div>
       <div className="mb-4 mt-4 h-[80px]">
