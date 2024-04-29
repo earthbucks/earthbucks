@@ -1,6 +1,5 @@
 import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import crypto from "crypto";
 import StrictHex from "./strict-hex";
 import bs58 from "bs58";
 import { blake3Hash } from "./blake3";
@@ -15,7 +14,7 @@ export default class PrivKey {
   static fromRandom(): PrivKey {
     let privateKey;
     do {
-      privateKey = crypto.randomBytes(32);
+      privateKey = crypto.getRandomValues(Buffer.alloc(32));
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
   }
