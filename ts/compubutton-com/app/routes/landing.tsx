@@ -75,7 +75,7 @@ export default function Landing() {
         </div>
         <div className="mx-auto w-[320px]">
           <Button
-            initialText="Compute"
+            initialText="Computcha"
             computingText="Computing..."
             successText="Solved!"
             mode="computcha"
