@@ -1,4 +1,10 @@
 import type { MetaFunction } from "@remix-run/node";
+import { useNavigate } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
+import Button from "~/button";
+import Footer from "~/components/footer";
+import { Buffer } from "buffer";
+import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,9 +14,33 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
+  const navigate = useNavigate();
+
+  async function onSuccess() {
+    console.log("login");
+    navigate("/login");
+  }
+
+  async function onComputing() {
+    console.log("begin");
+    {
+      console.time("blake3PowAsync");
+      let nonce = blake3Sync(Buffer.from("nonce 5"));
+      let target = Buffer.from(
+        "00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "hex",
+      );
+      let res = await blake3PowAsync(nonce, target);
+      console.log(res.toString("hex"));
+      let resHash = blake3Sync(res);
+      console.log(resHash.toString("hex"));
+      console.timeEnd("blake3PowAsync");
+    }
+    console.log("end");
+  }
   return (
     <div className="">
-      <div className="mb-4 mt-4 flex">
+      <div className="mt-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
@@ -34,13 +64,28 @@ export default function Landing() {
             </div>
             <div className="mt-4 text-center text-black dark:text-white">
               Welcome to the most advanced button in the world!
-              <br />
-              <br />
-              Copyright &copy; 2024 Ryan X. Charles LLC
             </div>
           </div>
         </div>
       </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <div className="mx-auto max-w-[400px]">
+        <div className="mb-4 text-center text-black dark:text-white">
+          Please solve the computcha to log in or register.
+        </div>
+        <div className="mx-auto w-[320px]">
+          <Button
+            initialText="Computcha"
+            computingText="Computing..."
+            successText="Solved!"
+            mode="computcha"
+            onComputing={onComputing}
+            onSuccess={onSuccess}
+          />
+        </div>
+      </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <Footer />
     </div>
   );
 }
