@@ -27,6 +27,7 @@ export default function Landing() {
   async function onRegister() {
     navigate("/register");
   }
+
   return (
     <div className="">
       <div className="mt-4 flex">

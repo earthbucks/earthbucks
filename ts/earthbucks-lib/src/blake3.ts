@@ -74,8 +74,8 @@ if (typeof document === "undefined") {
   //    high volume.
 
   blake3Hash = function blake3Hash(data: Buffer): Buffer {
-    let hex = blake3browser.newRegular().update(data).finalize() as string;
-    return Buffer.from(hex, 'hex');
+    let arr = blake3browser.newRegular().update(data).finalize(32, "bytes") as Array<number>;
+    return Buffer.from(arr);
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: Buffer): Buffer {
