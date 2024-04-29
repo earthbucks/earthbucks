@@ -57,7 +57,18 @@ export default function Landing() {
           </div>
         </div>
       </div>
-
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <div className="mx-auto max-w-[400px]">
+        <div className="my-4 text-center text-black dark:text-white">
+          Please sign in or register to continue.
+        </div>
+        <div className="mx-auto my-4 w-[320px]">
+          <Button initialText="Sign in" onSuccess={onSignin} />
+        </div>
+        <div className="mx-auto my-4 w-[320px]">
+          <Button initialText="Register" onSuccess={onRegister} />
+        </div>
+      </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <Footer />
     </div>

@@ -17,23 +17,25 @@ export default function Landing() {
 
   useEffect(() => {
     if (!keyPair) {
-      let keyPair = KeyPair.fromRandom();
-      setKeyPair(keyPair);
-      console.log(keyPair?.privKey.toHex());
+      setTimeout(() => {
+        let keyPair = KeyPair.fromRandom();
+        setKeyPair(keyPair);
+        console.log(keyPair?.privKey.toStringFmt());
+      }, 1000);
     }
-  }, [keyPair]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-[400px]">
       <div className="mb-4 text-black dark:text-white">
         A new key pair has been generated client-side for you. Our servers have
         not seen and will never see your private key. If you lose your private
-        key, it cannot be recovered. Never show your private key anywhere but
+        key, it cannot be recovered. Never show your private key to anyone but
         Compubutton and your password manager. Please save your key pair in your
         password manager to continue.
       </div>
       <div className="mx-auto w-[320px]">
-        <Button initialText="Continue" />
+        <Button initialText="Log in" />
       </div>
     </div>
   );
