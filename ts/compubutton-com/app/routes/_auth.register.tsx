@@ -17,11 +17,9 @@ export default function Landing() {
 
   useEffect(() => {
     if (!keyPair) {
-      setTimeout(() => {
-        let keyPair = KeyPair.fromRandom();
-        setKeyPair(keyPair);
-        console.log(keyPair?.privKey.toStringFmt());
-      }, 1000);
+      let keyPair = KeyPair.fromRandom();
+      setKeyPair(keyPair);
+      console.log(keyPair?.privKey.toStringFmt());
     }
   }, []);
 
