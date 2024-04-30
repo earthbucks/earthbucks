@@ -67,6 +67,10 @@ function Slider({
   const [sliderState, setSliderState] = useState(
     disabled ? "disabled" : "initial",
   );
+  useEffect(() => {
+    setSliderState(disabled ? "disabled" : "initial");
+  }, [disabled]);
+
   const [startX, setStartX] = useState(0);
   const [buttonX, setButtonX] = useState(0); // Track button's X position
 

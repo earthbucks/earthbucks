@@ -66,8 +66,7 @@ export default function Signin() {
             id="public-key"
             type="text"
             placeholder="Public Key"
-            autoComplete="off"
-            onChange={(e) => setPublicKey(e.target.value)}
+            onChange={(e) => setPublicKey(e.target.value.trim())}
             onBlur={() => {
               if (publicKey !== "") {
                 setIsPublicKeyValid(validatePublicKey(publicKey));
@@ -83,9 +82,9 @@ export default function Signin() {
             }}
             value={publicKey}
             className={classNames(
-              "w-full flex-grow overflow-hidden rounded-full border-[1px] border-gray-700 bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:border-gray-300 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2  pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
-                ? ""
+                ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
                   ? "border-green-500"
                   : "border-red-500",
@@ -105,8 +104,7 @@ export default function Signin() {
             type="password"
             id="private-key"
             placeholder="Private Key"
-            autoComplete="off"
-            onChange={(e) => setPrivateKey(e.target.value)}
+            onChange={(e) => setPrivateKey(e.target.value.trim())}
             onBlur={() => {
               if (privateKey !== "") {
                 setIsPrivateKeyValid(validatePrivateKey(privateKey));
@@ -121,9 +119,9 @@ export default function Signin() {
               }
             }}
             className={classNames(
-              "w-full flex-grow overflow-hidden rounded-full border-[1px] border-gray-700 bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:border-gray-300 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2  pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
-                ? ""
+                ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
                   ? "border-green-500"
                   : "border-red-500",
@@ -132,11 +130,11 @@ export default function Signin() {
         </div>
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        {isPrivateKeyValid === true && isPublicKeyValid === true ? (
-          <Button key={"save-enabled"} initialText="Save" />
-        ) : (
-          <Button key={"save-disabled"} initialText="Save" disabled />
-        )}
+        <Button
+          key={"save-disabled"}
+          initialText="Save"
+          disabled={!isPrivateKeyValid || !isPublicKeyValid}
+        />
       </div>
       <div className="mx-auto my-4 w-[320px]">
         <Button initialText="Sign in" mode="secret" disabled />
