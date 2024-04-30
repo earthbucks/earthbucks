@@ -38,6 +38,7 @@ function Slider({
   onFinishedError = async () => {},
   buttonSrc = "/button-128.png",
   delayComputedMs = 0,
+  disabled = false,
 }: {
   initialText: string;
   computingText: string;
@@ -50,8 +51,10 @@ function Slider({
   onFinishedError?: () => Promise<void>;
   buttonSrc?: string;
   delayComputedMs?: number;
+  disabled: boolean;
 }) {
   const sliderStates = [
+    "disabled",
     "initial",
     "dragging",
     "computing",
@@ -61,7 +64,9 @@ function Slider({
     "finished-success",
   ];
 
-  const [sliderState, setSliderState] = useState(sliderStates[0]);
+  const [sliderState, setSliderState] = useState(
+    disabled ? "disabled" : "initial",
+  );
   const [startX, setStartX] = useState(0);
   const [buttonX, setButtonX] = useState(0); // Track button's X position
 
@@ -226,13 +231,16 @@ function Slider({
                 sliderState === "dragging"
                   ? "rounded-full outline outline-4 outline-[#42f6eb]"
                   : "",
+                sliderState === "disabled" ? "opacity-50" : "",
               )}
               ref={buttonRef}
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               style={{
                 animation:
-                  buttonX === 0 ? "manyButtonBounce 1s infinite" : undefined,
+                  buttonX === 0 && sliderState !== "disabled"
+                    ? "manyButtonBounce 1s infinite"
+                    : undefined,
                 transform: `translateX(${buttonX}px)`, // Use translateX to move the button along X-axis
                 cursor:
                   sliderState === "initial"
@@ -325,6 +333,16 @@ function Slider({
             </div>
           </div>
           <div className="flex h-full flex-grow items-center overflow-x-hidden">
+            <div
+              className={classNames(
+                sliderState === "disabled" ? "flex items-center" : "hidden",
+                "",
+              )}
+            >
+              <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white/50">
+                {initialText}
+              </span>
+            </div>
             <div
               className={classNames(
                 sliderState === "initial" || sliderState === "dragging"
@@ -474,6 +492,7 @@ export default function Button({
   onFinishedError = async () => {},
   mode: buttonMode = "standard",
   delayComputedMs = 0,
+  disabled = false,
 }: {
   initialText?: string;
   computingText?: string;
@@ -486,6 +505,7 @@ export default function Button({
   onFinishedError?: () => Promise<void>;
   mode?: buttonColor;
   delayComputedMs?: number;
+  disabled?: boolean;
 }) {
   computingText = computingText.replaceAll(".", "");
   computingText = computingText + "...";
@@ -543,6 +563,7 @@ export default function Button({
                     onFinishedError={onFinishedError}
                     buttonSrc={buttonSrc}
                     delayComputedMs={delayComputedMs}
+                    disabled={disabled}
                   />
                 </div>
                 <div className="h-full flex-shrink-0">

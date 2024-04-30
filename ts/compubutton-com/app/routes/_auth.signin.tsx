@@ -18,7 +18,7 @@ export default function Landing() {
         Please insert your public key and private key to sign in.
       </div>
       <div className="mx-auto w-[320px]">
-        <Button initialText="Continue" />
+        <Button initialText="Continue" disabled />
       </div>
     </div>
   );
