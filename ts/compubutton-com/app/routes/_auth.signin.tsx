@@ -42,12 +42,8 @@ export default function Signin() {
 
   const [isSaved, setIsSaved] = useState(false);
   async function saveToLocalStorage() {
-    let privKey = PrivKey.fromStringFmt(privateKey);
-    let pubKey = PubKey.fromPrivKey(privKey);
-    let privKeyHex = privKey.toHex();
-    let pubKeyHex = pubKey.toHex();
-    localStorage.setItem("privKey", privKeyHex);
-    localStorage.setItem("pubKey", pubKeyHex);
+    localStorage.setItem("privKey", privateKey);
+    localStorage.setItem("pubKey", publicKey);
     setIsSaved(true);
   }
 
@@ -96,7 +92,7 @@ export default function Signin() {
             className={classNames(
               "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
-                ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
+                ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
                   ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
@@ -134,7 +130,7 @@ export default function Signin() {
             className={classNames(
               "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
-                ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
+                ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
                   ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
