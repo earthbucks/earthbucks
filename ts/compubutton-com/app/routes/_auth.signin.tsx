@@ -40,6 +40,17 @@ export default function Signin() {
     return pubKey.toStringFmt() === publicKey;
   };
 
+  const [isSaved, setIsSaved] = useState(false);
+  async function saveToLocalStorage() {
+    let privKey = PrivKey.fromStringFmt(privateKey);
+    let pubKey = PubKey.fromPrivKey(privKey);
+    let privKeyHex = privKey.toHex();
+    let pubKeyHex = pubKey.toHex();
+    localStorage.setItem("privKey", privKeyHex);
+    localStorage.setItem("pubKey", pubKeyHex);
+    setIsSaved(true);
+  }
+
   return (
     <div className="mx-auto max-w-[400px]">
       <div className="my-4 text-black dark:text-white">
@@ -66,6 +77,7 @@ export default function Signin() {
             id="public-key"
             type="text"
             placeholder="Public Key"
+            disabled={isSaved}
             onChange={(e) => setPublicKey(e.target.value.trim())}
             onBlur={() => {
               if (publicKey !== "") {
@@ -86,7 +98,7 @@ export default function Signin() {
               isPublicKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
-                  ? "border-green-500"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500",
             )}
           />
@@ -104,6 +116,7 @@ export default function Signin() {
             type="password"
             id="private-key"
             placeholder="Private Key"
+            disabled={isSaved}
             onChange={(e) => setPrivateKey(e.target.value.trim())}
             onBlur={() => {
               if (privateKey !== "") {
@@ -123,7 +136,7 @@ export default function Signin() {
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
-                  ? "border-green-500"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500",
             )}
           />
@@ -133,11 +146,14 @@ export default function Signin() {
         <Button
           key={"save-disabled"}
           initialText="Save"
+          computingText="Saving..."
+          successText="Saved!"
           disabled={!isPrivateKeyValid || !isPublicKeyValid}
+          onComputing={saveToLocalStorage}
         />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Sign in" mode="secret" disabled />
+        <Button initialText="Sign in" mode="secret" disabled={!isSaved} />
       </div>
     </div>
   );
