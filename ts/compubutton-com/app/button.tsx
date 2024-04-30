@@ -277,11 +277,13 @@ function Slider({
                   src="/pink-heart-128.png"
                   alt=""
                   className="h-[36px] w-[36px]"
+                  draggable="false"
                 />
                 <img
                   src="/pink-heart-128.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
+                  draggable="false"
                 />
               </div>
             </div>
@@ -297,6 +299,7 @@ function Slider({
                   src="/pink-heart-128.png"
                   alt=""
                   className="h-[36px] w-[36px]"
+                  draggable="false"
                 />
               </div>
             </div>
@@ -312,11 +315,13 @@ function Slider({
                   src="/error-2-96.png"
                   alt=""
                   className="h-[36px] w-[36px]"
+                  draggable="false"
                 />
                 <img
                   src="/error-2-96.png"
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
+                  draggable="false"
                 />
               </div>
             </div>
@@ -332,6 +337,7 @@ function Slider({
                   src="/error-2-96.png"
                   alt=""
                   className="h-[36px] w-[36px]"
+                  draggable="false"
                 />
               </div>
             </div>
@@ -381,7 +387,6 @@ function Slider({
               )}
             >
               <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
-                {" "}
                 {successText}
               </span>
             </div>
@@ -394,7 +399,6 @@ function Slider({
               )}
             >
               <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
-                {" "}
                 {successText}
               </span>
             </div>
@@ -406,7 +410,6 @@ function Slider({
               )}
             >
               <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
-                {" "}
                 {errorText}
               </span>
             </div>
@@ -418,7 +421,6 @@ function Slider({
               )}
             >
               <span className="ml-[40px] inline-block max-w-[160px] overflow-hidden align-middle text-sm font-semibold text-white">
-                {" "}
                 {errorText}
               </span>
             </div>

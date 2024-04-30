@@ -99,7 +99,7 @@ export default function Signin() {
                 ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
                   ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
-                  : "border-red-500",
+                  : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
         </div>
@@ -132,12 +132,12 @@ export default function Signin() {
               }
             }}
             className={classNames(
-              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2  pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
                   ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
-                  : "border-red-500",
+                  : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
         </div>
