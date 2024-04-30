@@ -64,7 +64,7 @@ export default function Register() {
             </p>
             <div className="my-4">
               <div className="my-2 flex space-x-2">
-                <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[1px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
                   <img
                     src="/sun-128.png"
                     alt="Sun"
@@ -77,14 +77,14 @@ export default function Register() {
                 <div className="flex-shrink-0">
                   <button
                     onClick={copyPubToClipboard}
-                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                    className="w-[100px] rounded-full border-[3px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
                   >
                     {copiedPub ? "Copied" : "Copy"}
                   </button>
                 </div>
               </div>
               <div className="my-2 flex space-x-2">
-                <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[1px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
                   <img
                     src="/black-button-128.png"
                     alt="Sun"
@@ -97,7 +97,7 @@ export default function Register() {
                 <div className="flex-shrink-0">
                   <button
                     onClick={copyPrvToClipboard}
-                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                    className="w-[100px] rounded-full border-[3px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
                   >
                     {copiedPrv ? "Copied" : "Copy"}
                   </button>
