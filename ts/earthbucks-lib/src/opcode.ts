@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 export type OpcodeName =
   | "0"
   | "PUSHDATA1"

@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 export default class Domain {
   public domainStr: string;
 

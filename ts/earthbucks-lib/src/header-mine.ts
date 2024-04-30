@@ -1,6 +1,7 @@
 import Header from "./header";
 import BufferReader from "./buffer-reader";
 import HashNum from "./hash-num";
+import { Buffer } from "buffer";
 
 export default class HeaderMine {
   header: Header;

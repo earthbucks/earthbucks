@@ -3,6 +3,7 @@ import Button from "../button";
 import React, { useEffect, useState } from "react";
 import KeyPair from "earthbucks-lib/src/key-pair";
 import { useNavigate } from "@remix-run/react";
+import { Buffer } from "buffer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -79,7 +80,9 @@ export default function Landing() {
               </div>
               <div className="my-2 flex space-x-2">
                 <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
-                  <div className="overflow-hidden rounded-full">(private key hidden)</div>
+                  <div className="overflow-hidden rounded-full">
+                    (private key hidden)
+                  </div>
                 </div>
                 <div className="flex-shrink-0">
                   <button

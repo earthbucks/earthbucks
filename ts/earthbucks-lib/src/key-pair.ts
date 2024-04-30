@@ -1,5 +1,6 @@
 import PrivKey from "./priv-key";
 import PubKey from "./pub-key";
+import { Buffer } from "buffer";
 
 export default class KeyPair {
   privKey: PrivKey;

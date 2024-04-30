@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import Footer from "~/components/footer";
 import { Outlet } from "@remix-run/react";
+import { Buffer } from "buffer";
 
 export const meta: MetaFunction = () => {
   return [
