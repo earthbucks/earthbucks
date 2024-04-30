@@ -48,7 +48,7 @@ export default function Landing() {
   return (
     <div className="mx-auto max-w-[400px]">
       {!keyPair ? (
-        <div className="mb-4 text-center text-black dark:text-white">
+        <div className="my-4 text-center text-black dark:text-white">
           <p className="my-4">Please generate a new key pair to register.</p>
           <div className="mx-auto w-[320px]">
             <Button initialText="Generate" onComputing={generateKeyPair} />
@@ -57,7 +57,7 @@ export default function Landing() {
       ) : null}
       {keyPair ? (
         <div>
-          <div className="mb-4 text-black dark:text-white">
+          <div className="my-4 text-black dark:text-white">
             <p className="my-4">
               A new key pair has been generated client-side for you. Please save
               your key pair in your password manager to continue.

@@ -14,11 +14,11 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   return (
     <div className="mx-auto max-w-[400px]">
-      <div className="mb-4 text-center text-black dark:text-white">
-        Please insert your public key and private key to sign in.
+      <div className="my-4 text-black dark:text-white">
+        <p>Please save your key pair in localStorage (client-side browser storage) to sign in.</p>
       </div>
       <div className="mx-auto w-[320px]">
-        <Button initialText="Continue" disabled />
+        <Button initialText="Save" disabled />
       </div>
     </div>
   );
