@@ -13,13 +13,11 @@ export const meta: MetaFunction = () => {
 export default function Landing() {
   const [keyPair, setKeyPair] = useState<KeyPair | null>(null);
 
-  useEffect(() => {
-    if (!keyPair) {
-      let keyPair = KeyPair.fromRandom();
-      setKeyPair(keyPair);
-      console.log(keyPair?.privKey.toStringFmt());
-    }
-  }, []);
+  async function generateKeyPair() {
+    let keyPair = KeyPair.fromRandom();
+    setKeyPair(keyPair);
+    console.log(keyPair?.privKey.toStringFmt());
+  }
 
   const [copiedPub, setCopiedPub] = useState(false);
   const copyPubToClipboard = async () => {
@@ -31,66 +29,75 @@ export default function Landing() {
     setTimeout(() => setCopiedPub(false), 1000);
   };
 
-  const [copiedPriv, setCopiedPriv] = useState(false);
-  const copyPrivToClipboard = async () => {
+  const [copiedPrv, setCopiedPrv] = useState(false);
+  const copyPrvToClipboard = async () => {
     if (!keyPair) {
       return;
     }
     await navigator.clipboard.writeText(keyPair.privKey.toStringFmt());
-    setCopiedPriv(true);
-    setTimeout(() => setCopiedPriv(false), 1000);
+    setCopiedPrv(true);
+    setTimeout(() => setCopiedPrv(false), 1000);
   };
 
   return (
     <div className="mx-auto max-w-[400px]">
-      <div className="mb-4 text-black dark:text-white">
-        <p className="my-4">
-          A new key pair has been generated client-side for you. Please save
-          your key pair in your password manager to continue.
-        </p>
-        {keyPair ? (
-          <div className="my-4">
-            <div className="my-2 flex space-x-2">
-              <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
-                <div className="overflow-hidden rounded-full">
-                  {keyPair.pubKey.toStringFmt()}
-                </div>
-              </div>
-              <div className="flex-shrink-0">
-                <button
-                  onClick={copyPubToClipboard}
-                  className="bg-button-blue-700 border-button-blue-700 w-[100px] rounded-full border-[2px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
-                >
-                  {copiedPub ? "Copied" : "Copy"}
-                </button>
-              </div>
-            </div>
-            <div className="my-2 flex space-x-2">
-              <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
-                <div className="overflow-hidden rounded-full">
-                  (hidden)
-                </div>
-              </div>
-              <div className="flex-shrink-0">
-                <button
-                  onClick={copyPrivToClipboard}
-                  className="bg-button-blue-700 border-button-blue-700 w-[100px] rounded-full border-[2px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
-                >
-                  {copiedPriv ? "Copied" : "Copy"}
-                </button>
-              </div>
-            </div>
+      {!keyPair ? (
+        <div className="mb-4 text-center text-black dark:text-white">
+          <p className="my-4">Please generate a new key pair to register.</p>
+          <div className="mx-auto w-[320px]">
+            <Button initialText="Generate" onComputing={generateKeyPair} />
           </div>
-        ) : null}
-        <p className="my-4">
-          Our servers have not seen and will never see your private key. If you
-          lose your private key, it cannot be recovered. Never show your private
-          key to anyone but Compubutton (client-side) and your password manager.
-        </p>
-      </div>
-      <div className="mx-auto w-[320px]">
-        <Button initialText="Log in" />
-      </div>
+        </div>
+      ) : null}
+      {keyPair ? (
+        <div>
+          <div className="mb-4 text-black dark:text-white">
+            <p className="my-4">
+              A new key pair has been generated client-side for you. Please save
+              your key pair in your password manager to continue.
+            </p>
+            <div className="my-4">
+              <div className="my-2 flex space-x-2">
+                <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                  <div className="overflow-hidden rounded-full">
+                    {keyPair.pubKey.toStringFmt()}
+                  </div>
+                </div>
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={copyPubToClipboard}
+                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                  >
+                    {copiedPub ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+              <div className="my-2 flex space-x-2">
+                <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                  <div className="overflow-hidden rounded-full">(hidden)</div>
+                </div>
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={copyPrvToClipboard}
+                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                  >
+                    {copiedPrv ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className="my-4">
+              Our servers have not seen and will never see your private key. If
+              you lose your private key, it cannot be recovered. Never show your
+              private key to anyone but Compubutton (client-side) and your
+              password manager.
+            </p>
+          </div>
+          <div className="mx-auto w-[320px]">
+            <Button initialText="Log in" />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
