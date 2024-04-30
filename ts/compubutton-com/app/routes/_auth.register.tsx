@@ -21,6 +21,26 @@ export default function Landing() {
     }
   }, []);
 
+  const [copiedPub, setCopiedPub] = useState(false);
+  const copyPubToClipboard = async () => {
+    if (!keyPair) {
+      return;
+    }
+    await navigator.clipboard.writeText(keyPair.pubKey.toStringFmt());
+    setCopiedPub(true);
+    setTimeout(() => setCopiedPub(false), 1000);
+  };
+
+  const [copiedPriv, setCopiedPriv] = useState(false);
+  const copyPrivToClipboard = async () => {
+    if (!keyPair) {
+      return;
+    }
+    await navigator.clipboard.writeText(keyPair.privKey.toStringFmt());
+    setCopiedPriv(true);
+    setTimeout(() => setCopiedPriv(false), 1000);
+  };
+
   return (
     <div className="mx-auto max-w-[400px]">
       <div className="mb-4 text-black dark:text-white">
@@ -30,9 +50,36 @@ export default function Landing() {
         </p>
         {keyPair ? (
           <div className="my-4">
-            {keyPair.pubKey.toStringFmt()}
-            <br />
-            {keyPair.privKey.toStringFmt()}
+            <div className="my-2 flex space-x-2">
+              <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                <div className="overflow-hidden rounded-full">
+                  {keyPair.pubKey.toStringFmt()}
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  onClick={copyPubToClipboard}
+                  className="bg-button-blue-700 border-button-blue-700 w-[100px] rounded-full border-[2px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                >
+                  {copiedPub ? "Copied" : "Copy"}
+                </button>
+              </div>
+            </div>
+            <div className="my-2 flex space-x-2">
+              <div className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 p-2  text-gray-600 dark:border-gray-300 dark:text-gray-400">
+                <div className="overflow-hidden rounded-full">
+                  (hidden)
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  onClick={copyPrivToClipboard}
+                  className="bg-button-blue-700 border-button-blue-700 w-[100px] rounded-full border-[2px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                >
+                  {copiedPriv ? "Copied" : "Copy"}
+                </button>
+              </div>
+            </div>
           </div>
         ) : null}
         <p className="my-4">
