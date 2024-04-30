@@ -26,14 +26,14 @@ export default function Landing() {
           <input
             type="text"
             placeholder="Public Key"
-            className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 bg-white p-2 text-gray-600  dark:border-gray-300 dark:bg-black dark:text-gray-400"
+            className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 bg-white p-2 text-gray-600 dark:border-gray-300 dark:bg-black dark:text-gray-400"
           />
         </div>
         <div className="my-2">
           <input
             type="password"
             placeholder="Private Key"
-            className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 bg-white p-2 text-gray-600  dark:border-gray-300 dark:bg-black dark:text-gray-400"
+            className="w-full flex-grow overflow-hidden rounded-full border-[2px] border-gray-700 bg-white p-2 text-gray-600 dark:border-gray-300 dark:bg-black dark:text-gray-400"
           />
         </div>
       </div>
