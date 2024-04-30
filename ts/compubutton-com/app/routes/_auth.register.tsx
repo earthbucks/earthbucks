@@ -2,6 +2,7 @@ import type { MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import React, { useEffect, useState } from "react";
 import KeyPair from "earthbucks-lib/src/key-pair";
+import { useNavigate } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -39,6 +40,11 @@ export default function Landing() {
     setTimeout(() => setCopiedPrv(false), 1000);
   };
 
+  let navigate = useNavigate();
+  const onSignin = async () => {
+    navigate("/signin");
+  };
+
   return (
     <div className="mx-auto max-w-[400px]">
       {!keyPair ? (
@@ -66,7 +72,7 @@ export default function Landing() {
                 <div className="flex-shrink-0">
                   <button
                     onClick={copyPubToClipboard}
-                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                    className="w-[100px] rounded-full border-[2px] border-secondary-blue-500 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
                   >
                     {copiedPub ? "Copied" : "Copy"}
                   </button>
@@ -79,7 +85,7 @@ export default function Landing() {
                 <div className="flex-shrink-0">
                   <button
                     onClick={copyPrvToClipboard}
-                    className="w-[100px] rounded-full border-[2px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+                    className="w-[100px] rounded-full border-[2px] border-secondary-blue-500 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
                   >
                     {copiedPrv ? "Copied" : "Copy"}
                   </button>
@@ -94,7 +100,7 @@ export default function Landing() {
             </p>
           </div>
           <div className="mx-auto w-[320px]">
-            <Button initialText="Log in" />
+            <Button initialText="Sign in" onComputing={onSignin} />
           </div>
         </div>
       ) : null}
