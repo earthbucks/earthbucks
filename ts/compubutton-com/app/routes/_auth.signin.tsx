@@ -66,6 +66,7 @@ export default function Signin() {
             id="public-key"
             type="text"
             placeholder="Public Key"
+            autoComplete="off"
             onChange={(e) => setPublicKey(e.target.value)}
             onBlur={() => {
               if (publicKey !== "") {
@@ -104,6 +105,7 @@ export default function Signin() {
             type="password"
             id="private-key"
             placeholder="Private Key"
+            autoComplete="off"
             onChange={(e) => setPrivateKey(e.target.value)}
             onBlur={() => {
               if (privateKey !== "") {
