@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import { blake3Hash, doubleBlake3Hash } from "../src/blake3";
+import { blake3Hash, doubleBlake3Hash, blake3Mac } from "../src/blake3";
 import { Buffer } from "buffer";
 
 describe("blake3", () => {
@@ -36,4 +36,11 @@ describe("blake3", () => {
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
   });
+
+  test("blake3Mac", () => {
+    let key = blake3Hash(Buffer.from("key"));
+    let data = Buffer.from("data");
+    let mac = Buffer.from(blake3Mac(key, data));
+    expect(mac.toString("hex")).toEqual("438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27")
+  })
 });

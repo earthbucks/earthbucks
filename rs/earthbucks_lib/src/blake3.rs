@@ -10,6 +10,12 @@ pub fn double_blake3_hash(data: &[u8]) -> [u8; 32] {
     blake3_hash(&blake3_hash(data))
 }
 
+pub fn blake3_mac(key: &[u8; 32], data: &[u8]) -> [u8; 32] {
+    let mut hasher = Hasher::new_keyed(key);
+    hasher.update(data);
+    hasher.finalize().into()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -65,5 +71,24 @@ mod tests {
 
         // Check that the computed pkh matches the expected pkh
         assert_eq!(pkh_hex, expected_pkh_hex);
+    }
+
+    //   test("blake3Mac", () => {
+    //     let key = blake3Hash(Buffer.from("key"));
+    //     let data = Buffer.from("data");
+    //     let mac = Buffer.from(blake3Mac(key, data));
+    //     expect(mac.toString("hex")).toEqual("438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27")
+    //   })
+
+    #[test]
+    fn test_blake3_mac() {
+        let key_str = "key".to_string();
+        let key_data = key_str.as_bytes();
+        let key = blake3_hash(key_data);
+        let data_str = "data".to_string();
+        let data = data_str.as_bytes();
+        let mac = blake3_mac(&key, data);
+        let expected_mac_hex = "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27";
+        assert_eq!(hex::encode(mac), expected_mac_hex);
     }
 }
