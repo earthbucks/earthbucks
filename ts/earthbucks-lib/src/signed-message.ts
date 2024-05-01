@@ -25,7 +25,7 @@ export default class SignedMessage {
     return blake3Mac(MAC_KEY, message);
   }
 
-  static signFromMessage(privKey: PrivKey, message: Buffer): SignedMessage {
+  static fromSignMessage(privKey: PrivKey, message: Buffer): SignedMessage {
     const mac = SignedMessage.createMac(message);
     const sigObj = ecdsaSign(mac, privKey.toBuffer());
     const sigBuf = Buffer.from(sigObj.signature);
