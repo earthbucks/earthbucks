@@ -41,6 +41,8 @@ describe("blake3", () => {
     let key = blake3Hash(Buffer.from("key"));
     let data = Buffer.from("data");
     let mac = Buffer.from(blake3Mac(key, data));
-    expect(mac.toString("hex")).toEqual("438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27")
-  })
+    expect(mac.toString("hex")).toEqual(
+      "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27",
+    );
+  });
 });
