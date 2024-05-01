@@ -420,6 +420,9 @@ importers:
 
   earthbucks-lib:
     dependencies:
+      '@noble/hashes':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@types/secp256k1':
         specifier: ^4.0.6
         version: 4.0.6
@@ -2145,6 +2148,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@noble/hashes@1.4.0:
+    resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
+    engines: {node: '>= 16'}
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

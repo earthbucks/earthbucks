@@ -15,12 +15,11 @@ import { Buffer } from "buffer";
 // for approach 3:
 //import * as blake3browser from 'blake3/browser';
 // for approach 4:
-import blake3browser from "./blake3-js/index";
+import { blake3 as blake3browser } from "@noble/hashes/blake3";
 
 type BufferFunction = (input: Buffer) => Buffer;
 
 let blake3Hash: BufferFunction;
-
 let doubleBlake3Hash: BufferFunction;
 
 if (typeof document === "undefined") {
@@ -73,9 +72,22 @@ if (typeof document === "undefined") {
   //    occassionally hash their own keys or transactions, which will not be
   //    high volume.
 
+  // blake3Hash = function blake3Hash(data: Buffer): Buffer {
+  //   let arr = blake3browser.newRegular().update(data).finalize(32, "bytes") as Array<number>;
+  //   return Buffer.from(arr);
+  // };
+
+  // doubleBlake3Hash = function doubleBlake3Hash(data: Buffer): Buffer {
+  //   return blake3Hash(blake3Hash(data));
+  // };
+
+  // 5. second pure javascript approach with @nobel/hashes/blake3
+
+  // import { blake3 } from '@noble/hashes/blake3';
+  // All params are optional
+  // const h11 = blake3('abc', { dkLen: 256, key: 'def', context: 'fji' });
   blake3Hash = function blake3Hash(data: Buffer): Buffer {
-    let arr = blake3browser.newRegular().update(data).finalize(32, "bytes") as Array<number>;
-    return Buffer.from(arr);
+    return Buffer.from(blake3browser(data));
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: Buffer): Buffer {

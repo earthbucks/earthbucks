@@ -12,9 +12,10 @@
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "license": "MIT",
   "dependencies": {
+    "@noble/hashes": "^1.4.0",
+    "@types/secp256k1": "^4.0.6",
     "blake3": "2.1.7",
     "blake3-wasm": "2.1.5",
-    "@types/secp256k1": "^4.0.6",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "mathjs": "^12.4.1",
