@@ -446,7 +446,7 @@ otherwise the builder is unlikely to ever find a block.
 The second piece of the full node is the API, which listens to incoming requests
 and can either return data, such as a getting a transaction, or writing data,
 such as submitting a new block header. The API scales horizontally, so that it
-can  be deployed in rolling fashion and never go down, and the builder scales
+can be deployed in rolling fashion and never go down, and the builder scales
 vertically, so it can handle large blocks. Making the full node highly available
 and scalable is what requires it to be broken into two pieces.
 
@@ -631,8 +631,9 @@ floating point operations on it. We can't perform matrix multiplication with
 floating points because it is too hard to guarantee determinacy. However, for
 element-wise computations, we can guarantee determinacy. So we subtract the
 minimum, and then divide by the maximum, to get a matrix of floats between 0 and
+
 1. We then multiply by 1289 to get a large number of pseudorandom floats between
-0 and 1289. We then round this number and then convert back into integers.
+   0 and 1289. We then round this number and then convert back into integers.
 
 Finally, we need to reduce this matrix. Ideally, we would hash the output on the
 GPU and then send that result back to the CPU. Unfortunately, that is not
@@ -772,6 +773,7 @@ The fraction of blocks each part gets is determined by the number of blocks in
 the past 2016 target adjustment window. 1/3 blocks is 672 blocks.
 
 Part 1:
+
 - "The first node"
 - ryanxcharles.com (KYC)
 - compubutton.com (wallet)
@@ -779,6 +781,7 @@ Part 1:
 - At least 1/3 blocks in perpetuity.
 
 Part 2:
+
 - "Global nodes" / "Sextant nodes" / "Permissioned nodes"
 - Guarantee connectivity of some nodes in each global sextant
 - Must pass RXC KYC
@@ -793,6 +796,7 @@ Part 2:
 - Australia (>= 2)
 
 Part 3:
+
 - "Free market nodes" / "Permissionless nodes"
 - No KYC
 - Must agree to ToS
@@ -858,5 +862,50 @@ even that can be prevented with some sophisticated multi-user key management
 EarthBucks should be as user-friendly as possible. For the most part, that means
 not seeing keys, but when keys are visible, they should be readable and include
 a checksum. The EarthBucks key string format solves this problem.
+
+Ryan X. Charles
+
+---
+
+### Client-Side Key Management
+
+May 1, 2024
+
+It is important for security that users manage their own keys. If one or a
+handful of servers have all the keys, that creates a giant security honeypot
+that would draw attackers. But if users have their own keys, and validate their
+own transactions, then the network is much more secure.
+
+Consider that the more the keys are distributed, the higher cost for an attacker
+to gather those keys. For the same amount of value stored in the tokens, the
+cost can be raised arbitrarily by distributing the value over keys and over more
+independent systems.
+
+The first version of the wallet will require that the user generate a key
+client-side that is never sent to a server. While this is not ideal for every
+user, it is not too hard these days as most users have password managers. The
+user can simply store their master key in a password manager.
+
+Over the long-run, there are ways to make client-side key management easier. An
+encrypted backup of each key can be sent to semi-trusted third-parties, who
+can't see the key, but who can, together, reveal the key only to the original
+owner. Imagine if one party has an encrypted backup, and another party has the
+key to decrypt that backup, and both of those parties send both pieces to the
+owner. This enables the owner to recover their key. I call this strategy "two
+factor friend" - have your friends store material that can be used to recover
+your key.
+
+Two factor friend is not the only strategy for key management. Users can use
+multisig outputs which require multiple independent keys. If the user has not
+lost two of their devices, but only one, in a 2 of 3 multisig output, then they
+can recover their funds.
+
+The first version of the EarthBucks wallet will simply require the user recall
+their primary key. This will be adequate for launch day and all early users.
+However, we can and will improve the user experience of managing keys over time.
+
+Note that, although I do not plan to launch a custodial service, custodial key
+management is, of course, also possible, which may be better for some users,
+even though it creates a honeypot for attackers.
 
 Ryan X. Charles
