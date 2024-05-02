@@ -10,42 +10,42 @@ import Domain from "earthbucks-lib/src/domain";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 
-const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
-const DOMAIN: string = process.env.DOMAIN || "";
-
-let DOMAIN_PRIV_KEY: PrivKey;
-let AUTH_PUB_KEY: PubKey;
-try {
-  DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
-  AUTH_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
-} catch (err) {
-  console.error(err);
-  throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
-}
-
-{
-  let domainIsValid = Domain.isValidDomain(DOMAIN);
-  if (!domainIsValid) {
-    throw new Error("Invalid AUTH_DOMAIN_NAME");
-  }
-}
-
 export async function action({ request, params }: ActionFunctionArgs) {
+  const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
+  const DOMAIN: string = process.env.DOMAIN || "";
+
+  let DOMAIN_PRIV_KEY: PrivKey;
+  let AUTH_PUB_KEY: PubKey;
+  try {
+    DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
+    AUTH_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
+  } catch (err) {
+    console.error(err);
+    throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
+  }
+
+  {
+    let domainIsValid = Domain.isValidDomain(DOMAIN);
+    if (!domainIsValid) {
+      throw new Error("Invalid AUTH_DOMAIN_NAME");
+    }
+  }
+
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-signin-challenge") {
     const signinChallenge = SigninChallenge.fromRandom(DOMAIN_PRIV_KEY, DOMAIN);
     return json({ signinChallenge: signinChallenge.toHex() });
-  } else if (method == 'new-signin-response') {
+  } else if (method == "new-signin-response") {
     const signinReponseHex = `${formData.get("signinReponse")}`;
-    let signinResponse: SigninResponse 
+    let signinResponse: SigninResponse;
     try {
       signinResponse = SigninResponse.fromHex(signinReponseHex, DOMAIN);
     } catch (err) {
       throw new Response("Invalid signin response 1", { status: 400 });
     }
     const signinChallengeBuf = signinResponse.signedMessage.message;
-    let signinChallenge: SigninChallenge
+    let signinChallenge: SigninChallenge;
     try {
       signinChallenge = SigninChallenge.fromBuffer(signinChallengeBuf, DOMAIN);
     } catch (err) {
@@ -55,7 +55,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (!isValidChallenge) {
       throw new Response("Invalid signin challenge 2", { status: 400 });
     }
-    let userPubKey: PubKey
+    let userPubKey: PubKey;
     try {
       userPubKey = PubKey.fromBuffer(signinResponse.signedMessage.pubKey);
     } catch (err) {
@@ -63,7 +63,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     let isValidResponse = signinResponse.isValid(userPubKey, DOMAIN);
     if (!isValidResponse) {
-      console.log('here')
+      console.log("here");
       throw new Response("Invalid signin response 2", { status: 400 });
     }
     return json({ isValidResponse });
