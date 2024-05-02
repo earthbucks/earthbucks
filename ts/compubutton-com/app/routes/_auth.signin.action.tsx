@@ -7,7 +7,7 @@ import {
 import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
 import Domain from "earthbucks-lib/src/domain";
-import SigninPermissionToken from "earthbucks-lib/src/auth/signin-permission-token";
+import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 
 const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
 const DOMAIN: string = process.env.DOMAIN || "";
@@ -33,7 +33,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-permission-token") {
-    const signedPermissionToken = SigninPermissionToken.fromRandom(
+    const signedPermissionToken = SigninChallenge.fromRandom(
       AUTH_PRIV_KEY,
       DOMAIN,
     );

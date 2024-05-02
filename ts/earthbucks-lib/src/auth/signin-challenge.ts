@@ -4,23 +4,23 @@ import StrictHex from "../strict-hex";
 import PermissionToken from "./permission-token";
 import SignedMessage from "./signed-message";
 
-export default class SigninPermissionToken {
+export default class SigninChallenge {
   signedMessage: SignedMessage;
 
   constructor(signedMessage: SignedMessage) {
     this.signedMessage = signedMessage;
   }
 
-  static signinPermissionString(domain: string): string {
-    return `signin permission token for ${domain}`;
+  static signinChallengeKeyString(domain: string): string {
+    return `signin challenge for ${domain}`;
   }
 
   static fromRandom(
     authPrivKey: PrivKey,
     domain: string,
-  ): SigninPermissionToken {
+  ): SigninChallenge {
     const signInPermissionStr =
-      SigninPermissionToken.signinPermissionString(domain);
+      SigninChallenge.signinChallengeKeyString(domain);
     const permissionToken = PermissionToken.fromRandom();
     const message = permissionToken.toBuffer();
     const signedMessage = SignedMessage.fromSignMessage(
@@ -28,19 +28,19 @@ export default class SigninPermissionToken {
       message,
       signInPermissionStr,
     );
-    return new SigninPermissionToken(signedMessage);
+    return new SigninChallenge(signedMessage);
   }
 
-  static fromBuffer(buf: Buffer, domain: string): SigninPermissionToken {
+  static fromBuffer(buf: Buffer, domain: string): SigninChallenge {
     const signInPermissionStr =
-      SigninPermissionToken.signinPermissionString(domain);
+      SigninChallenge.signinChallengeKeyString(domain);
     const signedMessage = SignedMessage.fromBuffer(buf, signInPermissionStr);
-    return new SigninPermissionToken(signedMessage);
+    return new SigninChallenge(signedMessage);
   }
 
-  static fromHex(hex: string, domain: string): SigninPermissionToken {
+  static fromHex(hex: string, domain: string): SigninChallenge {
     const buf = StrictHex.decode(hex);
-    return SigninPermissionToken.fromBuffer(buf, domain);
+    return SigninChallenge.fromBuffer(buf, domain);
   }
 
   toBuffer(): Buffer {
