@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { Link, json, useFetcher } from "@remix-run/react";
-import {
-  createNewAuthSigninToken,
-  getAuthSigninToken,
-} from "earthbucks-db/src/models/auth-signin-token";
+// import {
+//   createNewAuthSigninToken,
+//   getAuthSigninToken,
+// } from "earthbucks-db/src/models/auth-signin-token";
 import PubKey from "earthbucks-lib/src/pub-key";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
@@ -64,13 +64,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }
       break;
 
-    case "new-auth-signin-token":
-      {
-        const tokenId = await createNewAuthSigninToken();
-        const token = await getAuthSigninToken(tokenId);
-        return json({ tokenId: tokenId.toString("hex") });
-      }
-      break;
+    // case "new-auth-signin-token":
+    //   {
+    //     const tokenId = await createNewAuthSigninToken();
+    //     const token = await getAuthSigninToken(tokenId);
+    //     return json({ tokenId: tokenId.toString("hex") });
+    //   }
+    //   break;
 
     default:
       {

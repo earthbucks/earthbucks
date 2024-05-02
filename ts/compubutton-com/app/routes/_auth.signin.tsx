@@ -124,16 +124,16 @@ export default function Signin() {
         let json = await res.json();
         console.log(json);
       }
-      {
-        let formData = new FormData();
-        formData.append("method", "new-auth-signin-token");
-        let res = await fetch("/api/auth", {
-          method: "POST",
-          body: formData,
-        });
-        let json = await res.json();
-        console.log(json);
-      }
+      // {
+      //   let formData = new FormData();
+      //   formData.append("method", "new-auth-signin-token");
+      //   let res = await fetch("/api/auth", {
+      //     method: "POST",
+      //     body: formData,
+      //   });
+      //   let json = await res.json();
+      //   console.log(json);
+      // }
     } catch (e) {
       console.error(e);
     }
