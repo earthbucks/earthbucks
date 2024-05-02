@@ -47,7 +47,6 @@ export default class SignedMessage {
 
   isValid(pubKey: PubKey, keyStr: string): boolean {
     if (keyStr !== this.keyStr) {
-      //console.log('invalid key str')
       return false;
     }
     let mac = SignedMessage.createMac(this.message, this.keyStr);

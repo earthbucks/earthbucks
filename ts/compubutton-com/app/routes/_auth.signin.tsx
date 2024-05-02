@@ -14,6 +14,7 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
+import SigninReponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -78,7 +79,7 @@ export default function Signin() {
 
   async function onSignin() {
     try {
-      // get sign in challenge
+      // get signin challenge
       let signinChallengeHex: string;
       {
         let formData = new FormData();
@@ -91,16 +92,27 @@ export default function Signin() {
         signinChallengeHex = json.signinChallenge;
         console.log(json);
       }
-      // verify challenge, form response
       {
-        //console.log("signinChallengeHex", signinChallengeHex);
+        // verify signin challenge
         let signinChallenge = SigninChallenge.fromHex(
           signinChallengeHex,
           DOMAIN,
         );
         let DOMAIN_PUB_KEY = PubKey.fromStringFmt(DOMAIN_PUB_KEY_STR);
         let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
-        console.log("isValidChallenge", isValidChallenge);
+        if (!isValidChallenge) {
+          throw new Error("Invalid signin challenge");
+        }
+
+        // create signin response
+        let userPrivKey = PrivKey.fromStringFmt(privateKey);
+        let signinResponse = SigninReponse.fromSigninChallenge(
+          userPrivKey,
+          DOMAIN,
+          DOMAIN_PUB_KEY,
+          signinChallenge,
+        );
+        console.log(signinResponse.toHex());
       }
       {
         let formData = new FormData();

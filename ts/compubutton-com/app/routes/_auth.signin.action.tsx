@@ -34,14 +34,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const method = `${formData.get("method")}`;
   if (method === "new-signin-challenge") {
     const signinChallenge = SigninChallenge.fromRandom(DOMAIN_PRIV_KEY, DOMAIN);
-    //console.log("signinChallenge", signinChallenge.toHex());
     return json({ signinChallenge: signinChallenge.toHex() });
   } else if (method === "new-auth-signin-token") {
     const tokenId = await createNewAuthSigninToken();
-    //console.log(tokenId.toString("hex"));
     const token = await getAuthSigninToken(tokenId);
-    //console.log(token?.id.toString("hex"));
-    //console.log(token);
     return json({ tokenId: tokenId.toString("hex") });
   } else {
     throw new Response("Method not allowed", { status: 405 });
