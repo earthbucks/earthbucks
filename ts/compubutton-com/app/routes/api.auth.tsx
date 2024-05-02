@@ -4,34 +4,12 @@ import {
   createNewAuthSigninToken,
   getAuthSigninToken,
 } from "earthbucks-db/src/models/auth-signin-token";
-import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
-import Domain from "earthbucks-lib/src/domain";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
+import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  // TODO: Move to config loader
-  const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
-  const DOMAIN: string = process.env.DOMAIN || "";
-
-  let DOMAIN_PRIV_KEY: PrivKey;
-  let AUTH_PUB_KEY: PubKey;
-  try {
-    DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
-    AUTH_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
-  } catch (err) {
-    console.error(err);
-    throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
-  }
-
-  {
-    let domainIsValid = Domain.isValidDomain(DOMAIN);
-    if (!domainIsValid) {
-      throw new Error("Invalid AUTH_DOMAIN_NAME");
-    }
-  }
-
   // begin API
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
@@ -65,7 +43,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
         } catch (err) {
           throw new Response("Invalid signin challenge 1", { status: 400 });
         }
-        const isValidChallenge = signinChallenge.isValid(AUTH_PUB_KEY, DOMAIN);
+        const isValidChallenge = signinChallenge.isValid(
+          DOMAIN_PUB_KEY,
+          DOMAIN,
+        );
         if (!isValidChallenge) {
           throw new Response("Invalid signin challenge 2", { status: 400 });
         }
