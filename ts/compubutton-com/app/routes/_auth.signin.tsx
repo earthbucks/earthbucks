@@ -1,13 +1,25 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Footer from "~/components/footer";
-import { Link } from "@remix-run/react";
+import { Link, json } from "@remix-run/react";
 import { useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
+
+export async function action({ request, params }: LoaderFunctionArgs) {
+  const formData = await request.formData();
+  const method = `${formData.get("method")}`;
+  if (method === "new-auth-token") {
+    let data = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
+    let hex = data.toString("hex");
+    return json({ token: hex });
+  } else {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+}
 
 export const meta: MetaFunction = () => {
   return [

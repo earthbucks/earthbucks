@@ -6,7 +6,7 @@ import PubKey from "./pub-key";
 import BufferReader from "./buffer-reader";
 import BufferWriter from "./buffer-writer";
 
-const MAC_KEY = blake3Hash(Buffer.from("signed message"));
+const SIGNED_MESSAGE_KEY = blake3Hash(Buffer.from("signed message"));
 
 export default class SignedMessage {
   sig: Buffer;
@@ -22,7 +22,7 @@ export default class SignedMessage {
   }
 
   static createMac(message: Buffer) {
-    return blake3Mac(MAC_KEY, message);
+    return blake3Mac(SIGNED_MESSAGE_KEY, message);
   }
 
   static fromSignMessage(privKey: PrivKey, message: Buffer): SignedMessage {
