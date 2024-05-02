@@ -33,11 +33,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-permission-token") {
-    const signedPermissionToken = SigninChallenge.fromRandom(
+    const signinChallenge = SigninChallenge.fromRandom(
       AUTH_PRIV_KEY,
       DOMAIN,
     );
-    return json({ signedPermissionToken: signedPermissionToken.toHex() });
+    return json({ signinChallenge: signinChallenge.toHex() });
   } else if (method === "new-auth-signin-token") {
     const tokenId = await createNewAuthSigninToken();
     console.log(tokenId.toString("hex"));

@@ -65,7 +65,7 @@ export default function Signin() {
   async function onSignin() {
     try {
       // get permission token
-      let permissionTokenHex: string;
+      let signinChallengeHex: string;
       {
         let formData = new FormData();
         formData.append("method", "new-permission-token");
@@ -74,7 +74,7 @@ export default function Signin() {
           body: formData,
         });
         let json = await res.json();
-        permissionTokenHex = json.signedPermissionToken;
+        signinChallengeHex = json.signinChallenge;
         console.log(json);
       }
       {
