@@ -22,7 +22,10 @@ export default class SigninReponse {
     domainPubKey: PubKey,
     signinChallenge: SigninChallenge,
   ): SigninReponse {
-    const isSignedChallengeValid = signinChallenge.isValid(domainPubKey, domain);
+    const isSignedChallengeValid = signinChallenge.isValid(
+      domainPubKey,
+      domain,
+    );
     const signInResponseStr = SigninReponse.signinResponseKeyString(domain);
     const message = signinChallenge.toBuffer();
     const signedMessage = SignedMessage.fromSignMessage(

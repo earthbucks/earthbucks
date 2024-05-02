@@ -1,5 +1,6 @@
 import type {
   ActionFunctionArgs,
+  LoaderFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -7,11 +8,22 @@ import Button from "../button";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Footer from "~/components/footer";
-import { Link, json, useFetcher } from "@remix-run/react";
+import { Link, json, useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
+import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
+import { isValid } from "earthbucks-lib/src/strict-hex";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const DOMAIN = process.env.DOMAIN || "";
+  const DOMAIN_PRIV_KEY_STR = process.env.DOMAIN_PRIV_KEY || "";
+  const DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
+  const DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
+  const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toStringFmt();
+  return json({ DOMAIN, DOMAIN_PUB_KEY_STR });
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -21,6 +33,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Signin() {
+  const { DOMAIN, DOMAIN_PUB_KEY_STR } = useLoaderData<typeof loader>();
+
   const [publicKey, setPublicKey] = useState("");
   const [isPublicKeyValid, setIsPublicKeyValid] = useState<boolean | null>(
     null,
@@ -64,7 +78,7 @@ export default function Signin() {
 
   async function onSignin() {
     try {
-      // get permission token
+      // get sign in challenge
       let signinChallengeHex: string;
       {
         let formData = new FormData();
@@ -76,6 +90,17 @@ export default function Signin() {
         let json = await res.json();
         signinChallengeHex = json.signinChallenge;
         console.log(json);
+      }
+      // verify challenge, form response
+      {
+        //console.log("signinChallengeHex", signinChallengeHex);
+        let signinChallenge = SigninChallenge.fromHex(
+          signinChallengeHex,
+          DOMAIN,
+        );
+        let DOMAIN_PUB_KEY = PubKey.fromStringFmt(DOMAIN_PUB_KEY_STR);
+        let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
+        console.log("isValidChallenge", isValidChallenge);
       }
       {
         let formData = new FormData();

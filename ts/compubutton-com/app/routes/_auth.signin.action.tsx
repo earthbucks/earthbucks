@@ -12,11 +12,11 @@ import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
 const DOMAIN: string = process.env.DOMAIN || "";
 
-let AUTH_PRIV_KEY: PrivKey;
+let DOMAIN_PRIV_KEY: PrivKey;
 let AUTH_PUB_KEY: PubKey;
 try {
-  AUTH_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
-  AUTH_PUB_KEY = PubKey.fromPrivKey(AUTH_PRIV_KEY);
+  DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
+  AUTH_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
 } catch (err) {
   console.error(err);
   throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
@@ -33,17 +33,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-signin-challenge") {
-    const signinChallenge = SigninChallenge.fromRandom(
-      AUTH_PRIV_KEY,
-      DOMAIN,
-    );
+    const signinChallenge = SigninChallenge.fromRandom(DOMAIN_PRIV_KEY, DOMAIN);
+    //console.log("signinChallenge", signinChallenge.toHex());
     return json({ signinChallenge: signinChallenge.toHex() });
   } else if (method === "new-auth-signin-token") {
     const tokenId = await createNewAuthSigninToken();
-    console.log(tokenId.toString("hex"));
+    //console.log(tokenId.toString("hex"));
     const token = await getAuthSigninToken(tokenId);
-    console.log(token?.id.toString("hex"));
-    console.log(token);
+    //console.log(token?.id.toString("hex"));
+    //console.log(token);
     return json({ tokenId: tokenId.toString("hex") });
   } else {
     throw new Response("Method not allowed", { status: 405 });

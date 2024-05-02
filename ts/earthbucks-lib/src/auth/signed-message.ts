@@ -47,6 +47,7 @@ export default class SignedMessage {
 
   isValid(pubKey: PubKey, keyStr: string): boolean {
     if (keyStr !== this.keyStr) {
+      //console.log('invalid key str')
       return false;
     }
     let mac = SignedMessage.createMac(this.message, this.keyStr);
@@ -64,10 +65,10 @@ export default class SignedMessage {
 
   static fromBuffer(buf: Buffer, keyStr: string): SignedMessage {
     const reader = new BufferReader(buf);
-    const sig = reader.readBuffer(65);
+    const sig = reader.readBuffer(64);
     const pubKey = reader.readBuffer(33);
     const mac = reader.readBuffer(32);
-    const message = reader.readBuffer();
+    const message = reader.readRemainder();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 

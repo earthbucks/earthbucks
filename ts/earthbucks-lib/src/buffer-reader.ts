@@ -22,6 +22,10 @@ export default class BufferReader {
     return arr;
   }
 
+  readRemainder(): Buffer {
+    return this.readBuffer(this.buf.length - this.pos);
+  }
+
   readReverse(len: number = this.buf.length): Buffer {
     const buf = this.buf.subarray(this.pos, this.pos + len);
     this.pos += len;
