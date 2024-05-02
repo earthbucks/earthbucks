@@ -11,6 +11,7 @@ import BufferReader from "earthbucks-lib/src/buffer-reader";
 import BufferWriter from "earthbucks-lib/src/buffer-writer";
 import Domain from "earthbucks-lib/src/domain";
 import StrictHex from "earthbucks-lib/src/strict-hex";
+import PermissionToken from "earthbucks-lib/src/auth/permission-token";
 
 const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
 const DOMAIN: string = process.env.DOMAIN || "";
@@ -32,39 +33,7 @@ try {
   }
 }
 
-class PermissionToken {
-  randValue: Buffer;
-  timestamp: bigint; // milliseconds
 
-  constructor(randValue: Buffer, timestamp: bigint) {
-    this.randValue = randValue;
-    this.timestamp = timestamp; // milliseconds
-  }
-
-  toBuffer(): Buffer {
-    const writer = new BufferWriter();
-    writer.writeBuffer(this.randValue);
-    writer.writeUInt64BEBigInt(this.timestamp);
-    return writer.toBuffer();
-  }
-
-  static fromBuffer(buf: Buffer): PermissionToken {
-    const reader = new BufferReader(buf);
-    const randValue = reader.readBuffer(32);
-    const timestamp = reader.readUInt64BEBigInt();
-    return new PermissionToken(randValue, timestamp);
-  }
-
-  static fromRandom(): PermissionToken {
-    const randValue = crypto.getRandomValues(new Uint8Array(32));
-    const timestamp = BigInt(Date.now()); // milliseconds
-    return new PermissionToken(Buffer.from(randValue), timestamp);
-  }
-
-  isValid(): boolean {
-    return Date.now() - Number(this.timestamp) < 15 * 60 * 1000; // 15 minutes
-  }
-}
 
 class SigninPermissionToken {
   signedMessage: SignedMessage;
