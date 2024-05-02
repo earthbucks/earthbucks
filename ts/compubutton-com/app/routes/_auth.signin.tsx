@@ -17,20 +17,6 @@ import {
   getAuthSigninToken,
 } from "earthbucks-db/src/models/auth-signin-token";
 
-export async function action({ request, params }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const method = `${formData.get("method")}`;
-  if (method === "new-auth-signin-token") {
-    let tokenId = await createNewAuthSigninToken();
-    console.log(tokenId.toString("hex"));
-    let token = await getAuthSigninToken(tokenId);
-    console.log(token?.id.toString("hex"));
-    console.log(token);
-    return json({ tokenId: tokenId.toString("hex") });
-  } else {
-    throw new Response("Method not allowed", { status: 405 });
-  }
-}
 
 export const meta: MetaFunction = () => {
   return [
@@ -70,7 +56,20 @@ export default function Signin() {
     setIsSaved(true);
   }
 
-  const fetcher = useFetcher();
+  async function OnSignin() {
+    try {
+      let formData = new FormData();
+      formData.append("method", "new-auth-signin-token");
+      let res = await fetch("/signin/action", {
+        method: "POST",
+        body: formData,
+      });
+      let json = await res.json();
+      console.log(json);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-[400px]">
@@ -177,26 +176,7 @@ export default function Signin() {
         <Button initialText="Sign in" mode="secret" disabled={!isSaved} />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button
-          initialText="Sign in"
-          mode="secret"
-          onComputing={async () => {
-            try {
-              let formData = new FormData();
-              formData.append("method", "new-auth-signin-token");
-              let res = await fetch("/signin", {
-                method: "POST",
-                body: formData,
-              });
-              let text = await res.text();
-              console.log(text);
-              let json = await res.json();
-              console.log(json);
-            } catch (e) {
-              console.error(e);
-            }
-          }}
-        />
+        <Button initialText="Sign in" mode="secret" onComputing={OnSignin} />
       </div>
     </div>
   );
