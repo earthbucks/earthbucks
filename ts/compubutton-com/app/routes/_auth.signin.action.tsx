@@ -55,7 +55,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (!isValidChallenge) {
       throw new Response("Invalid signin challenge 2", { status: 400 });
     }
-    let isValidResponse = signinResponse.isValid(DOMAIN_PRIV_KEY, DOMAIN);
+    let userPubKey: PubKey
+    try {
+      userPubKey = PubKey.fromBuffer(signinResponse.signedMessage.pubKey);
+    } catch (err) {
+      throw new Response("Invalid user public key", { status: 400 });
+    }
+    let isValidResponse = signinResponse.isValid(userPubKey, DOMAIN);
     if (!isValidResponse) {
       console.log('here')
       throw new Response("Invalid signin response 2", { status: 400 });
