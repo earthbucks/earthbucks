@@ -7,35 +7,36 @@ import PubKey from "./pub-key";
 import BufferReader from "./buffer-reader";
 import BufferWriter from "./buffer-writer";
 
-const SIGNED_MESSAGE_KEY = blake3Hash(Buffer.from("signed message"));
-
 export default class SignedMessage {
   sig: Buffer;
   pubKey: Buffer;
   mac: Buffer;
   message: Buffer;
+  keyStr: string;
 
-  constructor(sig: Buffer, pubKey: Buffer, mac: Buffer, message: Buffer) {
+  constructor(sig: Buffer, pubKey: Buffer, mac: Buffer, message: Buffer, keyStr: string) {
     this.sig = sig;
     this.pubKey = pubKey;
     this.mac = mac;
     this.message = message;
+    this.keyStr = keyStr;
   }
 
-  static createMac(message: Buffer) {
-    return blake3Mac(SIGNED_MESSAGE_KEY, message);
+  static createMac(message: Buffer, keyStr: string) {
+    let key = blake3Hash(Buffer.from(keyStr))
+    return blake3Mac(key, message);
   }
 
-  static fromSignMessage(privKey: PrivKey, message: Buffer): SignedMessage {
-    const mac = SignedMessage.createMac(message);
+  static fromSignMessage(privKey: PrivKey, message: Buffer, keyStr: string): SignedMessage {
+    const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toBuffer());
     const sigBuf = Buffer.from(sigObj.signature);
     let pubKey = privKey.toPubKeyBuffer();
-    return new SignedMessage(sigBuf, pubKey, mac, message);
+    return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
   isValid(pubKey: PubKey): boolean {
-    let mac = SignedMessage.createMac(this.message);
+    let mac = SignedMessage.createMac(this.message, this.keyStr);
     if (!mac.equals(this.mac)) {
       return false;
     }
@@ -48,13 +49,13 @@ export default class SignedMessage {
     return true;
   }
 
-  static fromBuffer(buf: Buffer): SignedMessage {
+  static fromBuffer(buf: Buffer, keyStr: string): SignedMessage {
     const reader = new BufferReader(buf);
     const sig = reader.readBuffer(65);
     const pubKey = reader.readBuffer(33);
     const mac = reader.readBuffer(32);
     const message = reader.readBuffer();
-    return new SignedMessage(sig, pubKey, mac, message);
+    return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
   toBuffer(): Buffer {

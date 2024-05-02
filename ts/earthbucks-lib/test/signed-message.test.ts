@@ -8,7 +8,7 @@ describe("SignedMessage", () => {
     const privKey = PrivKey.fromRandom();
     const pubKey = PubKey.fromPrivKey(privKey);
     const message = Buffer.from("message");
-    const signedMessage = SignedMessage.fromSignMessage(privKey, message);
+    const signedMessage = SignedMessage.fromSignMessage(privKey, message, "signed message");
     expect(signedMessage.isValid(pubKey)).toBe(true);
   });
 });

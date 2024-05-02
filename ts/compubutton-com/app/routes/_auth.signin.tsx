@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Footer from "~/components/footer";
 import { Link, json, useFetcher } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
@@ -51,31 +51,42 @@ export default function Signin() {
     setIsSaved(true);
   }
 
-  async function OnGetPermission() {
-    try {
-      let formData = new FormData();
-      formData.append("method", "new-permission-token");
-      let res = await fetch("/signin/action", {
-        method: "POST",
-        body: formData,
-      });
-      let json = await res.json();
-      console.log(json);
-    } catch (e) {
-      console.error(e);
+  useEffect(() => {
+    let privKey = localStorage.getItem("privKey");
+    let pubKey = localStorage.getItem("pubKey");
+    if (privKey && pubKey) {
+      setPrivateKey(privKey);
+      setPublicKey(pubKey);
+      setIsPublicKeyValid(true);
+      setIsPrivateKeyValid(true);
     }
-  }
+  }, []);
 
-  async function OnSignin() {
+  async function onSignin() {
     try {
-      let formData = new FormData();
-      formData.append("method", "new-auth-signin-token");
-      let res = await fetch("/signin/action", {
-        method: "POST",
-        body: formData,
-      });
-      let json = await res.json();
-      console.log(json);
+      // get permission token
+      let permissionTokenHex: string
+      {
+        let formData = new FormData();
+        formData.append("method", "new-permission-token");
+        let res = await fetch("/signin/action", {
+          method: "POST",
+          body: formData,
+        });
+        let json = await res.json();
+        permissionTokenHex = json.signedPermissionToken;
+        console.log(json);
+      }
+      {
+        let formData = new FormData();
+        formData.append("method", "new-auth-signin-token");
+        let res = await fetch("/signin/action", {
+          method: "POST",
+          body: formData,
+        });
+        let json = await res.json();
+        console.log(json);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -161,6 +172,7 @@ export default function Signin() {
                 (e.target as HTMLInputElement).blur();
               }
             }}
+            value={privateKey}
             className={classNames(
               "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
@@ -183,13 +195,7 @@ export default function Signin() {
         />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Sign in" mode="secret" disabled={!isSaved} />
-      </div>
-      <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Get permission" onComputing={OnGetPermission} />
-      </div>
-      <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Sign in" mode="secret" onComputing={OnSignin} />
+        <Button initialText="Sign in" mode="secret" disabled={!isSaved} onComputing={onSignin} />
       </div>
     </div>
   );

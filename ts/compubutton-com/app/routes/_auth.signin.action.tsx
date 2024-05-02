@@ -9,17 +9,27 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import SignedMessage from "earthbucks-lib/src/signed-message";
 import BufferReader from "earthbucks-lib/src/buffer-reader";
 import BufferWriter from "earthbucks-lib/src/buffer-writer";
+import Domain from 'earthbucks-lib/src/domain'
+import StrictHex from "earthbucks-lib/src/strict-hex";
 
-const AUTH_PERMISSION_PRIV_KEY: string = process.env.AUTH_PERMISSION_PRIV_KEY || "";
+const AUTH_PERMISSION_PRIV_KEY_STR: string = process.env.AUTH_PERMISSION_PRIV_KEY || "";
+const AUTH_DOMAIN_NAME: string = process.env.AUTH_DOMAIN_NAME || "";
 
-let authPrivKey: PrivKey;
-let authPubKey: PubKey;
+let AUTH_PRIV_KEY: PrivKey;
+let AUTH_PUB_KEY: PubKey;
 try {
-  authPrivKey = PrivKey.fromStringFmt(AUTH_PERMISSION_PRIV_KEY);
-  authPubKey = PubKey.fromPrivKey(authPrivKey);
+  AUTH_PRIV_KEY = PrivKey.fromStringFmt(AUTH_PERMISSION_PRIV_KEY_STR);
+  AUTH_PUB_KEY = PubKey.fromPrivKey(AUTH_PRIV_KEY);
 } catch (err) {
   console.error(err);
   throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
+}
+
+{
+  let domainIsValid = Domain.isValidDomain(AUTH_DOMAIN_NAME);
+  if (!domainIsValid) {
+    throw new Error("Invalid AUTH_DOMAIN_NAME");
+  }
 }
 
 class PermissionToken {
@@ -56,36 +66,51 @@ class PermissionToken {
   }
 }
 
-class SignedPermissionToken {
+class SigninPermissionToken {
   signedMessage: SignedMessage;
 
   constructor(signedMessage: SignedMessage) {
     this.signedMessage = signedMessage;
   }
 
-  static fromRandom(): SignedPermissionToken {
-    const permissionToken = PermissionToken.fromRandom();
-    const message = permissionToken.toBuffer();
-    const signedMessage = SignedMessage.fromSignMessage(authPrivKey, message);
-    return new SignedPermissionToken(signedMessage);
+  static signinPermissionString(domain: string): string {
+    return `sign in permission token for ${domain}`;
   }
 
-  static fromBuffer(buf: Buffer): SignedPermissionToken {
-    const signedMessage = SignedMessage.fromBuffer(buf);
-    return new SignedPermissionToken(signedMessage);
+  static fromRandom(authPrivKey: PrivKey, domain: string): SigninPermissionToken {
+    const signInPermissionStr = SigninPermissionToken.signinPermissionString(domain);
+    const permissionToken = PermissionToken.fromRandom();
+    const message = permissionToken.toBuffer();
+    const signedMessage = SignedMessage.fromSignMessage(authPrivKey, message, signInPermissionStr);
+    return new SigninPermissionToken(signedMessage);
+  }
+
+  static fromBuffer(buf: Buffer, domain: string): SigninPermissionToken {
+    const signInPermissionStr = SigninPermissionToken.signinPermissionString(domain);
+    const signedMessage = SignedMessage.fromBuffer(buf, signInPermissionStr);
+    return new SigninPermissionToken(signedMessage);
+  }
+
+  static fromHex(hex: string, domain: string): SigninPermissionToken {
+    const buf = StrictHex.decode(hex);
+    return SigninPermissionToken.fromBuffer(buf, domain);
   }
 
   toBuffer(): Buffer {
     return this.signedMessage.toBuffer();
   }
 
+  toHex(): string {
+    return this.toBuffer().toString("hex");
+  }
+
   isValid(): boolean {
-    let message = this.signedMessage.message;
-    let permissionToken = PermissionToken.fromBuffer(message);
+    const message = this.signedMessage.message;
+    const permissionToken = PermissionToken.fromBuffer(message);
     if (!permissionToken.isValid()) {
       return false;
     }
-    return this.signedMessage.isValid(authPubKey);
+    return this.signedMessage.isValid(AUTH_PUB_KEY);
   }
 }
 
@@ -93,12 +118,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-permission-token") {
-    let signedPermissionToken = SignedPermissionToken.fromRandom();
-    return json({ signedPermissionToken: signedPermissionToken.toBuffer().toString("hex") });
+    const signedPermissionToken = SigninPermissionToken.fromRandom(AUTH_PRIV_KEY, AUTH_DOMAIN_NAME);
+    return json({ signedPermissionToken: signedPermissionToken.toHex() });
   } else if (method === "new-auth-signin-token") {
-    let tokenId = await createNewAuthSigninToken();
+    const tokenId = await createNewAuthSigninToken();
     console.log(tokenId.toString("hex"));
-    let token = await getAuthSigninToken(tokenId);
+    const token = await getAuthSigninToken(tokenId);
     console.log(token?.id.toString("hex"));
     console.log(token);
     return json({ tokenId: tokenId.toString("hex") });
