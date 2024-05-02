@@ -68,7 +68,7 @@ export default function Signin() {
       let signinChallengeHex: string;
       {
         let formData = new FormData();
-        formData.append("method", "new-permission-token");
+        formData.append("method", "new-signin-challenge");
         let res = await fetch("/signin/action", {
           method: "POST",
           body: formData,

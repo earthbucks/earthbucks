@@ -32,7 +32,7 @@ try {
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
-  if (method === "new-permission-token") {
+  if (method === "new-signin-challenge") {
     const signinChallenge = SigninChallenge.fromRandom(
       AUTH_PRIV_KEY,
       DOMAIN,
