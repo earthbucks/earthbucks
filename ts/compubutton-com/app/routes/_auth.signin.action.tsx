@@ -6,10 +6,10 @@ import {
 } from "earthbucks-db/src/models/auth-signin-token";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
-import SignedMessage from "earthbucks-lib/src/signed-message";
+import SignedMessage from "earthbucks-lib/src/auth/signed-message";
 import BufferReader from "earthbucks-lib/src/buffer-reader";
 import BufferWriter from "earthbucks-lib/src/buffer-writer";
-import Domain from 'earthbucks-lib/src/domain'
+import Domain from "earthbucks-lib/src/domain";
 import StrictHex from "earthbucks-lib/src/strict-hex";
 
 const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
@@ -33,8 +33,8 @@ try {
 }
 
 class PermissionToken {
-  randValue: Buffer
-  timestamp: bigint // milliseconds
+  randValue: Buffer;
+  timestamp: bigint; // milliseconds
 
   constructor(randValue: Buffer, timestamp: bigint) {
     this.randValue = randValue;
@@ -77,16 +77,25 @@ class SigninPermissionToken {
     return `sign in permission token for ${domain}`;
   }
 
-  static fromRandom(authPrivKey: PrivKey, domain: string): SigninPermissionToken {
-    const signInPermissionStr = SigninPermissionToken.signinPermissionString(domain);
+  static fromRandom(
+    authPrivKey: PrivKey,
+    domain: string,
+  ): SigninPermissionToken {
+    const signInPermissionStr =
+      SigninPermissionToken.signinPermissionString(domain);
     const permissionToken = PermissionToken.fromRandom();
     const message = permissionToken.toBuffer();
-    const signedMessage = SignedMessage.fromSignMessage(authPrivKey, message, signInPermissionStr);
+    const signedMessage = SignedMessage.fromSignMessage(
+      authPrivKey,
+      message,
+      signInPermissionStr,
+    );
     return new SigninPermissionToken(signedMessage);
   }
 
   static fromBuffer(buf: Buffer, domain: string): SigninPermissionToken {
-    const signInPermissionStr = SigninPermissionToken.signinPermissionString(domain);
+    const signInPermissionStr =
+      SigninPermissionToken.signinPermissionString(domain);
     const signedMessage = SignedMessage.fromBuffer(buf, signInPermissionStr);
     return new SigninPermissionToken(signedMessage);
   }
@@ -118,7 +127,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-permission-token") {
-    const signedPermissionToken = SigninPermissionToken.fromRandom(AUTH_PRIV_KEY, DOMAIN);
+    const signedPermissionToken = SigninPermissionToken.fromRandom(
+      AUTH_PRIV_KEY,
+      DOMAIN,
+    );
     return json({ signedPermissionToken: signedPermissionToken.toHex() });
   } else if (method === "new-auth-signin-token") {
     const tokenId = await createNewAuthSigninToken();

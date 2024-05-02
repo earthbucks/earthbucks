@@ -65,7 +65,7 @@ export default function Signin() {
   async function onSignin() {
     try {
       // get permission token
-      let permissionTokenHex: string
+      let permissionTokenHex: string;
       {
         let formData = new FormData();
         formData.append("method", "new-permission-token");
@@ -135,11 +135,11 @@ export default function Signin() {
             }}
             value={publicKey}
             className={classNames(
-              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
-                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
@@ -174,11 +174,11 @@ export default function Signin() {
             }}
             value={privateKey}
             className={classNames(
-              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
-                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
@@ -195,7 +195,12 @@ export default function Signin() {
         />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Sign in" mode="secret" disabled={!isSaved} onComputing={onSignin} />
+        <Button
+          initialText="Sign in"
+          mode="secret"
+          disabled={!isSaved}
+          onComputing={onSignin}
+        />
       </div>
     </div>
   );

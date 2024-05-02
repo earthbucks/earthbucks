@@ -1,11 +1,11 @@
 import { Buffer } from "buffer";
-import { blake3Hash, blake3Mac } from "./blake3";
+import { blake3Hash, blake3Mac } from "../blake3";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import PrivKey from "./priv-key";
-import PubKey from "./pub-key";
-import BufferReader from "./buffer-reader";
-import BufferWriter from "./buffer-writer";
+import PrivKey from "../priv-key";
+import PubKey from "../pub-key";
+import BufferReader from "../buffer-reader";
+import BufferWriter from "../buffer-writer";
 
 export default class SignedMessage {
   sig: Buffer;
@@ -14,7 +14,13 @@ export default class SignedMessage {
   message: Buffer;
   keyStr: string;
 
-  constructor(sig: Buffer, pubKey: Buffer, mac: Buffer, message: Buffer, keyStr: string) {
+  constructor(
+    sig: Buffer,
+    pubKey: Buffer,
+    mac: Buffer,
+    message: Buffer,
+    keyStr: string,
+  ) {
     this.sig = sig;
     this.pubKey = pubKey;
     this.mac = mac;
@@ -23,11 +29,15 @@ export default class SignedMessage {
   }
 
   static createMac(message: Buffer, keyStr: string) {
-    let key = blake3Hash(Buffer.from(keyStr))
+    let key = blake3Hash(Buffer.from(keyStr));
     return blake3Mac(key, message);
   }
 
-  static fromSignMessage(privKey: PrivKey, message: Buffer, keyStr: string): SignedMessage {
+  static fromSignMessage(
+    privKey: PrivKey,
+    message: Buffer,
+    keyStr: string,
+  ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toBuffer());
     const sigBuf = Buffer.from(sigObj.signature);
