@@ -11,6 +11,7 @@ import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  // TODO: Move to config loader
   const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
   const DOMAIN: string = process.env.DOMAIN || "";
 
@@ -31,6 +32,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   }
 
+  // begin API
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-signin-challenge") {

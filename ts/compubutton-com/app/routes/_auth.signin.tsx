@@ -84,7 +84,7 @@ export default function Signin() {
       {
         let formData = new FormData();
         formData.append("method", "new-signin-challenge");
-        let res = await fetch("/signin/action", {
+        let res = await fetch("/api/auth", {
           method: "POST",
           body: formData,
         });
@@ -118,7 +118,7 @@ export default function Signin() {
         let formData = new FormData();
         formData.append("method", "new-signin-response");
         formData.append("signinReponse", signinResponse.toHex());
-        let res = await fetch("/signin/action", {
+        let res = await fetch("/api/auth", {
           method: "POST",
           body: formData,
         });
@@ -128,7 +128,7 @@ export default function Signin() {
       {
         let formData = new FormData();
         formData.append("method", "new-auth-signin-token");
-        let res = await fetch("/signin/action", {
+        let res = await fetch("/api/auth", {
           method: "POST",
           body: formData,
         });
