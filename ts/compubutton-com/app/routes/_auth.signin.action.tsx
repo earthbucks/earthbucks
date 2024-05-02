@@ -12,13 +12,13 @@ import BufferWriter from "earthbucks-lib/src/buffer-writer";
 import Domain from 'earthbucks-lib/src/domain'
 import StrictHex from "earthbucks-lib/src/strict-hex";
 
-const AUTH_PERMISSION_PRIV_KEY_STR: string = process.env.AUTH_PERMISSION_PRIV_KEY || "";
-const AUTH_DOMAIN_NAME: string = process.env.AUTH_DOMAIN_NAME || "";
+const DOMAIN_PRIV_KEY_STR: string = process.env.DOMAIN_PRIV_KEY || "";
+const DOMAIN: string = process.env.DOMAIN || "";
 
 let AUTH_PRIV_KEY: PrivKey;
 let AUTH_PUB_KEY: PubKey;
 try {
-  AUTH_PRIV_KEY = PrivKey.fromStringFmt(AUTH_PERMISSION_PRIV_KEY_STR);
+  AUTH_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
   AUTH_PUB_KEY = PubKey.fromPrivKey(AUTH_PRIV_KEY);
 } catch (err) {
   console.error(err);
@@ -26,7 +26,7 @@ try {
 }
 
 {
-  let domainIsValid = Domain.isValidDomain(AUTH_DOMAIN_NAME);
+  let domainIsValid = Domain.isValidDomain(DOMAIN);
   if (!domainIsValid) {
     throw new Error("Invalid AUTH_DOMAIN_NAME");
   }
@@ -118,7 +118,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
   if (method === "new-permission-token") {
-    const signedPermissionToken = SigninPermissionToken.fromRandom(AUTH_PRIV_KEY, AUTH_DOMAIN_NAME);
+    const signedPermissionToken = SigninPermissionToken.fromRandom(AUTH_PRIV_KEY, DOMAIN);
     return json({ signedPermissionToken: signedPermissionToken.toHex() });
   } else if (method === "new-auth-signin-token") {
     const tokenId = await createNewAuthSigninToken();
