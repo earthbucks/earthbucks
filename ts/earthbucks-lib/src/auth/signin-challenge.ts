@@ -16,7 +16,7 @@ export default class SigninChallenge {
   }
 
   static fromRandom(
-    authPrivKey: PrivKey,
+    domainPrivKey: PrivKey,
     domain: string,
   ): SigninChallenge {
     const signInPermissionStr =
@@ -24,7 +24,7 @@ export default class SigninChallenge {
     const permissionToken = PermissionToken.fromRandom();
     const message = permissionToken.toBuffer();
     const signedMessage = SignedMessage.fromSignMessage(
-      authPrivKey,
+      domainPrivKey,
       message,
       signInPermissionStr,
     );
@@ -51,12 +51,12 @@ export default class SigninChallenge {
     return this.toBuffer().toString("hex");
   }
 
-  isValid(authPubKey: PubKey): boolean {
+  isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
     const permissionToken = PermissionToken.fromBuffer(message);
     if (!permissionToken.isValid()) {
       return false;
     }
-    return this.signedMessage.isValid(authPubKey);
+    return this.signedMessage.isValid(domainPubKey, domain);
   }
 }

@@ -45,7 +45,10 @@ export default class SignedMessage {
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
-  isValid(pubKey: PubKey): boolean {
+  isValid(pubKey: PubKey, keyStr: string): boolean {
+    if (keyStr !== this.keyStr) {
+      return false;
+    }
     let mac = SignedMessage.createMac(this.message, this.keyStr);
     if (!mac.equals(this.mac)) {
       return false;

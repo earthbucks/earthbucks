@@ -18,6 +18,9 @@ export default class PermissionToken {
   }
 
   static fromBuffer(buf: Buffer): PermissionToken {
+    if (buf.length !== 32 + 8) {
+      throw new Error("invalid buffer length");
+    }
     const reader = new BufferReader(buf);
     const randValue = reader.readBuffer(32);
     const timestamp = reader.readUInt64BEBigInt();
