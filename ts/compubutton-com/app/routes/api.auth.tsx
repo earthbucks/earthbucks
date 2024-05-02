@@ -35,44 +35,66 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // begin API
   const formData = await request.formData();
   const method = `${formData.get("method")}`;
-  if (method === "new-signin-challenge") {
-    const signinChallenge = SigninChallenge.fromRandom(DOMAIN_PRIV_KEY, DOMAIN);
-    return json({ signinChallenge: signinChallenge.toHex() });
-  } else if (method == "new-signin-response") {
-    const signinReponseHex = `${formData.get("signinReponse")}`;
-    let signinResponse: SigninResponse;
-    try {
-      signinResponse = SigninResponse.fromHex(signinReponseHex, DOMAIN);
-    } catch (err) {
-      throw new Response("Invalid signin response 1", { status: 400 });
-    }
-    const signinChallengeBuf = signinResponse.signedMessage.message;
-    let signinChallenge: SigninChallenge;
-    try {
-      signinChallenge = SigninChallenge.fromBuffer(signinChallengeBuf, DOMAIN);
-    } catch (err) {
-      throw new Response("Invalid signin challenge 1", { status: 400 });
-    }
-    const isValidChallenge = signinChallenge.isValid(AUTH_PUB_KEY, DOMAIN);
-    if (!isValidChallenge) {
-      throw new Response("Invalid signin challenge 2", { status: 400 });
-    }
-    let userPubKey: PubKey;
-    try {
-      userPubKey = PubKey.fromBuffer(signinResponse.signedMessage.pubKey);
-    } catch (err) {
-      throw new Response("Invalid user public key", { status: 400 });
-    }
-    let isValidResponse = signinResponse.isValid(userPubKey, DOMAIN);
-    if (!isValidResponse) {
-      throw new Response("Invalid signin response 2", { status: 400 });
-    }
-    return json({ isValidResponse });
-  } else if (method === "new-auth-signin-token") {
-    const tokenId = await createNewAuthSigninToken();
-    const token = await getAuthSigninToken(tokenId);
-    return json({ tokenId: tokenId.toString("hex") });
-  } else {
-    throw new Response("Method not allowed", { status: 405 });
+  switch (method) {
+    case "new-signin-challenge":
+      {
+        const signinChallenge = SigninChallenge.fromRandom(
+          DOMAIN_PRIV_KEY,
+          DOMAIN,
+        );
+        return json({ signinChallenge: signinChallenge.toHex() });
+      }
+      break;
+
+    case "new-signin-response":
+      {
+        const signinReponseHex = `${formData.get("signinReponse")}`;
+        let signinResponse: SigninResponse;
+        try {
+          signinResponse = SigninResponse.fromHex(signinReponseHex, DOMAIN);
+        } catch (err) {
+          throw new Response("Invalid signin response 1", { status: 400 });
+        }
+        const signinChallengeBuf = signinResponse.signedMessage.message;
+        let signinChallenge: SigninChallenge;
+        try {
+          signinChallenge = SigninChallenge.fromBuffer(
+            signinChallengeBuf,
+            DOMAIN,
+          );
+        } catch (err) {
+          throw new Response("Invalid signin challenge 1", { status: 400 });
+        }
+        const isValidChallenge = signinChallenge.isValid(AUTH_PUB_KEY, DOMAIN);
+        if (!isValidChallenge) {
+          throw new Response("Invalid signin challenge 2", { status: 400 });
+        }
+        let userPubKey: PubKey;
+        try {
+          userPubKey = PubKey.fromBuffer(signinResponse.signedMessage.pubKey);
+        } catch (err) {
+          throw new Response("Invalid user public key", { status: 400 });
+        }
+        let isValidResponse = signinResponse.isValid(userPubKey, DOMAIN);
+        if (!isValidResponse) {
+          throw new Response("Invalid signin response 2", { status: 400 });
+        }
+        return json({ isValidResponse });
+      }
+      break;
+
+    case "new-auth-signin-token":
+      {
+        const tokenId = await createNewAuthSigninToken();
+        const token = await getAuthSigninToken(tokenId);
+        return json({ tokenId: tokenId.toString("hex") });
+      }
+      break;
+
+    default:
+      {
+        throw new Response("Method not allowed", { status: 405 });
+      }
+      break;
   }
 }
