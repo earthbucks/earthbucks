@@ -14,7 +14,7 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
-import SigninReponse from "earthbucks-lib/src/auth/signin-response";
+import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -106,13 +106,24 @@ export default function Signin() {
 
         // create signin response
         let userPrivKey = PrivKey.fromStringFmt(privateKey);
-        let signinResponse = SigninReponse.fromSigninChallenge(
+        let signinResponse = SigninResponse.fromSigninChallenge(
           userPrivKey,
           DOMAIN,
           DOMAIN_PUB_KEY,
           signinChallenge,
         );
         console.log(signinResponse.toHex());
+
+        // post signin response
+        let formData = new FormData();
+        formData.append("method", "new-signin-response");
+        formData.append("signinReponse", signinResponse.toHex());
+        let res = await fetch("/signin/action", {
+          method: "POST",
+          body: formData,
+        });
+        let json = await res.json();
+        console.log(json);
       }
       {
         let formData = new FormData();

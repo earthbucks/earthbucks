@@ -5,7 +5,7 @@ import PermissionToken from "./permission-token";
 import SignedMessage from "./signed-message";
 import SigninChallenge from "./signin-challenge";
 
-export default class SigninReponse {
+export default class SigninResponse {
   signedMessage: SignedMessage;
 
   constructor(signedMessage: SignedMessage) {
@@ -21,30 +21,30 @@ export default class SigninReponse {
     domain: string,
     domainPubKey: PubKey,
     signinChallenge: SigninChallenge,
-  ): SigninReponse {
+  ): SigninResponse {
     const isSignedChallengeValid = signinChallenge.isValid(
       domainPubKey,
       domain,
     );
-    const signInResponseStr = SigninReponse.signinResponseKeyString(domain);
+    const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
     const message = signinChallenge.toBuffer();
     const signedMessage = SignedMessage.fromSignMessage(
       userPrivKey,
       message,
       signInResponseStr,
     );
-    return new SigninReponse(signedMessage);
+    return new SigninResponse(signedMessage);
   }
 
-  static fromBuffer(buf: Buffer, domain: string): SigninReponse {
-    const signInResponseStr = SigninReponse.signinResponseKeyString(domain);
+  static fromBuffer(buf: Buffer, domain: string): SigninResponse {
+    const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
     const signedMessage = SignedMessage.fromBuffer(buf, signInResponseStr);
-    return new SigninReponse(signedMessage);
+    return new SigninResponse(signedMessage);
   }
 
-  static fromHex(hex: string, domain: string): SigninReponse {
+  static fromHex(hex: string, domain: string): SigninResponse {
     const buf = StrictHex.decode(hex);
-    return SigninReponse.fromBuffer(buf, domain);
+    return SigninResponse.fromBuffer(buf, domain);
   }
 
   toBuffer(): Buffer {
@@ -56,7 +56,7 @@ export default class SigninReponse {
   }
 
   isValid(userPubKey: PubKey, domain: string): boolean {
-    const keyStr = SigninReponse.signinResponseKeyString(domain);
+    const keyStr = SigninResponse.signinResponseKeyString(domain);
     return this.signedMessage.isValid(userPubKey, keyStr);
   }
 }
