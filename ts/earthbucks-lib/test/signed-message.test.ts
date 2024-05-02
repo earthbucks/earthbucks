@@ -9,6 +9,6 @@ describe("SignedMessage", () => {
     const pubKey = PubKey.fromPrivKey(privKey);
     const message = Buffer.from("message");
     const signedMessage = SignedMessage.fromSignMessage(privKey, message);
-    expect(signedMessage.verify(pubKey)).toBe(true);
+    expect(signedMessage.isValid(pubKey)).toBe(true);
   });
 });

@@ -12,11 +12,6 @@ import { useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { classNames } from "~/util";
-import {
-  createNewAuthSigninToken,
-  getAuthSigninToken,
-} from "earthbucks-db/src/models/auth-signin-token";
-
 
 export const meta: MetaFunction = () => {
   return [
@@ -54,6 +49,21 @@ export default function Signin() {
     localStorage.setItem("privKey", privateKey);
     localStorage.setItem("pubKey", publicKey);
     setIsSaved(true);
+  }
+
+  async function OnGetPermission() {
+    try {
+      let formData = new FormData();
+      formData.append("method", "new-permission-token");
+      let res = await fetch("/signin/action", {
+        method: "POST",
+        body: formData,
+      });
+      let json = await res.json();
+      console.log(json);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async function OnSignin() {
@@ -174,6 +184,9 @@ export default function Signin() {
       </div>
       <div className="mx-auto my-4 w-[320px]">
         <Button initialText="Sign in" mode="secret" disabled={!isSaved} />
+      </div>
+      <div className="mx-auto my-4 w-[320px]">
+        <Button initialText="Get permission" onComputing={OnGetPermission} />
       </div>
       <div className="mx-auto my-4 w-[320px]">
         <Button initialText="Sign in" mode="secret" onComputing={OnSignin} />

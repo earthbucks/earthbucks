@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import { blake3Hash, blake3Mac } from "./blake3";
-import { ecdsaSign, ecdsaVerify } from "secp256k1";
+import secp256k1 from "secp256k1";
+const { ecdsaSign, ecdsaVerify } = secp256k1;
 import PrivKey from "./priv-key";
 import PubKey from "./pub-key";
 import BufferReader from "./buffer-reader";
@@ -33,7 +34,7 @@ export default class SignedMessage {
     return new SignedMessage(sigBuf, pubKey, mac, message);
   }
 
-  verify(pubKey: PubKey): boolean {
+  isValid(pubKey: PubKey): boolean {
     let mac = SignedMessage.createMac(this.message);
     if (!mac.equals(this.mac)) {
       return false;
