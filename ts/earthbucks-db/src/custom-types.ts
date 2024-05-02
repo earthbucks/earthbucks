@@ -2,6 +2,7 @@
 // our own custom types
 
 import { customType } from "drizzle-orm/mysql-core";
+import { Buffer } from "buffer";
 
 export const customTinyBlob = customType<{ data: Buffer }>({
   // up to 255 bytes
@@ -31,5 +32,11 @@ export const customLongBlob = customType<{ data: Buffer }>({
   // up to 4GB
   dataType() {
     return "LONGBLOB";
+  },
+});
+
+export const customBinary = customType<{ data: Buffer }>({
+  dataType() {
+    return "BINARY";
   },
 });

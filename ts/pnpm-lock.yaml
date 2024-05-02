@@ -401,6 +401,9 @@ importers:
 
   earthbucks-db:
     dependencies:
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
