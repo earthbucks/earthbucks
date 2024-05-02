@@ -12,7 +12,7 @@ export default class SigninPermissionToken {
   }
 
   static signinPermissionString(domain: string): string {
-    return `sign in permission token for ${domain}`;
+    return `signin permission token for ${domain}`;
   }
 
   static fromRandom(
