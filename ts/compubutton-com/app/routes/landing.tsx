@@ -25,7 +25,7 @@ export default function Landing() {
   }
 
   async function onRegister() {
-    navigate("/register");
+    navigate("/new");
   }
   return (
     <div className="">
@@ -60,13 +60,13 @@ export default function Landing() {
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <div className="mx-auto max-w-[400px]">
         <div className="my-4 text-center text-black dark:text-white">
-          Please sign in or register to continue.
+          Please sign in or create a new key pair to continue.
         </div>
         <div className="mx-auto my-4 w-[320px]">
           <Button initialText="Sign in" onSuccess={onSignin} />
         </div>
         <div className="mx-auto my-4 w-[320px]">
-          <Button initialText="Register" onSuccess={onRegister} />
+          <Button initialText="New" onSuccess={onRegister} />
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />

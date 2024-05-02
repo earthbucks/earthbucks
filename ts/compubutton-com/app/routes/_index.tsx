@@ -25,7 +25,7 @@ export default function Landing() {
   }
 
   async function onRegister() {
-    navigate("/register");
+    navigate("/new");
   }
 
   return (

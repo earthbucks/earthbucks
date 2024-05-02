@@ -112,7 +112,6 @@ export default function Signin() {
           DOMAIN_PUB_KEY,
           signinChallenge,
         );
-        console.log(signinResponse.toHex());
 
         // post signin response
         let formData = new FormData();
@@ -146,8 +145,8 @@ export default function Signin() {
         <p>
           Please save your key pair in localStorage (client-side browser
           storage) to sign in. (New here?{" "}
-          <Link to="/register" className="underline">
-            Register first
+          <Link to="/new" className="underline">
+            Create a key pair first
           </Link>
           .)
         </p>

@@ -65,7 +65,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     let isValidResponse = signinResponse.isValid(userPubKey, DOMAIN);
     if (!isValidResponse) {
-      console.log("here");
       throw new Response("Invalid signin response 2", { status: 400 });
     }
     return json({ isValidResponse });
