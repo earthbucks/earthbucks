@@ -11,19 +11,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Landing() {
+export default function Auth() {
   return (
     <div className="">
-      <div className="my-4 flex">
-        <div className="mx-auto">
-          <div className="inline-block align-middle">
-            <Logo />
-          </div>
-        </div>
+      <div className="mx-auto my-4">
+        <Logo />
       </div>
-
       <Outlet />
-
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <Footer />
     </div>

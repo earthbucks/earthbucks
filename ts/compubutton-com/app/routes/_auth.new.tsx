@@ -12,7 +12,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Register() {
+export default function New() {
   const [keyPair, setKeyPair] = useState<KeyPair | null>(null);
 
   async function generateKeyPair() {
