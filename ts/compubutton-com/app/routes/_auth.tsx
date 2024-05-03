@@ -2,6 +2,7 @@ import type { MetaFunction } from "@remix-run/node";
 import Footer from "~/components/footer";
 import { Outlet } from "@remix-run/react";
 import { Buffer } from "buffer";
+import Logo from "~/components/logo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,11 +17,7 @@ export default function Landing() {
       <div className="my-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
-            <img
-              src="/button-logo.png"
-              alt=""
-              className="mx-auto block aspect-square w-[120px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]"
-            />
+            <Logo />
           </div>
         </div>
       </div>
