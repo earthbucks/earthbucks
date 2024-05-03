@@ -90,7 +90,7 @@ export async function signin(
   let signinChallengeHex: string;
   {
     let formData = new FormData();
-    let res = await fetch("/api/auth/new-signin-challenge", {
+    let res = await fetch("/api/ebx/auth/new-signin-challenge", {
       method: "POST",
       body: formData,
     });
@@ -118,7 +118,7 @@ export async function signin(
     // post signin response
     let formData = new FormData();
     formData.append("signinReponse", signinResponse.toHex());
-    let res = await fetch("/api/auth/new-signin-response", {
+    let res = await fetch("/api/ebx/auth/new-signin-response", {
       method: "POST",
       body: formData,
     });

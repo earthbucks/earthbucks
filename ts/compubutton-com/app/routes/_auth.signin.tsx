@@ -16,7 +16,7 @@ import { classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
-import { signin } from "./api.auth.$method";
+import { signin } from "./api.ebx.auth.$method";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const DOMAIN = process.env.DOMAIN || "";
