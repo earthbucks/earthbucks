@@ -141,14 +141,17 @@ export default function Signin() {
 
   return (
     <div className="mx-auto max-w-[400px]">
-      <div className="my-4 text-black dark:text-white">
-        <p>
-          Please save your key pair in localStorage (client-side browser
-          storage) to sign in. (New here?{" "}
+      <div className="my-4 text-black dark:text-white text-center">
+        <h1 className="text-2xl font-bold">Sign in</h1>
+        <p className='my-4'>
+          Please save your key pair on your device to sign in.
+        </p>
+        <p className='my-4 text-sm'>
+          New here?{" "}
           <Link to="/new" className="underline">
             Create a key pair first
           </Link>
-          .)
+          .
         </p>
       </div>
       <div className="my-4">
@@ -182,11 +185,11 @@ export default function Signin() {
             }}
             value={publicKey}
             className={classNames(
-              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
+              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
-                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
+                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
@@ -221,11 +224,11 @@ export default function Signin() {
             }}
             value={privateKey}
             className={classNames(
-              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
+              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
-                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
+                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
