@@ -8,11 +8,12 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
+import PrivKey from "earthbucks-lib/src/priv-key";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   // begin API
   const formData = await request.formData();
-  const method = `${formData.get("method")}`;
+  const method = `${params.method}`;
   switch (method) {
     case "new-signin-challenge":
       {
@@ -78,4 +79,60 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }
       break;
   }
+}
+
+export async function signin(
+  userPrivKey: PrivKey,
+  DOMAIN: string,
+  DOMAIN_PUB_KEY_STR: string,
+) {
+  // get signin challenge
+  let signinChallengeHex: string;
+  {
+    let formData = new FormData();
+    let res = await fetch("/api/auth/new-signin-challenge", {
+      method: "POST",
+      body: formData,
+    });
+    let json = await res.json();
+    signinChallengeHex = json.signinChallenge;
+    console.log(json);
+  }
+  {
+    // verify signin challenge
+    let signinChallenge = SigninChallenge.fromHex(signinChallengeHex, DOMAIN);
+    let DOMAIN_PUB_KEY = PubKey.fromStringFmt(DOMAIN_PUB_KEY_STR);
+    let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
+    if (!isValidChallenge) {
+      throw new Error("Invalid signin challenge");
+    }
+
+    // create signin response
+    let signinResponse = SigninResponse.fromSigninChallenge(
+      userPrivKey,
+      DOMAIN,
+      DOMAIN_PUB_KEY,
+      signinChallenge,
+    );
+
+    // post signin response
+    let formData = new FormData();
+    formData.append("signinReponse", signinResponse.toHex());
+    let res = await fetch("/api/auth/new-signin-response", {
+      method: "POST",
+      body: formData,
+    });
+    let json = await res.json();
+    console.log(json);
+  }
+  // {
+  //   let formData = new FormData();
+  //   formData.append("method", "new-auth-signin-token");
+  //   let res = await fetch("/api/auth", {
+  //     method: "POST",
+  //     body: formData,
+  //   });
+  //   let json = await res.json();
+  //   console.log(json);
+  // }
 }

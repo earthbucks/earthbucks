@@ -49,7 +49,7 @@ export default function Register() {
     <div className="mx-auto max-w-[400px]">
       {!keyPair ? (
         <div className="my-4 text-center text-black dark:text-white">
-        <h1 className="text-2xl font-bold">New</h1>
+          <h1 className="text-2xl font-bold">New</h1>
           <p className="my-4">Please generate a new key pair to sign in.</p>
           <div className="mx-auto w-[320px]">
             <Button initialText="Generate" onComputing={generateKeyPair} />

@@ -16,6 +16,7 @@ import { classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
+import { signin } from "./api.auth.$method";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const DOMAIN = process.env.DOMAIN || "";
@@ -79,74 +80,25 @@ export default function Signin() {
 
   async function onSignin() {
     try {
-      // get signin challenge
-      let signinChallengeHex: string;
-      {
-        let formData = new FormData();
-        formData.append("method", "new-signin-challenge");
-        let res = await fetch("/api/auth", {
-          method: "POST",
-          body: formData,
-        });
-        let json = await res.json();
-        signinChallengeHex = json.signinChallenge;
-        console.log(json);
-      }
-      {
-        // verify signin challenge
-        let signinChallenge = SigninChallenge.fromHex(
-          signinChallengeHex,
-          DOMAIN,
-        );
-        let DOMAIN_PUB_KEY = PubKey.fromStringFmt(DOMAIN_PUB_KEY_STR);
-        let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
-        if (!isValidChallenge) {
-          throw new Error("Invalid signin challenge");
-        }
-
-        // create signin response
-        let userPrivKey = PrivKey.fromStringFmt(privateKey);
-        let signinResponse = SigninResponse.fromSigninChallenge(
-          userPrivKey,
-          DOMAIN,
-          DOMAIN_PUB_KEY,
-          signinChallenge,
-        );
-
-        // post signin response
-        let formData = new FormData();
-        formData.append("method", "new-signin-response");
-        formData.append("signinReponse", signinResponse.toHex());
-        let res = await fetch("/api/auth", {
-          method: "POST",
-          body: formData,
-        });
-        let json = await res.json();
-        console.log(json);
-      }
-      // {
-      //   let formData = new FormData();
-      //   formData.append("method", "new-auth-signin-token");
-      //   let res = await fetch("/api/auth", {
-      //     method: "POST",
-      //     body: formData,
-      //   });
-      //   let json = await res.json();
-      //   console.log(json);
-      // }
+      await signin(
+        PrivKey.fromStringFmt(privateKey),
+        DOMAIN,
+        DOMAIN_PUB_KEY_STR,
+      );
     } catch (e) {
       console.error(e);
+      throw e;
     }
   }
 
   return (
     <div className="mx-auto max-w-[400px]">
-      <div className="my-4 text-black dark:text-white text-center">
+      <div className="my-4 text-center text-black dark:text-white">
         <h1 className="text-2xl font-bold">Sign in</h1>
-        <p className='my-4'>
+        <p className="my-4">
           Please save your key pair on your device to sign in.
         </p>
-        <p className='my-4 text-sm'>
+        <p className="my-4 text-sm">
           New here?{" "}
           <Link to="/new" className="underline">
             Create a key pair first
@@ -185,11 +137,11 @@ export default function Signin() {
             }}
             value={publicKey}
             className={classNames(
-              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPublicKeyValid
-                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
@@ -224,11 +176,11 @@ export default function Signin() {
             }}
             value={privateKey}
             className={classNames(
-              "focus:border-primary-blue-500 focus:outline-primary-blue-500 w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:outline focus:outline-2 dark:bg-black dark:text-gray-400",
+              "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
                 : isPrivateKeyValid
-                  ? "border-secondary-blue-500 outline-secondary-blue-500 outline outline-2"
+                  ? "border-secondary-blue-500 outline outline-2 outline-secondary-blue-500"
                   : "border-red-500 outline outline-2 outline-red-500",
             )}
           />
