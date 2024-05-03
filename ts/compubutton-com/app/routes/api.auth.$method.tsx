@@ -82,9 +82,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export async function signin(
-  userPrivKey: PrivKey,
   DOMAIN: string,
   DOMAIN_PUB_KEY_STR: string,
+  userPrivKey: PrivKey,
 ) {
   // get signin challenge
   let signinChallengeHex: string;

@@ -81,9 +81,9 @@ export default function Signin() {
   async function onSignin() {
     try {
       await signin(
-        PrivKey.fromStringFmt(privateKey),
         DOMAIN,
         DOMAIN_PUB_KEY_STR,
+        PrivKey.fromStringFmt(privateKey),
       );
     } catch (e) {
       console.error(e);
