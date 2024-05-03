@@ -37,7 +37,7 @@ export default function Landing() {
   }
   return (
     <div className="">
-      <div className="mb-4 mt-4 flex">
+      <div className="my-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
