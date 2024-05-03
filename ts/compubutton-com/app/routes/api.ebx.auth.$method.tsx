@@ -14,7 +14,6 @@ import { z } from "zod";
 const MethodSchema = z.enum(["new-signin-challenge", "new-signin-response"]);
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  // begin API
   const formData = await request.formData();
   const method = MethodSchema.parse(params.method);
   switch (method) {
