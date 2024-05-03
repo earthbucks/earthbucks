@@ -9,11 +9,14 @@ import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
 import PrivKey from "earthbucks-lib/src/priv-key";
+import { z } from "zod";
+
+const MethodSchema = z.enum(["new-signin-challenge", "new-signin-response"]);
 
 export async function action({ request, params }: ActionFunctionArgs) {
   // begin API
   const formData = await request.formData();
-  const method = `${params.method}`;
+  const method = MethodSchema.parse(params.method);
   switch (method) {
     case "new-signin-challenge":
       {
@@ -75,7 +78,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     default:
       {
-        throw new Response("Method not allowed", { status: 405 });
+        const _exhaustiveCheck: never = method;
+        return _exhaustiveCheck;
       }
       break;
   }
@@ -96,18 +100,22 @@ function domainToBaseUrl(domain: string) {
   return `https://${domain}`;
 }
 
+function methodPath(method: z.infer<typeof MethodSchema>) {
+  return `/api/ebx/auth/${method}`;
+}
+
 export async function signin(
   DOMAIN: string,
   DOMAIN_PUB_KEY_STR: string,
   userPrivKey: PrivKey,
 ) {
   let baseUrl = domainToBaseUrl(DOMAIN);
-  console.log(baseUrl)
+  console.log(baseUrl);
   // get signin challenge
   let signinChallengeHex: string;
   {
     let formData = new FormData();
-    let res = await fetch(`${baseUrl}/api/ebx/auth/new-signin-challenge`, {
+    let res = await fetch(`${baseUrl}${methodPath("new-signin-challenge")}`, {
       method: "POST",
       body: formData,
     });
@@ -135,7 +143,7 @@ export async function signin(
     // post signin response
     let formData = new FormData();
     formData.append("signinReponse", signinResponse.toHex());
-    let res = await fetch(`${baseUrl}/api/ebx/auth/new-signin-response`, {
+    let res = await fetch(`${baseUrl}${methodPath("new-signin-response")}`, {
       method: "POST",
       body: formData,
     });
