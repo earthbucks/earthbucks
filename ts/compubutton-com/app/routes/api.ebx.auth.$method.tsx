@@ -30,10 +30,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     case "new-signin-response":
       {
-        const signinReponseHex = `${formData.get("signinReponse")}`;
+        const signinResponseHex = `${formData.get("signinReponse")}`;
         let signinResponse: SigninResponse;
         try {
-          signinResponse = SigninResponse.fromHex(signinReponseHex, DOMAIN);
+          signinResponse = SigninResponse.fromHex(signinResponseHex, DOMAIN);
         } catch (err) {
           throw new Response("Invalid signin response 1", { status: 400 });
         }
@@ -110,7 +110,6 @@ export async function signin(
   userPrivKey: PrivKey,
 ) {
   let baseUrl = domainToBaseUrl(DOMAIN);
-  console.log(baseUrl);
   // get signin challenge
   let signinChallengeHex: string;
   {
