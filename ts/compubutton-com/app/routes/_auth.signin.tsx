@@ -96,7 +96,7 @@ export default function Signin() {
       <div className="my-4 text-center text-black dark:text-white">
         <h1 className="text-2xl font-bold">Sign in</h1>
         <p className="my-4">
-          Please save your key pair on your device to sign in.
+          Please save your key pair in localStorage to sign in.
         </p>
         <p className="my-4 text-sm">
           New here?{" "}

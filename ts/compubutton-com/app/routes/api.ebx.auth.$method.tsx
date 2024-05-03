@@ -81,16 +81,33 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
+function domainToBaseUrl(domain: string) {
+  // enable "domain" to include a port number at the start if we are in
+  // development, e.g. 3000.localhost goes to localhost:3000. otherwise, assume
+  // https and no extra www (if they want www, they need to include that in
+  // "domain")
+  if (domain.includes("localhost")) {
+    let possiblePort = parseInt(String(domain.split(".")[0]));
+    if (domain.endsWith("localhost") && possiblePort > 0) {
+      return `http://localhost:${possiblePort}`;
+    }
+  }
+
+  return `https://${domain}`;
+}
+
 export async function signin(
   DOMAIN: string,
   DOMAIN_PUB_KEY_STR: string,
   userPrivKey: PrivKey,
 ) {
+  let baseUrl = domainToBaseUrl(DOMAIN);
+  console.log(baseUrl)
   // get signin challenge
   let signinChallengeHex: string;
   {
     let formData = new FormData();
-    let res = await fetch("/api/ebx/auth/new-signin-challenge", {
+    let res = await fetch(`${baseUrl}/api/ebx/auth/new-signin-challenge`, {
       method: "POST",
       body: formData,
     });
@@ -118,7 +135,7 @@ export async function signin(
     // post signin response
     let formData = new FormData();
     formData.append("signinReponse", signinResponse.toHex());
-    let res = await fetch("/api/ebx/auth/new-signin-response", {
+    let res = await fetch(`${baseUrl}/api/ebx/auth/new-signin-response`, {
       method: "POST",
       body: formData,
     });
