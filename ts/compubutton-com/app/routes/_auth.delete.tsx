@@ -90,33 +90,18 @@ export default function Delete() {
       setPublicKey(pubKey);
       setIsPublicKeyValid(true);
       setIsPrivateKeyValid(true);
+    } else {
+      window.location.href = "/";
     }
   }, []);
-
-  async function onSignin() {
-    try {
-      let res = await signin(
-        DOMAIN,
-        DOMAIN_PUB_KEY_STR,
-        PrivKey.fromStringFmt(privateKey),
-      );
-      if (res) {
-        window.location.href = "/home";
-      }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  }
 
   return (
     <div className="mx-auto max-w-[400px]">
       <div className="my-4 text-black dark:text-white">
         <h1 className="text-center text-2xl font-bold">Delete</h1>
         <p className="my-4 text-left">
-          Please delete your keys from localStorage to finish signing out.
-          Confirm that you have saved them to your password manager before
-          proceeding.
+          You have been signed out. Please delete your keys from localStorage.
+          Confirm that you have saved them to your password manager first.
         </p>
       </div>
       <div className="my-4">

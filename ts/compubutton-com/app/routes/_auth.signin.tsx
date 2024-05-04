@@ -132,13 +132,9 @@ export default function Signin() {
             type="text"
             placeholder="Public Key"
             disabled={isSaved}
-            onChange={(e) => setPublicKey(e.target.value.trim())}
-            onBlur={() => {
-              if (publicKey !== "") {
-                setIsPublicKeyValid(validatePublicKey(publicKey));
-              } else {
-                setIsPublicKeyValid(null);
-              }
+            onChange={(e) => {
+              setPublicKey(e.target.value.trim());
+              setIsPublicKeyValid(validatePublicKey(e.target.value.trim()));
             }}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "Enter") {
@@ -171,13 +167,9 @@ export default function Signin() {
             id="private-key"
             placeholder="Private Key"
             disabled={isSaved}
-            onChange={(e) => setPrivateKey(e.target.value.trim())}
-            onBlur={() => {
-              if (privateKey !== "") {
-                setIsPrivateKeyValid(validatePrivateKey(privateKey));
-              } else {
-                setIsPrivateKeyValid(null);
-              }
+            onChange={(e) => {
+              setPrivateKey(e.target.value.trim());
+              setIsPrivateKeyValid(validatePrivateKey(e.target.value.trim()));
             }}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "Enter") {
