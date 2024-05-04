@@ -58,8 +58,20 @@ export default function Landing() {
       <div className="mx-auto max-w-[400px]">
         <div className="my-4 text-center text-black dark:text-white">
           You are signed in as:
-          <br />
-          {userPubKeyStr}
+        </div>
+        <div className="my-4">
+          <div className="my-2 flex space-x-2">
+            <div className="border-secondary-blue-500 flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] p-2 text-gray-600 dark:text-gray-400">
+              <img
+                src="/sun-128.png"
+                alt="Sun"
+                className="h-[24px] w-[24px] shrink-0"
+              />
+              <div className="overflow-hidden overflow-ellipsis rounded-full">
+                {userPubKeyStr}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mx-auto text-center">
