@@ -19,7 +19,7 @@ import {
 import PubKey from "earthbucks-lib/src/pub-key";
 import { blake3Hash } from "earthbucks-lib/src/blake3";
 
-export async function createNewAuthSessionToken(
+export async function createAuthSessionToken(
   pubKey: PubKey,
 ): Promise<Buffer> {
   let sessionId = crypto.getRandomValues(Buffer.alloc(32));
