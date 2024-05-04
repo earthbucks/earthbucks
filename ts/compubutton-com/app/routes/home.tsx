@@ -14,11 +14,9 @@ import { signout } from "./api.auth.$method";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
 import { getSession, getUserPubKey } from "~/.server/session";
-import { DOMAIN, DOMAIN_PUB_KEY } from "~/.server/config";
+import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toStringFmt();
-
   let userPubKey = await getUserPubKey(request);
   if (!userPubKey) {
     return redirect("/signin");
@@ -61,7 +59,7 @@ export default function Landing() {
         </div>
         <div className="my-4">
           <div className="my-2 flex space-x-2">
-            <div className="border-secondary-blue-500 flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] p-2 text-gray-600 dark:text-gray-400">
+            <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
               <img
                 src="/sun-128.png"
                 alt="Sun"
@@ -76,11 +74,11 @@ export default function Landing() {
 
         <div className="mx-auto text-center">
           <button
-            onClick={async (e) => {
+            onClick={async () => {
               await signout(DOMAIN);
-              navigate("/");
+              navigate("/delete");
             }}
-            className="border-button-blue-700 bg-button-blue-700 hover:bg-primary-blue-500 w-[100px] rounded-full border-[3px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+            className="w-[100px] rounded-full border-[3px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
           >
             Sign out
           </button>

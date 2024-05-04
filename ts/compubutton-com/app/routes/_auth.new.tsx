@@ -1,9 +1,19 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import Button from "../button";
 import React, { useEffect, useState } from "react";
 import KeyPair from "earthbucks-lib/src/key-pair";
-import { useNavigate } from "@remix-run/react";
+import { json, redirect, useNavigate } from "@remix-run/react";
 import { Buffer } from "buffer";
+import { getUserPubKey } from "~/.server/session";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  let userPubKey = await getUserPubKey(request);
+  if (userPubKey) {
+    return redirect("/home");
+  }
+
+  return json({});
+}
 
 export const meta: MetaFunction = () => {
   return [

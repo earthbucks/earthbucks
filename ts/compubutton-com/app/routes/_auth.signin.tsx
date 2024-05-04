@@ -8,7 +8,13 @@ import Button from "../button";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Footer from "~/components/footer";
-import { Link, json, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  json,
+  redirect,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
@@ -17,13 +23,15 @@ import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
 import { signin, signout } from "./api.auth.$method";
+import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
+import { getUserPubKey } from "~/.server/session";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const DOMAIN = process.env.DOMAIN || "";
-  const DOMAIN_PRIV_KEY_STR = process.env.DOMAIN_PRIV_KEY || "";
-  const DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
-  const DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
-  const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toStringFmt();
+  let userPubKey = await getUserPubKey(request);
+  if (userPubKey) {
+    return redirect("/home");
+  }
+
   return json({ DOMAIN, DOMAIN_PUB_KEY_STR });
 }
 
