@@ -11,13 +11,13 @@ import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { z } from "zod";
 
-const MethodSchema = z.enum(["signin-challenge", "signin-response"]);
+const MethodSchema = z.enum(["get-signin-challenge", "post-signin-response"]);
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const method = MethodSchema.parse(params.method);
   switch (method) {
-    case "signin-challenge":
+    case "get-signin-challenge":
       {
         const signinChallenge = SigninChallenge.fromRandom(
           DOMAIN_PRIV_KEY,
@@ -27,7 +27,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }
       break;
 
-    case "signin-response":
+    case "post-signin-response":
       {
         const signinResponseHex = `${formData.get("signinReponse")}`;
         let signinResponse: SigninResponse;
@@ -113,7 +113,7 @@ export async function signin(
   let signinChallengeHex: string;
   {
     let formData = new FormData();
-    let res = await fetch(`${baseUrl}${methodPath("signin-challenge")}`, {
+    let res = await fetch(`${baseUrl}${methodPath("get-signin-challenge")}`, {
       method: "POST",
       body: formData,
     });
@@ -141,7 +141,7 @@ export async function signin(
     // post signin response
     let formData = new FormData();
     formData.append("signinReponse", signinResponse.toHex());
-    let res = await fetch(`${baseUrl}${methodPath("signin-response")}`, {
+    let res = await fetch(`${baseUrl}${methodPath("post-signin-response")}`, {
       method: "POST",
       body: formData,
     });
