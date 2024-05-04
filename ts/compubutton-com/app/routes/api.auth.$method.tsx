@@ -16,7 +16,7 @@ type JsonArray = JsonValue[];
 
 function isPlainObject(value: any): value is JsonObject {
   return (
-    typeof value === 'object' && // Ensures value is an object
+    typeof value === "object" && // Ensures value is an object
     value !== null && // Ensures value is not null
     value.constructor === Object && // Ensures value was constructed by Object
     Object.getPrototypeOf(value) === Object.prototype // Ensures value's prototype is Object.prototype
@@ -28,11 +28,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     let res = await request.json();
     if (!isPlainObject(res)) {
-      throw new Response("Invalid Object", { status: 400 });
+      throw new Response("Invalid JSON Object", { status: 400 });
     }
     inputData = res;
   } catch (err) {
-    throw new Response("Invalid JSON", { status: 400 });
+    throw new Response("Invalid JSON Object", { status: 400 });
   }
 
   const method = MethodSchema.parse(params.method);

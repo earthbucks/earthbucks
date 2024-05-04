@@ -21,12 +21,13 @@ import { blake3Hash } from "earthbucks-lib/src/blake3";
 
 export async function createAuthSessionToken(
   pubKey: PubKey,
-): Promise<Buffer> {
+  expiresAt: Date | undefined,
+): Promise<string> {
   let sessionId = crypto.getRandomValues(Buffer.alloc(32));
   let tokenId: Buffer = blake3Hash(sessionId);
   let now = Date.now(); // milliseconds
   let createdAt = new Date(now);
-  let expiresAt = new Date(now + 15 * 60 * 1000); // now plus 15 minutes
+  expiresAt = expiresAt || new Date(now + 1000 * 60 * 60 * 24 * 365 * 2); // two years
   const newAuthSigninToken: NewAuthSessionToken = {
     id: tokenId,
     pubKey: pubKey.toBuffer(),
@@ -34,17 +35,29 @@ export async function createAuthSessionToken(
     expiresAt,
   };
   await db.insert(TableAuthSessionToken).values(newAuthSigninToken);
-  return sessionId;
+  return sessionId.toString("hex");
 }
 
 export async function getAuthSessionToken(
-  sessionId: Buffer,
+  sessionId: string,
 ): Promise<AuthSessionToken | null> {
-  let tokenId: Buffer = blake3Hash(sessionId);
+  let sessionIdBuf = Buffer.from(sessionId, "hex");
+  let tokenId: Buffer = blake3Hash(sessionIdBuf);
   const [authSigninToken] = await db
     .select()
     .from(TableAuthSessionToken)
-    .where(eq(TableAuthSessionToken.id, tokenId))
+    .where(
+      and(
+        eq(TableAuthSessionToken.id, tokenId),
+        gt(TableAuthSessionToken.expiresAt, new Date()),
+      ),
+    )
     .limit(1);
   return authSigninToken;
+}
+
+export async function deleteAuthSessionToken(sessionId: string) {
+  let sessionIdBuf = Buffer.from(sessionId, "hex");
+  let tokenId: Buffer = blake3Hash(sessionIdBuf);
+  await db.delete(TableAuthSessionToken).where(eq(TableAuthSessionToken.id, tokenId));
 }
