@@ -1,9 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { Link, json, useFetcher } from "@remix-run/react";
-// import {
-//   createNewAuthSigninToken,
-//   getAuthSigninToken,
-// } from "earthbucks-db/src/models/auth-signin-token";
 import PubKey from "earthbucks-lib/src/pub-key";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
@@ -13,8 +9,23 @@ import { z } from "zod";
 
 const MethodSchema = z.enum(["get-signin-challenge", "post-signin-response"]);
 
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+type JsonObject = { [property: string]: JsonValue };
+type JsonArray = JsonValue[];
+
 export async function action({ request, params }: ActionFunctionArgs) {
-  const formData = await request.formData();
+  let inputData: JsonObject;
+  try {
+    let res = await request.json();
+    if (typeof res !== "object" || res === null || Array.isArray(res)) {
+      throw new Response("Invalid JSON", { status: 400 });
+    }
+    inputData = res;
+  } catch (err) {
+    throw new Response("Invalid JSON", { status: 400 });
+  }
+
   const method = MethodSchema.parse(params.method);
   switch (method) {
     case "get-signin-challenge":
@@ -29,7 +40,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     case "post-signin-response":
       {
-        const signinResponseHex = `${formData.get("signinReponse")}`;
+        const signinResponseHex = `${inputData.signinReponse}`;
         let signinResponse: SigninResponse;
         try {
           signinResponse = SigninResponse.fromHex(signinResponseHex, DOMAIN);
@@ -66,14 +77,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
         return json({ isValidResponse });
       }
       break;
-
-    // case "new-auth-signin-token":
-    //   {
-    //     const tokenId = await createNewAuthSigninToken();
-    //     const token = await getAuthSigninToken(tokenId);
-    //     return json({ tokenId: tokenId.toString("hex") });
-    //   }
-    //   break;
 
     default:
       {
@@ -112,10 +115,12 @@ export async function signin(
   // get signin challenge
   let signinChallengeHex: string;
   {
-    let formData = new FormData();
     let res = await fetch(`${baseUrl}${methodPath("get-signin-challenge")}`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
     });
     let json = await res.json();
     signinChallengeHex = json.signinChallenge;
@@ -139,23 +144,16 @@ export async function signin(
     );
 
     // post signin response
-    let formData = new FormData();
-    formData.append("signinReponse", signinResponse.toHex());
     let res = await fetch(`${baseUrl}${methodPath("post-signin-response")}`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signinReponse: signinResponse.toHex(),
+      }),
     });
     let json = await res.json();
     console.log(json);
   }
-  // {
-  //   let formData = new FormData();
-  //   formData.append("method", "new-auth-signin-token");
-  //   let res = await fetch("/api/auth", {
-  //     method: "POST",
-  //     body: formData,
-  //   });
-  //   let json = await res.json();
-  //   console.log(json);
-  // }
 }
