@@ -4,7 +4,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, redirect, useLoaderData, useNavigate } from "@remix-run/react";
 import Button from "~/button";
 import Footer from "~/components/footer";
 import { Buffer } from "buffer";
@@ -13,14 +13,22 @@ import Header from "~/components/header";
 import { signout } from "./api.auth.$method";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
+import { getSession, getUserPubKey } from "~/.server/session";
+import { DOMAIN, DOMAIN_PUB_KEY } from "~/.server/config";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const DOMAIN = process.env.DOMAIN || "";
-  const DOMAIN_PRIV_KEY_STR = process.env.DOMAIN_PRIV_KEY || "";
-  const DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
-  const DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
   const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toStringFmt();
-  return json({ DOMAIN, DOMAIN_PUB_KEY_STR });
+
+  let userPubKey = await getUserPubKey(request);
+  if (!userPubKey) {
+    return redirect("/signin");
+  }
+
+  return json({
+    DOMAIN,
+    DOMAIN_PUB_KEY_STR,
+    userPubKeyStr: userPubKey.toStringFmt(),
+  });
 }
 
 export const meta: MetaFunction = () => {
@@ -31,7 +39,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
-  const { DOMAIN, DOMAIN_PUB_KEY_STR } = useLoaderData<typeof loader>();
+  const { DOMAIN, DOMAIN_PUB_KEY_STR, userPubKeyStr } =
+    useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
 
@@ -50,7 +59,7 @@ export default function Landing() {
         <div className="my-4 text-center text-black dark:text-white">
           You are signed in as:
           <br />
-          (public key)
+          {userPubKeyStr}
         </div>
 
         <div className="mx-auto text-center">
@@ -59,7 +68,7 @@ export default function Landing() {
               await signout(DOMAIN);
               navigate("/");
             }}
-            className="w-[100px] rounded-full border-[3px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
+            className="border-button-blue-700 bg-button-blue-700 hover:bg-primary-blue-500 w-[100px] rounded-full border-[3px] p-2 font-bold text-white hover:border-white hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
           >
             Sign out
           </button>

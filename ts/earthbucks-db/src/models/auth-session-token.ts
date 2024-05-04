@@ -64,16 +64,3 @@ export async function deleteAuthSessionToken(sessionId: string) {
     .delete(TableAuthSessionToken)
     .where(eq(TableAuthSessionToken.id, tokenId));
 }
-
-export async function updateAuthSessionToken(
-  sessionId: string,
-  expiresAt: Date | undefined,
-): Promise<void> {
-  let sessionIdBuf = Buffer.from(sessionId, "hex");
-  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
-  expiresAt = expiresAt || new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 2); // two years
-  await db
-    .update(TableAuthSessionToken)
-    .set({ expiresAt })
-    .where(eq(TableAuthSessionToken.id, tokenId));
-}
