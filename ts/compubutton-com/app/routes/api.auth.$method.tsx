@@ -100,7 +100,7 @@ function domainToBaseUrl(domain: string) {
 }
 
 function methodPath(method: z.infer<typeof MethodSchema>) {
-  return `/api/ebx/auth/${method}`;
+  return `/api/auth/${method}`;
 }
 
 export async function signin(
