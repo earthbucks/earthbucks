@@ -3,7 +3,6 @@ export const classNames = (...classes: String[]) => {
 };
 
 type ImagePath =
-  | "/another-image.png"
   | "/artintellica-button-128.png"
   | "/black-button-128.png"
   | "/button-128.png"
