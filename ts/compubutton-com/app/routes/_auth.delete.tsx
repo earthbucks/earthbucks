@@ -25,11 +25,12 @@ import { isValid } from "earthbucks-lib/src/strict-hex";
 import { signin, signout } from "./api.auth.$method";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 import { getUserPubKey } from "~/.server/session";
+import { $path } from "remix-routes";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
   if (userPubKey) {
-    return redirect("/home");
+    return redirect($path("/home"));
   }
 
   return json({ DOMAIN, DOMAIN_PUB_KEY_STR });
@@ -79,7 +80,7 @@ export default function Delete() {
     localStorage.removeItem("pubKey");
     setPrivateKey("");
     setPublicKey("");
-    window.location.href = "/";
+    window.location.href = $path("/");
   }
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export default function Delete() {
       setIsPublicKeyValid(true);
       setIsPrivateKeyValid(true);
     } else {
-      window.location.href = "/";
+      window.location.href = $path("/");
     }
   }, []);
 

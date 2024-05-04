@@ -7,12 +7,17 @@ import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { z } from "zod";
 import { commitSession, getSession, destroySession } from "../.server/session";
+import { $path } from "remix-routes";
 
 const MethodSchema = z.enum([
   "get-signin-challenge",
   "post-signin-response",
   "signout",
 ]);
+
+export type SearchParams = {
+  method: z.infer<typeof MethodSchema>;
+};
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonObject | JsonArray;
@@ -142,7 +147,7 @@ function domainToBaseUrl(domain: string) {
 }
 
 function methodPath(method: z.infer<typeof MethodSchema>) {
-  return `/api/auth/${method}`;
+  return $path(`/api/auth/:method`, { method });
 }
 
 export async function signin(

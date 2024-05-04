@@ -10,6 +10,7 @@ import Footer from "~/components/footer";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Header from "~/components/header";
+import { $path } from "remix-routes";
 
 export const meta: MetaFunction = () => {
   return [
@@ -22,11 +23,11 @@ export default function Landing() {
   const navigate = useNavigate();
 
   async function onSignin() {
-    navigate("/signin");
+    navigate($path("/signin"));
   }
 
   async function onRegister() {
-    navigate("/new");
+    navigate($path("/new"));
   }
 
   return (

@@ -15,6 +15,7 @@ import PrivKey from "earthbucks-lib/src/priv-key";
 import PubKey from "earthbucks-lib/src/pub-key";
 import { getSession, getUserPubKey } from "~/.server/session";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
+import { $path } from "remix-routes";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
@@ -43,11 +44,11 @@ export default function Landing() {
   const navigate = useNavigate();
 
   async function onSignin() {
-    navigate("/signin");
+    navigate($path("/signin"));
   }
 
   async function onRegister() {
-    navigate("/new");
+    navigate($path("/new"));
   }
   return (
     <div className="">
@@ -76,7 +77,7 @@ export default function Landing() {
           <button
             onClick={async () => {
               await signout(DOMAIN);
-              navigate("/delete");
+              navigate($path("/delete"));
             }}
             className="w-[100px] rounded-full border-[3px] border-button-blue-700 bg-button-blue-700 p-2 font-bold text-white hover:border-white hover:bg-primary-blue-500 hover:outline hover:outline-2 hover:outline-black hover:dark:border-white"
           >

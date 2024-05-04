@@ -9,6 +9,7 @@ import Button from "~/button";
 import Footer from "~/components/footer";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
+import { $path } from "remix-routes";
 
 export const meta: MetaFunction = () => {
   return [
@@ -21,8 +22,7 @@ export default function Landing() {
   const navigate = useNavigate();
 
   async function onSuccess() {
-    console.log("login");
-    navigate("/login");
+    navigate($path("/signin"));
   }
 
   async function onComputing() {

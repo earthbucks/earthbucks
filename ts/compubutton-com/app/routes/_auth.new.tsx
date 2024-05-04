@@ -5,11 +5,12 @@ import KeyPair from "earthbucks-lib/src/key-pair";
 import { json, redirect, useNavigate } from "@remix-run/react";
 import { Buffer } from "buffer";
 import { getUserPubKey } from "~/.server/session";
+import { $path } from "remix-routes";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
   if (userPubKey) {
-    return redirect("/home");
+    return redirect($path("/home"));
   }
 
   return json({});
@@ -52,7 +53,7 @@ export default function New() {
 
   let navigate = useNavigate();
   const onSignin = async () => {
-    navigate("/signin");
+    navigate($path("/signin"));
   };
 
   return (

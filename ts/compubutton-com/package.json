@@ -39,6 +39,7 @@
     "mysql2": "^3.9.7",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
+    "remix-routes": "^1.7.3",
     "vite-plugin-top-level-await-worker": "=1.4.3",
     "vite-plugin-wasm": "^3.3.0",
     "zod": "^3.23.6"
