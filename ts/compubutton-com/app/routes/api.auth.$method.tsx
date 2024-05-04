@@ -1,13 +1,18 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { Link, json, useFetcher } from "@remix-run/react";
+import { Link, json, redirect, useFetcher } from "@remix-run/react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY } from "../.server/config";
 import PrivKey from "earthbucks-lib/src/priv-key";
 import { z } from "zod";
+import { commitSession, getSession, destroySession } from "../.server/session";
 
-const MethodSchema = z.enum(["get-signin-challenge", "post-signin-response"]);
+const MethodSchema = z.enum([
+  "get-signin-challenge",
+  "post-signin-response",
+  "signout",
+]);
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonObject | JsonArray;
@@ -83,9 +88,34 @@ export async function action({ request, params }: ActionFunctionArgs) {
         if (!isValidResponse) {
           throw new Response("Invalid signin response 2", { status: 400 });
         }
-        return json({ isValidResponse });
+
+        // create session
+        let session = await getSession(request.headers.get("Cookie"));
+        session.set("pubKey", userPubKey);
+
+        // Login succeeded
+        return json(
+          { ok: isValidResponse },
+          {
+            headers: {
+              "Set-Cookie": await commitSession(session),
+            },
+          },
+        );
       }
       break;
+
+    case "signout": {
+      let session = await getSession(request.headers.get("Cookie"));
+      return json(
+        { ok: true },
+        {
+          headers: {
+            "Set-Cookie": await destroySession(session),
+          },
+        },
+      );
+    }
 
     default:
       {
@@ -164,5 +194,25 @@ export async function signin(
     });
     let json = await res.json();
     console.log(json);
+
+    if (!json.ok) {
+      throw new Error("Invalid signin response");
+    }
+
+    return true;
   }
+}
+
+export async function signout(DOMAIN: string) {
+  let baseUrl = domainToBaseUrl(DOMAIN);
+  let res = await fetch(`${baseUrl}${methodPath("signout")}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  let json = await res.json();
+  console.log(json);
+  return json.ok;
 }

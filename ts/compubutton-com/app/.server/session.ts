@@ -6,6 +6,7 @@ import {
   createAuthSessionToken,
   deleteAuthSessionToken,
   getAuthSessionToken,
+  updateAuthSessionToken,
 } from "earthbucks-db/src/models/auth-session-token";
 import PubKey from "earthbucks-lib/src/pub-key";
 
@@ -23,6 +24,11 @@ import PubKey from "earthbucks-lib/src/pub-key";
 function createDatabaseSessionStorage() {
   let cookie = {
     name: "__session",
+    httpOnly: true,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    domain: process.env.NODE_ENV === "production" ? DOMAIN : undefined,
+    maxAge: 60 * 60 * 24 * 365 * 2, // two years
   };
 
   return createSessionStorage({
@@ -31,7 +37,7 @@ function createDatabaseSessionStorage() {
       // `expires` is a Date after which the data should be considered
       // invalid. You could use it to invalidate the data somehow or
       // automatically purge this record from your database.
-      let pubKey: PubKey = data.get("pubKey");
+      let pubKey: PubKey = data.pubKey;
       const id = await createAuthSessionToken(pubKey, expiresAt);
       return id;
     },
@@ -46,6 +52,8 @@ function createDatabaseSessionStorage() {
     },
     async updateData(id, data, expires) {
       throw new Error("updateData not implemented");
+      // await updateAuthSessionToken(id, expires);
+      // return;
     },
     async deleteData(id) {
       await deleteAuthSessionToken(id);

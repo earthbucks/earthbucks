@@ -23,8 +23,8 @@ export async function createAuthSessionToken(
   pubKey: PubKey,
   expiresAt: Date | undefined,
 ): Promise<string> {
-  let sessionId = crypto.getRandomValues(Buffer.alloc(32));
-  let tokenId: Buffer = blake3Hash(sessionId);
+  let sessionId = crypto.getRandomValues(Buffer.alloc(16));
+  let tokenId: Buffer = blake3Hash(sessionId).subarray(0, 16);
   let now = Date.now(); // milliseconds
   let createdAt = new Date(now);
   expiresAt = expiresAt || new Date(now + 1000 * 60 * 60 * 24 * 365 * 2); // two years
@@ -42,7 +42,7 @@ export async function getAuthSessionToken(
   sessionId: string,
 ): Promise<AuthSessionToken | null> {
   let sessionIdBuf = Buffer.from(sessionId, "hex");
-  let tokenId: Buffer = blake3Hash(sessionIdBuf);
+  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
   const [authSigninToken] = await db
     .select()
     .from(TableAuthSessionToken)
@@ -57,7 +57,23 @@ export async function getAuthSessionToken(
 }
 
 export async function deleteAuthSessionToken(sessionId: string) {
+  // TODO: Instead of deleting, we should mark the token as invalid
   let sessionIdBuf = Buffer.from(sessionId, "hex");
-  let tokenId: Buffer = blake3Hash(sessionIdBuf);
-  await db.delete(TableAuthSessionToken).where(eq(TableAuthSessionToken.id, tokenId));
+  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
+  await db
+    .delete(TableAuthSessionToken)
+    .where(eq(TableAuthSessionToken.id, tokenId));
+}
+
+export async function updateAuthSessionToken(
+  sessionId: string,
+  expiresAt: Date | undefined,
+): Promise<void> {
+  let sessionIdBuf = Buffer.from(sessionId, "hex");
+  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
+  expiresAt = expiresAt || new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 2); // two years
+  await db
+    .update(TableAuthSessionToken)
+    .set({ expiresAt })
+    .where(eq(TableAuthSessionToken.id, tokenId));
 }

@@ -22,7 +22,7 @@ import { Buffer } from "buffer";
 export const TableAuthSessionToken = mysqlTable(
   "auth_session_token",
   {
-    id: binary("id", { length: 32 }).$type<Buffer>().notNull().primaryKey(),
+    id: binary("id", { length: 16 }).$type<Buffer>().notNull().primaryKey(),
     pubKey: binary("pub_key", { length: 33 }).$type<Buffer>().notNull(),
     createdAt: datetime("created_at", { mode: "date", fsp: 3 }).notNull(),
     expiresAt: datetime("expires_at", { mode: "date", fsp: 3 }).notNull(),
