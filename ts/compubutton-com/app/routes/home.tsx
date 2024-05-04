@@ -16,6 +16,7 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import { getSession, getUserPubKey } from "~/.server/session";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 import { $path } from "remix-routes";
+import { $image } from "~/util";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
@@ -62,7 +63,7 @@ export default function Landing() {
           <div className="my-2 flex space-x-2">
             <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
               <img
-                src="/sun-128.png"
+                src={$image("/sun-128.png")}
                 alt="Sun"
                 className="h-[24px] w-[24px] shrink-0"
               />

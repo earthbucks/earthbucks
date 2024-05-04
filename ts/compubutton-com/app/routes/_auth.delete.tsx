@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
-import { classNames } from "~/util";
+import { $image, classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
@@ -109,7 +109,7 @@ export default function Delete() {
         <div className="my-2 flex space-x-2">
           <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
             <img
-              src="/sun-128.png"
+              src={$image("/sun-128.png")}
               alt="Sun"
               className="h-[24px] w-[24px] shrink-0"
             />
@@ -129,7 +129,7 @@ export default function Delete() {
         <div className="my-2 flex space-x-2">
           <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
             <img
-              src="/black-button-128.png"
+              src={$image("/black-button-128.png")}
               alt="Sun"
               className="h-[24px] w-[24px] shrink-0"
             />

@@ -1,3 +1,4 @@
+import { $image } from "~/util";
 import Logo from "./logo";
 
 export default function Header() {
@@ -8,14 +9,14 @@ export default function Header() {
           <Logo />
           <div className="my-4 hidden dark:block">
             <img
-              src="/compubutton-text-white.png"
+              src={$image("/compubutton-text-white.png")}
               alt="Compubutton"
               className="mx-auto block w-[300px]"
             />
           </div>
           <div className="my-4 block dark:hidden">
             <img
-              src="/compubutton-text-black.png"
+              src={$image("/compubutton-text-black.png")}
               alt="Compubutton"
               className="mx-auto block w-[300px]"
             />

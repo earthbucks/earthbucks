@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { classNames } from "./util";
+import { $image, classNames } from "./util";
 import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
 
 function Spinner() {
@@ -36,7 +36,7 @@ function Slider({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  buttonSrc = "/button-128.png",
+  buttonSrc = $image("/button-128.png"),
   delayComputedMs = 0,
   disabled = false,
 }: {
@@ -274,13 +274,13 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/pink-heart-128.png"
+                  src={$image("/pink-heart-128.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
                 />
                 <img
-                  src="/pink-heart-128.png"
+                  src={$image("/pink-heart-128.png")}
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                   draggable="false"
@@ -296,7 +296,7 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/pink-heart-128.png"
+                  src={$image("/pink-heart-128.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
@@ -312,13 +312,13 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/error-2-96.png"
+                  src={$image("/error-2-96.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
                 />
                 <img
-                  src="/error-2-96.png"
+                  src={$image("/error-2-96.png")}
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                   draggable="false"
@@ -334,7 +334,7 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src="/error-2-96.png"
+                  src={$image("/error-2-96.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
@@ -443,7 +443,7 @@ function Slider({
               }}
             >
               <img
-                src="/compute-circle-128.png"
+                src={$image("/compute-circle-128.png")}
                 alt=""
                 className="h-20px] w-[40px]"
               />
@@ -518,21 +518,21 @@ export default function Button({
 
   let buttonSrc = "";
   if (buttonMode === "standard") {
-    buttonSrc = "/button-128.png";
+    buttonSrc = $image("/button-128.png");
     // } else if (buttonMode === "pay") {
     //   buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pay") {
-    buttonSrc = "/earthbucks-coin-128.png";
+    buttonSrc = $image("/earthbucks-coin-128.png");
   } else if (buttonMode === "computcha") {
-    buttonSrc = "/computcha-bottlecap-128.png";
+    buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
-    buttonSrc = "/black-button-128.png";
+    buttonSrc = $image("/black-button-128.png");
   } else if (buttonMode == "ai") {
-    buttonSrc = "/artintellica-button-128.png";
+    buttonSrc = $image("/artintellica-button-128.png");
   } else if (buttonMode == "credits") {
-    buttonSrc = "/washington-button-128.png";
+    buttonSrc = $image("/washington-button-128.png");
   } else if (buttonMode == "mine") {
-    buttonSrc = "/mining-button-128.png";
+    buttonSrc = $image("/mining-button-128.png");
   }
 
   let MAX_TEXT_LEN = 16;
@@ -574,7 +574,7 @@ export default function Button({
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
-                    src="/imp-avatar-bw.png"
+                    src={$image("/imp-avatar-bw.png")}
                     alt=""
                     className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#42f6eb]"
                   />

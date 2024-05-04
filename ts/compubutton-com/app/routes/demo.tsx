@@ -3,6 +3,7 @@ import Button from "../button";
 import { Buffer } from "buffer";
 import PowGpu from "../.client/pow-gpu";
 import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
+import { $image } from "~/util";
 
 export const meta: MetaFunction = () => {
   return [
@@ -41,20 +42,20 @@ export default function Landing() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <img
-              src="/button-logo.png"
+              src={$image("/button-logo.png")}
               alt=""
               className="mx-auto mb-4 block aspect-square w-[120px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]"
             />
             <div className="hidden dark:block">
               <img
-                src="/compubutton-text-white.png"
+                src={$image("/compubutton-text-white.png")}
                 alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
-                src="/compubutton-text-black.png"
+                src={$image("/compubutton-text-black.png")}
                 alt="Compubutton"
                 className="mx-auto block w-[300px]"
               />

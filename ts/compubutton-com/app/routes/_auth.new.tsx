@@ -6,6 +6,7 @@ import { json, redirect, useNavigate } from "@remix-run/react";
 import { Buffer } from "buffer";
 import { getUserPubKey } from "~/.server/session";
 import { $path } from "remix-routes";
+import { $image } from "~/util";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
@@ -78,7 +79,7 @@ export default function New() {
               <div className="my-2 flex space-x-2">
                 <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
                   <img
-                    src="/sun-128.png"
+                    src={$image("/sun-128.png")}
                     alt="Sun"
                     className="h-[24px] w-[24px] shrink-0"
                   />
@@ -98,7 +99,7 @@ export default function New() {
               <div className="my-2 flex space-x-2">
                 <div className="flex w-full flex-grow space-x-2 overflow-hidden rounded-full border-[3px] border-secondary-blue-500 p-2 text-gray-600 dark:text-gray-400">
                   <img
-                    src="/black-button-128.png"
+                    src={$image("/black-button-128.png")}
                     alt="Sun"
                     className="h-[24px] w-[24px] shrink-0"
                   />

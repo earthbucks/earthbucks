@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
-import { classNames } from "~/util";
+import { $image, classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/strict-hex";
@@ -122,7 +122,7 @@ export default function Signin() {
         <div className="relative my-2">
           <label htmlFor="public-key">
             <img
-              src="/sun-128.png"
+              src={$image("/sun-128.png")}
               alt="Sun"
               draggable="false"
               className="absolute left-[9px] top-[9px] h-[24px] w-[24px]"
@@ -157,7 +157,7 @@ export default function Signin() {
         <div className="relative my-2">
           <label htmlFor="private-key">
             <img
-              src="/black-button-128.png"
+              src={$image("/black-button-128.png")}
               alt="Sun"
               draggable="false"
               className="absolute left-[9px] top-[9px] h-[24px] w-[24px]"
