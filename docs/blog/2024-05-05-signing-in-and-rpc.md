@@ -36,7 +36,7 @@ wallet to the builder and worry about building SPV some time after launch. This
 will allow me to move more quickly and launch sooner.
 
 I am considering launching an "early registration" product soon, where users can
-reserve their user numbers." I would like to allow up to 100 people to mine the
+reserve their user numbers. I would like to allow up to 100 people to mine the
 genesis block, so the order in which the user registers will govern who can mine
 the genesis block.
 

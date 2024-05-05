@@ -11,14 +11,14 @@ import "./tailwind.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-white dark:bg-black">
+    <html lang="en" className="bg-background-light dark:bg-background-dark">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="bg-white dark:bg-black">
+      <body className="bg-background-light dark:bg-background-dark">
         {children}
         <ScrollRestoration />
         <Scripts />
