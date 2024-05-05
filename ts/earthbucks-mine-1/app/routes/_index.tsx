@@ -34,6 +34,8 @@ export default function Landing() {
     <div className="">
       <Header />
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <p className='text-black dark:text-white text-center'>Coming soon.</p>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <Footer />
     </div>
   );
