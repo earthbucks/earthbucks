@@ -520,7 +520,7 @@ export default function Button({
   if (buttonMode === "standard") {
     buttonSrc = $image("/button-128.png");
   } else if (buttonMode === "pay") {
-    buttonSrc = $image("/computcha-bottlecap-128.png");
+    buttonSrc = $image("/earthbucks-coin-128.png");
   } else if (buttonMode === "computcha") {
     buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {

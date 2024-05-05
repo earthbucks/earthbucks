@@ -1,6 +1,6 @@
 # EarthBucks
 
-<img src="./earthbucks-coin.png" width="200" height="200">
+<img src="./earthbucks-imp.png" width="200" height="200">
 
 42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
