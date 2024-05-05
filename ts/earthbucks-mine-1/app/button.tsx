@@ -517,7 +517,7 @@ export default function Button({
 
   let buttonSrc = "";
   if (buttonMode === "standard") {
-    buttonSrc = $image("/earthbucks-coin-128.png");
+    buttonSrc = $image("/earthbucks-coin-3-128.png");
   } else if (buttonMode === "computcha") {
     buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
