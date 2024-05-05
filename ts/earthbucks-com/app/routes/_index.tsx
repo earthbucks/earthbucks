@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import Logo from "~/components/logo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,19 +14,15 @@ export default function Index() {
       <div className="mb-4 mt-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
-            <img
-              src="/earthbucks-coin.png"
-              alt=""
-              className="mx-auto mb-4 block h-[200px] w-[200px]"
-            />
-            <div className="hidden dark:block">
+            <Logo />
+            <div className="hidden dark:block my-4">
               <img
                 src="/earthbucks-text-white.png"
                 alt="EarthBucks"
                 className="mx-auto block h-[50px]"
               />
             </div>
-            <div className="block dark:hidden">
+            <div className="block dark:hidden my-4">
               <img
                 src="/earthbucks-text-black.png"
                 alt="EarthBucks"
