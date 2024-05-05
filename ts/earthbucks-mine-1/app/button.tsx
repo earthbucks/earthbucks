@@ -479,6 +479,7 @@ function Slider({
 
 type buttonColor =
   | "standard"
+  | "pay"
   | "computcha"
   | "secret"
   | "ai"
@@ -517,7 +518,9 @@ export default function Button({
 
   let buttonSrc = "";
   if (buttonMode === "standard") {
-    buttonSrc = $image("/earthbucks-coin-3-128.png");
+    buttonSrc = $image("/button-128.png");
+  } else if (buttonMode === "pay") {
+    buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "computcha") {
     buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
