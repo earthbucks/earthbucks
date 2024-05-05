@@ -15,7 +15,7 @@ Website: [earthbucks.com](https://earthbucks.com)
 Rust is used for consensus-critical code. TypeScript is used for everything
 else. The library is implemented in both Rust and TypeScript.
 
-Rust (rs):
+### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks_tf (tensorflow methods for GPU POW)
@@ -23,16 +23,27 @@ Rust (rs):
 - earthbucks_builder (build blocks, build merkle trees, validate txs, validate blocks)
 - earthbucks_follower (follow block headers, validate txs + merkle proofs)
 
-TypeScript (ts):
+### TypeScript (ts)
+
+Libraries/tools:
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks-blake3 (async blake3 in a web worker)
 - earthbucks-tf (tensorflow methods for GPU POW)
 - earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
 - earthbucks-api (works with builder and/or follower and/or wallet, via client)
-- earthbucks-com (mine, information, not a wallet)
 - earthbucks-wallet (wallet, works with follower)
 - earthbucks-explorer (block explorer, works with builder)
+
+Apps:
+
+- earthbucks-com (information)
+- earthbucks-mine-1 (mine, works with builder, follower, wallet)
+- earthbucks-mine-2 (mine, works with builder, follower, wallet)
+- earthbucks-mine-3 (mine, works with builder, follower, wallet)
+- earthbucks-mine-4 (mine, works with builder, follower, wallet)
+- earthbucks-mine-5 (mine, works with builder, follower, wallet)
+- earthbucks-mine-6 (mine, works with builder, follower, wallet)
 - compubutton-com (button, AI, etc., not open source)
 - ryanxcharles-com (KYC, not open source)
 
@@ -47,11 +58,8 @@ have not produced a block in the past 2016 blocks.
 Every mine is a mining pool. Wallets and users are conceptually separate from
 mines. However, a mine can have a wallet and users.
 
-Of the active mines, the network has three parts, and blocks are intentionally
-distributed to all three parts.
-
-The fraction of blocks each part gets is determined by the number of blocks in
-the past 2016 target adjustment window. 1/3 blocks is 672 blocks.
+The first six mines are distributed globally to make sure everyone in the world
+has low latency.
 
 The first six mines:
 - 1.earthbucks.com (North America)

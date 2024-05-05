@@ -9,7 +9,7 @@ they proceed to the sign in page, where they save the key pair in localStorage
 signing an authentication challenge with their key. Signing in proceeds to a
 home page where, currently, the only functionality is to sign out. Signing out
 deletes the session cookie and also gives the user one final chance to save
-their key pair for deleting the key pair from localStorage.
+their key pair before deleting the key pair from localStorage.
 
 Getting this far required researching and implementing an RPC API. I've decided
 against using REST because it is too incompatible with the flow of the software.
