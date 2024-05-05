@@ -12,8 +12,8 @@ Website: [earthbucks.com](https://earthbucks.com)
 
 ## Software Architecture
 
-Rust is used for consensus-critical code. TypeScript is used for everything
-else. The library is implemented in both Rust and TypeScript.
+Rust is used to build blocks. TypeScript is used for the apps. The library is
+implemented in both Rust and TypeScript.
 
 ### Rust (rs)
 
