@@ -7,20 +7,14 @@ export default function Header() {
       <div className="mx-auto">
         <div className="inline-block align-middle">
           <Logo />
-          <div className="my-4 hidden dark:block">
-            <img
-              src={$image("/earthbucks-mine-1-text-white.png")}
-              alt="EarthBucks Mine 1"
-              className="mx-auto block w-[300px]"
-            />
-          </div>
-          <div className="my-4 block dark:hidden">
-            <img
-              src={$image("/earthbucks-mine-1-text-black.png")}
-              alt="EarthBucks Mine 1"
-              className="mx-auto block w-[300px]"
-            />
-          </div>
+
+          <h1 className="my-4 text-center text-2xl font-bold text-black dark:text-white">
+            EarthBucks Mine 1
+          </h1>
+
+          <p className="text-center text-black dark:text-white">
+            Virginia, USA, North American Sextant
+          </p>
         </div>
       </div>
     </div>

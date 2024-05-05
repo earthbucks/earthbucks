@@ -518,7 +518,8 @@ export default function Button({
 
   let buttonSrc = "";
   if (buttonMode === "standard") {
-    buttonSrc = $image("/button-128.png");
+    //buttonSrc = $image("/button-128.png");
+    buttonSrc = $image("/earthbucks-coin-128.png");
     // } else if (buttonMode === "pay") {
     //   buttonSrc = "/compubux-coin-128.png";
   } else if (buttonMode === "pay") {
@@ -553,7 +554,7 @@ export default function Button({
     <div className="flex h-[60px] w-[320px]">
       <div className="mx-auto h-[60px] w-[320px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]">
         <div className="h-full w-full rounded-full bg-[#42f6eb] p-[3px]">
-          <div className="relative h-full w-full rounded-full bg-[#12b3ec] shadow-[inset_5px_5px_10px_#020a2c]">
+          <div className="relative h-full w-full rounded-full bg-[#12b3ec] shadow-[inset_5px_5px_10px_#04408d]">
             <div className="absolute z-20 h-full w-full">
               <div className="flex h-full">
                 <div className="h-full flex-grow">
