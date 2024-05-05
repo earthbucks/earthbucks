@@ -100,7 +100,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
         // Login succeeded
         return json(
-          { ok: isValidResponse },
+          { ok: true },
           {
             headers: {
               "Set-Cookie": await commitSession(session),

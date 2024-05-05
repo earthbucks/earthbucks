@@ -1,15 +1,10 @@
 import type {
-  ActionFunctionArgs,
-  LoaderFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { redirect, useNavigate } from "@remix-run/react";
+import { json, redirect, useNavigate } from "@remix-run/react";
 import Button from "~/button";
 import Footer from "~/components/footer";
-import { Buffer } from "buffer";
-import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
-import Logo from "~/components/logo";
 import Header from "~/components/header";
 import { $path } from "remix-routes";
 import { getUserPubKey } from "~/.server/session";
@@ -19,7 +14,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (userPubKey) {
     return redirect($path("/home"));
   }
-  return;
+  return json({});
 }
 
 export const meta: MetaFunction = () => {
