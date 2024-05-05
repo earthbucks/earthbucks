@@ -1,6 +1,5 @@
 packages:
   - 'compubutton-com'
-  - 'computcha-com'
   - 'earthbucks-blake3'
   - 'earthbucks-com'
   - 'earthbucks-db'
