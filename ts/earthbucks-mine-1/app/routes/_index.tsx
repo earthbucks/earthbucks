@@ -14,8 +14,8 @@ import { $path } from "remix-routes";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Compubutton" },
-    { name: "description", content: "Welcome to Compubutton!" },
+    { title: "EarthBucks Mine 1" },
+    { name: "description", content: "Welcome to EarthBucks Mine 1!" },
   ];
 };
 

@@ -38,8 +38,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Delete | Compubutton" },
-    { name: "description", content: "Welcome to Compubutton!" },
+    { title: "Delete | EarthBucks Mine 1" },
+    { name: "description", content: "Welcome to EarthBucks Mine 1!" },
   ];
 };
 

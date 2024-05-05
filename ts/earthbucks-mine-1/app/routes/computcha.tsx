@@ -14,8 +14,8 @@ import { $image } from "~/util";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Compubutton" },
-    { name: "description", content: "Welcome to Compubutton!" },
+    { title: "EarthBucks Mine 1" },
+    { name: "description", content: "Welcome to EarthBucks Mine 1!" },
   ];
 };
 
@@ -56,14 +56,14 @@ export default function Landing() {
             <div className="hidden dark:block">
               <img
                 src={$image("/compubutton-text-white.png")}
-                alt="Compubutton"
+                alt="EarthBucks Mine 1"
                 className="mx-auto block w-[300px]"
               />
             </div>
             <div className="block dark:hidden">
               <img
                 src={$image("/compubutton-text-black.png")}
-                alt="Compubutton"
+                alt="EarthBucks Mine 1"
                 className="mx-auto block w-[300px]"
               />
             </div>

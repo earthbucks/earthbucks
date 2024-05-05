@@ -19,8 +19,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New | Compubutton" },
-    { name: "description", content: "Welcome to Compubutton!" },
+    { title: "New | EarthBucks Mine 1" },
+    { name: "description", content: "Welcome to EarthBucks Mine 1!" },
   ];
 };
 
@@ -120,7 +120,7 @@ export default function New() {
             <p className="my-4">
               Our servers have not seen and will never see your private key. If
               you lose your private key, it cannot be recovered. Never show your
-              private key to anyone but Compubutton (client-side) and your
+              private key to anyone but EarthBucks Mine 1 (client-side) and your
               password manager.
             </p>
           </div>

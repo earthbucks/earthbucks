@@ -9,20 +9,17 @@ export default function Header() {
           <Logo />
           <div className="my-4 hidden dark:block">
             <img
-              src={$image("/compubutton-text-white.png")}
-              alt="Compubutton"
+              src={$image("/earthbucks-mine-1-text-white.png")}
+              alt="EarthBucks Mine 1"
               className="mx-auto block w-[300px]"
             />
           </div>
           <div className="my-4 block dark:hidden">
             <img
-              src={$image("/compubutton-text-black.png")}
-              alt="Compubutton"
+              src={$image("/earthbucks-mine-1-text-black.png")}
+              alt="EarthBucks Mine 1"
               className="mx-auto block w-[300px]"
             />
-          </div>
-          <div className="mt-4 text-center text-black dark:text-white">
-            Welcome to the most advanced button in the world!
           </div>
         </div>
       </div>
