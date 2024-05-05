@@ -16,12 +16,13 @@ FROM base as build
 WORKDIR /app
 
 COPY --link ./pnpm-lock.yaml ./
-COPY --link ./pnpm-workspace.yaml ./
+COPY --link ./package.json ./
+# COPY --link ./pnpm-workspace.yaml ./
 RUN pnpm install --prod=false
 
 COPY --link . .
 
-WORKDIR /app/compubutton-com
+WORKDIR /app
 
 RUN pnpm install --prod=false
 
@@ -35,7 +36,7 @@ WORKDIR /app
 
 COPY --from=build /app /app
 
-WORKDIR /app/compubutton-com
+WORKDIR /app
 
 EXPOSE 3000
 CMD [ "pnpm", "run", "start" ]

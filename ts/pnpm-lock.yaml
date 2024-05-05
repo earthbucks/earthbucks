@@ -25,36 +25,15 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.13
         version: 0.5.13(tailwindcss@3.4.3)
-      blake3:
-        specifier: 2.1.7
-        version: 2.1.7
-      blake3-wasm:
-        specifier: 2.1.5
-        version: 2.1.5
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
-      earthbucks-blake3:
-        specifier: workspace:^
-        version: link:../earthbucks-blake3
-      earthbucks-db:
-        specifier: workspace:^
-        version: link:../earthbucks-db
-      earthbucks-lib:
-        specifier: workspace:^
-        version: link:../earthbucks-lib
-      earthbucks-tf:
-        specifier: workspace:^
-        version: link:../earthbucks-tf
       isbot:
         specifier: ^4.1.0
         version: 4.4.0
-      mysql2:
-        specifier: ^3.9.7
-        version: 3.9.7
       react:
         specifier: ^18.3.0
         version: 18.3.1
