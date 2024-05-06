@@ -1,6 +1,6 @@
 # EarthBucks
 
-<img src="./earthbucks-imp.png" width="200" height="200">
+<img src="./earth-coin-2.png" width="200" height="200">
 
 42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
@@ -37,7 +37,7 @@ Libraries/tools:
 
 Apps:
 
-- earthbucks-com (information)
+- earthbucks-com (information, wallet)
 - earthbucks-mine-1 (mine, works with builder, follower, wallet)
 - earthbucks-mine-2 (mine, works with builder, follower, wallet)
 - earthbucks-mine-3 (mine, works with builder, follower, wallet)
