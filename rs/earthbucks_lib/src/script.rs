@@ -1,4 +1,4 @@
-use crate::buffer_reader::BufferReader;
+use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::OP;
 use crate::script_chunk::ScriptChunk;
 
@@ -44,7 +44,7 @@ impl Script {
     }
 
     pub fn self_from_iso_buf(&mut self, arr: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
-        let mut reader = BufferReader::new(arr.to_vec());
+        let mut reader = IsoBufReader::new(arr.to_vec());
 
         while !reader.eof() {
             let mut chunk = ScriptChunk::new(reader.read_u8(), None);

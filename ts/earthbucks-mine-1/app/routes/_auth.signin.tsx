@@ -21,7 +21,7 @@ import PrivKey from "earthbucks-lib/src/priv-key";
 import { $image, classNames } from "~/util";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
-import { isValid } from "earthbucks-lib/src/strict-hex";
+import { isValid } from "earthbucks-lib/src/iso-hex";
 import { signin, signout } from "./api.auth.$method";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 import { getUserPubKey } from "~/.server/session";

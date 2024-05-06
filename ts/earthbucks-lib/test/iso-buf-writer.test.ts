@@ -1,12 +1,12 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import BufferWriter from "../src/buffer-writer";
+import IsoBufWriter from "../src/iso-buf-writer";
 import { Buffer } from "buffer";
 
 describe("BufferWriter", () => {
-  let bufferWriter: BufferWriter;
+  let bufferWriter: IsoBufWriter;
 
   beforeEach(() => {
-    bufferWriter = new BufferWriter();
+    bufferWriter = new IsoBufWriter();
   });
 
   describe("writeUInt8", () => {
@@ -208,27 +208,27 @@ describe("BufferWriter", () => {
   describe("varIntBufNum", () => {
     it("should write a number less than 253 as a single byte", () => {
       const n = 252;
-      const result = BufferWriter.varIntBufNum(n);
+      const result = IsoBufWriter.varIntBufNum(n);
       expect(result[0]).toBe(n);
     });
 
     it("should write a number less than 0x10000 as a 3-byte integer", () => {
       const n = 0xffff;
-      const result = BufferWriter.varIntBufNum(n);
+      const result = IsoBufWriter.varIntBufNum(n);
       expect(result[0]).toBe(253);
       expect(Buffer.from(result).readUInt16BE(1)).toBe(n);
     });
 
     it("should write a number less than 0x100000000 as a 5-byte integer", () => {
       const n = 0xffffffff;
-      const result = BufferWriter.varIntBufNum(n);
+      const result = IsoBufWriter.varIntBufNum(n);
       expect(result[0]).toBe(254);
       expect(Buffer.from(result).readUInt32BE(1)).toBe(n);
     });
 
     it("should write a number greater than or equal to 0x100000000 as a 9-byte integer", () => {
       const n = 0x100000000;
-      const result = BufferWriter.varIntBufNum(n);
+      const result = IsoBufWriter.varIntBufNum(n);
       expect(result[0]).toBe(255);
       expect(Buffer.from(result).readUInt32BE(1)).toBe(n & -1);
       expect(Buffer.from(result).readUInt32BE(5)).toBe(
@@ -240,27 +240,27 @@ describe("BufferWriter", () => {
   describe("varIntBufBigInt", () => {
     it("should write a bigint less than 253 as a single byte", () => {
       const bn = BigInt(252);
-      const result = BufferWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBufBigInt(bn);
       expect(result[0]).toBe(Number(bn));
     });
 
     it("should write a bigint less than 0x10000 as a 3-byte integer", () => {
       const bn = BigInt(0xffff);
-      const result = BufferWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBufBigInt(bn);
       expect(result[0]).toBe(253);
       expect((result[1] << 8) | result[2]).toBe(Number(bn));
     });
 
     it("should write a bigint less than 0x100000000 as a 5-byte integer", () => {
       const bn = BigInt(0xffffffff);
-      const result = BufferWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBufBigInt(bn);
       expect(result[0]).toBe(254);
       expect(Buffer.from(result).toString("hex")).toBe("feffffffff");
     });
 
     it("should write a bigint greater than or equal to 0x100000000 as a 9-byte integer", () => {
       const bn = BigInt("0x100000000");
-      const result = BufferWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBufBigInt(bn);
       expect(result[0]).toBe(255);
       const readBn =
         (BigInt(result[1]) << 56n) |

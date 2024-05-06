@@ -1,4 +1,4 @@
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{OP, OPCODE_TO_NAME};
 use std::error::Error;
 
@@ -70,17 +70,17 @@ impl ScriptChunk {
             Some(buffer) => {
                 let len = buffer.len();
                 if self.opcode == *OP.get("PUSHDATA1").unwrap() {
-                    let mut writer = BufferWriter::new();
+                    let mut writer = IsoBufWriter::new();
                     writer.write_u8(len as u8);
                     result.extend_from_slice(&writer.to_iso_buf());
                     result.extend_from_slice(buffer);
                 } else if self.opcode == *OP.get("PUSHDATA2").unwrap() {
-                    let mut writer = BufferWriter::new();
+                    let mut writer = IsoBufWriter::new();
                     writer.write_u16_be(len as u16);
                     result.extend_from_slice(&writer.to_iso_buf());
                     result.extend_from_slice(buffer);
                 } else if self.opcode == *OP.get("PUSHDATA4").unwrap() {
-                    let mut writer = BufferWriter::new();
+                    let mut writer = IsoBufWriter::new();
                     writer.write_u32_be(len as u32);
                     result.extend_from_slice(&writer.to_iso_buf());
                     result.extend_from_slice(buffer);

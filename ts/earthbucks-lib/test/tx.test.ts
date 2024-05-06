@@ -3,8 +3,8 @@ import Tx, { HashCache } from "../src/tx";
 import TxInput from "../src/tx-input";
 import TxOutput from "../src/tx-output";
 import Script from "../src/script";
-import BufferReader from "../src/buffer-reader";
-import BufferWriter from "../src/buffer-writer";
+import IsoBufReader from "../src/iso-buf-reader";
+import IsoBufWriter from "../src/iso-buf-writer";
 import { blake3Hash } from "../src/blake3";
 import TxSignature from "../src/tx-signature";
 import KeyPair from "../src/key-pair";
@@ -73,7 +73,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const reader = new BufferReader(tx.toIsoBuf());
+      const reader = new IsoBufReader(tx.toIsoBuf());
       const result = Tx.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);

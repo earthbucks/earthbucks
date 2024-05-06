@@ -1,5 +1,5 @@
 import Header from "./header";
-import BufferReader from "./buffer-reader";
+import IsoBufReader from "./iso-buf-reader";
 import HashNum from "./hash-num";
 import { Buffer } from "buffer";
 

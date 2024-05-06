@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class BufferReader {
+export default class IsoBufReader {
   private buf: Buffer;
   private pos: number;
 

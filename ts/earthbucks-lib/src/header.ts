@@ -1,5 +1,5 @@
-import BufferReader from "./buffer-reader";
-import BufferWriter from "./buffer-writer";
+import IsoBufReader from "./iso-buf-reader";
+import IsoBufWriter from "./iso-buf-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 
@@ -45,7 +45,7 @@ export default class Header {
   }
 
   toIsoBuf(): Buffer {
-    const bw = new BufferWriter();
+    const bw = new IsoBufWriter();
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
@@ -60,7 +60,7 @@ export default class Header {
   }
 
   static fromIsoBuf(buf: Buffer): Header {
-    const br = new BufferReader(buf);
+    const br = new IsoBufReader(buf);
     const version = br.readUInt32BE();
     const previousBlockHash = br.readBuffer(32);
     const merkleRoot = br.readBuffer(32);
@@ -85,7 +85,7 @@ export default class Header {
     );
   }
 
-  static fromIsoBufReader(br: BufferReader): Header {
+  static fromIsoBufReader(br: IsoBufReader): Header {
     const version = br.readUInt32BE();
     const previousBlockHash = br.readBuffer(32);
     const merkleRoot = br.readBuffer(32);
@@ -110,7 +110,7 @@ export default class Header {
     );
   }
 
-  toIsoBufWriter(bw: BufferWriter): BufferWriter {
+  toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);

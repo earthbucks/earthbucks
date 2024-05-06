@@ -4,8 +4,8 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import PrivKey from "../priv-key";
 import PubKey from "../pub-key";
-import BufferReader from "../buffer-reader";
-import BufferWriter from "../buffer-writer";
+import IsoBufReader from "../iso-buf-reader";
+import IsoBufWriter from "../iso-buf-writer";
 
 export default class SignedMessage {
   sig: Buffer;
@@ -63,7 +63,7 @@ export default class SignedMessage {
   }
 
   static fromIsoBuf(buf: Buffer, keyStr: string): SignedMessage {
-    const reader = new BufferReader(buf);
+    const reader = new IsoBufReader(buf);
     const sig = reader.readBuffer(64);
     const pubKey = reader.readBuffer(33);
     const mac = reader.readBuffer(32);
@@ -72,7 +72,7 @@ export default class SignedMessage {
   }
 
   toIsoBuf(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     writer.writeBuffer(this.sig);
     writer.writeBuffer(this.pubKey);
     writer.writeBuffer(this.mac);

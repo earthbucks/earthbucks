@@ -1,6 +1,6 @@
 use crate::blake3::double_blake3_hash;
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
@@ -107,7 +107,7 @@ impl MerkleProof {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut bw = BufferWriter::new();
+        let mut bw = IsoBufWriter::new();
         bw.write_u8_vec(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
         for (sibling, is_left) in &self.proof {
@@ -118,7 +118,7 @@ impl MerkleProof {
     }
 
     pub fn from_iso_buf(u8: &[u8]) -> MerkleProof {
-        let mut br = BufferReader::new(u8.to_vec());
+        let mut br = IsoBufReader::new(u8.to_vec());
         let root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let mut proof = vec![];
         let proof_length = br.read_var_int() as usize;

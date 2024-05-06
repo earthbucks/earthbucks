@@ -1,8 +1,8 @@
 import TxInput from "./tx-input";
 import TxOutput from "./tx-output";
 import VarInt from "./var-int";
-import BufferReader from "./buffer-reader";
-import BufferWriter from "./buffer-writer";
+import IsoBufReader from "./iso-buf-reader";
+import IsoBufWriter from "./iso-buf-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
@@ -35,7 +35,7 @@ export default class Tx {
   }
 
   static fromU8Vec(buf: Buffer): Tx {
-    const reader = new BufferReader(buf);
+    const reader = new IsoBufReader(buf);
     const version = reader.readUInt8();
     const numInputs = reader.readVarIntNum();
     const inputs = [];
@@ -51,7 +51,7 @@ export default class Tx {
     return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
-  static fromIsoBufReader(reader: BufferReader): Tx {
+  static fromIsoBufReader(reader: IsoBufReader): Tx {
     const version = reader.readUInt8();
     const numInputs = reader.readVarIntNum();
     const inputs = [];
@@ -68,7 +68,7 @@ export default class Tx {
   }
 
   toIsoBuf(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
     writer.writeBuffer(VarInt.fromNumber(this.inputs.length).toIsoBuf());
     for (const input of this.inputs) {
@@ -115,7 +115,7 @@ export default class Tx {
   }
 
   hashPrevouts(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeBuffer(input.inputTxId);
       writer.writeUInt32BE(input.inputTxNOut);
@@ -124,7 +124,7 @@ export default class Tx {
   }
 
   hashSequence(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeUInt32LE(input.sequence);
     }
@@ -132,7 +132,7 @@ export default class Tx {
   }
 
   hashOutputs(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     for (const output of this.outputs) {
       writer.writeBuffer(output.toIsoBuf());
     }
@@ -187,7 +187,7 @@ export default class Tx {
       outputsHash = doubleBlake3Hash(this.outputs[inputIndex].toIsoBuf());
     }
 
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
     writer.writeBuffer(prevoutsHash);
     writer.writeBuffer(sequenceHash);

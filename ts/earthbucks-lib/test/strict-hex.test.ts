@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import * as strictHex from "../src/strict-hex";
+import * as strictHex from "../src/iso-hex";
 
 describe("strictHex", () => {
   test("should return true for valid hex strings", () => {

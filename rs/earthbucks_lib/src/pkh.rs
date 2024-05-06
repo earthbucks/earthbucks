@@ -1,6 +1,6 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::pub_key;
-use crate::strict_hex;
+use crate::iso_hex;
 use bs58;
 
 #[derive(Debug, Clone)]
@@ -19,7 +19,7 @@ impl Pkh {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
-        let pkh_buf = strict_hex::decode(hex)?.to_vec();
+        let pkh_buf = iso_hex::decode(hex)?.to_vec();
         if pkh_buf.len() != 32 {
             return Err("Invalid pkh length".to_string());
         }
@@ -39,7 +39,7 @@ impl Pkh {
     pub fn to_iso_str(&self) -> String {
         let check_buf = blake3_hash(&self.buf);
         let check_sum = &check_buf[0..4];
-        let check_hex = strict_hex::encode(check_sum);
+        let check_hex = iso_hex::encode(check_sum);
         "ebxpkh".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
@@ -47,7 +47,7 @@ impl Pkh {
         if !s.starts_with("ebxpkh") {
             return Err("Invalid pkh prefix".to_string());
         }
-        let check_sum = strict_hex::decode(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
+        let check_sum = iso_hex::decode(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
 
         let buf = bs58::decode(&s[14..])
             .into_vec()

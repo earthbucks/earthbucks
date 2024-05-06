@@ -1,7 +1,7 @@
 import { doubleBlake3Hash, blake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
-import StrictHex from "./strict-hex";
+import IsoHex from "./iso-hex";
 import PubKey from "./pub-key";
 
 // public key hash
@@ -39,7 +39,7 @@ export default class Pkh {
       throw new Error("Invalid pkh format");
     }
     let checkHex = pkhStr.slice(6, 14);
-    let checkBuf = StrictHex.decode(checkHex);
+    let checkBuf = IsoHex.decode(checkHex);
     let buf = Buffer.from(bs58.decode(pkhStr.slice(14)));
     let hashBuf = blake3Hash(buf);
     let checkHash = hashBuf.subarray(0, 4);

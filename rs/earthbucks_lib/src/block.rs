@@ -1,5 +1,5 @@
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 use crate::header::Header;
 use crate::tx::Tx;
 use crate::var_int::VarInt;
@@ -14,7 +14,7 @@ impl Block {
         Self { header, txs }
     }
 
-    pub fn from_buffer_reader(br: &mut BufferReader) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Result<Self, Box<dyn std::error::Error>> {
         let header = Header::from_buffer_reader(br)?;
         let tx_count_varint = VarInt::from_buffer_reader(br);
         if !tx_count_varint.is_minimal() {
@@ -29,8 +29,8 @@ impl Block {
         Ok(Self { header, txs })
     }
 
-    pub fn to_buffer_writer(&self) -> BufferWriter {
-        let mut bw = BufferWriter::new();
+    pub fn to_buffer_writer(&self) -> IsoBufWriter {
+        let mut bw = IsoBufWriter::new();
         bw.write_u8_vec(self.header.to_iso_buf());
         bw.write_u8_vec(VarInt::from_u64_new(self.txs.len() as u64).to_iso_buf());
         for tx in &self.txs {
@@ -44,7 +44,7 @@ impl Block {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut br = BufferReader::new(buf);
+        let mut br = IsoBufReader::new(buf);
         Self::from_buffer_reader(&mut br)
     }
 }
@@ -112,7 +112,7 @@ mod tests {
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_iso_buf();
-        let mut br = BufferReader::new(buf);
+        let mut br = IsoBufReader::new(buf);
         let block2 = Block::from_buffer_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);

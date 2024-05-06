@@ -1,5 +1,5 @@
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
@@ -23,7 +23,7 @@ impl TxInput {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut reader = BufferReader::new(buf);
+        let mut reader = IsoBufReader::new(buf);
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
@@ -33,7 +33,7 @@ impl TxInput {
     }
 
     pub fn from_buffer_reader(
-        reader: &mut BufferReader,
+        reader: &mut IsoBufReader,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
@@ -44,7 +44,7 @@ impl TxInput {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u8_vec(self.input_tx_id.clone());
         writer.write_u32_be(self.input_tx_out_num);
         let script_buf = self.script.to_iso_buf();
@@ -125,14 +125,14 @@ mod tests {
             Err(_) => panic!("Failed to convert script to u8 vec"),
         };
 
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u8_vec(input_tx_id.clone());
         writer.write_u32_be(input_tx_index);
         writer.write_var_int(script_v8_vec.len() as u64);
         writer.write_u8_vec(script_v8_vec);
         writer.write_u32_be(sequence);
 
-        let mut reader = BufferReader::new(writer.to_iso_buf());
+        let mut reader = IsoBufReader::new(writer.to_iso_buf());
         let tx_input = TxInput::from_buffer_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;

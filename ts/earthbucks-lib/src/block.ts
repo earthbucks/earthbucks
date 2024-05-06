@@ -1,8 +1,8 @@
 import Header from "./header";
 import Tx from "./tx";
 import VarInt from "./var-int";
-import BufferWriter from "./buffer-writer";
-import BufferReader from "./buffer-reader";
+import IsoBufWriter from "./iso-buf-writer";
+import IsoBufReader from "./iso-buf-reader";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 
@@ -15,7 +15,7 @@ export default class Block {
     this.txs = txs;
   }
 
-  static fromIsoBufReader(br: BufferReader): Block {
+  static fromIsoBufReader(br: IsoBufReader): Block {
     const header = Header.fromIsoBuf(br.readBuffer(80));
     const txCountVarInt = VarInt.fromIsoBufReader(br);
     if (!txCountVarInt.isMinimal()) {
@@ -34,7 +34,7 @@ export default class Block {
     return new Block(header, txs);
   }
 
-  toIsoBufWriter(bw: BufferWriter): BufferWriter {
+  toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
     bw.writeBuffer(this.header.toIsoBuf());
     bw.writeVarIntNum(this.txs.length);
     this.txs.forEach((tx) => {
@@ -44,11 +44,11 @@ export default class Block {
   }
 
   toIsoBuf(): Buffer {
-    return this.toIsoBufWriter(new BufferWriter()).toIsoBuf();
+    return this.toIsoBufWriter(new IsoBufWriter()).toIsoBuf();
   }
 
   static fromU8Vec(buf: Buffer): Block {
-    return Block.fromIsoBufReader(new BufferReader(buf));
+    return Block.fromIsoBufReader(new IsoBufReader(buf));
   }
 
   isGenesis(): boolean {

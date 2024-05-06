@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import TxOutput from "../src/tx-output";
 import Script from "../src/script";
-import BufferReader from "../src/buffer-reader";
+import IsoBufReader from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 
 describe("TxOutput", () => {
@@ -11,7 +11,7 @@ describe("TxOutput", () => {
       const script = new Script();
       const txOutput = new TxOutput(value, script);
 
-      const reader = new BufferReader(txOutput.toIsoBuf());
+      const reader = new IsoBufReader(txOutput.toIsoBuf());
       const result = TxOutput.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(TxOutput);
       expect(result.value).toEqual(value);

@@ -1,7 +1,7 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::buffer::Buffer;
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 use num_bigint::BigUint;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -26,7 +26,7 @@ impl Header {
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut bw = BufferWriter::new();
+        let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
         bw.write_u8_vec(self.prev_block_id.to_vec());
         bw.write_u8_vec(self.merkle_root.to_vec());
@@ -44,7 +44,7 @@ impl Header {
         if buf.len() != Header::BLOCK_HEADER_SIZE {
             return Err("Invalid block header size");
         }
-        let mut br = BufferReader::new(buf);
+        let mut br = IsoBufReader::new(buf);
         let version = br.read_u32_be();
         let prev_block_id: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let merkle_root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
@@ -69,7 +69,7 @@ impl Header {
         })
     }
 
-    pub fn from_buffer_reader(br: &mut BufferReader) -> Result<Header, &'static str> {
+    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Result<Header, &'static str> {
         if br.remainder_len() < Header::BLOCK_HEADER_SIZE {
             panic!("Invalid block header size");
         }
@@ -97,8 +97,8 @@ impl Header {
         })
     }
 
-    pub fn to_buffer_writer(&self) -> BufferWriter {
-        let mut bw = BufferWriter::new();
+    pub fn to_buffer_writer(&self) -> IsoBufWriter {
+        let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
         bw.write_u8_vec(self.prev_block_id.to_vec());
         bw.write_u8_vec(self.merkle_root.to_vec());

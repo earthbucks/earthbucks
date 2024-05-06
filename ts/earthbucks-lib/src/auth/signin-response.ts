@@ -1,6 +1,6 @@
 import PrivKey from "../priv-key";
 import PubKey from "../pub-key";
-import StrictHex from "../strict-hex";
+import IsoHex from "../iso-hex";
 import PermissionToken from "./permission-token";
 import SignedMessage from "./signed-message";
 import SigninChallenge from "./signin-challenge";
@@ -43,7 +43,7 @@ export default class SigninResponse {
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const buf = StrictHex.decode(hex);
+    const buf = IsoHex.decode(hex);
     return SigninResponse.toIsoBuf(buf, domain);
   }
 

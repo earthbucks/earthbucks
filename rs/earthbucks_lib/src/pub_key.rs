@@ -1,6 +1,6 @@
 use crate::blake3::blake3_hash;
 use crate::priv_key::PrivKey;
-use crate::strict_hex;
+use crate::iso_hex;
 use bs58;
 use secp256k1::PublicKey;
 
@@ -40,7 +40,7 @@ impl PubKey {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<PubKey, String> {
-        let pub_key_buf = strict_hex::decode(hex)?;
+        let pub_key_buf = iso_hex::decode(hex)?;
         PubKey::from_iso_buf(pub_key_buf)
     }
 
@@ -56,7 +56,7 @@ impl PubKey {
             return Err("Invalid format".to_string());
         }
         let check_str = &s[6..14];
-        let check_buf = strict_hex::decode(check_str).map_err(|_| "Invalid hex pub key")?;
+        let check_buf = iso_hex::decode(check_str).map_err(|_| "Invalid hex pub key")?;
         let buf = bs58::decode(&s[14..])
             .into_vec()
             .map_err(|_| "Invalid base58")?;

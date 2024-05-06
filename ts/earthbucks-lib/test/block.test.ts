@@ -2,8 +2,8 @@ import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import Header from "../src/header";
 import Block from "../src/block";
 import Tx from "../src/tx";
-import BufferWriter from "../src/buffer-writer";
-import BufferReader from "../src/buffer-reader";
+import IsoBufWriter from "../src/iso-buf-writer";
+import IsoBufReader from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 
 describe("Block", () => {
@@ -22,7 +22,7 @@ describe("Block", () => {
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const bw = block.toIsoBufWriter(new BufferWriter());
+    const bw = block.toIsoBufWriter(new IsoBufWriter());
     expect(bw.toIsoBuf().length).toBeGreaterThan(0);
   });
 
@@ -60,8 +60,8 @@ describe("Block", () => {
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const bw = block.toIsoBufWriter(new BufferWriter());
-    const br = new BufferReader(bw.toIsoBuf());
+    const bw = block.toIsoBufWriter(new IsoBufWriter());
+    const br = new IsoBufReader(bw.toIsoBuf());
     const block2 = Block.fromIsoBufReader(br);
     expect(block2.header.version).toBe(bh.version);
     expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);

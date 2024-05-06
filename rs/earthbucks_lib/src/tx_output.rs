@@ -1,5 +1,5 @@
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
@@ -15,7 +15,7 @@ impl TxOutput {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut reader = BufferReader::new(buf);
+        let mut reader = IsoBufReader::new(buf);
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
         let script_arr = reader.read_u8_vec(script_len);
@@ -27,7 +27,7 @@ impl TxOutput {
     }
 
     pub fn from_buffer_reader(
-        reader: &mut BufferReader,
+        reader: &mut IsoBufReader,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
@@ -40,7 +40,7 @@ impl TxOutput {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u64_be(self.value);
         let script_buf = self.script.to_iso_buf();
         writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
@@ -89,7 +89,7 @@ mod tests {
         let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
         let result =
-            TxOutput::from_buffer_reader(&mut BufferReader::new(tx_output.to_iso_buf())).unwrap();
+            TxOutput::from_buffer_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
         assert_eq!(
             hex::encode(tx_output.to_iso_buf()),
             hex::encode(result.to_iso_buf())

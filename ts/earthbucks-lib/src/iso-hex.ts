@@ -16,5 +16,5 @@ export function decode(hex: string): Buffer {
   return buffer;
 }
 
-let StrictHex = { encode, decode, isValid };
-export default StrictHex;
+let IsoHex = { encode, decode, isValid };
+export default IsoHex;

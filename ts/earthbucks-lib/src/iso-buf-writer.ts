@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class BufferWriter {
+export default class IsoBufWriter {
   bufs: Buffer[];
 
   constructor(bufs?: Buffer[]) {
@@ -118,13 +118,13 @@ export default class BufferWriter {
   }
 
   writeVarIntNum(n: number): this {
-    const buf = BufferWriter.varIntBufNum(n);
+    const buf = IsoBufWriter.varIntBufNum(n);
     this.writeBuffer(buf);
     return this;
   }
 
   writeVarIntBigInt(bn: bigint): this {
-    const buf = BufferWriter.varIntBufBigInt(bn);
+    const buf = IsoBufWriter.varIntBufBigInt(bn);
     this.writeBuffer(buf);
     return this;
   }
@@ -166,7 +166,7 @@ export default class BufferWriter {
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
-      const bw = new BufferWriter();
+      const bw = new IsoBufWriter();
       bw.writeUInt8(255);
       bw.writeUInt64BEBigInt(bn);
       buf = bw.toIsoBuf();

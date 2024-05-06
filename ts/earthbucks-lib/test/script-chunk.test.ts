@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import ScriptChunk from "../src/script-chunk";
 import { OP } from "../src/opcode";
-import BufferWriter from "../src/buffer-writer";
+import IsoBufWriter from "../src/iso-buf-writer";
 import { Buffer } from "buffer";
 
 describe("ScriptChunk", () => {
@@ -90,7 +90,7 @@ describe("ScriptChunk", () => {
     test("should convert a ScriptChunk with opcode OP_PUSHDATA2 and a buffer to Buffer", () => {
       const buffer = Buffer.alloc(256).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA2, buffer);
-      const expected = new BufferWriter()
+      const expected = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeBuffer(buffer)
@@ -101,7 +101,7 @@ describe("ScriptChunk", () => {
     test("should convert a ScriptChunk with opcode OP_PUSHDATA4 and a buffer to Buffer", () => {
       const buffer = Buffer.alloc(65536).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA4, buffer);
-      const expected = new BufferWriter()
+      const expected = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeBuffer(buffer)
@@ -134,7 +134,7 @@ describe("ScriptChunk", () => {
 
     test("should create a ScriptChunk from Buffer with opcode OP_PUSHDATA2 and a buffer", () => {
       const buffer = Buffer.alloc(256).fill(0);
-      const arr = new BufferWriter()
+      const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeBuffer(buffer)
@@ -146,7 +146,7 @@ describe("ScriptChunk", () => {
 
     test("should create a ScriptChunk from Buffer with opcode OP_PUSHDATA4 and a buffer", () => {
       const buffer = Buffer.alloc(65536).fill(0);
-      const arr = new BufferWriter()
+      const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeBuffer(buffer)
@@ -166,7 +166,7 @@ describe("ScriptChunk", () => {
 
     test("should throw error if length does not match expected length", () => {
       const buffer = Buffer.alloc(100).fill(0);
-      const arr = new BufferWriter()
+      const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(200)
         .writeBuffer(buffer)
@@ -178,7 +178,7 @@ describe("ScriptChunk", () => {
 
     test("should throw error if length does not match expected length", () => {
       const buffer = Buffer.alloc(100).fill(0);
-      const arr = new BufferWriter()
+      const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(200)
         .writeBuffer(buffer)

@@ -1,6 +1,6 @@
 import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import StrictHex, { isValid } from "./strict-hex";
+import IsoHex, { isValid } from "./iso-hex";
 import bs58 from "bs58";
 import PrivKey from "./priv-key";
 import { blake3Hash } from "./blake3";
@@ -32,7 +32,7 @@ export default class PubKey {
   }
 
   static fromIsoHex(hex: string): PubKey {
-    return PubKey.fromIsoBuf(StrictHex.decode(hex));
+    return PubKey.fromIsoBuf(IsoHex.decode(hex));
   }
 
   toIsoStr(): string {
@@ -47,7 +47,7 @@ export default class PubKey {
       throw new Error("Invalid public key format");
     }
     let checkHex = str.slice(6, 14);
-    let checkBuf = StrictHex.decode(checkHex);
+    let checkBuf = IsoHex.decode(checkHex);
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));

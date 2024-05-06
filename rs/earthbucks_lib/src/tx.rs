@@ -1,7 +1,7 @@
 use crate::blake3::blake3_hash;
 use crate::blake3::double_blake3_hash;
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
 use crate::tx_input::TxInput;
 use crate::tx_output::TxOutput;
@@ -47,7 +47,7 @@ impl Tx {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut reader = BufferReader::new(buf);
+        let mut reader = IsoBufReader::new(buf);
         Self::from_buffer_reader(&mut reader)
     }
 
@@ -56,7 +56,7 @@ impl Tx {
     }
 
     pub fn from_buffer_reader(
-        reader: &mut BufferReader,
+        reader: &mut IsoBufReader,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let version = reader.read_u8();
         let input_count = reader.read_var_int() as usize;
@@ -73,8 +73,8 @@ impl Tx {
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
-    pub fn to_buffer_writer(&self) -> BufferWriter {
-        let mut writer = BufferWriter::new();
+    pub fn to_buffer_writer(&self) -> IsoBufWriter {
+        let mut writer = IsoBufWriter::new();
         writer.write_u8(self.version);
         writer.write_u8_vec(VarInt::from_u64_new(self.inputs.len() as u64).to_iso_buf());
         for input in &self.inputs {
@@ -201,7 +201,7 @@ impl Tx {
             outputs_hash = double_blake3_hash(&self.outputs[input_index].to_iso_buf()).to_vec();
         }
 
-        let mut bw = BufferWriter::new();
+        let mut bw = IsoBufWriter::new();
         bw.write_u8(self.version);
         bw.write_u8_vec(prevouts_hash);
         bw.write_u8_vec(sequence_hash);
@@ -397,7 +397,7 @@ mod tests {
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
         let buf = tx.to_iso_buf();
-        let mut reader = BufferReader::new(buf);
+        let mut reader = IsoBufReader::new(buf);
         let tx2 = Tx::from_buffer_reader(&mut reader).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());

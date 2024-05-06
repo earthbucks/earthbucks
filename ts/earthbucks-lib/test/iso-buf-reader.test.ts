@@ -1,14 +1,14 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import BufferReader from "../src/buffer-reader";
+import IsoBufReader from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 
 describe("BufferReader", () => {
-  let bufferReader: BufferReader;
+  let bufferReader: IsoBufReader;
   let testBuffer: Buffer;
 
   beforeEach(() => {
     testBuffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
-    bufferReader = new BufferReader(testBuffer);
+    bufferReader = new IsoBufReader(testBuffer);
   });
 
   test("constructor sets buffer and position", () => {
@@ -96,7 +96,7 @@ describe("BufferReader", () => {
 
   test("readUInt64BEBigInt returns correct value and updates position", () => {
     // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0x0123456789ABCDEF
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
@@ -111,7 +111,7 @@ describe("BufferReader", () => {
 
   test("readUInt64LEBigInt returns correct value and updates position", () => {
     // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0xEFCDAB8967452301 in little-endian order
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
@@ -133,7 +133,7 @@ describe("BufferReader", () => {
   test("readVarIntNum returns correct value and updates position for 16 bit numbers", () => {
     const buf = Buffer.from([0xfd, 0, 0, 0, 0]);
     buf.writeUInt16BE(500, 1);
-    bufferReader = new BufferReader(buf); // A varint that represents the number 2^30
+    bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum();
     expect(result).toBe(500); // 2^30
     expect(bufferReader["pos"]).toBe(3);
@@ -142,69 +142,69 @@ describe("BufferReader", () => {
   test("readVarIntNum returns correct value and updates position for 32 bit numbers", () => {
     const buf = Buffer.from([254, 0, 0, 0, 0]);
     buf.writeUInt32BE(2000000000, 1);
-    bufferReader = new BufferReader(buf); // A varint that represents the number 2^30
+    bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum();
     expect(result).toBe(2000000000); // 2^30
     expect(bufferReader["pos"]).toBe(5);
   });
 
   test("readVarIntNum", () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntNum()).toBe(1);
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum()).toBe(1);
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum()).toBe(1);
 
-    bufferReader = new BufferReader(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(Buffer.from([0x01]));
     expect(bufferReader.readVarIntNum()).toBe(1);
   });
 
   test("readVarIntBuf", () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBuf()).toEqual(
       Buffer.from([0xfd, 0x00, 0x01]),
     );
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf()).toEqual(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf()).toEqual(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
 
-    bufferReader = new BufferReader(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(Buffer.from([0x01]));
     expect(bufferReader.readVarIntBuf()).toEqual(Buffer.from([0x01]));
   });
 
   test("readVarIntBigInt", () => {
-    let bufferReader = new BufferReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
 
-    bufferReader = new BufferReader(
+    bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
 
-    bufferReader = new BufferReader(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(Buffer.from([0x01]));
     expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
   });
 });

@@ -1,6 +1,6 @@
 import { doubleBlake3Hash } from "./blake3";
-import BufferWriter from "./buffer-writer";
-import BufferReader from "./buffer-reader";
+import IsoBufWriter from "./iso-buf-writer";
+import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
 
 export default class MerkleProof {
@@ -68,7 +68,7 @@ export default class MerkleProof {
   }
 
   toIsoBuf() {
-    const bw = new BufferWriter();
+    const bw = new IsoBufWriter();
     bw.writeBuffer(this.root);
     bw.writeVarIntNum(this.proof.length);
     for (const [sibling, isLeft] of this.proof) {
@@ -79,7 +79,7 @@ export default class MerkleProof {
   }
 
   static fromU8Vec(buf: Buffer): MerkleProof {
-    const br = new BufferReader(buf);
+    const br = new IsoBufReader(buf);
     const root = br.readBuffer(32);
     const proof: Array<[Buffer, boolean]> = [];
     const proofLength = br.readVarIntNum();

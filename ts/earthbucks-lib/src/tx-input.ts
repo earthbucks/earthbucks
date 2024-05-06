@@ -1,5 +1,5 @@
-import BufferWriter from "./buffer-writer";
-import BufferReader from "./buffer-reader";
+import IsoBufWriter from "./iso-buf-writer";
+import IsoBufReader from "./iso-buf-reader";
 import Script from "./script";
 import VarInt from "./var-int";
 import { Buffer } from "buffer";
@@ -23,7 +23,7 @@ export default class TxInput {
   }
 
   static fromIsoBuf(buf: Buffer): TxInput {
-    const reader = new BufferReader(buf);
+    const reader = new IsoBufReader(buf);
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
@@ -32,7 +32,7 @@ export default class TxInput {
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
-  static fromIsoBufReader(reader: BufferReader): TxInput {
+  static fromIsoBufReader(reader: IsoBufReader): TxInput {
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
@@ -42,7 +42,7 @@ export default class TxInput {
   }
 
   toIsoBuf(): Buffer {
-    const writer = new BufferWriter();
+    const writer = new IsoBufWriter();
     writer.writeBuffer(this.inputTxId);
     writer.writeUInt32LE(this.inputTxNOut);
     const scriptBuf = this.script.toIsoBuf();

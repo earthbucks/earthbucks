@@ -1,5 +1,5 @@
 import { OPCODE_TO_NAME, OP, OpcodeName } from "./opcode";
-import BufferWriter from "./buffer-writer";
+import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
 
 export default class ScriptChunk {
@@ -65,19 +65,19 @@ export default class ScriptChunk {
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt8(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeUInt8(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt16BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeUInt16BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt32BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeUInt32BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     }

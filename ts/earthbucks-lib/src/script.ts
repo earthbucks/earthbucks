@@ -1,6 +1,6 @@
 import { OP } from "./opcode";
 import ScriptChunk from "./script-chunk";
-import BufferReader from "./buffer-reader";
+import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
 
 export default class Script {
@@ -32,7 +32,7 @@ export default class Script {
   }
 
   fromU8Vec(arr: Buffer): this {
-    const reader = new BufferReader(arr);
+    const reader = new IsoBufReader(arr);
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
       chunk.opcode = reader.readUInt8();

@@ -1,5 +1,5 @@
-use crate::buffer_reader::BufferReader;
-use crate::buffer_writer::BufferWriter;
+use crate::iso_buf_reader::IsoBufReader;
+use crate::iso_buf_writer::IsoBufWriter;
 
 #[derive(Default)]
 pub struct VarInt {
@@ -12,7 +12,7 @@ impl VarInt {
     }
 
     pub fn from_u64(&mut self, bn: u64) -> &mut Self {
-        self.buf = BufferWriter::new().write_var_int(bn).to_iso_buf();
+        self.buf = IsoBufWriter::new().write_var_int(bn).to_iso_buf();
         self
     }
 
@@ -23,7 +23,7 @@ impl VarInt {
     }
 
     pub fn from_u32(&mut self, num: u32) -> &mut Self {
-        self.buf = BufferWriter::new().write_var_int(num as u64).to_iso_buf();
+        self.buf = IsoBufWriter::new().write_var_int(num as u64).to_iso_buf();
         self
     }
 
@@ -38,10 +38,10 @@ impl VarInt {
     }
 
     pub fn to_u64(&self) -> u64 {
-        BufferReader::new(self.buf.clone()).read_var_int()
+        IsoBufReader::new(self.buf.clone()).read_var_int()
     }
 
-    pub fn from_buffer_reader(br: &mut BufferReader) -> Self {
+    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Self {
         let buf = br.read_var_int_buf();
         VarInt { buf }
     }

@@ -2,17 +2,17 @@ use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
 
 // add Default
 #[derive(Default)]
-pub struct BufferWriter {
+pub struct IsoBufWriter {
     bufs: Vec<Vec<u8>>,
 }
 
-impl BufferWriter {
-    pub fn new() -> BufferWriter {
-        BufferWriter { bufs: Vec::new() }
+impl IsoBufWriter {
+    pub fn new() -> IsoBufWriter {
+        IsoBufWriter { bufs: Vec::new() }
     }
 
-    pub fn with_buffers(buffers: Vec<Vec<u8>>) -> BufferWriter {
-        BufferWriter { bufs: buffers }
+    pub fn with_buffers(buffers: Vec<Vec<u8>>) -> IsoBufWriter {
+        IsoBufWriter { bufs: buffers }
     }
 
     pub fn get_length(&self) -> usize {
@@ -125,7 +125,7 @@ impl BufferWriter {
     }
 
     pub fn write_var_int(&mut self, n: u64) -> &mut Self {
-        let buf = BufferWriter::var_int_buf(n);
+        let buf = IsoBufWriter::var_int_buf(n);
         self.write_u8_vec(buf);
         self
     }
@@ -137,7 +137,7 @@ mod tests {
 
     #[test]
     fn test_get_length() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         assert_eq!(writer.get_length(), 0);
 
         writer.write_u8(1);
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_to_iso_buf() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u8_vec(vec![1, 2, 3]);
         writer.write_u8_vec(vec![4, 5, 6]);
 
@@ -159,7 +159,7 @@ mod tests {
 
     #[test]
     fn test_write_u8_vec() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u8_vec(vec![1, 2, 3]);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn test_write_reverse() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_reverse(vec![1, 2, 3]);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn test_write_u8() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u8(1);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn test_write_i8() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_i8(-1);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -195,7 +195,7 @@ mod tests {
 
     #[test]
     fn test_write_u16_be() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u16_be(0x0102);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn test_write_i16_be() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_i16_be(-0x0102);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -213,7 +213,7 @@ mod tests {
 
     #[test]
     fn test_write_u16_le() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u16_le(0x0102);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -222,7 +222,7 @@ mod tests {
 
     #[test]
     fn test_write_i16_le() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_i16_le(-0x0102);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -231,7 +231,7 @@ mod tests {
 
     #[test]
     fn test_write_u32_be() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u32_be(0x01020304);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -240,7 +240,7 @@ mod tests {
 
     #[test]
     fn test_write_i32_be() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_i32_be(-0x01020304);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -249,7 +249,7 @@ mod tests {
 
     #[test]
     fn test_write_u32_le() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u32_le(0x01020304);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -258,7 +258,7 @@ mod tests {
 
     #[test]
     fn test_write_i32_le() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_i32_le(-0x01020304);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -267,7 +267,7 @@ mod tests {
 
     #[test]
     fn test_write_u64_be() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u64_be(0x0102030405060708);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -276,7 +276,7 @@ mod tests {
 
     #[test]
     fn test_write_u64_le() {
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_u64_le(0x0102030405060708);
 
         assert_eq!(writer.bufs.len(), 1);
@@ -287,37 +287,37 @@ mod tests {
     fn test_var_int_buf() {
         // Test case where n < 253
         let buf: Vec<u8> = vec![100];
-        assert_eq!(BufferWriter::var_int_buf(100), buf);
+        assert_eq!(IsoBufWriter::var_int_buf(100), buf);
 
         // Test case where 253 <= n < 0x10000
         let mut buf = vec![];
         buf.push(253);
         buf.write_u16::<BigEndian>(0x0102).unwrap();
-        assert_eq!(BufferWriter::var_int_buf(0x0102), buf);
+        assert_eq!(IsoBufWriter::var_int_buf(0x0102), buf);
 
         // Test case where 0x10000 <= n < 0x100000000
         let mut buf = vec![];
         buf.push(254);
         buf.write_u32::<BigEndian>(0x01020304).unwrap();
-        assert_eq!(BufferWriter::var_int_buf(0x01020304), buf);
+        assert_eq!(IsoBufWriter::var_int_buf(0x01020304), buf);
 
         // Test case where n >= 0x100000000
         let mut buf = vec![];
         buf.push(255);
         buf.write_u64::<BigEndian>(0x0102030405060708).unwrap();
-        assert_eq!(BufferWriter::var_int_buf(0x0102030405060708), buf);
+        assert_eq!(IsoBufWriter::var_int_buf(0x0102030405060708), buf);
     }
 
     #[test]
     fn test_write_var_int() {
         // Test case where n < 253
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_var_int(100);
         assert_eq!(writer.bufs.len(), 1);
         assert_eq!(writer.bufs[0], vec![100]);
 
         // Test case where 253 <= n < 0x10000
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_var_int(0x0102);
         assert_eq!(writer.bufs.len(), 1);
         let mut expected = vec![253];
@@ -325,7 +325,7 @@ mod tests {
         assert_eq!(writer.bufs[0], expected);
 
         // Test case where 0x10000 <= n < 0x100000000
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_var_int(0x01020304);
         assert_eq!(writer.bufs.len(), 1);
         let mut expected = vec![254];
@@ -333,7 +333,7 @@ mod tests {
         assert_eq!(writer.bufs[0], expected);
 
         // Test case where n >= 0x100000000
-        let mut writer = BufferWriter::new();
+        let mut writer = IsoBufWriter::new();
         writer.write_var_int(0x0102030405060708);
         assert_eq!(writer.bufs.len(), 1);
         let mut expected = vec![255];

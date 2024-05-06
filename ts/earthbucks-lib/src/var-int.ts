@@ -1,5 +1,5 @@
-import BufferReader from "./buffer-reader";
-import BufferWriter from "./buffer-writer";
+import IsoBufReader from "./iso-buf-reader";
+import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
 
 export default class VarInt {
@@ -10,7 +10,7 @@ export default class VarInt {
   }
 
   fromBigInt(bn: bigint) {
-    this.buf = new BufferWriter().writeVarIntBigInt(bn).toIsoBuf();
+    this.buf = new IsoBufWriter().writeVarIntBigInt(bn).toIsoBuf();
     return this;
   }
 
@@ -19,7 +19,7 @@ export default class VarInt {
   }
 
   fromNumber(num: number) {
-    this.buf = new BufferWriter().writeVarIntNum(num).toIsoBuf();
+    this.buf = new IsoBufWriter().writeVarIntNum(num).toIsoBuf();
     return this;
   }
 
@@ -32,14 +32,14 @@ export default class VarInt {
   }
 
   toBigInt(): bigint {
-    return new BufferReader(this.buf).readVarIntBigInt();
+    return new IsoBufReader(this.buf).readVarIntBigInt();
   }
 
   toNumber() {
-    return new BufferReader(this.buf).readVarIntNum();
+    return new IsoBufReader(this.buf).readVarIntNum();
   }
 
-  static fromIsoBufReader(br: BufferReader): VarInt {
+  static fromIsoBufReader(br: IsoBufReader): VarInt {
     const buf = Buffer.from(br.readVarIntBuf());
     return new VarInt(buf);
   }

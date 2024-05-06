@@ -16,11 +16,11 @@ pub fn encode(data: &[u8]) -> String {
 
 pub fn decode(hex: &str) -> Result<Vec<u8>, String> {
     if !is_valid(hex) {
-        return Err("Invalid hex string".into());
+        return Err("Invalid iso hex string 1".into());
     }
     let res = hex::decode(hex);
     if res.is_err() {
-        return Err("Invalid hex string".into());
+        return Err("Invalid iso hex string 2".into());
     }
     Ok(res.unwrap())
 }
