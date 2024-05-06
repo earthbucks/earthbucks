@@ -4,13 +4,8 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { useNavigate } from "@remix-run/react";
-import Button from "~/button";
 import Footer from "~/components/footer";
-import { Buffer } from "buffer";
-import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import Header from "~/components/header";
-import { $path } from "remix-routes";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,16 +15,6 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Landing() {
-  const navigate = useNavigate();
-
-  async function onSignin() {
-    navigate($path("/signin"));
-  }
-
-  async function onRegister() {
-    navigate($path("/new"));
-  }
-
   return (
     <div className="">
       <Header />
