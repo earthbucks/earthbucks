@@ -13,7 +13,7 @@ export default function Header() {
           </h1>
 
           <p className="text-center text-black dark:text-white">
-            42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+            42 EBX. No pre-mine. GPUs. Big blocks. Script.
           </p>
         </div>
       </div>

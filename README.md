@@ -2,7 +2,7 @@
 
 <img src="./earth-coin-2.png" width="200" height="200">
 
-42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+42 EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in July 2024.
 
@@ -38,12 +38,8 @@ Apps:
 - earthbucks-com (information, wallet)
 - earthbucks-mine-1 (mine, works with builder, follower, wallet)
 - earthbucks-mine-2 (mine, works with builder, follower, wallet)
-- earthbucks-mine-3 (mine, works with builder, follower, wallet)
-- earthbucks-mine-4 (mine, works with builder, follower, wallet)
-- earthbucks-mine-5 (mine, works with builder, follower, wallet)
+- ...
 - earthbucks-mine-6 (mine, works with builder, follower, wallet)
-- compubutton-com (button, AI, etc., not open source)
-- ryanxcharles-com (KYC, not open source)
 
 ## Mining Network Architecture
 
