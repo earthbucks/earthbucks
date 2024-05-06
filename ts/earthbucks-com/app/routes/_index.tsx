@@ -30,10 +30,10 @@ export default function Index() {
               />
             </div>
             <div className="mb-4 text-center text-black dark:text-white">
-              42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+              Small casual transactions for everybody on Planet Earth.
               <br />
               <br />
-              Genesis block in 2024.
+              July 2024.
               <br />
               <br />
               <a
