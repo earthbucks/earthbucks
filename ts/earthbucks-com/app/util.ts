@@ -12,6 +12,8 @@ type ImagePath =
   | "/computcha-bottlecap-128.png"
   | "/compute-circle-128.png"
   | "/earth-coin-2.png"
+  | "/earthbucks-42.png"
+  | "/earthbucks-42-128.png"
   | "/earthbucks-coin-1.png"
   | "/earthbucks-coin-128.png"
   | "/earthbucks-coin-3-128.png"
