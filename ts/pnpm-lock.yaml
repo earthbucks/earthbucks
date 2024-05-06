@@ -311,6 +311,9 @@ importers:
       secp256k1:
         specifier: ^5.0.0
         version: 5.0.0
+      ts-results:
+        specifier: ^3.3.0
+        version: 3.3.0
       tsx:
         specifier: ^4.7.1
         version: 4.7.2
@@ -10458,6 +10461,10 @@ packages:
       typescript: 5.4.5
       yargs-parser: 21.1.1
     dev: true
+
+  /ts-results@3.3.0:
+    resolution: {integrity: sha512-FWqxGX2NHp5oCyaMd96o2y2uMQmSu8Dey6kvyuFdRJ2AzfmWo3kWa4UsPlCGlfQ/qu03m09ZZtppMoY8EMHuiA==}
+    dev: false
 
   /tsconfck@3.0.3(typescript@5.4.5):
     resolution: {integrity: sha512-4t0noZX9t6GcPTfBAbIbbIU4pfpCwh0ueq3S4O/5qXI1VwK1outmxhe9dOiEWqMz3MW2LKgDTpqWV+37IWuVbA==}

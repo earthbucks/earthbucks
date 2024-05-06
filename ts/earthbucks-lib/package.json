@@ -6,6 +6,7 @@
   "scripts": {
     "main": "tsx src/main.ts",
     "test": "jest",
+    "typecheck": "tsc --noEmit",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "keywords": [],
@@ -20,6 +21,7 @@
     "buffer": "^6.0.3",
     "mathjs": "^12.4.1",
     "secp256k1": "^5.0.0",
+    "ts-results": "^3.3.0",
     "tsx": "^4.7.1"
   },
   "prettier": {

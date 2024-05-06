@@ -5,6 +5,7 @@ import path from "path";
 import Pkh from "../src/pkh";
 import { Buffer } from "buffer";
 import PubKey from "../src/pub-key";
+import { Ok } from "ts-results";
 
 describe("Pkh", () => {
   test("Pkh", () => {
@@ -33,7 +34,9 @@ describe("Pkh", () => {
     expect(
       Pkh.fromIsoStr(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
-      ).toIsoStr(),
+      )
+        .unwrap()
+        .toIsoStr(),
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 

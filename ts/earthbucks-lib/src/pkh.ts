@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import bs58 from "bs58";
 import IsoHex from "./iso-hex";
 import PubKey from "./pub-key";
+import { Result, Ok, Err } from "ts-results";
 
 // public key hash
 export default class Pkh {
@@ -21,11 +22,11 @@ export default class Pkh {
     return Pkh.fromPubKeyBuffer(pubKey.toIsoBuf());
   }
 
-  static fromIsoBuf(buf: Buffer): Pkh {
+  static fromIsoBuf(buf: Buffer): Result<Pkh, string> {
     if (buf.length !== 32) {
-      throw new Error("Invalid public key hash length");
+      return Err("Invalid public key hash length");
     }
-    return new Pkh(buf);
+    return Ok(new Pkh(buf));
   }
 
   toIsoStr(): string {
@@ -34,9 +35,9 @@ export default class Pkh {
     return "ebxpkh" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromIsoStr(pkhStr: string): Pkh {
+  static fromIsoStr(pkhStr: string): Result<Pkh, string> {
     if (!pkhStr.startsWith("ebxpkh")) {
-      throw new Error("Invalid pkh format");
+      return Err("Invalid pkh format");
     }
     let checkHex = pkhStr.slice(6, 14);
     let checkBuf = IsoHex.decode(checkHex);
@@ -44,18 +45,13 @@ export default class Pkh {
     let hashBuf = blake3Hash(buf);
     let checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {
-      throw new Error("Invalid pkh checksum");
+      return Err("Invalid pkh checksum");
     }
     return Pkh.fromIsoBuf(buf);
   }
 
   static isValidStringFmt(pkhStr: string): boolean {
-    let pkh: Pkh;
-    try {
-      pkh = Pkh.fromIsoStr(pkhStr);
-    } catch (e) {
-      return false;
-    }
-    return true;
+    let pkh = Pkh.fromIsoStr(pkhStr);
+    return pkh.ok;
   }
 }
