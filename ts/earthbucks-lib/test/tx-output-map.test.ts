@@ -12,7 +12,7 @@ describe("TxOutputMap", () => {
 
   beforeEach(() => {
     txOutputMap = new TxOutputMap();
-    txOutput = new TxOutput(BigInt(100), Script.fromString(""));
+    txOutput = new TxOutput(BigInt(100), Script.fromIsoStr(""));
     txIdHash = Buffer.from([1, 2, 3, 4]);
     outputIndex = 0;
   });

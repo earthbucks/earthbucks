@@ -20,55 +20,55 @@ describe("ScriptChunk", () => {
   describe("toString", () => {
     test("should create a ScriptChunk with opcode IF", () => {
       const scriptChunk = new ScriptChunk(OP.IF);
-      expect(scriptChunk.toString()).toBe("IF");
+      expect(scriptChunk.toIsoStr()).toBe("IF");
     });
 
     test("should create a ScriptChunk with opcode OP_PUSHDATA1 and a buffer", () => {
       const buffer = Buffer.alloc(255).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA1, buffer);
-      expect(scriptChunk.toString()).toBe("0x" + "00".repeat(255));
+      expect(scriptChunk.toIsoStr()).toBe("0x" + "00".repeat(255));
     });
 
     test("should create a ScriptChunk with opcode OP_PUSHDATA2 and a buffer", () => {
       const buffer = Buffer.alloc(256).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA2, buffer);
-      expect(scriptChunk.toString()).toBe("0x" + "00".repeat(256));
+      expect(scriptChunk.toIsoStr()).toBe("0x" + "00".repeat(256));
     });
 
     test("should create a ScriptChunk with opcode OP_PUSHDATA4 and a buffer", () => {
       const buffer = Buffer.alloc(65536).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA4, buffer);
-      expect(scriptChunk.toString()).toBe("0x" + "00".repeat(65536));
+      expect(scriptChunk.toIsoStr()).toBe("0x" + "00".repeat(65536));
     });
   });
 
-  describe("fromString", () => {
+  describe("fromIsoStr", () => {
     test("should create a ScriptChunk from opcode IF", () => {
-      const scriptChunk = ScriptChunk.fromString("IF");
+      const scriptChunk = ScriptChunk.fromIsoStr("IF");
       expect(scriptChunk.opcode).toBe(OP.IF);
       expect(scriptChunk.buf).toBeUndefined();
     });
 
     test("should create a ScriptChunk from opcode OP_PUSHDATA1 and a buffer", () => {
-      const scriptChunk = ScriptChunk.fromString("0x" + "00".repeat(255));
+      const scriptChunk = ScriptChunk.fromIsoStr("0x" + "00".repeat(255));
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA1);
       expect(scriptChunk.buf).toEqual(Buffer.from(Buffer.alloc(255).fill(0)));
     });
 
     test("should create a ScriptChunk from opcode OP_PUSHDATA2 and a buffer", () => {
-      const scriptChunk = ScriptChunk.fromString("0x" + "00".repeat(256));
+      const scriptChunk = ScriptChunk.fromIsoStr("0x" + "00".repeat(256));
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA2);
       expect(scriptChunk.buf).toEqual(Buffer.from(Buffer.alloc(256).fill(0)));
     });
 
     test("should create a ScriptChunk from opcode OP_PUSHDATA4 and a buffer", () => {
-      const scriptChunk = ScriptChunk.fromString("0x" + "00".repeat(65536));
+      const scriptChunk = ScriptChunk.fromIsoStr("0x" + "00".repeat(65536));
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4);
       expect(scriptChunk.buf).toEqual(Buffer.from(Buffer.alloc(65536).fill(0)));
     });
 
     test("should throw an error for invalid opcode", () => {
-      expect(() => ScriptChunk.fromString("INVALID_OPCODE")).toThrow(
+      expect(() => ScriptChunk.fromIsoStr("INVALID_OPCODE")).toThrow(
         "invalid opcode",
       );
     });
@@ -110,7 +110,7 @@ describe("ScriptChunk", () => {
     });
 
     test("pushdata1", () => {
-      const scriptChunk = new ScriptChunk().fromString("0xff");
+      const scriptChunk = new ScriptChunk().fromIsoStr("0xff");
       const arr = scriptChunk.toIsoBuf();
       expect(arr).toEqual(Buffer.from([0x4c, 0x01, 0xff]));
     });

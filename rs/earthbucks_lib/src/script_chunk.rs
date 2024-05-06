@@ -16,7 +16,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn to_string(&self) -> Result<String, Box<dyn Error>> {
+    pub fn to_iso_str(&self) -> Result<String, Box<dyn Error>> {
         match &self.buffer {
             Some(buffer) => {
                 let hex: Vec<String> = buffer.iter().map(|b| format!("{:02x}", b)).collect();
@@ -32,7 +32,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn from_string(&mut self, str: String) -> Result<(), Box<dyn Error>> {
+    pub fn from_iso_str(&mut self, str: String) -> Result<(), Box<dyn Error>> {
         if str.starts_with("0x") {
             let buffer = hex::decode(str.strip_prefix("0x").unwrap())?;
             let len = buffer.len();
@@ -57,9 +57,9 @@ impl ScriptChunk {
         Ok(())
     }
 
-    pub fn from_string_new(str: String) -> Result<ScriptChunk, Box<dyn Error>> {
+    pub fn from_iso_str_new(str: String) -> Result<ScriptChunk, Box<dyn Error>> {
         let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_string(str)?;
+        chunk.from_iso_str(str)?;
         Ok(chunk)
     }
 
@@ -166,66 +166,66 @@ mod tests {
     #[test]
     fn test_to_string_if() {
         let chunk = ScriptChunk::new(*OP.get("IF").unwrap(), None);
-        assert_eq!(chunk.to_string().unwrap(), "IF");
+        assert_eq!(chunk.to_iso_str().unwrap(), "IF");
     }
 
     #[test]
     fn test_to_string_pushdata1() {
         let chunk = ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(vec![1, 2, 3]));
-        assert_eq!(chunk.to_string().unwrap(), "0x010203");
+        assert_eq!(chunk.to_iso_str().unwrap(), "0x010203");
     }
 
     #[test]
     fn test_to_string_pushdata2() {
         let chunk = ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(vec![4, 5, 6]));
-        assert_eq!(chunk.to_string().unwrap(), "0x040506");
+        assert_eq!(chunk.to_iso_str().unwrap(), "0x040506");
     }
 
     #[test]
     fn test_to_string_pushdata4() {
         let chunk = ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(vec![7, 8, 9]));
-        assert_eq!(chunk.to_string().unwrap(), "0x070809");
+        assert_eq!(chunk.to_iso_str().unwrap(), "0x070809");
     }
 
     #[test]
-    fn test_from_string_if() {
+    fn test_from_iso_str_if() {
         let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_string("IF".to_string()).unwrap();
+        chunk.from_iso_str("IF".to_string()).unwrap();
         assert_eq!(chunk.opcode, *OP.get("IF").unwrap());
         assert_eq!(chunk.buffer, None);
     }
 
     #[test]
-    fn test_from_string_pushdata1() {
+    fn test_from_iso_str_pushdata1() {
         let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_string("0x010203".to_string()).unwrap();
+        chunk.from_iso_str("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
 
     #[test]
-    fn test_from_string_pushdata2() {
+    fn test_from_iso_str_pushdata2() {
         let mut chunk = ScriptChunk::new(0, None);
         chunk
-            .from_string("0x".to_string() + &"01".repeat(256))
+            .from_iso_str("0x".to_string() + &"01".repeat(256))
             .unwrap();
         assert_eq!(chunk.opcode, *OP.get("PUSHDATA2").unwrap());
         assert_eq!(chunk.buffer, Some(vec![1; 256]));
     }
 
     #[test]
-    fn test_from_string_pushdata4() {
+    fn test_from_iso_str_pushdata4() {
         let mut chunk = ScriptChunk::new(0, None);
         chunk
-            .from_string("0x".to_string() + &"01".repeat(70000))
+            .from_iso_str("0x".to_string() + &"01".repeat(70000))
             .unwrap();
         assert_eq!(chunk.opcode, *OP.get("PUSHDATA4").unwrap());
         assert_eq!(chunk.buffer, Some(vec![1; 70000]));
     }
 
     #[test]
-    fn test_from_string_new() {
-        let chunk = ScriptChunk::from_string_new("0x010203".to_string()).unwrap();
+    fn test_from_iso_str_new() {
+        let chunk = ScriptChunk::from_iso_str_new("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }

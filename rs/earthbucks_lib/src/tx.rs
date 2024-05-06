@@ -355,12 +355,12 @@ mod tests {
     fn test_tx() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -382,12 +382,12 @@ mod tests {
     fn test_from_buffer_reader() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -407,15 +407,15 @@ mod tests {
     }
 
     #[test]
-    fn test_to_string_and_from_string() -> Result<(), String> {
+    fn test_to_string_and_from_iso_str() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -435,8 +435,8 @@ mod tests {
 
     #[test]
     fn test_from_coinbase() {
-        let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let input_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
         let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert_eq!(tx.version, 1);
@@ -449,12 +449,12 @@ mod tests {
     fn test_is_coinbase() {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -464,8 +464,8 @@ mod tests {
         let tx = Tx::new(version, inputs, outputs, lock_num);
         assert!(!tx.is_coinbase());
 
-        let input_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let output_script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let input_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
         let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert!(tx.is_coinbase());
@@ -475,12 +475,12 @@ mod tests {
     fn test_hash_once() {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -496,12 +496,12 @@ mod tests {
     fn test_hash() {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let sequence = 0;
         let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
 
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
 
         let version = 1;
@@ -519,10 +519,10 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -542,10 +542,10 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -565,10 +565,10 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -588,14 +588,14 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
-        let script = Script::from_string("").unwrap();
+        let script = Script::from_iso_str("").unwrap();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let preimage = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
@@ -612,14 +612,14 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
-        let script = Script::from_string("").unwrap();
+        let script = Script::from_iso_str("").unwrap();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let hash_cache = &mut HashCache::new();
@@ -644,14 +644,14 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
             "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
         );
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
@@ -697,14 +697,14 @@ mod tests {
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
-            Script::from_string("").unwrap(),
+            Script::from_iso_str("").unwrap(),
             0xffffffff,
         )];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
             "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
         );
-        let outputs = vec![TxOutput::new(100, Script::from_string("").unwrap())];
+        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");

@@ -11,7 +11,7 @@ export default class ScriptChunk {
     this.buf = buf;
   }
 
-  toString(): string {
+  toIsoStr(): string {
     if (this.buf) {
       return `0x${this.buf.toString("hex")}`;
     } else {
@@ -24,7 +24,7 @@ export default class ScriptChunk {
     }
   }
 
-  fromString(str: string): this {
+  fromIsoStr(str: string): this {
     if (str.startsWith("0x")) {
       this.buf = Buffer.from(str.slice(2), "hex");
       const len = this.buf.length;
@@ -56,8 +56,8 @@ export default class ScriptChunk {
     return this;
   }
 
-  static fromString(str: string): ScriptChunk {
-    return new ScriptChunk().fromString(str);
+  static fromIsoStr(str: string): ScriptChunk {
+    return new ScriptChunk().fromIsoStr(str);
   }
 
   toIsoBuf(): Buffer {

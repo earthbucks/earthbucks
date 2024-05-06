@@ -30,7 +30,7 @@ describe("TxSigner", () => {
       txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
     }
 
-    const changeScript = Script.fromString("");
+    const changeScript = Script.fromIsoStr("");
     txBuilder = new TxBuilder(txOutMap, changeScript);
   });
 
@@ -39,7 +39,7 @@ describe("TxSigner", () => {
     const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
-    txBuilder.addOutput(BigInt(50), Script.fromString(""));
+    txBuilder.addOutput(BigInt(50), Script.fromIsoStr(""));
 
     const tx = txBuilder.build();
 
@@ -80,8 +80,8 @@ describe("TxSigner", () => {
     const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
-    txBuilder.addOutput(BigInt(100), Script.fromString(""));
-    txBuilder.addOutput(BigInt(100), Script.fromString(""));
+    txBuilder.addOutput(BigInt(100), Script.fromIsoStr(""));
+    txBuilder.addOutput(BigInt(100), Script.fromIsoStr(""));
 
     const tx = txBuilder.build();
 

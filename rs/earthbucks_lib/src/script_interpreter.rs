@@ -989,7 +989,7 @@ mod tests {
         #[test]
         fn test_zero() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string("0").unwrap();
+            let script = Script::from_iso_str("0").unwrap();
             let mut hash_cache = HashCache::new();
             let mut script_interpreter =
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
@@ -1001,7 +1001,7 @@ mod tests {
         #[test]
         fn test_pushdata1() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string("0xff").unwrap();
+            let script = Script::from_iso_str("0xff").unwrap();
             let mut hash_cache = HashCache::new();
             let mut script_interpreter =
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
@@ -1014,7 +1014,7 @@ mod tests {
         #[test]
         fn test_pushdata2() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
+            let script = Script::from_iso_str(&("0x".to_owned() + &"ff".repeat(256))).unwrap();
 
             let mut hash_cache = HashCache::new();
             let mut script_interpreter =
@@ -1031,7 +1031,7 @@ mod tests {
         #[test]
         fn test_pushdata4() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
+            let script = Script::from_iso_str(&("0x".to_owned() + &"ff".repeat(65536))).unwrap();
             let mut hash_cache = HashCache::new();
             let mut script_interpreter =
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
@@ -1047,7 +1047,7 @@ mod tests {
         #[test]
         fn test_1negate() {
             let tx = Tx::new(0, Vec::new(), Vec::new(), 0);
-            let script = Script::from_string("1NEGATE").unwrap();
+            let script = Script::from_iso_str("1NEGATE").unwrap();
             let mut hash_cache = HashCache::new();
             let mut script_interpreter =
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
@@ -1082,7 +1082,7 @@ mod tests {
                 vec![TxInput::new(
                     output_tx_id.clone(),
                     output_tx_index,
-                    Script::from_string("").unwrap(),
+                    Script::from_iso_str("").unwrap(),
                     0xffffffff,
                 )],
                 vec![TxOutput::new(output_amount, output_script.clone())],
@@ -1157,7 +1157,7 @@ mod tests {
                 vec![TxInput::new(
                     output_tx_id.clone(),
                     output_tx_index,
-                    Script::from_string("").unwrap(),
+                    Script::from_iso_str("").unwrap(),
                     0xffffffff,
                 )],
                 vec![TxOutput::new(output_amount, output_script.clone())],
@@ -1232,16 +1232,16 @@ mod tests {
                 // to confirm tests are running:
                 // cargo test script_interpreter -- --nocapture
 
-                let script = Script::from_string(&test_script.script).unwrap();
+                let script = Script::from_iso_str(&test_script.script).unwrap();
                 let tx = Tx::new(
                     1,
                     vec![TxInput::new(
                         vec![],
                         0,
-                        Script::from_string("").unwrap(),
+                        Script::from_iso_str("").unwrap(),
                         0xffffffff,
                     )],
-                    vec![TxOutput::new(0, Script::from_string("").unwrap())],
+                    vec![TxOutput::new(0, Script::from_iso_str("").unwrap())],
                     0,
                 );
                 let mut hash_cache = HashCache::new();

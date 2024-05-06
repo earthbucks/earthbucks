@@ -27,7 +27,7 @@ describe("ScriptInterpreter", () => {
 
   describe("sanity tests", () => {
     test("0", () => {
-      const script = new Script().fromString("0");
+      const script = new Script().fromIsoStr("0");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -44,7 +44,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("pushdata1", () => {
-      const script = new Script().fromString("0xff");
+      const script = new Script().fromIsoStr("0xff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -62,7 +62,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA1", () => {
-      const script = new Script().fromString("0xffff");
+      const script = new Script().fromIsoStr("0xffff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -80,7 +80,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA2", () => {
-      const script = new Script().fromString("0x" + "ff".repeat(256));
+      const script = new Script().fromIsoStr("0x" + "ff".repeat(256));
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -98,7 +98,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA4", () => {
-      const script = new Script().fromString("0x" + "ff".repeat(65536));
+      const script = new Script().fromIsoStr("0x" + "ff".repeat(65536));
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -116,7 +116,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("1NEGATE", () => {
-      const script = new Script().fromString("1NEGATE");
+      const script = new Script().fromIsoStr("1NEGATE");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -278,7 +278,7 @@ describe("ScriptInterpreter", () => {
 
       testScripts.forEach((testScript) => {
         test(testScript.name, () => {
-          const script = Script.fromString(testScript.script);
+          const script = Script.fromIsoStr(testScript.script);
           const hashCache = new HashCache();
           const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,

@@ -35,7 +35,7 @@ describe("TxInput", () => {
         Buffer.from(inputTxHash).toString("hex"),
       );
       expect(result.inputTxNOut).toEqual(inputTxIndex);
-      expect(result.script.toString()).toEqual(script.toString());
+      expect(result.script.toIsoStr()).toEqual(script.toIsoStr());
       expect(result.sequence).toEqual(sequence);
     });
   });
@@ -57,7 +57,7 @@ describe("TxInput", () => {
     test("toIsoBuf with script", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
-      const script = new Script().fromString("DOUBLEBLAKE3");
+      const script = new Script().fromIsoStr("DOUBLEBLAKE3");
       const sequence = 0xffffffff;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -71,7 +71,7 @@ describe("TxInput", () => {
   test("toIsoBuf with pushdata", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromString("0x121212");
+    const script = new Script().fromIsoStr("0x121212");
     const sequence = 0xffffffff;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -84,7 +84,7 @@ describe("TxInput", () => {
   test("isNull", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromString("0x121212");
+    const script = new Script().fromIsoStr("0x121212");
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -102,7 +102,7 @@ describe("TxInput", () => {
   test("isFinal", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromString("0x121212");
+    const script = new Script().fromIsoStr("0x121212");
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -120,7 +120,7 @@ describe("TxInput", () => {
   test("isCoinbase", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromString("0x121212");
+    const script = new Script().fromIsoStr("0x121212");
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -136,11 +136,11 @@ describe("TxInput", () => {
   });
 
   test("fromCoinbase", () => {
-    const script = new Script().fromString("0x121212");
+    const script = new Script().fromIsoStr("0x121212");
     const txInput = TxInput.fromCoinbase(script);
     expect(txInput).toBeInstanceOf(TxInput);
     expect(txInput.isNull()).toBe(true);
     expect(txInput.isFinal()).toBe(true);
-    expect(txInput.script.toString()).toEqual(script.toString());
+    expect(txInput.script.toIsoStr()).toEqual(script.toIsoStr());
   });
 });

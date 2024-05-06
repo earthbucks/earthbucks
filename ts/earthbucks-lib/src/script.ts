@@ -10,20 +10,20 @@ export default class Script {
     this.chunks = chunks;
   }
 
-  fromString(str: string): this {
+  fromIsoStr(str: string): this {
     if (str === "") {
       return this;
     }
-    this.chunks = str.split(" ").map(ScriptChunk.fromString);
+    this.chunks = str.split(" ").map(ScriptChunk.fromIsoStr);
     return this;
   }
 
-  static fromString(str: string): Script {
-    return new Script().fromString(str);
+  static fromIsoStr(str: string): Script {
+    return new Script().fromIsoStr(str);
   }
 
-  toString(): string {
-    return this.chunks.map((chunk) => chunk.toString()).join(" ");
+  toIsoStr(): string {
+    return this.chunks.map((chunk) => chunk.toIsoStr()).join(" ");
   }
 
   toIsoBuf(): Buffer {
@@ -31,7 +31,7 @@ export default class Script {
     return Buffer.concat(bufArray);
   }
 
-  fromU8Vec(arr: Buffer): this {
+  fromIsoBuf(arr: Buffer): this {
     const reader = new IsoBufReader(arr);
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
@@ -55,8 +55,8 @@ export default class Script {
     return this;
   }
 
-  static fromU8Vec(arr: Buffer): Script {
-    return new Script().fromU8Vec(arr);
+  static fromIsoBuf(arr: Buffer): Script {
+    return new Script().fromIsoBuf(arr);
   }
 
   static fromAddressOutput(pkh: Buffer): Script {

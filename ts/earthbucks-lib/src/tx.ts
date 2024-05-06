@@ -82,11 +82,11 @@ export default class Tx {
     return writer.toIsoBuf();
   }
 
-  toString(): string {
+  toIsoStr(): string {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromString(hex: string): Tx {
+  static fromIsoStr(hex: string): Tx {
     return Tx.fromU8Vec(Buffer.from(hex, "hex"));
   }
 

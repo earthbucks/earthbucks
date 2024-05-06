@@ -1,6 +1,6 @@
 use crate::blake3::blake3_hash;
-use crate::priv_key::PrivKey;
 use crate::iso_hex;
+use crate::priv_key::PrivKey;
 use bs58;
 use secp256k1::PublicKey;
 
@@ -106,7 +106,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_from_string_format() {
+    fn test_to_from_iso_str_format() {
         assert!(PubKey::is_valid_string_fmt(
             "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo"
         ));

@@ -493,7 +493,7 @@ mod tests {
     }
 
     #[test]
-    fn to_string_and_from_string() {
+    fn to_iso_str_and_from_iso_str() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
         let proof = MerkleProof::new(data1, vec![(data2, true)]);

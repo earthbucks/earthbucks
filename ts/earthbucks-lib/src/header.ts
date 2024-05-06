@@ -124,11 +124,11 @@ export default class Header {
     return bw;
   }
 
-  toString(): string {
+  toIsoStr(): string {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromString(str: string): Header {
+  static fromIsoStr(str: string): Header {
     return Header.fromIsoBuf(Buffer.from(str, "hex"));
   }
 

@@ -6,7 +6,6 @@ describe("PubKey", () => {
   test("PubKey", () => {
     const privKey = PrivKey.fromRandom();
     const pubKey = PubKey.fromPrivKey(privKey);
-    console.log(pubKey.toIsoStr());
     expect(pubKey).toBeDefined();
   });
 

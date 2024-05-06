@@ -91,13 +91,13 @@ export default class MerkleProof {
     return new MerkleProof(root, proof);
   }
 
-  toString(): string {
+  toIsoStr(): string {
     const u8vec = this.toIsoBuf();
     const hex = Buffer.from(u8vec).toString("hex");
     return hex;
   }
 
-  static fromString(hex: string): MerkleProof {
+  static fromIsoStr(hex: string): MerkleProof {
     const u8vec = Buffer.from(hex, "hex");
     return MerkleProof.fromU8Vec(u8vec);
   }

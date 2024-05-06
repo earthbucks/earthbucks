@@ -105,8 +105,8 @@ mod tests {
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_string("").unwrap(), 0);
-        tx_builder.add_output(50, Script::from_string("").unwrap());
+        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_iso_str("").unwrap(), 0);
+        tx_builder.add_output(50, Script::from_iso_str("").unwrap());
 
         let tx = tx_builder.build();
 
@@ -160,9 +160,9 @@ mod tests {
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_string("").unwrap(), 0);
-        tx_builder.add_output(100, Script::from_string("").unwrap());
-        tx_builder.add_output(100, Script::from_string("").unwrap());
+        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_iso_str("").unwrap(), 0);
+        tx_builder.add_output(100, Script::from_iso_str("").unwrap());
+        tx_builder.add_output(100, Script::from_iso_str("").unwrap());
 
         let tx = tx_builder.build();
 

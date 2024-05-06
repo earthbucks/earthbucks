@@ -54,17 +54,17 @@ export default class ScriptNum {
     }
   }
 
-  toString(): string {
+  toIsoStr(): string {
     return this.num.toString();
   }
 
-  fromString(str: string): this {
+  fromIsoStr(str: string): this {
     this.num = BigInt(str);
     return this;
   }
 
-  static fromString(str: string): ScriptNum {
-    return new ScriptNum().fromString(str);
+  static fromIsoStr(str: string): ScriptNum {
+    return new ScriptNum().fromIsoStr(str);
   }
 
   toU32(): number {

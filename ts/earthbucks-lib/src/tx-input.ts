@@ -27,7 +27,7 @@ export default class TxInput {
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
-    const script = Script.fromU8Vec(reader.readBuffer(scriptLen));
+    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen));
     const sequence = reader.readUInt32LE();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
@@ -36,7 +36,7 @@ export default class TxInput {
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
-    const script = Script.fromU8Vec(reader.readBuffer(scriptLen));
+    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen));
     const sequence = reader.readUInt32LE();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }

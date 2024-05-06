@@ -79,7 +79,7 @@ mod tests {
 
     fn setup() -> TxBuilder {
         let mut tx_out_map = TxOutputMap::new();
-        let change_script = Script::from_string("");
+        let change_script = Script::from_iso_str("");
 
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -95,7 +95,7 @@ mod tests {
     #[test]
     fn test_build_valid_tx_when_input_is_enough_to_cover_output() {
         let mut tx_builder = setup();
-        tx_builder.add_output(50, Script::from_string("").unwrap());
+        tx_builder.add_output(50, Script::from_iso_str("").unwrap());
 
         let tx = tx_builder.build();
 
@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn test_build_invalid_tx_when_input_is_insufficient_to_cover_output() {
         let mut tx_builder = setup();
-        tx_builder.add_output(10000, Script::from_string("").unwrap());
+        tx_builder.add_output(10000, Script::from_iso_str("").unwrap());
 
         let tx = tx_builder.build();
 

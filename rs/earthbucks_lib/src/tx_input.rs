@@ -84,7 +84,7 @@ mod tests {
     fn test_tx_input() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
-        let script = Script::from_string("");
+        let script = Script::from_iso_str("");
         let sequence = 0;
 
         let script_clone = match script {
@@ -102,7 +102,7 @@ mod tests {
         let tx_input2 = TxInput::from_iso_buf(buf).map_err(|e| e.to_string())?;
         assert_eq!(tx_input2.input_tx_id, input_tx_id);
         assert_eq!(tx_input2.input_tx_out_num, input_tx_index);
-        match (tx_input.script.to_string(), tx_input2.script.to_string()) {
+        match (tx_input.script.to_iso_str(), tx_input2.script.to_iso_str()) {
             (Ok(script_str), Ok(expected_script_str)) => {
                 assert_eq!(script_str, expected_script_str)
             }
@@ -117,7 +117,7 @@ mod tests {
         let input_tx_id = vec![0u8; 32];
         let input_tx_index = 1u32;
         let script_hex = "";
-        let script = Script::from_string(script_hex);
+        let script = Script::from_iso_str(script_hex);
         let sequence = 2u32;
 
         let script_v8_vec = match script {
@@ -136,7 +136,7 @@ mod tests {
         let tx_input = TxInput::from_buffer_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;
-        let script2_hex = match script2.to_string() {
+        let script2_hex = match script2.to_iso_str() {
             Ok(script2_hex) => script2_hex,
             Err(_) => panic!("Failed to convert script to string"),
         };
@@ -152,7 +152,7 @@ mod tests {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
-            script: Script::from_string("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             sequence: 0,
         };
         assert!(!tx_input.is_null());
@@ -160,7 +160,7 @@ mod tests {
         let null_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_string("").unwrap(),
+            script: Script::from_iso_str("").unwrap(),
             sequence: 0xffffffff,
         };
         assert!(null_tx_input.is_null());
@@ -171,7 +171,7 @@ mod tests {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
-            script: Script::from_string("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             sequence: 0,
         };
         assert!(!tx_input.is_final());
@@ -179,7 +179,7 @@ mod tests {
         let final_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_string("").unwrap(),
+            script: Script::from_iso_str("").unwrap(),
             sequence: 0xffffffff,
         };
         assert!(final_tx_input.is_final());
@@ -190,7 +190,7 @@ mod tests {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
-            script: Script::from_string("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             sequence: 0,
         };
         assert!(!tx_input.is_coinbase());
@@ -198,7 +198,7 @@ mod tests {
         let coinbase_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_string("").unwrap(),
+            script: Script::from_iso_str("").unwrap(),
             sequence: 0xffffffff,
         };
         assert!(coinbase_tx_input.is_coinbase());
@@ -206,12 +206,12 @@ mod tests {
 
     #[test]
     fn test_from_coinbase() {
-        let script = Script::from_string("0x121212").unwrap();
+        let script = Script::from_iso_str("0x121212").unwrap();
         let tx_input = TxInput::from_coinbase(script);
 
         assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
         assert_eq!(tx_input.input_tx_out_num, 0xffffffff);
-        assert_eq!(tx_input.script.to_string().unwrap(), "0x121212");
+        assert_eq!(tx_input.script.to_iso_str().unwrap(), "0x121212");
         assert_eq!(tx_input.sequence, 0xffffffff);
     }
 }

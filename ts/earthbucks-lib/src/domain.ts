@@ -7,11 +7,11 @@ export default class Domain {
     this.domainStr = domainStr;
   }
 
-  static fromString(domainStr: string): Domain {
+  static fromIsoStr(domainStr: string): Domain {
     return new Domain(domainStr);
   }
 
-  toString(): string {
+  toIsoStr(): string {
     return this.domainStr;
   }
 

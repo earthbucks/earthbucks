@@ -12,26 +12,26 @@ impl Script {
         Self { chunks }
     }
 
-    pub fn self_from_string(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn self_from_iso_str(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
         if s.is_empty() {
             return Ok(Self::new(Vec::new()));
         }
         let chunks: Result<Vec<ScriptChunk>, _> = s
             .split_whitespace()
-            .map(|s| ScriptChunk::from_string_new(s.to_string()))
+            .map(|s| ScriptChunk::from_iso_str_new(s.to_string()))
             .collect();
         Ok(Self::new(chunks?))
     }
 
-    pub fn from_string(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        // use from_string
+    pub fn from_iso_str(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        // use from_iso_str
         let script = Self::new(Vec::new());
-        script.self_from_string(s)
+        script.self_from_iso_str(s)
     }
 
-    pub fn to_string(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_iso_str(&self) -> Result<String, Box<dyn std::error::Error>> {
         let chunks: Result<Vec<String>, _> =
-            self.chunks.iter().map(|chunk| chunk.to_string()).collect();
+            self.chunks.iter().map(|chunk| chunk.to_iso_str()).collect();
         Ok(chunks?.join(" "))
     }
 
@@ -178,13 +178,13 @@ mod tests {
     }
 
     #[test]
-    fn test_from_string() {
+    fn test_from_iso_str() {
         let s = "DUP BLAKE3 DOUBLEBLAKE3";
-        let script = Script::from_string(s).unwrap();
+        let script = Script::from_iso_str(s).unwrap();
         let expected_chunks = vec![
-            ScriptChunk::from_string_new("DUP".to_string()).unwrap(),
-            ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
-            ScriptChunk::from_string_new("DOUBLEBLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DUP".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("BLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DOUBLEBLAKE3".to_string()).unwrap(),
         ];
         assert_eq!(script.chunks, expected_chunks);
     }
@@ -192,21 +192,21 @@ mod tests {
     #[test]
     fn test_to_string() {
         let chunks = vec![
-            ScriptChunk::from_string_new("DUP".to_string()).unwrap(),
-            ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
-            ScriptChunk::from_string_new("DOUBLEBLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DUP".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("BLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DOUBLEBLAKE3".to_string()).unwrap(),
         ];
         let script = Script::new(chunks);
         let expected_string = "DUP BLAKE3 DOUBLEBLAKE3"; // Replace with the expected string representation of your chunks
-        assert_eq!(script.to_string().unwrap(), expected_string);
+        assert_eq!(script.to_iso_str().unwrap(), expected_string);
     }
 
     #[test]
     fn test_to_iso_buf() {
         let chunks = vec![
-            ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
-            ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
-            ScriptChunk::from_string_new("DOUBLEBLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("0xffff".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("BLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DOUBLEBLAKE3".to_string()).unwrap(),
         ];
         let script = Script::new(chunks);
         let expected_vec = vec![76, 0x02, 0xff, 0xff, 166, 167];
@@ -218,9 +218,9 @@ mod tests {
         let arr = vec![76, 0x02, 0xff, 0xff, 166, 167];
         let script = Script::from_iso_buf(&arr);
         let expected_chunks = vec![
-            ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
-            ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
-            ScriptChunk::from_string_new("DOUBLEBLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("0xffff".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("BLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DOUBLEBLAKE3".to_string()).unwrap(),
         ];
         assert_eq!(script.unwrap().chunks, expected_chunks);
     }
@@ -231,7 +231,7 @@ mod tests {
         let expected_output_string = "0xffff 0xffff";
 
         // Convert the input string to a Script
-        let script = Script::from_string(input_string).unwrap();
+        let script = Script::from_iso_str(input_string).unwrap();
 
         // Convert the Script to a u8 vector
         let u8_vec = script.to_iso_buf();
@@ -239,7 +239,7 @@ mod tests {
         let script2 = Script::from_iso_buf(&u8_vec).unwrap();
 
         // Convert the Script back to a string
-        let output_string = script2.to_string().unwrap();
+        let output_string = script2.to_iso_str().unwrap();
 
         // Check that the output string is the same as the input string
         assert_eq!(output_string, expected_output_string);
@@ -250,18 +250,18 @@ mod tests {
         let arr = vec![76, 0x02, 0xff, 0xff, 166, 167];
         let script = Script::from_iso_buf(arr.as_slice());
         let expected_chunks = vec![
-            ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
-            ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
-            ScriptChunk::from_string_new("DOUBLEBLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("0xffff".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("BLAKE3".to_string()).unwrap(),
+            ScriptChunk::from_iso_str_new("DOUBLEBLAKE3".to_string()).unwrap(),
         ];
         let new_script = Script::new(expected_chunks);
-        let new_string = new_script.to_string().unwrap();
-        assert_eq!(script.unwrap().to_string().unwrap(), new_string);
+        let new_string = new_script.to_iso_str().unwrap();
+        assert_eq!(script.unwrap().to_iso_str().unwrap(), new_string);
     }
 
     #[test]
     fn test_is_pkh_output() {
-        let mut script = Script::from_string("").unwrap();
+        let mut script = Script::from_iso_str("").unwrap();
         script.chunks = vec![
             ScriptChunk::new(OP["DUP"], None),
             ScriptChunk::new(OP["DOUBLEBLAKE3"], None),

@@ -1,6 +1,6 @@
+use crate::header::Header;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
-use crate::header::Header;
 use crate::tx::Tx;
 use crate::var_int::VarInt;
 

@@ -1,6 +1,6 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
-use crate::pub_key;
 use crate::iso_hex;
+use crate::pub_key;
 use bs58;
 
 #[derive(Debug, Clone)]

@@ -132,7 +132,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_string() {
+    fn test_from_iso_str() {
         let priv_key = PrivKey::from_random();
         let s = priv_key.to_iso_str();
         let priv_key2 = PrivKey::from_iso_str(&s).unwrap();
@@ -169,7 +169,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_from_string_format() {
+    fn test_to_from_iso_str_format() {
         assert!(PrivKey::is_valid_string_fmt(
             "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ"
         ));

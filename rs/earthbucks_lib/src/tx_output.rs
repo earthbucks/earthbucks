@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn test_tx_output_from_iso_buf_and_to_iso_buf() {
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
         let result = TxOutput::from_iso_buf(tx_output.to_iso_buf());
         let result = match result {
@@ -74,7 +74,8 @@ mod tests {
     fn test_big_push_data() {
         let data = vec![0u8; 0xffff];
         let value = 100;
-        let script = Script::from_string(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
+        let script =
+            Script::from_iso_str(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
         let tx_output = TxOutput::new(value, script);
         let result = TxOutput::from_iso_buf(tx_output.to_iso_buf()).unwrap();
         assert_eq!(
@@ -86,7 +87,7 @@ mod tests {
     #[test]
     fn test_buffer_reader() {
         let value = 100;
-        let script = Script::from_string("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOutput::new(value, script);
         let result =
             TxOutput::from_buffer_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
