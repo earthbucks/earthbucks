@@ -7,9 +7,9 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "remix vite:dev --port=3000",
+    "dev": "remix vite:dev --port=3100",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "PORT=3000 remix-serve ./build/server/index.js",
+    "start": "PORT=3100 remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "deploy": "cd .. && fly deploy --config earthbucks-mine-1/fly.toml --dockerfile earthbucks-mine-1/Dockerfile",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""

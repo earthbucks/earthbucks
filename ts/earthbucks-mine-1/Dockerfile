@@ -37,5 +37,5 @@ COPY --from=build /app /app
 
 WORKDIR /app/earthbucks-mine-1
 
-EXPOSE 3000
+EXPOSE 3100
 CMD [ "pnpm", "run", "start" ]

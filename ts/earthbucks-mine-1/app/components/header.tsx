@@ -13,7 +13,9 @@ export default function Header() {
           </h1>
 
           <p className="text-center text-black dark:text-white">
-            Virginia, USA, North American Sextant
+            42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
+            <br /><br />
+            Genesis block in July 2024.
           </p>
         </div>
       </div>
