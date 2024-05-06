@@ -13,14 +13,14 @@ impl TxSignature {
         Self { hash_type, sig_buf }
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut result = Vec::new();
         result.push(self.hash_type);
         result.extend(&self.sig_buf);
         result
     }
 
-    pub fn from_u8_vec(data: &[u8]) -> Self {
+    pub fn from_iso_buf(data: &[u8]) -> Self {
         let hash_type = data[0];
         let sig_buf = data[1..].to_vec();
         Self { hash_type, sig_buf }

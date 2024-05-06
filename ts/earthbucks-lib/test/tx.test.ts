@@ -36,9 +36,9 @@ describe("Tx", () => {
     const lockNum = BigInt(0);
 
     const tx = new Tx(version, inputs, outputs, lockNum);
-    const result = Tx.fromU8Vec(tx.toBuffer());
-    expect(tx.toBuffer().toString("hex")).toEqual(
-      result.toBuffer().toString("hex"),
+    const result = Tx.fromU8Vec(tx.toIsoBuf());
+    expect(tx.toIsoBuf().toString("hex")).toEqual(
+      result.toIsoBuf().toString("hex"),
     );
   });
 
@@ -53,7 +53,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = Tx.fromU8Vec(tx.toBuffer());
+      const result = Tx.fromU8Vec(tx.toIsoBuf());
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
@@ -62,8 +62,8 @@ describe("Tx", () => {
     });
   });
 
-  describe("fromBufferReader", () => {
-    test("fromBufferReader", () => {
+  describe("fromIsoBufReader", () => {
+    test("fromIsoBufReader", () => {
       const version = 1;
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
@@ -73,8 +73,8 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const reader = new BufferReader(tx.toBuffer());
-      const result = Tx.fromBufferReader(reader);
+      const reader = new BufferReader(tx.toIsoBuf());
+      const result = Tx.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
@@ -158,7 +158,7 @@ describe("Tx", () => {
       const lockNum = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockNum);
-      const expectedHash = blake3Hash(tx.toBuffer());
+      const expectedHash = blake3Hash(tx.toIsoBuf());
       expect(tx.blake3Hash()).toEqual(expectedHash);
     });
   });
@@ -173,7 +173,7 @@ describe("Tx", () => {
       const lockNum = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockNum);
-      const expectedHash = blake3Hash(blake3Hash(tx.toBuffer()));
+      const expectedHash = blake3Hash(blake3Hash(tx.toIsoBuf()));
       expect(tx.id()).toEqual(expectedHash);
     });
   });
@@ -249,7 +249,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockNum);
 
       const script = Script.fromString("");
-      const scriptU8Vec = script.toBuffer();
+      const scriptU8Vec = script.toIsoBuf();
       const result = tx.sighashNoCache(
         0,
         scriptU8Vec,
@@ -277,7 +277,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockNum);
 
       const script = Script.fromString("");
-      const scriptU8Vec = script.toBuffer();
+      const scriptU8Vec = script.toIsoBuf();
       const hashCache = new HashCache();
       const result = tx.sighashWithCache(
         0,
@@ -325,7 +325,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
       });
@@ -344,17 +344,17 @@ describe("Tx", () => {
           new TxInput(Buffer.alloc(32), 0, Script.fromString(""), 0xffffffff),
         ];
         // expect tx output to equal hext
-        expect(inputs[0].toBuffer().toString("hex")).toEqual(
+        expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
           "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
         );
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromString("")),
         ];
-        expect(outputs[0].toBuffer().toString("hex")).toEqual(
+        expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
         const tx = new Tx(1, inputs, outputs, BigInt(0));
-        expect(tx.toBuffer().toString("hex")).toEqual(
+        expect(tx.toIsoBuf().toString("hex")).toEqual(
           "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000",
         );
 
@@ -370,11 +370,11 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
         const publicKey =
-          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toBuffer();
+          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toIsoBuf();
         const result = tx.verifyNoCache(
           inputIndex,
           publicKey,
@@ -399,17 +399,17 @@ describe("Tx", () => {
           new TxInput(Buffer.alloc(32), 0, Script.fromString(""), 0xffffffff),
         ];
         // expect tx output to equal hext
-        expect(inputs[0].toBuffer().toString("hex")).toEqual(
+        expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
           "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
         );
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromString("")),
         ];
-        expect(outputs[0].toBuffer().toString("hex")).toEqual(
+        expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
         const tx = new Tx(1, inputs, outputs, BigInt(0));
-        expect(tx.toBuffer().toString("hex")).toEqual(
+        expect(tx.toIsoBuf().toString("hex")).toEqual(
           "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000",
         );
         const hashCache1 = new HashCache();
@@ -427,11 +427,11 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
-        expect(Buffer.from(signature.toBuffer()).toString("hex")).toEqual(
+        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
         const publicKey =
-          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toBuffer();
+          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toIsoBuf();
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,

@@ -14,10 +14,10 @@ function main() {
     case "key":
       {
         const key = KeyPair.fromRandom();
-        const privateKeyHex = Buffer.from(key.privKey.toBuffer()).toString(
+        const privateKeyHex = Buffer.from(key.privKey.toIsoBuf()).toString(
           "hex",
         );
-        const publicKeyHex = Buffer.from(key.pubKey.toBuffer()).toString("hex");
+        const publicKeyHex = Buffer.from(key.pubKey.toIsoBuf()).toString("hex");
 
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
@@ -27,13 +27,13 @@ function main() {
       {
         // Generate a new private key
         const key = KeyPair.fromRandom();
-        const publicKey = key.pubKey.toBuffer();
+        const publicKey = key.pubKey.toIsoBuf();
 
         // Get the corresponding pkh
         const pkh = Pkh.fromPubKeyBuffer(publicKey);
 
         // Print them out
-        const privateKeyHex = Buffer.from(key.privKey.toBuffer()).toString(
+        const privateKeyHex = Buffer.from(key.privKey.toIsoBuf()).toString(
           "hex",
         );
         const publicKeyHex = Buffer.from(publicKey).toString("hex");

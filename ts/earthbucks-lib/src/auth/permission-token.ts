@@ -10,14 +10,14 @@ export default class PermissionToken {
     this.timestamp = timestamp; // milliseconds
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const writer = new BufferWriter();
     writer.writeBuffer(this.randValue);
     writer.writeUInt64BEBigInt(this.timestamp);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 
-  static fromBuffer(buf: Buffer): PermissionToken {
+  static fromIsoBuf(buf: Buffer): PermissionToken {
     if (buf.length !== 32 + 8) {
       throw new Error("invalid buffer length");
     }

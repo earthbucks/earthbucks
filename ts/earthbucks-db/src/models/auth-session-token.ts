@@ -30,7 +30,7 @@ export async function createAuthSessionToken(
   expiresAt = expiresAt || new Date(now + 1000 * 60 * 60 * 24 * 365 * 2); // two years
   const newAuthSigninToken: NewAuthSessionToken = {
     id: tokenId,
-    pubKey: pubKey.toBuffer(),
+    pubKey: pubKey.toIsoBuf(),
     createdAt,
     expiresAt,
   };

@@ -14,7 +14,7 @@ impl PubKey {
         PubKey { buf: pub_key }
     }
 
-    pub fn from_u8_vec(vec: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
         if vec.len() != 33 {
             return Err("Invalid buffer length".to_string());
         }
@@ -35,23 +35,23 @@ impl PubKey {
         Ok(PubKey::new(pub_key_buf.unwrap()))
     }
 
-    pub fn to_hex(&self) -> String {
+    pub fn to_iso_hex(&self) -> String {
         hex::encode(self.buf)
     }
 
-    pub fn from_hex(hex: &str) -> Result<PubKey, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<PubKey, String> {
         let pub_key_buf = strict_hex::decode(hex)?;
-        PubKey::from_u8_vec(pub_key_buf)
+        PubKey::from_iso_buf(pub_key_buf)
     }
 
-    pub fn to_string_fmt(&self) -> String {
+    pub fn to_iso_str(&self) -> String {
         let check_hash = blake3_hash(&self.buf);
         let check_sum = &check_hash[0..4];
         let check_hex = hex::encode(check_sum);
         "ebxpub".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
-    pub fn from_string_fmt(s: &str) -> Result<PubKey, String> {
+    pub fn from_iso_str(s: &str) -> Result<PubKey, String> {
         if !s.starts_with("ebxpub") {
             return Err("Invalid format".to_string());
         }
@@ -65,7 +65,7 @@ impl PubKey {
         if check_buf != check_sum {
             return Err("Invalid checksum".to_string());
         }
-        PubKey::from_u8_vec(buf)
+        PubKey::from_iso_buf(buf)
     }
 
     pub fn is_valid(&self) -> bool {
@@ -74,7 +74,7 @@ impl PubKey {
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
-        let res = Self::from_string_fmt(s);
+        let res = Self::from_iso_str(s);
         res.is_ok()
     }
 }
@@ -87,8 +87,8 @@ mod tests {
     fn test_from_priv_key() {
         let priv_key = PrivKey::from_random();
         let pub_key = PubKey::from_priv_key(&priv_key).unwrap();
-        println!("priv_key: {}", priv_key.to_string_fmt());
-        println!("pub_key: {}", pub_key.to_hex());
+        println!("priv_key: {}", priv_key.to_iso_str());
+        println!("pub_key: {}", pub_key.to_iso_hex());
     }
 
     #[test]
@@ -101,7 +101,7 @@ mod tests {
     #[test]
     fn test_is_not_valid() {
         let invalid = "065b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219";
-        let pub_key = PubKey::from_hex(invalid).unwrap();
+        let pub_key = PubKey::from_iso_hex(invalid).unwrap();
         assert!(!pub_key.is_valid());
     }
 

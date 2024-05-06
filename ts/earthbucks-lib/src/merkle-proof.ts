@@ -67,7 +67,7 @@ export default class MerkleProof {
     return [root, proofs];
   }
 
-  toBuffer() {
+  toIsoBuf() {
     const bw = new BufferWriter();
     bw.writeBuffer(this.root);
     bw.writeVarIntNum(this.proof.length);
@@ -75,7 +75,7 @@ export default class MerkleProof {
       bw.writeBuffer(sibling);
       bw.writeUInt8(isLeft ? 1 : 0);
     }
-    return bw.toBuffer();
+    return bw.toIsoBuf();
   }
 
   static fromU8Vec(buf: Buffer): MerkleProof {
@@ -92,7 +92,7 @@ export default class MerkleProof {
   }
 
   toString(): string {
-    const u8vec = this.toBuffer();
+    const u8vec = this.toIsoBuf();
     const hex = Buffer.from(u8vec).toString("hex");
     return hex;
   }

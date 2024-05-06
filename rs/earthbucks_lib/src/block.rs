@@ -31,19 +31,19 @@ impl Block {
 
     pub fn to_buffer_writer(&self) -> BufferWriter {
         let mut bw = BufferWriter::new();
-        bw.write_u8_vec(self.header.to_u8_vec());
-        bw.write_u8_vec(VarInt::from_u64_new(self.txs.len() as u64).to_u8_vec());
+        bw.write_u8_vec(self.header.to_iso_buf());
+        bw.write_u8_vec(VarInt::from_u64_new(self.txs.len() as u64).to_iso_buf());
         for tx in &self.txs {
-            bw.write_u8_vec(tx.to_buffer_writer().to_u8_vec());
+            bw.write_u8_vec(tx.to_buffer_writer().to_iso_buf());
         }
         bw
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
-        self.to_buffer_writer().to_u8_vec()
+    pub fn to_iso_buf(&self) -> Vec<u8> {
+        self.to_buffer_writer().to_iso_buf()
     }
 
-    pub fn from_u8_vec(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
         let mut br = BufferReader::new(buf);
         Self::from_buffer_reader(&mut br)
     }
@@ -70,11 +70,11 @@ mod tests {
         let tx = Tx::new(1, vec![], vec![], 1);
         let block = Block::new(header, vec![tx]);
         let bw = block.to_buffer_writer();
-        assert!(!bw.to_u8_vec().is_empty());
+        assert!(!bw.to_iso_buf().is_empty());
     }
 
     #[test]
-    fn test_to_u8_vec_and_from_u8_vec() {
+    fn test_to_iso_buf_and_from_iso_buf() {
         let header = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -89,8 +89,8 @@ mod tests {
         };
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
-        let buf = block1.to_u8_vec();
-        let block2 = Block::from_u8_vec(buf).unwrap();
+        let buf = block1.to_iso_buf();
+        let block2 = Block::from_iso_buf(buf).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);
     }
@@ -111,7 +111,7 @@ mod tests {
         };
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
-        let buf = block1.to_u8_vec();
+        let buf = block1.to_iso_buf();
         let mut br = BufferReader::new(buf);
         let block2 = Block::from_buffer_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);

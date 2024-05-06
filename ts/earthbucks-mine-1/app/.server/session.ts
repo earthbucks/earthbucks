@@ -30,7 +30,7 @@ function createDatabaseSessionStorage() {
       let res = await getAuthSessionToken(id);
       if (!res) return null;
       let pubKeyBuf = res.pubKey;
-      let pubKey = PubKey.fromBuffer(pubKeyBuf);
+      let pubKey = PubKey.fromIsoBuf(pubKeyBuf);
       return {
         pubKey,
       };

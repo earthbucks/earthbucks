@@ -15,9 +15,9 @@ export default class Block {
     this.txs = txs;
   }
 
-  static fromBufferReader(br: BufferReader): Block {
-    const header = Header.fromBuffer(br.readBuffer(80));
-    const txCountVarInt = VarInt.fromBufferReader(br);
+  static fromIsoBufReader(br: BufferReader): Block {
+    const header = Header.fromIsoBuf(br.readBuffer(80));
+    const txCountVarInt = VarInt.fromIsoBufReader(br);
     if (!txCountVarInt.isMinimal()) {
       throw new Error("non-minimally encoded varint");
     }
@@ -25,7 +25,7 @@ export default class Block {
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
       try {
-        const tx = Tx.fromBufferReader(br);
+        const tx = Tx.fromIsoBufReader(br);
         txs.push(tx);
       } catch (e) {
         throw new Error("unable to parse transactions");
@@ -34,21 +34,21 @@ export default class Block {
     return new Block(header, txs);
   }
 
-  toBufferWriter(bw: BufferWriter): BufferWriter {
-    bw.writeBuffer(this.header.toBuffer());
+  toIsoBufWriter(bw: BufferWriter): BufferWriter {
+    bw.writeBuffer(this.header.toIsoBuf());
     bw.writeVarIntNum(this.txs.length);
     this.txs.forEach((tx) => {
-      bw.writeBuffer(tx.toBuffer());
+      bw.writeBuffer(tx.toIsoBuf());
     });
     return bw;
   }
 
-  toBuffer(): Buffer {
-    return this.toBufferWriter(new BufferWriter()).toBuffer();
+  toIsoBuf(): Buffer {
+    return this.toIsoBufWriter(new BufferWriter()).toIsoBuf();
   }
 
   static fromU8Vec(buf: Buffer): Block {
-    return Block.fromBufferReader(new BufferReader(buf));
+    return Block.fromIsoBufReader(new BufferReader(buf));
   }
 
   isGenesis(): boolean {

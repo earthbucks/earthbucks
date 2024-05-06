@@ -84,7 +84,7 @@ mod tests {
         for i in 0..5 {
             let key = KeyPair::from_random();
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
-            let script = Script::from_pkh_output(pkh.to_u8_vec());
+            let script = Script::from_pkh_output(pkh.to_iso_buf());
             let output = TxOutput::new(100, script);
             tx_out_map.add(output, &[0; 32], i);
         }

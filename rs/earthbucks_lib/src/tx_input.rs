@@ -22,12 +22,12 @@ impl TxInput {
         }
     }
 
-    pub fn from_u8_vec(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
         let mut reader = BufferReader::new(buf);
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
-        let script = Script::from_u8_vec(reader.read_u8_vec(size).as_slice())?;
+        let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }
@@ -38,20 +38,20 @@ impl TxInput {
         let input_tx_id = reader.read_u8_vec(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_var_int() as usize;
-        let script = Script::from_u8_vec(reader.read_u8_vec(size).as_slice())?;
+        let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
         let sequence = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut writer = BufferWriter::new();
         writer.write_u8_vec(self.input_tx_id.clone());
         writer.write_u32_be(self.input_tx_out_num);
-        let script_buf = self.script.to_u8_vec();
-        writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_u8_vec());
+        let script_buf = self.script.to_iso_buf();
+        writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
         writer.write_u8_vec(script_buf);
         writer.write_u32_be(self.sequence);
-        writer.to_u8_vec()
+        writer.to_iso_buf()
     }
 
     pub fn is_null(&self) -> bool {
@@ -94,12 +94,12 @@ mod tests {
 
         let tx_input = TxInput::new(input_tx_id.clone(), input_tx_index, script_clone, sequence);
 
-        // Test to_u8_vec
-        let buf = tx_input.to_u8_vec();
+        // Test to_iso_buf
+        let buf = tx_input.to_iso_buf();
         assert!(!buf.is_empty());
 
-        // Test from_u8_vec
-        let tx_input2 = TxInput::from_u8_vec(buf).map_err(|e| e.to_string())?;
+        // Test from_iso_buf
+        let tx_input2 = TxInput::from_iso_buf(buf).map_err(|e| e.to_string())?;
         assert_eq!(tx_input2.input_tx_id, input_tx_id);
         assert_eq!(tx_input2.input_tx_out_num, input_tx_index);
         match (tx_input.script.to_string(), tx_input2.script.to_string()) {
@@ -121,7 +121,7 @@ mod tests {
         let sequence = 2u32;
 
         let script_v8_vec = match script {
-            Ok(script) => script.to_u8_vec(),
+            Ok(script) => script.to_iso_buf(),
             Err(_) => panic!("Failed to convert script to u8 vec"),
         };
 
@@ -132,7 +132,7 @@ mod tests {
         writer.write_u8_vec(script_v8_vec);
         writer.write_u32_be(sequence);
 
-        let mut reader = BufferReader::new(writer.to_u8_vec());
+        let mut reader = BufferReader::new(writer.to_iso_buf());
         let tx_input = TxInput::from_buffer_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;

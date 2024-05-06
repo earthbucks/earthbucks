@@ -47,7 +47,7 @@ impl TxSigner {
             return false;
         }
         input_script.chunks[1].buffer = Some(pub_key.clone());
-        let output_script_buf = tx_out.script.to_u8_vec();
+        let output_script_buf = tx_out.script.to_iso_buf();
         let output_amount = tx_out.value;
         let private_key_array = key.priv_key.buf;
         let sig = self.tx.sign_no_cache(
@@ -57,7 +57,7 @@ impl TxSigner {
             output_amount,
             TxSignature::SIGHASH_ALL,
         );
-        let sig_buf = sig.to_u8_vec();
+        let sig_buf = sig.to_iso_buf();
         if sig_buf.len() != 65 {
             return false;
         }

@@ -10,7 +10,7 @@ export default class VarInt {
   }
 
   fromBigInt(bn: bigint) {
-    this.buf = new BufferWriter().writeVarIntBigInt(bn).toBuffer();
+    this.buf = new BufferWriter().writeVarIntBigInt(bn).toIsoBuf();
     return this;
   }
 
@@ -19,7 +19,7 @@ export default class VarInt {
   }
 
   fromNumber(num: number) {
-    this.buf = new BufferWriter().writeVarIntNum(num).toBuffer();
+    this.buf = new BufferWriter().writeVarIntNum(num).toIsoBuf();
     return this;
   }
 
@@ -27,7 +27,7 @@ export default class VarInt {
     return new this().fromNumber(num);
   }
 
-  toBuffer() {
+  toIsoBuf() {
     return this.buf;
   }
 
@@ -39,7 +39,7 @@ export default class VarInt {
     return new BufferReader(this.buf).readVarIntNum();
   }
 
-  static fromBufferReader(br: BufferReader): VarInt {
+  static fromIsoBufReader(br: BufferReader): VarInt {
     const buf = Buffer.from(br.readVarIntBuf());
     return new VarInt(buf);
   }
@@ -47,6 +47,6 @@ export default class VarInt {
   isMinimal() {
     const bn = this.toBigInt();
     const varint = new VarInt().fromBigInt(bn);
-    return Buffer.compare(this.buf, varint.toBuffer()) === 0;
+    return Buffer.compare(this.buf, varint.toIsoBuf()) === 0;
   }
 }

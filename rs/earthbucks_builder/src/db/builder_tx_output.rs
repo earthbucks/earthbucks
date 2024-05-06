@@ -22,7 +22,7 @@ impl MineTxOutput {
                 tx_id: tx.id().to_vec(),
                 tx_out_num: tx_out_num as u32,
                 value: tx_out.value,
-                script: tx_out.script.to_u8_vec(),
+                script: tx_out.script.to_iso_buf(),
                 spent_by_tx_id: None,
                 spent_by_tx_in_num: None,
                 spent_in_block_id: None,

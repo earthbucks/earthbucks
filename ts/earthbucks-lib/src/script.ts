@@ -26,8 +26,8 @@ export default class Script {
     return this.chunks.map((chunk) => chunk.toString()).join(" ");
   }
 
-  toBuffer(): Buffer {
-    const bufArray = this.chunks.map((chunk) => chunk.toBuffer());
+  toIsoBuf(): Buffer {
+    const bufArray = this.chunks.map((chunk) => chunk.toIsoBuf());
     return Buffer.concat(bufArray);
   }
 

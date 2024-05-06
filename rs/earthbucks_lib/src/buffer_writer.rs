@@ -19,7 +19,7 @@ impl BufferWriter {
         self.bufs.iter().map(|buf| buf.len()).sum()
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut result = Vec::new();
         for buf in &self.bufs {
             result.extend(buf);
@@ -148,12 +148,12 @@ mod tests {
     }
 
     #[test]
-    fn test_to_u8_vec() {
+    fn test_to_iso_buf() {
         let mut writer = BufferWriter::new();
         writer.write_u8_vec(vec![1, 2, 3]);
         writer.write_u8_vec(vec![4, 5, 6]);
 
-        let result = writer.to_u8_vec();
+        let result = writer.to_iso_buf();
         assert_eq!(result, vec![1, 2, 3, 4, 5, 6]);
     }
 

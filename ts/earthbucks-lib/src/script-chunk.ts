@@ -60,31 +60,31 @@ export default class ScriptChunk {
     return new ScriptChunk().fromString(str);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const opcode = this.opcode;
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt8(this.buf.length).toBuffer(),
+        new BufferWriter().writeUInt8(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt16BE(this.buf.length).toBuffer(),
+        new BufferWriter().writeUInt16BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return Buffer.concat([
         Buffer.from([opcode]),
-        new BufferWriter().writeUInt32BE(this.buf.length).toBuffer(),
+        new BufferWriter().writeUInt32BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     }
     return Buffer.from([opcode]);
   }
 
-  fromBuffer(buf: Buffer): this {
+  fromIsoBuf(buf: Buffer): this {
     const opcode = buf[0];
     if (opcode === OP.PUSHDATA1) {
       const len = buf[1];
@@ -114,8 +114,8 @@ export default class ScriptChunk {
     return this;
   }
 
-  static fromBuffer(buf: Buffer): ScriptChunk {
-    return new ScriptChunk().fromBuffer(buf);
+  static fromIsoBuf(buf: Buffer): ScriptChunk {
+    return new ScriptChunk().fromIsoBuf(buf);
   }
 
   static fromData(data: Buffer): ScriptChunk {

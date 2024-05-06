@@ -8,8 +8,8 @@ import { Buffer } from "buffer";
 describe("KeyPair", () => {
   test("KeyPair", () => {
     const keypair = KeyPair.fromRandom();
-    expect(keypair.privKey.toBuffer()).toBeDefined();
-    expect(keypair.pubKey.toBuffer()).toBeDefined();
+    expect(keypair.privKey.toIsoBuf()).toBeDefined();
+    expect(keypair.pubKey.toIsoBuf()).toBeDefined();
   });
 
   describe("standard test vectors: key-pair.json", () => {
@@ -27,9 +27,9 @@ describe("KeyPair", () => {
 
       for (const pair of keyPairs) {
         const privKeyBuf = Buffer.from(pair.priv_key, "hex");
-        const privKey = PrivKey.fromStringFmt(pair.priv_key);
+        const privKey = PrivKey.fromIsoStr(pair.priv_key);
         const key = KeyPair.fromPrivKey(privKey);
-        expect(key.pubKey.toStringFmt()).toBe(pair.pub_key);
+        expect(key.pubKey.toIsoStr()).toBe(pair.pub_key);
       }
     });
   });

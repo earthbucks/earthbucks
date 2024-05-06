@@ -39,7 +39,7 @@ export default class SignedMessage {
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
-    const sigObj = ecdsaSign(mac, privKey.toBuffer());
+    const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
     const sigBuf = Buffer.from(sigObj.signature);
     let pubKey = privKey.toPubKeyBuffer();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
@@ -53,7 +53,7 @@ export default class SignedMessage {
     if (!mac.equals(this.mac)) {
       return false;
     }
-    if (!pubKey.toBuffer().equals(this.pubKey)) {
+    if (!pubKey.toIsoBuf().equals(this.pubKey)) {
       return false;
     }
     if (!ecdsaVerify(this.sig, mac, this.pubKey)) {
@@ -62,7 +62,7 @@ export default class SignedMessage {
     return true;
   }
 
-  static fromBuffer(buf: Buffer, keyStr: string): SignedMessage {
+  static fromIsoBuf(buf: Buffer, keyStr: string): SignedMessage {
     const reader = new BufferReader(buf);
     const sig = reader.readBuffer(64);
     const pubKey = reader.readBuffer(33);
@@ -71,12 +71,12 @@ export default class SignedMessage {
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const writer = new BufferWriter();
     writer.writeBuffer(this.sig);
     writer.writeBuffer(this.pubKey);
     writer.writeBuffer(this.mac);
     writer.writeBuffer(this.message);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 }

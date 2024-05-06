@@ -22,7 +22,7 @@ export default class TxInput {
     this.sequence = sequence;
   }
 
-  static fromBuffer(buf: Buffer): TxInput {
+  static fromIsoBuf(buf: Buffer): TxInput {
     const reader = new BufferReader(buf);
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
@@ -32,7 +32,7 @@ export default class TxInput {
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
-  static fromBufferReader(reader: BufferReader): TxInput {
+  static fromIsoBufReader(reader: BufferReader): TxInput {
     const inputTxHash = reader.readBuffer(32);
     const inputTxIndex = reader.readUInt32LE();
     const scriptLen = reader.readVarIntNum();
@@ -41,15 +41,15 @@ export default class TxInput {
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const writer = new BufferWriter();
     writer.writeBuffer(this.inputTxId);
     writer.writeUInt32LE(this.inputTxNOut);
-    const scriptBuf = this.script.toBuffer();
-    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toBuffer());
+    const scriptBuf = this.script.toIsoBuf();
+    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.writeBuffer(scriptBuf);
     writer.writeUInt32LE(this.sequence);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 
   isNull(): boolean {

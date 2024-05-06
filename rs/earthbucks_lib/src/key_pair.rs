@@ -53,7 +53,7 @@ impl KeyPair {
         KeyPair { priv_key, pub_key }
     }
 
-    pub fn from_u8_vec(vec: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
         if vec.len() != 65 {
             return Err("Invalid buffer length".to_string());
         }
@@ -62,12 +62,12 @@ impl KeyPair {
         Ok(KeyPair::from_buffer(&buffer))
     }
 
-    pub fn to_hex(&self) -> String {
+    pub fn to_iso_hex(&self) -> String {
         hex::encode(self.to_buffer())
     }
 
-    pub fn from_hex(hex: &str) -> Result<Self, String> {
-        let buffer = Buffer::from_hex(hex).data;
+    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
+        let buffer = Buffer::from_iso_hex(hex).data;
         if buffer.len() != 65 {
             return Err("Invalid buffer length".to_string());
         }
@@ -75,12 +75,12 @@ impl KeyPair {
         Ok(KeyPair::from_buffer(&buffer))
     }
 
-    pub fn to_string_fmt(&self) -> String {
-        self.to_hex()
+    pub fn to_iso_str(&self) -> String {
+        self.to_iso_hex()
     }
 
-    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
-        KeyPair::from_hex(s)
+    pub fn from_iso_str(s: &str) -> Result<Self, String> {
+        KeyPair::from_iso_hex(s)
     }
 
     pub fn is_valid(&self) -> bool {
@@ -116,12 +116,12 @@ mod tests {
         let key_pairs: JsonKeyPairs = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in key_pairs.key_pair {
-            let priv_key: PrivKey = PrivKey::from_string_fmt(&pair.priv_key).unwrap();
+            let priv_key: PrivKey = PrivKey::from_iso_str(&pair.priv_key).unwrap();
             let key_pair = KeyPair::from_priv_key(&priv_key);
             let pub_key = key_pair.unwrap().pub_key;
 
             let expected_public_key = &pair.pub_key;
-            let actual_public_key = pub_key.to_string_fmt();
+            let actual_public_key = pub_key.to_iso_str();
 
             assert_eq!(expected_public_key, &actual_public_key);
         }

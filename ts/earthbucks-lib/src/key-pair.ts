@@ -17,7 +17,7 @@ export default class KeyPair {
   }
 
   static fromPrivKeyBuffer(privKeyBuf: Buffer) {
-    let privKey = PrivKey.fromBuffer(Buffer.from(privKeyBuf));
+    let privKey = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf));
     let pubKey = PubKey.fromPrivKey(privKey);
     return new KeyPair(privKey, pubKey);
   }

@@ -19,7 +19,7 @@ export default class SigninChallenge {
     const signInPermissionStr =
       SigninChallenge.signinChallengeKeyString(domain);
     const permissionToken = PermissionToken.fromRandom();
-    const message = permissionToken.toBuffer();
+    const message = permissionToken.toIsoBuf();
     const signedMessage = SignedMessage.fromSignMessage(
       domainPrivKey,
       message,
@@ -28,29 +28,29 @@ export default class SigninChallenge {
     return new SigninChallenge(signedMessage);
   }
 
-  static fromBuffer(buf: Buffer, domain: string): SigninChallenge {
+  static fromIsoBuf(buf: Buffer, domain: string): SigninChallenge {
     const signinChallengeKeyStr =
       SigninChallenge.signinChallengeKeyString(domain);
-    const signedMessage = SignedMessage.fromBuffer(buf, signinChallengeKeyStr);
+    const signedMessage = SignedMessage.fromIsoBuf(buf, signinChallengeKeyStr);
     return new SigninChallenge(signedMessage);
   }
 
-  static fromHex(hex: string, domain: string): SigninChallenge {
+  static fromIsoHex(hex: string, domain: string): SigninChallenge {
     const buf = StrictHex.decode(hex);
-    return SigninChallenge.fromBuffer(buf, domain);
+    return SigninChallenge.fromIsoBuf(buf, domain);
   }
 
-  toBuffer(): Buffer {
-    return this.signedMessage.toBuffer();
+  toIsoBuf(): Buffer {
+    return this.signedMessage.toIsoBuf();
   }
 
-  toHex(): string {
-    return this.toBuffer().toString("hex");
+  toIsoHex(): string {
+    return this.toIsoBuf().toString("hex");
   }
 
   isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
-    const permissionToken = PermissionToken.fromBuffer(message);
+    const permissionToken = PermissionToken.fromIsoBuf(message);
     if (!permissionToken.isValid()) {
       return false;
     }

@@ -170,55 +170,55 @@ export default class ScriptInterpreter {
           }
         } else if (opcode === OP["1NEGATE"]) {
           const scriptNum = new ScriptNum(BigInt(-1));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["1"]) {
           const scriptNum = new ScriptNum(BigInt(1));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["2"]) {
           const scriptNum = new ScriptNum(BigInt(2));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["3"]) {
           const scriptNum = new ScriptNum(BigInt(3));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["4"]) {
           const scriptNum = new ScriptNum(BigInt(4));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["5"]) {
           const scriptNum = new ScriptNum(BigInt(5));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["6"]) {
           const scriptNum = new ScriptNum(BigInt(6));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["7"]) {
           const scriptNum = new ScriptNum(BigInt(7));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["8"]) {
           const scriptNum = new ScriptNum(BigInt(8));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["9"]) {
           const scriptNum = new ScriptNum(BigInt(9));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["10"]) {
           const scriptNum = new ScriptNum(BigInt(10));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["11"]) {
           const scriptNum = new ScriptNum(BigInt(11));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["12"]) {
           const scriptNum = new ScriptNum(BigInt(12));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["13"]) {
           const scriptNum = new ScriptNum(BigInt(13));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["14"]) {
           const scriptNum = new ScriptNum(BigInt(14));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["15"]) {
           const scriptNum = new ScriptNum(BigInt(15));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["16"]) {
           const scriptNum = new ScriptNum(BigInt(16));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.VERIFY) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
@@ -301,7 +301,7 @@ export default class ScriptInterpreter {
           }
         } else if (opcode === OP.DEPTH) {
           let scriptNum = new ScriptNum(BigInt(this.stack.length));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.DROP) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
@@ -333,7 +333,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           if (scriptNum < 0 || scriptNum >= this.stack.length) {
             this.errStr = "invalid stack operation";
             break;
@@ -345,7 +345,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           if (scriptNum < 0 || scriptNum >= this.stack.length) {
             this.errStr = "invalid stack operation";
             break;
@@ -393,8 +393,8 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let len = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
-          let offset = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let len = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
+          let offset = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           let buf = this.stack.pop() as Buffer;
           if (offset < 0 || len < 0 || offset + len > buf.length) {
             this.errStr = "invalid stack operation";
@@ -406,7 +406,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let len = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let len = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           let buf = this.stack.pop() as Buffer;
           if (len < 0 || len > buf.length) {
             this.errStr = "invalid stack operation";
@@ -418,7 +418,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let len = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let len = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           let buf = this.stack.pop() as Buffer;
           if (len < 0 || len > buf.length) {
             this.errStr = "invalid stack operation";
@@ -432,7 +432,7 @@ export default class ScriptInterpreter {
           }
           let buf = this.stack[this.stack.length - 1];
           let scriptNum = new ScriptNum(BigInt(buf.length));
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.INVERT) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
@@ -516,180 +516,180 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num++;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["1SUB"]) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num--;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["2MUL"]) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num *= BigInt(2);
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["2DIV"]) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num /= BigInt(2);
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.NEGATE) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num = -scriptNum.num;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.ABS) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num = scriptNum.num < 0 ? -scriptNum.num : scriptNum.num;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.NOT) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num = scriptNum.num === 0n ? 1n : 0n;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP["0NOTEQUAL"]) {
           if (this.stack.length < 1) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum.num = scriptNum.num === 0n ? 0n : 1n;
-          this.stack.push(scriptNum.toBuffer());
+          this.stack.push(scriptNum.toIsoBuf());
         } else if (opcode === OP.ADD) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num += scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.SUB) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num -= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.MUL) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num *= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.DIV) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           if (scriptNum2.num === 0n) {
             this.errStr = "division by zero";
             break;
           }
           scriptNum1.num /= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.MOD) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           if (scriptNum2.num === 0n) {
             this.errStr = "division by zero";
             break;
           }
           scriptNum1.num %= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.LSHIFT) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           if (scriptNum2.num < 0n) {
             this.errStr = "invalid shift";
             break;
           }
           scriptNum1.num <<= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.RSHIFT) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           if (scriptNum2.num < 0n) {
             this.errStr = "invalid shift";
             break;
           }
           scriptNum1.num >>= scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.BOOLAND) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num =
             scriptNum1.num !== 0n && scriptNum2.num !== 0n ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.BOOLOR) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num =
             scriptNum1.num !== 0n || scriptNum2.num !== 0n ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.NUMEQUAL) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num === scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.NUMEQUALVERIFY) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           if (scriptNum1.num !== scriptNum2.num) {
             this.errStr = "NUMEQUALVERIFY failed";
             break;
@@ -699,75 +699,75 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num !== scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.LESSTHAN) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num < scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.GREATERTHAN) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num > scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.LESSTHANOREQUAL) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num <= scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.GREATERTHANOREQUAL) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num = scriptNum1.num >= scriptNum2.num ? 1n : 0n;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.MIN) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num =
             scriptNum1.num < scriptNum2.num ? scriptNum1.num : scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.MAX) {
           if (this.stack.length < 2) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNum2 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNum1 = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           scriptNum1.num =
             scriptNum1.num > scriptNum2.num ? scriptNum1.num : scriptNum2.num;
-          this.stack.push(scriptNum1.toBuffer());
+          this.stack.push(scriptNum1.toIsoBuf());
         } else if (opcode === OP.WITHIN) {
           // (x min max -- out)
           if (this.stack.length < 3) {
             this.errStr = "invalid stack operation";
             break;
           }
-          let scriptNumMax = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNumMin = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
-          let scriptNumX = ScriptNum.fromBuffer(this.stack.pop() as Buffer);
+          let scriptNumMax = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNumMin = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          let scriptNumX = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
           let within =
             scriptNumX.num >= scriptNumMin.num &&
             scriptNumX.num < scriptNumMax.num;
@@ -803,7 +803,7 @@ export default class ScriptInterpreter {
           }
           const signature = TxSignature.fromU8Vec(sigBuf);
 
-          let execScriptBuf = this.script.toBuffer();
+          let execScriptBuf = this.script.toIsoBuf();
 
           const success = this.tx.verifyWithCache(
             this.nIn,
@@ -827,7 +827,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid stack operation";
             break;
           }
-          let nKeys = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let nKeys = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           if (nKeys < 0 || nKeys > 16) {
             this.errStr = "invalid number of keys";
             break;
@@ -845,7 +845,7 @@ export default class ScriptInterpreter {
             }
             pubKeys.push(pubKeyBuf);
           }
-          let nSigs = ScriptNum.fromBuffer(this.stack.pop() as Buffer).num;
+          let nSigs = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer).num;
           if (nSigs < 0 || nSigs > nKeys) {
             this.errStr = "invalid number of signatures";
             break;
@@ -863,7 +863,7 @@ export default class ScriptInterpreter {
             }
             sigs.push(sigBuf);
           }
-          let execScriptBuf = this.script.toBuffer();
+          let execScriptBuf = this.script.toIsoBuf();
 
           let matchedSigs = 0n;
           for (let i = 0; i < nSigs; i++) {

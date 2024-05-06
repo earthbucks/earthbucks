@@ -53,7 +53,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           DOMAIN_PRIV_KEY,
           DOMAIN,
         );
-        return json({ signinChallenge: signinChallenge.toHex() });
+        return json({ signinChallenge: signinChallenge.toIsoHex() });
       }
       break;
 
@@ -62,14 +62,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const signinResponseHex = `${inputData.signinReponse}`;
         let signinResponse: SigninResponse;
         try {
-          signinResponse = SigninResponse.fromHex(signinResponseHex, DOMAIN);
+          signinResponse = SigninResponse.fromIsoHex(signinResponseHex, DOMAIN);
         } catch (err) {
           throw new Response("Invalid signin response 1", { status: 400 });
         }
         const signinChallengeBuf = signinResponse.signedMessage.message;
         let signinChallenge: SigninChallenge;
         try {
-          signinChallenge = SigninChallenge.fromBuffer(
+          signinChallenge = SigninChallenge.fromIsoBuf(
             signinChallengeBuf,
             DOMAIN,
           );
@@ -85,7 +85,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         }
         let userPubKey: PubKey;
         try {
-          userPubKey = PubKey.fromBuffer(signinResponse.signedMessage.pubKey);
+          userPubKey = PubKey.fromIsoBuf(signinResponse.signedMessage.pubKey);
         } catch (err) {
           throw new Response("Invalid user public key", { status: 400 });
         }
@@ -172,8 +172,8 @@ export async function signin(
   }
   {
     // verify signin challenge
-    let signinChallenge = SigninChallenge.fromHex(signinChallengeHex, DOMAIN);
-    let DOMAIN_PUB_KEY = PubKey.fromStringFmt(DOMAIN_PUB_KEY_STR);
+    let signinChallenge = SigninChallenge.fromIsoHex(signinChallengeHex, DOMAIN);
+    let DOMAIN_PUB_KEY = PubKey.fromIsoStr(DOMAIN_PUB_KEY_STR);
     let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
     if (!isValidChallenge) {
       throw new Error("Invalid signin challenge");
@@ -194,7 +194,7 @@ export async function signin(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        signinReponse: signinResponse.toHex(),
+        signinReponse: signinResponse.toIsoHex(),
       }),
     });
     let json = await res.json();

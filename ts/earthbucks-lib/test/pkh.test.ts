@@ -9,7 +9,7 @@ import PubKey from "../src/pub-key";
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toBuffer()));
+    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toIsoBuf()));
     expect(pkh.buf).toBeDefined();
   });
 
@@ -31,9 +31,9 @@ describe("Pkh", () => {
     ).toBe(false);
 
     expect(
-      Pkh.fromStringFmt(
+      Pkh.fromIsoStr(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
-      ).toStringFmt(),
+      ).toIsoStr(),
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 
@@ -51,9 +51,9 @@ describe("Pkh", () => {
       const pkhPairs: AddressPair[] = JSON.parse(data).pkh;
 
       for (const pair of pkhPairs) {
-        const pubKey = PubKey.fromStringFmt(pair.pub_key);
+        const pubKey = PubKey.fromIsoStr(pair.pub_key);
         const pkh = Pkh.fromPubKey(pubKey);
-        expect(pkh.toStringFmt()).toBe(pair.pkh);
+        expect(pkh.toIsoStr()).toBe(pair.pkh);
       }
     });
   });

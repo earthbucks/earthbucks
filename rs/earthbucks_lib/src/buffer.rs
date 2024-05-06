@@ -7,7 +7,7 @@ pub struct Buffer {
 
 impl Buffer {
     // behavior designed to match node.js Buffer.from(hex_string, 'hex')
-    pub fn from_hex(hex_string: &str) -> Self {
+    pub fn from_iso_hex(hex_string: &str) -> Self {
         let mut hex_string = hex_string
             .to_lowercase()
             .chars()
@@ -20,7 +20,7 @@ impl Buffer {
         Self { data }
     }
 
-    pub fn to_hex(&self) -> String {
+    pub fn to_iso_hex(&self) -> String {
         hex::encode(&self.data)
     }
 
@@ -28,7 +28,7 @@ impl Buffer {
         Self { data }
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         self.data.clone()
     }
 
@@ -60,45 +60,45 @@ mod tests {
 
     #[test]
     fn test_buffer() {
-        let buffer = Buffer::from_hex("1234");
-        assert_eq!(buffer.to_hex(), "1234");
-        assert_eq!(buffer.to_u8_vec(), vec![0x12, 0x34]);
+        let buffer = Buffer::from_iso_hex("1234");
+        assert_eq!(buffer.to_iso_hex(), "1234");
+        assert_eq!(buffer.to_iso_buf(), vec![0x12, 0x34]);
     }
 
     #[test]
     fn test_buffer_2() {
-        let buffer = Buffer::from_hex("f0f0f0f0f0test");
-        assert_eq!(buffer.to_hex(), "f0f0f0f0f0");
+        let buffer = Buffer::from_iso_hex("f0f0f0f0f0test");
+        assert_eq!(buffer.to_iso_hex(), "f0f0f0f0f0");
     }
 
     #[test]
     fn test_buffer_3() {
-        let buffer = Buffer::from_hex("f0f0f0f0f0testf0");
-        assert_eq!(buffer.to_hex(), "f0f0f0f0f0");
+        let buffer = Buffer::from_iso_hex("f0f0f0f0f0testf0");
+        assert_eq!(buffer.to_iso_hex(), "f0f0f0f0f0");
     }
 
     #[test]
     fn test_buffer_4() {
-        let buffer = Buffer::from_hex("f0f0f0f0F0testf0");
-        assert_eq!(buffer.to_hex(), "f0f0f0f0f0");
+        let buffer = Buffer::from_iso_hex("f0f0f0f0F0testf0");
+        assert_eq!(buffer.to_iso_hex(), "f0f0f0f0f0");
     }
 
     #[test]
     fn test_buffer_5() {
-        let buffer = Buffer::from_hex("fff");
-        assert_eq!(buffer.to_hex(), "ff");
+        let buffer = Buffer::from_iso_hex("fff");
+        assert_eq!(buffer.to_iso_hex(), "ff");
     }
 
     #[test]
     fn test_vector_operations() {
-        let mut buffer = Buffer::from_hex("1234");
+        let mut buffer = Buffer::from_iso_hex("1234");
         buffer.push(0x56);
-        assert_eq!(buffer.to_hex(), "123456");
+        assert_eq!(buffer.to_iso_hex(), "123456");
         buffer.pop();
-        assert_eq!(buffer.to_hex(), "1234");
+        assert_eq!(buffer.to_iso_hex(), "1234");
         buffer.extend_from_slice(&[0x56, 0x78]);
-        assert_eq!(buffer.to_hex(), "12345678");
+        assert_eq!(buffer.to_iso_hex(), "12345678");
         buffer.truncate(1);
-        assert_eq!(buffer.to_hex(), "12");
+        assert_eq!(buffer.to_iso_hex(), "12");
     }
 }

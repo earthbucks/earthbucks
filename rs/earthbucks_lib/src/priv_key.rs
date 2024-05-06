@@ -45,7 +45,7 @@ impl PrivKey {
         PrivKey::new(priv_key)
     }
 
-    pub fn from_u8_vec(vec: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
         if vec.len() != 32 {
             return Err("Invalid buffer length".to_string());
         }
@@ -54,23 +54,23 @@ impl PrivKey {
         Ok(PrivKey::new(priv_key))
     }
 
-    pub fn to_hex(&self) -> String {
+    pub fn to_iso_hex(&self) -> String {
         strict_hex::encode(&self.buf)
     }
 
-    pub fn from_hex(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
         let priv_key_vec: Vec<u8> = strict_hex::decode(hex)?;
-        PrivKey::from_u8_vec(priv_key_vec)
+        PrivKey::from_iso_buf(priv_key_vec)
     }
 
-    pub fn to_string_fmt(&self) -> String {
+    pub fn to_iso_str(&self) -> String {
         let check_buf = blake3::hash(&self.buf);
         let check_sum = &check_buf.as_bytes()[0..4];
         let check_hex = strict_hex::encode(check_sum);
         "ebxprv".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
-    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
+    pub fn from_iso_str(s: &str) -> Result<Self, String> {
         if !s.starts_with("ebxprv") {
             return Err("Invalid private key format".to_string());
         }
@@ -83,11 +83,11 @@ impl PrivKey {
         if check_sum != expected_check_sum {
             return Err("Invalid checksum".to_string());
         }
-        PrivKey::from_u8_vec(buf)
+        PrivKey::from_iso_buf(buf)
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
-        let res = Self::from_string_fmt(s);
+        let res = Self::from_iso_str(s);
         res.is_ok()
     }
 }
@@ -99,7 +99,7 @@ mod tests {
     #[test]
     fn test_from_random() {
         let priv_key = PrivKey::from_random();
-        println!("priv_key: {}", priv_key.to_string_fmt());
+        println!("priv_key: {}", priv_key.to_iso_str());
     }
 
     #[test]
@@ -110,32 +110,32 @@ mod tests {
     }
 
     #[test]
-    fn test_to_hex() {
+    fn test_to_iso_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_string_fmt();
+        let hex = priv_key.to_iso_str();
         println!("hex: {}", hex);
     }
 
     #[test]
-    fn test_from_hex() {
+    fn test_from_iso_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_hex();
-        let priv_key2 = PrivKey::from_hex(&hex).unwrap();
+        let hex = priv_key.to_iso_hex();
+        let priv_key2 = PrivKey::from_iso_hex(&hex).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }
 
     #[test]
     fn test_to_string() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_string_fmt();
+        let s = priv_key.to_iso_str();
         println!("s: {}", s);
     }
 
     #[test]
     fn test_from_string() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_string_fmt();
-        let priv_key2 = PrivKey::from_string_fmt(&s).unwrap();
+        let s = priv_key.to_iso_str();
+        let priv_key2 = PrivKey::from_iso_str(&s).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }
 
@@ -156,9 +156,10 @@ mod tests {
 
     #[test]
     fn test_this_priv_key_vec() {
-        let priv_key =
-            PrivKey::from_hex("2ef930fed143c0b92b485c29aaaba97d09cab882baafdb9ea1e55dec252cd09f")
-                .unwrap();
+        let priv_key = PrivKey::from_iso_hex(
+            "2ef930fed143c0b92b485c29aaaba97d09cab882baafdb9ea1e55dec252cd09f",
+        )
+        .unwrap();
         let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
         let pub_key_hex = strict_hex::encode(&pub_key_buf);
         assert_eq!(
@@ -180,7 +181,7 @@ mod tests {
         ));
 
         let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
-        let priv_key = PrivKey::from_string_fmt(str).unwrap();
-        assert_eq!(priv_key.to_string_fmt(), str);
+        let priv_key = PrivKey::from_iso_str(str).unwrap();
+        assert_eq!(priv_key.to_iso_str(), str);
     }
 }

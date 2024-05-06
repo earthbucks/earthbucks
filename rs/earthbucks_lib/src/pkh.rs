@@ -18,7 +18,7 @@ impl Pkh {
         Self::from_pub_key_buffer(pub_key.to_buffer().to_vec())
     }
 
-    pub fn from_hex(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
         let pkh_buf = strict_hex::decode(hex)?.to_vec();
         if pkh_buf.len() != 32 {
             return Err("Invalid pkh length".to_string());
@@ -28,22 +28,22 @@ impl Pkh {
         })
     }
 
-    pub fn to_u8_vec(&self) -> &[u8; 32] {
+    pub fn to_iso_buf(&self) -> &[u8; 32] {
         &self.buf
     }
 
-    pub fn from_u8_vec(buf: &[u8; 32]) -> Self {
+    pub fn from_iso_buf(buf: &[u8; 32]) -> Self {
         Self { buf: *buf }
     }
 
-    pub fn to_string_fmt(&self) -> String {
+    pub fn to_iso_str(&self) -> String {
         let check_buf = blake3_hash(&self.buf);
         let check_sum = &check_buf[0..4];
         let check_hex = strict_hex::encode(check_sum);
         "ebxpkh".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
-    pub fn from_string_fmt(s: &str) -> Result<Self, String> {
+    pub fn from_iso_str(s: &str) -> Result<Self, String> {
         if !s.starts_with("ebxpkh") {
             return Err("Invalid pkh prefix".to_string());
         }
@@ -66,7 +66,7 @@ impl Pkh {
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
-        Self::from_string_fmt(s).is_ok()
+        Self::from_iso_str(s).is_ok()
     }
 }
 
@@ -96,7 +96,7 @@ mod tests {
         let pkh = Pkh::from_pub_key_buffer(pub_key);
 
         // Check that the pkh matches the expected pkh
-        assert_eq!(pkh.to_u8_vec(), &expected_pkh);
+        assert_eq!(pkh.to_iso_buf(), &expected_pkh);
     }
 
     #[derive(Deserialize)]
@@ -122,11 +122,10 @@ mod tests {
             "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN"
         ));
 
-        let pkh =
-            Pkh::from_string_fmt("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4")
-                .unwrap();
+        let pkh = Pkh::from_iso_str("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4")
+            .unwrap();
         assert_eq!(
-            pkh.to_string_fmt(),
+            pkh.to_iso_str(),
             "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         );
     }
@@ -140,13 +139,13 @@ mod tests {
         let pkh_data: PkhData = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in pkh_data.pkh {
-            let pub_key = PubKey::from_string_fmt(&pair.pub_key).unwrap();
+            let pub_key = PubKey::from_iso_str(&pair.pub_key).unwrap();
 
             // Create a new Address instance
             let pkh = Pkh::from_pub_key(pub_key);
 
             // Check that the pkh matches the expected pkh
-            assert_eq!(pkh.to_string_fmt(), pair.pkh);
+            assert_eq!(pkh.to_iso_str(), pair.pkh);
         }
     }
 }

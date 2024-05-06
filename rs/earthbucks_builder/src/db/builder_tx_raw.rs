@@ -16,13 +16,13 @@ impl MineTxRaw {
     pub fn from_tx(tx: &Tx) -> Self {
         Self {
             id: tx.id().to_vec(),
-            tx_raw: tx.to_u8_vec(),
+            tx_raw: tx.to_iso_buf(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_tx(&self) -> Tx {
-        Tx::from_u8_vec(self.tx_raw.clone()).unwrap()
+        Tx::from_iso_buf(self.tx_raw.clone()).unwrap()
     }
 
     pub async fn get_for_all_merkle_root_in_order(
@@ -60,7 +60,7 @@ impl MineTxRaw {
             domain.clone(),
             earthbucks_address.clone(),
         );
-        let tx_raw = tx.to_u8_vec();
+        let tx_raw = tx.to_iso_buf();
         let id = &builder_tx_parsed.id.clone();
         let version = builder_tx_parsed.version;
         let tx_in_count = builder_tx_parsed.tx_in_count;

@@ -14,7 +14,7 @@ export default class TxSignature {
     this.sigBuf = sigBuf;
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const hashTypeBuf = Buffer.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType);
     return Buffer.concat([hashTypeBuf, this.sigBuf]);

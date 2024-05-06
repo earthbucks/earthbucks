@@ -8,7 +8,7 @@ const DOMAIN: string = process.env.DOMAIN || "";
 let DOMAIN_PRIV_KEY: PrivKey;
 let DOMAIN_PUB_KEY: PubKey;
 try {
-  DOMAIN_PRIV_KEY = PrivKey.fromStringFmt(DOMAIN_PRIV_KEY_STR);
+  DOMAIN_PRIV_KEY = PrivKey.fromIsoStr(DOMAIN_PRIV_KEY_STR);
   DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
 } catch (err) {
   console.error(err);
@@ -22,6 +22,6 @@ try {
   }
 }
 
-const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toStringFmt();
+const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toIsoStr();
 
 export { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY, DOMAIN_PUB_KEY_STR };

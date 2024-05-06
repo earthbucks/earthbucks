@@ -16,33 +16,33 @@ export default class PubKey {
     return new PubKey(privKey.toPubKeyBuffer());
   }
 
-  static fromBuffer(buf: Buffer): PubKey {
+  static fromIsoBuf(buf: Buffer): PubKey {
     if (buf.length !== 33) {
       throw new Error("Invalid public key length");
     }
     return new PubKey(buf);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     return this.buf;
   }
 
-  toHex(): string {
+  toIsoHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromHex(hex: string): PubKey {
-    return PubKey.fromBuffer(StrictHex.decode(hex));
+  static fromIsoHex(hex: string): PubKey {
+    return PubKey.fromIsoBuf(StrictHex.decode(hex));
   }
 
-  toStringFmt(): string {
+  toIsoStr(): string {
     let checkHash = blake3Hash(this.buf);
     let checkSum = checkHash.subarray(0, 4);
     let checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromStringFmt(str: string): PubKey {
+  static fromIsoStr(str: string): PubKey {
     if (!str.startsWith("ebxpub")) {
       throw new Error("Invalid public key format");
     }
@@ -59,13 +59,13 @@ export default class PubKey {
     if (!checkBuf.equals(checkSum)) {
       throw new Error("Invalid checksum");
     }
-    return PubKey.fromBuffer(decoded);
+    return PubKey.fromIsoBuf(decoded);
   }
 
   static isValidStringFmt(str: string): boolean {
     let pubKey: PubKey;
     try {
-      pubKey = PubKey.fromStringFmt(str);
+      pubKey = PubKey.fromIsoStr(str);
     } catch (e) {
       return false;
     }

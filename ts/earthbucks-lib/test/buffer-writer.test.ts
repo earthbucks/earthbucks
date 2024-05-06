@@ -18,7 +18,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt8(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result[0]).toBe(n);
     });
   });
@@ -32,7 +32,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeInt8(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readInt8(0)).toBe(n);
     });
   });
@@ -46,7 +46,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt16BE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readUInt16BE(0)).toBe(n);
     });
   });
@@ -60,7 +60,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeInt16BE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readInt16BE(0)).toBe(n);
     });
   });
@@ -74,7 +74,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt16LE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readUInt16LE(0)).toBe(n);
     });
   });
@@ -88,7 +88,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeInt16LE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readInt16LE(0)).toBe(n);
     });
   });
@@ -102,7 +102,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt32BE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readUInt32BE(0)).toBe(n);
     });
   });
@@ -116,7 +116,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeInt32BE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readInt32BE(0)).toBe(n);
     });
   });
@@ -130,7 +130,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt32LE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readUInt32LE(0)).toBe(n);
     });
   });
@@ -144,7 +144,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeInt32LE(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readInt32LE(0)).toBe(n);
     });
   });
@@ -158,7 +158,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt64BEBigInt(bn);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readBigInt64BE(0)).toBe(bn);
     });
   });
@@ -172,7 +172,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeUInt64LEBigInt(bn);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.readBigInt64LE(0)).toBe(bn);
     });
   });
@@ -186,7 +186,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeVarIntNum(n);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.toString("hex")).toBe("fd3039");
     });
   });
@@ -200,7 +200,7 @@ describe("BufferWriter", () => {
       bufferWriter.writeVarIntBigInt(bn);
 
       // Assert
-      const result = bufferWriter.toBuffer();
+      const result = bufferWriter.toIsoBuf();
       expect(result.toString("hex")).toBe("ff112210f47de98115");
     });
   });

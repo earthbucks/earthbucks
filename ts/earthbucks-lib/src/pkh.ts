@@ -18,23 +18,23 @@ export default class Pkh {
   }
 
   static fromPubKey(pubKey: PubKey): Pkh {
-    return Pkh.fromPubKeyBuffer(pubKey.toBuffer());
+    return Pkh.fromPubKeyBuffer(pubKey.toIsoBuf());
   }
 
-  static fromBuffer(buf: Buffer): Pkh {
+  static fromIsoBuf(buf: Buffer): Pkh {
     if (buf.length !== 32) {
       throw new Error("Invalid public key hash length");
     }
     return new Pkh(buf);
   }
 
-  toStringFmt(): string {
+  toIsoStr(): string {
     let checkHash = blake3Hash(this.buf).subarray(0, 4);
     let checkHex = checkHash.toString("hex");
     return "ebxpkh" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromStringFmt(pkhStr: string): Pkh {
+  static fromIsoStr(pkhStr: string): Pkh {
     if (!pkhStr.startsWith("ebxpkh")) {
       throw new Error("Invalid pkh format");
     }
@@ -46,13 +46,13 @@ export default class Pkh {
     if (!checkHash.equals(checkBuf)) {
       throw new Error("Invalid pkh checksum");
     }
-    return Pkh.fromBuffer(buf);
+    return Pkh.fromIsoBuf(buf);
   }
 
   static isValidStringFmt(pkhStr: string): boolean {
     let pkh: Pkh;
     try {
-      pkh = Pkh.fromStringFmt(pkhStr);
+      pkh = Pkh.fromIsoStr(pkhStr);
     } catch (e) {
       return false;
     }

@@ -7,7 +7,7 @@ export default class HashNum {
     this.num = num;
   }
 
-  static fromBuffer(target: Buffer): HashNum {
+  static fromIsoBuf(target: Buffer): HashNum {
     if (target.length !== 32) {
       throw new Error("Invalid target length");
     }
@@ -16,7 +16,7 @@ export default class HashNum {
     return new HashNum(num);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     let hex = this.num.toString(16);
     // ensure length is 64 characters
     if (hex.length > 64) {

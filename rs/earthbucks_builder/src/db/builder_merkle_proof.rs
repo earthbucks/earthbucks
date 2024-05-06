@@ -31,14 +31,14 @@ impl MineMerkleProof {
         Self {
             merkle_root: merkle_proof.root.to_vec(),
             tx_id: tx_id.to_vec(),
-            merkle_proof: merkle_proof.to_u8_vec(),
+            merkle_proof: merkle_proof.to_iso_buf(),
             position: merkle_proof.position_in_tree(),
             created_at: chrono::Utc::now().naive_utc(),
         }
     }
 
     pub fn to_merkle_proof(&self) -> MerkleProof {
-        MerkleProof::from_u8_vec(&self.merkle_proof)
+        MerkleProof::from_iso_buf(&self.merkle_proof)
     }
 
     pub async fn get(

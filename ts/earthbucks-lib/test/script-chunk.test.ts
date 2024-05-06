@@ -74,17 +74,17 @@ describe("ScriptChunk", () => {
     });
   });
 
-  describe("toBuffer", () => {
+  describe("toIsoBuf", () => {
     test("should convert a ScriptChunk with opcode IF to Buffer", () => {
       const scriptChunk = new ScriptChunk(OP.IF);
-      expect(scriptChunk.toBuffer()).toEqual(Buffer.from([OP.IF]));
+      expect(scriptChunk.toIsoBuf()).toEqual(Buffer.from([OP.IF]));
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA1 and a buffer to Buffer", () => {
       const buffer = Buffer.alloc(255).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA1, buffer);
       const expected = Buffer.from([OP.PUSHDATA1, buffer.length, ...buffer]);
-      expect(scriptChunk.toBuffer()).toEqual(expected);
+      expect(scriptChunk.toIsoBuf()).toEqual(expected);
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA2 and a buffer to Buffer", () => {
@@ -94,8 +94,8 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeBuffer(buffer)
-        .toBuffer();
-      expect(scriptChunk.toBuffer()).toEqual(expected);
+        .toIsoBuf();
+      expect(scriptChunk.toIsoBuf()).toEqual(expected);
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA4 and a buffer to Buffer", () => {
@@ -105,13 +105,13 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeBuffer(buffer)
-        .toBuffer();
-      expect(scriptChunk.toBuffer()).toEqual(expected);
+        .toIsoBuf();
+      expect(scriptChunk.toIsoBuf()).toEqual(expected);
     });
 
     test("pushdata1", () => {
       const scriptChunk = new ScriptChunk().fromString("0xff");
-      const arr = scriptChunk.toBuffer();
+      const arr = scriptChunk.toIsoBuf();
       expect(arr).toEqual(Buffer.from([0x4c, 0x01, 0xff]));
     });
   });
@@ -119,7 +119,7 @@ describe("ScriptChunk", () => {
   describe("fromU8Vec", () => {
     test("should create a ScriptChunk from Buffer with opcode IF", () => {
       const arr = Buffer.from([OP.IF]);
-      const scriptChunk = new ScriptChunk().fromBuffer(arr);
+      const scriptChunk = new ScriptChunk().fromIsoBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.IF);
       expect(scriptChunk.buf).toBeUndefined();
     });
@@ -127,7 +127,7 @@ describe("ScriptChunk", () => {
     test("should create a ScriptChunk from Buffer with opcode OP_PUSHDATA1 and a buffer", () => {
       const buffer = Buffer.alloc(255).fill(0);
       const arr = Buffer.from([OP.PUSHDATA1, buffer.length, ...buffer]);
-      const scriptChunk = new ScriptChunk().fromBuffer(arr);
+      const scriptChunk = new ScriptChunk().fromIsoBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA1);
       expect(scriptChunk.buf).toEqual(Buffer.from(buffer));
     });
@@ -138,8 +138,8 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
         .writeBuffer(buffer)
-        .toBuffer();
-      const scriptChunk = new ScriptChunk().fromBuffer(arr);
+        .toIsoBuf();
+      const scriptChunk = new ScriptChunk().fromIsoBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA2);
       expect(scriptChunk.buf).toEqual(Buffer.from(buffer));
     });
@@ -150,8 +150,8 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
         .writeBuffer(buffer)
-        .toBuffer();
-      const scriptChunk = new ScriptChunk().fromBuffer(arr);
+        .toIsoBuf();
+      const scriptChunk = new ScriptChunk().fromIsoBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4);
       expect(scriptChunk.buf).toEqual(Buffer.from(buffer));
     });
@@ -159,7 +159,7 @@ describe("ScriptChunk", () => {
     test("should throw error if length does not match expected length", () => {
       const buffer = Buffer.alloc(100).fill(0);
       const arr = Buffer.from([OP.PUSHDATA1, 200, ...buffer]);
-      expect(() => new ScriptChunk().fromBuffer(arr)).toThrow(
+      expect(() => new ScriptChunk().fromIsoBuf(arr)).toThrow(
         "Buffer length is other than expected",
       );
     });
@@ -170,8 +170,8 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(200)
         .writeBuffer(buffer)
-        .toBuffer();
-      expect(() => new ScriptChunk().fromBuffer(arr)).toThrow(
+        .toIsoBuf();
+      expect(() => new ScriptChunk().fromIsoBuf(arr)).toThrow(
         "Buffer length is other than expected",
       );
     });
@@ -182,8 +182,8 @@ describe("ScriptChunk", () => {
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(200)
         .writeBuffer(buffer)
-        .toBuffer();
-      expect(() => new ScriptChunk().fromBuffer(arr)).toThrow(
+        .toIsoBuf();
+      expect(() => new ScriptChunk().fromIsoBuf(arr)).toThrow(
         "Buffer length is other than expected",
       );
     });

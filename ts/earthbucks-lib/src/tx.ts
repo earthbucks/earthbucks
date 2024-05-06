@@ -40,50 +40,50 @@ export default class Tx {
     const numInputs = reader.readVarIntNum();
     const inputs = [];
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TxInput.fromBufferReader(reader));
+      inputs.push(TxInput.fromIsoBufReader(reader));
     }
     const numOutputs = reader.readVarIntNum();
     const outputs = [];
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TxOutput.fromBufferReader(reader));
+      outputs.push(TxOutput.fromIsoBufReader(reader));
     }
     const lockNum = reader.readUInt64BEBigInt();
     return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
-  static fromBufferReader(reader: BufferReader): Tx {
+  static fromIsoBufReader(reader: BufferReader): Tx {
     const version = reader.readUInt8();
     const numInputs = reader.readVarIntNum();
     const inputs = [];
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TxInput.fromBufferReader(reader));
+      inputs.push(TxInput.fromIsoBufReader(reader));
     }
     const numOutputs = reader.readVarIntNum();
     const outputs = [];
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TxOutput.fromBufferReader(reader));
+      outputs.push(TxOutput.fromIsoBufReader(reader));
     }
     const lockNum = reader.readUInt64BEBigInt();
     return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const writer = new BufferWriter();
     writer.writeUInt8(this.version);
-    writer.writeBuffer(VarInt.fromNumber(this.inputs.length).toBuffer());
+    writer.writeBuffer(VarInt.fromNumber(this.inputs.length).toIsoBuf());
     for (const input of this.inputs) {
-      writer.writeBuffer(input.toBuffer());
+      writer.writeBuffer(input.toIsoBuf());
     }
-    writer.writeBuffer(VarInt.fromNumber(this.outputs.length).toBuffer());
+    writer.writeBuffer(VarInt.fromNumber(this.outputs.length).toIsoBuf());
     for (const output of this.outputs) {
-      writer.writeBuffer(output.toBuffer());
+      writer.writeBuffer(output.toIsoBuf());
     }
     writer.writeUInt64BEBigInt(this.lockNum);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 
   toString(): string {
-    return this.toBuffer().toString("hex");
+    return this.toIsoBuf().toString("hex");
   }
 
   static fromString(hex: string): Tx {
@@ -107,11 +107,11 @@ export default class Tx {
   }
 
   blake3Hash(): Buffer {
-    return blake3Hash(this.toBuffer());
+    return blake3Hash(this.toIsoBuf());
   }
 
   id(): Buffer {
-    return doubleBlake3Hash(this.toBuffer());
+    return doubleBlake3Hash(this.toIsoBuf());
   }
 
   hashPrevouts(): Buffer {
@@ -120,7 +120,7 @@ export default class Tx {
       writer.writeBuffer(input.inputTxId);
       writer.writeUInt32BE(input.inputTxNOut);
     }
-    return doubleBlake3Hash(writer.toBuffer());
+    return doubleBlake3Hash(writer.toIsoBuf());
   }
 
   hashSequence(): Buffer {
@@ -128,15 +128,15 @@ export default class Tx {
     for (const input of this.inputs) {
       writer.writeUInt32LE(input.sequence);
     }
-    return doubleBlake3Hash(writer.toBuffer());
+    return doubleBlake3Hash(writer.toIsoBuf());
   }
 
   hashOutputs(): Buffer {
     const writer = new BufferWriter();
     for (const output of this.outputs) {
-      writer.writeBuffer(output.toBuffer());
+      writer.writeBuffer(output.toIsoBuf());
     }
-    return doubleBlake3Hash(writer.toBuffer());
+    return doubleBlake3Hash(writer.toIsoBuf());
   }
 
   sighashPreimage(
@@ -184,7 +184,7 @@ export default class Tx {
       (hashType & 0x1f) === SIGHASH_SINGLE &&
       inputIndex < this.outputs.length
     ) {
-      outputsHash = doubleBlake3Hash(this.outputs[inputIndex].toBuffer());
+      outputsHash = doubleBlake3Hash(this.outputs[inputIndex].toIsoBuf());
     }
 
     const writer = new BufferWriter();
@@ -200,7 +200,7 @@ export default class Tx {
     writer.writeBuffer(outputsHash);
     writer.writeUInt64BEBigInt(this.lockNum);
     writer.writeUInt8(hashType);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 
   sighashNoCache(

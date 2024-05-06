@@ -3,7 +3,7 @@ import Header from "../src/header";
 import { Buffer } from "buffer";
 
 describe("BlockHeader", () => {
-  test("toBuffer and fromBuffer", () => {
+  test("toIsoBuf and fromIsoBuf", () => {
     const bh1 = new Header(
       1,
       Buffer.alloc(32),
@@ -16,8 +16,8 @@ describe("BlockHeader", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
     );
-    const buf = bh1.toBuffer();
-    const bh2 = Header.fromBuffer(buf);
+    const buf = bh1.toIsoBuf();
+    const bh2 = Header.fromIsoBuf(buf);
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
@@ -27,7 +27,7 @@ describe("BlockHeader", () => {
     expect(bh1.blockNum).toBe(bh2.blockNum);
   });
 
-  test("toBuffer", () => {
+  test("toIsoBuf", () => {
     const bh1 = new Header(
       1,
       Buffer.alloc(32),
@@ -40,8 +40,8 @@ describe("BlockHeader", () => {
       Buffer.alloc(32),
       Buffer.alloc(32),
     );
-    const buf = bh1.toBuffer();
-    const bh2 = Header.fromBuffer(buf);
+    const buf = bh1.toIsoBuf();
+    const bh2 = Header.fromIsoBuf(buf);
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);

@@ -22,7 +22,7 @@ impl MineTxInput {
                 tx_in_num: tx_in_num as u32,
                 input_tx_id: tx_in.input_tx_id.clone(),
                 input_tx_out_num: tx_in.input_tx_out_num,
-                script: tx_in.script.to_u8_vec(),
+                script: tx_in.script.to_iso_buf(),
                 sequence: tx_in.sequence,
                 created_at: chrono::Utc::now().naive_utc(),
             })

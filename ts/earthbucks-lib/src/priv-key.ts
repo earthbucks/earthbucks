@@ -19,7 +19,7 @@ export default class PrivKey {
     return new PrivKey(privateKey);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     return this.buf;
   }
 
@@ -31,29 +31,29 @@ export default class PrivKey {
     return this.toPubKeyBuffer().toString("hex");
   }
 
-  static fromBuffer(buf: Buffer): PrivKey {
+  static fromIsoBuf(buf: Buffer): PrivKey {
     if (buf.length !== 32) {
       throw new Error("Invalid private key length");
     }
     return new PrivKey(buf);
   }
 
-  toHex(): string {
+  toIsoHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromHex(hex: string): PrivKey {
-    return PrivKey.fromBuffer(StrictHex.decode(hex));
+  static fromIsoHex(hex: string): PrivKey {
+    return PrivKey.fromIsoBuf(StrictHex.decode(hex));
   }
 
-  toStringFmt(): string {
+  toIsoStr(): string {
     const hashBuf = blake3Hash(this.buf);
     const checkBuf = hashBuf.subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return "ebxprv" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromStringFmt(str: string): PrivKey {
+  static fromIsoStr(str: string): PrivKey {
     if (!str.startsWith("ebxprv")) {
       throw new Error("Invalid private key format");
     }
@@ -69,13 +69,13 @@ export default class PrivKey {
     if (!checkBuf.equals(checkBuf2)) {
       throw new Error("Checksum mismatch");
     }
-    return PrivKey.fromBuffer(decoded);
+    return PrivKey.fromIsoBuf(decoded);
   }
 
   static isValidStringFmt(str: string): boolean {
     let privKey: PrivKey;
     try {
-      privKey = PrivKey.fromStringFmt(str);
+      privKey = PrivKey.fromIsoStr(str);
     } catch (e) {
       return false;
     }

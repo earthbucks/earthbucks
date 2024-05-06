@@ -121,9 +121,9 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
-    const u8vec1 = proof1.toBuffer();
+    const u8vec1 = proof1.toIsoBuf();
     const proof1FromU8Vec = MerkleProof.fromU8Vec(u8vec1);
-    const u8vec2 = proof1FromU8Vec.toBuffer();
+    const u8vec2 = proof1FromU8Vec.toIsoBuf();
     expect(Buffer.compare(u8vec1, u8vec2)).toBe(0);
   });
 

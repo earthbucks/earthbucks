@@ -7,7 +7,7 @@ import BufferReader from "../src/buffer-reader";
 import { Buffer } from "buffer";
 
 describe("Block", () => {
-  test("toBufferWriter", () => {
+  test("toIsoBufWriter", () => {
     const bh = new Header(
       1,
       Buffer.alloc(32),
@@ -22,11 +22,11 @@ describe("Block", () => {
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const bw = block.toBufferWriter(new BufferWriter());
-    expect(bw.toBuffer().length).toBeGreaterThan(0);
+    const bw = block.toIsoBufWriter(new BufferWriter());
+    expect(bw.toIsoBuf().length).toBeGreaterThan(0);
   });
 
-  test("toBuffer", () => {
+  test("toIsoBuf", () => {
     const bh = new Header(
       1,
       Buffer.alloc(32),
@@ -41,11 +41,11 @@ describe("Block", () => {
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const u8vec = block.toBuffer();
+    const u8vec = block.toIsoBuf();
     expect(u8vec.length).toBeGreaterThan(0);
   });
 
-  test("fromBufferReader", () => {
+  test("fromIsoBufReader", () => {
     const bh = new Header(
       1,
       Buffer.alloc(32),
@@ -60,9 +60,9 @@ describe("Block", () => {
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
-    const bw = block.toBufferWriter(new BufferWriter());
-    const br = new BufferReader(bw.toBuffer());
-    const block2 = Block.fromBufferReader(br);
+    const bw = block.toIsoBufWriter(new BufferWriter());
+    const br = new BufferReader(bw.toIsoBuf());
+    const block2 = Block.fromIsoBufReader(br);
     expect(block2.header.version).toBe(bh.version);
     expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);

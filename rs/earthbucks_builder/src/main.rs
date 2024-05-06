@@ -41,7 +41,7 @@ impl EnvConfig {
 
         let domain_priv_key_str =
             env::var("DOMAIN_PRIV_KEY").map_err(|_| "Missing domain priv key".to_string())?;
-        let domain_priv_key: PrivKey = PrivKey::from_string_fmt(&domain_priv_key_str)
+        let domain_priv_key: PrivKey = PrivKey::from_iso_str(&domain_priv_key_str)
             .map_err(|e| format!("Invalid domain priv key: {}", e))?;
 
         let domain_key_pair: KeyPair = KeyPair::from_priv_key(&domain_priv_key)
@@ -49,12 +49,12 @@ impl EnvConfig {
 
         let coinbase_pkh_str =
             env::var("COINBASE_PKH").map_err(|_| "Missing coinbase pkh".to_string())?;
-        let coinbase_pkh: Pkh = Pkh::from_string_fmt(&coinbase_pkh_str)
+        let coinbase_pkh: Pkh = Pkh::from_iso_str(&coinbase_pkh_str)
             .map_err(|e| format!("Invalid coinbase pkh: {}", e))?;
 
         let admin_pub_key_str =
             env::var("ADMIN_PUB_KEY").map_err(|_| "Missing admin pub key".to_string())?;
-        let admin_pub_key: PubKey = PubKey::from_string_fmt(&admin_pub_key_str)
+        let admin_pub_key: PubKey = PubKey::from_iso_str(&admin_pub_key_str)
             .map_err(|e| format!("Invalid admin pub key: {}", e))?;
 
         let database_url =
@@ -182,7 +182,7 @@ async fn main() -> Result<()> {
                     let tx_out_num = builder_tx_output.tx_out_num;
                     let tx_output = TxOutput::new(
                         builder_tx_output.value,
-                        Script::from_u8_vec(&builder_tx_output.script).unwrap(),
+                        Script::from_iso_buf(&builder_tx_output.script).unwrap(),
                     );
                     tx_out_map.add(tx_output, &tx_id, tx_out_num);
                 }
@@ -198,7 +198,7 @@ async fn main() -> Result<()> {
                     .await?;
                 info!(
                     "New validated block ID: {}",
-                    Buffer::from(header.id().to_vec()).to_hex()
+                    Buffer::from(header.id().to_vec()).to_iso_hex()
                 );
                 if !is_block_valid {
                     continue;
@@ -243,7 +243,7 @@ async fn main() -> Result<()> {
                     info!(
                         "New header is valid: {}, {}",
                         header.block_num,
-                        Buffer::from(header.id().to_vec()).to_hex()
+                        Buffer::from(header.id().to_vec()).to_iso_hex()
                     );
                     MineHeader::update_is_header_valid(&new_builder_header.id, true, &pool).await?;
                     continue 'main_loop;
@@ -251,11 +251,11 @@ async fn main() -> Result<()> {
                     debug!(
                         "Header is invalid: {}, {}",
                         header.block_num,
-                        Buffer::from(header.id().to_vec()).to_hex()
+                        Buffer::from(header.id().to_vec()).to_iso_hex()
                     );
                     debug!(
                         "Header target: {}",
-                        Buffer::from(header.target.to_vec()).to_hex()
+                        Buffer::from(header.target.to_vec()).to_iso_hex()
                     );
                     MineHeader::update_is_header_valid(&new_builder_header.id, false, &pool)
                         .await?;
@@ -340,13 +340,13 @@ async fn main() -> Result<()> {
                 // this can hypothetically happen if timestamp is the same
                 debug!(
                     "Candidate header already exists: {}",
-                    Buffer::from(block_id.to_vec()).to_hex()
+                    Buffer::from(block_id.to_vec()).to_iso_hex()
                 );
             } else {
                 builder_header.save(&pool).await?;
                 debug!(
                     "Produced candidate header ID: {}",
-                    Buffer::from(block_id.to_vec()).to_hex()
+                    Buffer::from(block_id.to_vec()).to_iso_hex()
                 );
             }
         }

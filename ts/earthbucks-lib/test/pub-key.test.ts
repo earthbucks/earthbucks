@@ -6,7 +6,7 @@ describe("PubKey", () => {
   test("PubKey", () => {
     const privKey = PrivKey.fromRandom();
     const pubKey = PubKey.fromPrivKey(privKey);
-    console.log(pubKey.toStringFmt());
+    console.log(pubKey.toIsoStr());
     expect(pubKey).toBeDefined();
   });
 
@@ -27,10 +27,10 @@ describe("PubKey", () => {
       ),
     ).toBe(false);
 
-    let pubKey = PubKey.fromStringFmt(
+    let pubKey = PubKey.fromIsoStr(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
-    expect(pubKey.toStringFmt()).toEqual(
+    expect(pubKey.toIsoStr()).toEqual(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
   });

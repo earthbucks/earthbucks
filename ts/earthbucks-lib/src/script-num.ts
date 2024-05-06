@@ -9,7 +9,7 @@ export default class ScriptNum {
     this.num = num;
   }
 
-  fromBuffer(buffer: Buffer): this {
+  fromIsoBuf(buffer: Buffer): this {
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
@@ -26,11 +26,11 @@ export default class ScriptNum {
     return this;
   }
 
-  static fromBuffer(buffer: Buffer): ScriptNum {
-    return new ScriptNum().fromBuffer(buffer);
+  static fromIsoBuf(buffer: Buffer): ScriptNum {
+    return new ScriptNum().fromIsoBuf(buffer);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const num = this.num;
     if (num >= 0n) {
       let hex = num.toString(16);

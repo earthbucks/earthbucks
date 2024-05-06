@@ -19,8 +19,8 @@ describe("TxInput", () => {
     expect(txInput.sequence).toBe(sequence);
   });
 
-  describe("fromBufferReader", () => {
-    test("fromBufferReader", () => {
+  describe("fromIsoBufReader", () => {
+    test("fromIsoBufReader", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
@@ -28,8 +28,8 @@ describe("TxInput", () => {
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
 
-      const reader = new BufferReader(txInput.toBuffer());
-      const result = TxInput.fromBufferReader(reader);
+      const reader = new BufferReader(txInput.toIsoBuf());
+      const result = TxInput.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(TxInput);
       expect(Buffer.from(result.inputTxId).toString("hex")).toEqual(
         Buffer.from(inputTxHash).toString("hex"),
@@ -40,42 +40,42 @@ describe("TxInput", () => {
     });
   });
 
-  describe("toBuffer", () => {
-    test("toBuffer", () => {
+  describe("toIsoBuf", () => {
+    test("toIsoBuf", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
       const sequence = 0xffffffff;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
-      const result = txInput.toBuffer();
+      const result = txInput.toIsoBuf();
       expect(result.toString("hex")).toEqual(
         "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
       );
     });
 
-    test("toBuffer with script", () => {
+    test("toIsoBuf with script", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script().fromString("DOUBLEBLAKE3");
       const sequence = 0xffffffff;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
-      const result = txInput.toBuffer();
+      const result = txInput.toIsoBuf();
       expect(result.toString("hex")).toEqual(
         "00000000000000000000000000000000000000000000000000000000000000000000000001a7ffffffff",
       );
     });
   });
 
-  test("toBuffer with pushdata", () => {
+  test("toIsoBuf with pushdata", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
     const script = new Script().fromString("0x121212");
     const sequence = 0xffffffff;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
-    const result = txInput.toBuffer();
+    const result = txInput.toIsoBuf();
     expect(result.toString("hex")).toEqual(
       "000000000000000000000000000000000000000000000000000000000000000000000000054c03121212ffffffff",
     );

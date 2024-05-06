@@ -5,30 +5,30 @@ import BufferReader from "../src/buffer-reader";
 import { Buffer } from "buffer";
 
 describe("TxOutput", () => {
-  describe("fromBufferReader", () => {
-    test("fromBufferReader", () => {
+  describe("fromIsoBufReader", () => {
+    test("fromIsoBufReader", () => {
       const value = BigInt(100);
       const script = new Script();
       const txOutput = new TxOutput(value, script);
 
-      const reader = new BufferReader(txOutput.toBuffer());
-      const result = TxOutput.fromBufferReader(reader);
+      const reader = new BufferReader(txOutput.toIsoBuf());
+      const result = TxOutput.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(TxOutput);
       expect(result.value).toEqual(value);
       expect(result.script.toString()).toEqual(script.toString());
     });
   });
 
-  describe("fromU8Vec and toBuffer", () => {
+  describe("fromU8Vec and toIsoBuf", () => {
     test("should create a TxOutput from a Buffer", () => {
       const value = BigInt(100);
       const script = Script.fromString(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       );
       const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromBuffer(txOutput.toBuffer());
-      expect(txOutput.toBuffer().toString("hex")).toEqual(
-        result.toBuffer().toString("hex"),
+      const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
+      expect(txOutput.toIsoBuf().toString("hex")).toEqual(
+        result.toIsoBuf().toString("hex"),
       );
     });
 
@@ -37,9 +37,9 @@ describe("TxOutput", () => {
       const value = BigInt(100);
       const script = Script.fromString(`${data} DOUBLEBLAKE3`);
       const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromBuffer(txOutput.toBuffer());
-      expect(txOutput.toBuffer().toString("hex")).toEqual(
-        result.toBuffer().toString("hex"),
+      const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
+      expect(txOutput.toIsoBuf().toString("hex")).toEqual(
+        result.toIsoBuf().toString("hex"),
       );
     });
   });

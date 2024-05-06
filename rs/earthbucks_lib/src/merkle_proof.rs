@@ -106,7 +106,7 @@ impl MerkleProof {
         (root, proofs)
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut bw = BufferWriter::new();
         bw.write_u8_vec(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
@@ -114,10 +114,10 @@ impl MerkleProof {
             bw.write_u8_vec(sibling.to_vec());
             bw.write_u8(if *is_left { 1 } else { 0 });
         }
-        bw.to_u8_vec()
+        bw.to_iso_buf()
     }
 
-    pub fn from_u8_vec(u8: &[u8]) -> MerkleProof {
+    pub fn from_iso_buf(u8: &[u8]) -> MerkleProof {
         let mut br = BufferReader::new(u8.to_vec());
         let root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
         let mut proof = vec![];
@@ -130,12 +130,12 @@ impl MerkleProof {
         MerkleProof::new(root, proof)
     }
 
-    pub fn to_string_fmt(&self) -> String {
-        hex::encode(self.to_u8_vec())
+    pub fn to_iso_str(&self) -> String {
+        hex::encode(self.to_iso_buf())
     }
 
-    pub fn from_string_fmt(hex: &str) -> MerkleProof {
-        MerkleProof::from_u8_vec(&hex::decode(hex).unwrap())
+    pub fn from_iso_str(hex: &str) -> MerkleProof {
+        MerkleProof::from_iso_buf(&hex::decode(hex).unwrap())
     }
 }
 
@@ -480,13 +480,13 @@ mod tests {
     }
 
     #[test]
-    fn to_u8_vec_and_from_u8_vec() {
+    fn to_iso_buf_and_from_iso_buf() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
         let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
-        let u8 = proof.to_u8_vec();
-        let new_proof = MerkleProof::from_u8_vec(&u8);
+        let u8 = proof.to_iso_buf();
+        let new_proof = MerkleProof::from_iso_buf(&u8);
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);
@@ -498,8 +498,8 @@ mod tests {
         let data2 = double_blake3_hash("data2".as_bytes());
         let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
-        let hex = proof.to_string_fmt();
-        let new_proof = MerkleProof::from_string_fmt(&hex);
+        let hex = proof.to_iso_str();
+        let new_proof = MerkleProof::from_iso_str(&hex);
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);

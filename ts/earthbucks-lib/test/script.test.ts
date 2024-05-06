@@ -30,16 +30,16 @@ describe("Script", () => {
     expect(script.toString()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toBuffer and fromU8Vec", () => {
+  test("toIsoBuf and fromU8Vec", () => {
     const originalScript = Script.fromString("DUP DOUBLEBLAKE3");
-    const arr = originalScript.toBuffer();
+    const arr = originalScript.toIsoBuf();
     const script = Script.fromU8Vec(arr);
     expect(script.toString()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toBuffer and fromU8Vec with PUSHDATA1", () => {
+  test("toIsoBuf and fromU8Vec with PUSHDATA1", () => {
     const originalScript = Script.fromString("0xff 0xff");
-    const arr = originalScript.toBuffer();
+    const arr = originalScript.toIsoBuf();
     const script = Script.fromU8Vec(arr);
     expect(script.toString()).toBe("0xff 0xff");
   });
@@ -50,7 +50,7 @@ describe("Script", () => {
     initialScript.fromString("0xffff 0xffff");
 
     // Convert the Script to a Buffer
-    const arr = initialScript.toBuffer();
+    const arr = initialScript.toIsoBuf();
 
     // Create a new Script from the Buffer
     const finalScript = new Script();

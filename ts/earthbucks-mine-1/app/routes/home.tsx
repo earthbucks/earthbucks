@@ -27,7 +27,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     DOMAIN,
     DOMAIN_PUB_KEY_STR,
-    userPubKeyStr: userPubKey.toStringFmt(),
+    userPubKeyStr: userPubKey.toIsoStr(),
   });
 }
 

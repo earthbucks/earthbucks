@@ -44,7 +44,7 @@ export default class Header {
     this.workPar = workPar;
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const bw = new BufferWriter();
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
@@ -56,10 +56,10 @@ export default class Header {
     bw.writeUInt64BEBigInt(this.workAlgo);
     bw.writeBuffer(this.workSer);
     bw.writeBuffer(this.workPar);
-    return bw.toBuffer();
+    return bw.toIsoBuf();
   }
 
-  static fromBuffer(buf: Buffer): Header {
+  static fromIsoBuf(buf: Buffer): Header {
     const br = new BufferReader(buf);
     const version = br.readUInt32BE();
     const previousBlockHash = br.readBuffer(32);
@@ -85,7 +85,7 @@ export default class Header {
     );
   }
 
-  static fromBufferReader(br: BufferReader): Header {
+  static fromIsoBufReader(br: BufferReader): Header {
     const version = br.readUInt32BE();
     const previousBlockHash = br.readBuffer(32);
     const merkleRoot = br.readBuffer(32);
@@ -110,7 +110,7 @@ export default class Header {
     );
   }
 
-  toBufferWriter(bw: BufferWriter): BufferWriter {
+  toIsoBufWriter(bw: BufferWriter): BufferWriter {
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
@@ -125,11 +125,11 @@ export default class Header {
   }
 
   toString(): string {
-    return this.toBuffer().toString("hex");
+    return this.toIsoBuf().toString("hex");
   }
 
   static fromString(str: string): Header {
-    return Header.fromBuffer(Buffer.from(str, "hex"));
+    return Header.fromIsoBuf(Buffer.from(str, "hex"));
   }
 
   static fromGenesis(initialTarget: Buffer): Header {
@@ -212,7 +212,7 @@ export default class Header {
   }
 
   isValid(): boolean {
-    const len = this.toBuffer().length;
+    const len = this.toIsoBuf().length;
     if (len !== Header.BLOCK_HEADER_SIZE) {
       return false;
     }
@@ -230,11 +230,11 @@ export default class Header {
   }
 
   hash(): Buffer {
-    return blake3Hash(this.toBuffer());
+    return blake3Hash(this.toIsoBuf());
   }
 
   id(): Buffer {
-    return doubleBlake3Hash(this.toBuffer());
+    return doubleBlake3Hash(this.toIsoBuf());
   }
 
   static adjustTarget(targetBuf: Buffer, timeDiff: bigint): Buffer {

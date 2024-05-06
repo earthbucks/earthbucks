@@ -13,7 +13,7 @@ export default class TxOutput {
     this.script = script;
   }
 
-  static fromBuffer(buf: Buffer): TxOutput {
+  static fromIsoBuf(buf: Buffer): TxOutput {
     const reader = new BufferReader(buf);
     const value = reader.readUInt64BEBigInt();
     const scriptLen = reader.readVarIntNum();
@@ -22,7 +22,7 @@ export default class TxOutput {
     return new TxOutput(value, script);
   }
 
-  static fromBufferReader(reader: BufferReader): TxOutput {
+  static fromIsoBufReader(reader: BufferReader): TxOutput {
     const value = reader.readUInt64BEBigInt();
     const scriptLen = reader.readVarIntNum();
     const scriptArr = reader.readBuffer(scriptLen);
@@ -30,12 +30,12 @@ export default class TxOutput {
     return new TxOutput(value, script);
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     const writer = new BufferWriter();
     writer.writeUInt64BEBigInt(this.value);
-    const scriptBuf = this.script.toBuffer();
-    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toBuffer());
+    const scriptBuf = this.script.toIsoBuf();
+    writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.writeBuffer(scriptBuf);
-    return writer.toBuffer();
+    return writer.toIsoBuf();
   }
 }

@@ -35,21 +35,21 @@ export default class TxSigner {
     if (!key) {
       return false;
     }
-    const pubKey = key.pubKey.toBuffer();
+    const pubKey = key.pubKey.toIsoBuf();
     if (pubKey.length !== 33) {
       return false;
     }
     inputScript.chunks[1].buf = Buffer.from(pubKey);
-    const outputScriptBuf = txOut.script.toBuffer();
+    const outputScriptBuf = txOut.script.toIsoBuf();
     const outputAmount = txOut.value;
     const sig = this.tx.signNoCache(
       nIn,
-      key.privKey.toBuffer(),
+      key.privKey.toIsoBuf(),
       outputScriptBuf,
       outputAmount,
       TxSignature.SIGHASH_ALL,
     );
-    const sigBuf = sig.toBuffer();
+    const sigBuf = sig.toIsoBuf();
     if (sigBuf.length !== 65) {
       return false;
     }

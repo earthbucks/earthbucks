@@ -74,7 +74,7 @@ describe("VarInt", () => {
     });
   });
 
-  describe("toBuffer", () => {
+  describe("toIsoBuf", () => {
     it("should return a Buffer", () => {
       // Arrange
       const n: number = 123;
@@ -83,11 +83,11 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toBuffer()).toBeInstanceOf(Buffer);
+      expect(varInt.toIsoBuf()).toBeInstanceOf(Buffer);
     });
   });
 
-  describe("toBuffer", () => {
+  describe("toIsoBuf", () => {
     it("should return a Buffer", () => {
       // Arrange
       const n: number = 123;
@@ -96,7 +96,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toBuffer()).toBeInstanceOf(Buffer);
+      expect(varInt.toIsoBuf()).toBeInstanceOf(Buffer);
     });
   });
 

@@ -15,7 +15,7 @@ export default class BufferWriter {
     return len;
   }
 
-  toBuffer(): Buffer {
+  toIsoBuf(): Buffer {
     return Buffer.concat(this.bufs);
   }
 
@@ -169,7 +169,7 @@ export default class BufferWriter {
       const bw = new BufferWriter();
       bw.writeUInt8(255);
       bw.writeUInt64BEBigInt(bn);
-      buf = bw.toBuffer();
+      buf = bw.toIsoBuf();
     }
     return buf;
   }

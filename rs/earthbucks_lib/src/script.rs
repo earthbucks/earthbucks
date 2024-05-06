@@ -35,15 +35,15 @@ impl Script {
         Ok(chunks?.join(" "))
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut buf = Vec::new();
         for chunk in &self.chunks {
-            buf.extend(chunk.to_u8_vec());
+            buf.extend(chunk.to_iso_buf());
         }
         buf
     }
 
-    pub fn self_from_u8_vec(&mut self, arr: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn self_from_iso_buf(&mut self, arr: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
         let mut reader = BufferReader::new(arr.to_vec());
 
         while !reader.eof() {
@@ -78,9 +78,9 @@ impl Script {
         Ok(())
     }
 
-    pub fn from_u8_vec(arr: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(arr: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
         let mut script = Self::new(Vec::new());
-        script.self_from_u8_vec(arr)?;
+        script.self_from_iso_buf(arr)?;
         Result::Ok(script)
     }
 
@@ -202,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_u8_vec() {
+    fn test_to_iso_buf() {
         let chunks = vec![
             ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
             ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
@@ -210,13 +210,13 @@ mod tests {
         ];
         let script = Script::new(chunks);
         let expected_vec = vec![76, 0x02, 0xff, 0xff, 166, 167];
-        assert_eq!(script.to_u8_vec(), expected_vec);
+        assert_eq!(script.to_iso_buf(), expected_vec);
     }
 
     #[test]
-    fn test_from_u8_vec() {
+    fn test_from_iso_buf() {
         let arr = vec![76, 0x02, 0xff, 0xff, 166, 167];
-        let script = Script::from_u8_vec(&arr);
+        let script = Script::from_iso_buf(&arr);
         let expected_chunks = vec![
             ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
             ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),
@@ -226,7 +226,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_u8_vec_2() {
+    fn test_from_iso_buf_2() {
         let input_string = "0xffff 0xffff";
         let expected_output_string = "0xffff 0xffff";
 
@@ -234,9 +234,9 @@ mod tests {
         let script = Script::from_string(input_string).unwrap();
 
         // Convert the Script to a u8 vector
-        let u8_vec = script.to_u8_vec();
+        let u8_vec = script.to_iso_buf();
 
-        let script2 = Script::from_u8_vec(&u8_vec).unwrap();
+        let script2 = Script::from_iso_buf(&u8_vec).unwrap();
 
         // Convert the Script back to a string
         let output_string = script2.to_string().unwrap();
@@ -246,9 +246,9 @@ mod tests {
     }
 
     #[test]
-    fn test_from_u8_vec_new() {
+    fn test_from_iso_buf_new() {
         let arr = vec![76, 0x02, 0xff, 0xff, 166, 167];
-        let script = Script::from_u8_vec(arr.as_slice());
+        let script = Script::from_iso_buf(arr.as_slice());
         let expected_chunks = vec![
             ScriptChunk::from_string_new("0xffff".to_string()).unwrap(),
             ScriptChunk::from_string_new("BLAKE3".to_string()).unwrap(),

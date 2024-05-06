@@ -37,7 +37,7 @@ export default function New() {
     if (!keyPair) {
       return;
     }
-    await navigator.clipboard.writeText(keyPair.pubKey.toStringFmt());
+    await navigator.clipboard.writeText(keyPair.pubKey.toIsoStr());
     setCopiedPub(true);
     setTimeout(() => setCopiedPub(false), 1000);
   };
@@ -47,7 +47,7 @@ export default function New() {
     if (!keyPair) {
       return;
     }
-    await navigator.clipboard.writeText(keyPair.privKey.toStringFmt());
+    await navigator.clipboard.writeText(keyPair.privKey.toIsoStr());
     setCopiedPrv(true);
     setTimeout(() => setCopiedPrv(false), 1000);
   };
@@ -84,7 +84,7 @@ export default function New() {
                     className="h-[24px] w-[24px] shrink-0"
                   />
                   <div className="overflow-hidden overflow-ellipsis rounded-full">
-                    {keyPair.pubKey.toStringFmt()}
+                    {keyPair.pubKey.toIsoStr()}
                   </div>
                 </div>
                 <div className="flex-shrink-0">

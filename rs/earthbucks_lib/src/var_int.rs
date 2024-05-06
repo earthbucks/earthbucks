@@ -12,7 +12,7 @@ impl VarInt {
     }
 
     pub fn from_u64(&mut self, bn: u64) -> &mut Self {
-        self.buf = BufferWriter::new().write_var_int(bn).to_u8_vec();
+        self.buf = BufferWriter::new().write_var_int(bn).to_iso_buf();
         self
     }
 
@@ -23,7 +23,7 @@ impl VarInt {
     }
 
     pub fn from_u32(&mut self, num: u32) -> &mut Self {
-        self.buf = BufferWriter::new().write_var_int(num as u64).to_u8_vec();
+        self.buf = BufferWriter::new().write_var_int(num as u64).to_iso_buf();
         self
     }
 
@@ -33,7 +33,7 @@ impl VarInt {
         varint
     }
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         self.buf.clone()
     }
 
@@ -49,7 +49,7 @@ impl VarInt {
     pub fn is_minimal(&self) -> bool {
         let bn = self.to_u64();
         let varint = VarInt::from_u64_new(bn);
-        self.buf == varint.to_u8_vec()
+        self.buf == varint.to_iso_buf()
     }
 }
 
@@ -88,10 +88,10 @@ mod tests {
     }
 
     #[test]
-    fn test_to_u8_vec() {
+    fn test_to_iso_buf() {
         let mut varint = VarInt::new();
         varint.from_u64(1234567890);
-        let vec = varint.to_u8_vec();
+        let vec = varint.to_iso_buf();
 
         assert!(!vec.is_empty());
     }

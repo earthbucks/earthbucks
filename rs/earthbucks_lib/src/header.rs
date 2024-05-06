@@ -25,7 +25,7 @@ impl Header {
     pub const BLOCK_HEADER_SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
-    pub fn to_u8_vec(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut bw = BufferWriter::new();
         bw.write_u32_be(self.version);
         bw.write_u8_vec(self.prev_block_id.to_vec());
@@ -37,10 +37,10 @@ impl Header {
         bw.write_u64_be(self.work_algo);
         bw.write_u8_vec(self.work_ser.to_vec());
         bw.write_u8_vec(self.work_par.to_vec());
-        bw.to_u8_vec()
+        bw.to_iso_buf()
     }
 
-    pub fn from_u8_vec(buf: Vec<u8>) -> Result<Header, &'static str> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Header, &'static str> {
         if buf.len() != Header::BLOCK_HEADER_SIZE {
             return Err("Invalid block header size");
         }
@@ -112,21 +112,21 @@ impl Header {
         bw
     }
 
-    pub fn to_hex(&self) -> String {
-        Buffer::from(self.to_u8_vec()).to_hex()
+    pub fn to_iso_hex(&self) -> String {
+        Buffer::from(self.to_iso_buf()).to_iso_hex()
     }
 
-    pub fn from_hex(hex: &str) -> Result<Header, &'static str> {
-        let buf = Buffer::from_hex(hex).data;
-        Header::from_u8_vec(buf)
+    pub fn from_iso_hex(hex: &str) -> Result<Header, &'static str> {
+        let buf = Buffer::from_iso_hex(hex).data;
+        Header::from_iso_buf(buf)
     }
 
-    pub fn to_string_fmt(&self) -> String {
-        self.to_hex()
+    pub fn to_iso_str(&self) -> String {
+        self.to_iso_hex()
     }
 
-    pub fn from_string_fmt(hex: &str) -> Result<Header, &'static str> {
-        Header::from_hex(hex)
+    pub fn from_iso_str(hex: &str) -> Result<Header, &'static str> {
+        Header::from_iso_hex(hex)
     }
 
     pub fn is_valid_target(&self, lch: &[Header]) -> bool {
@@ -152,7 +152,7 @@ impl Header {
     }
 
     pub fn is_valid_in_isolation(&self) -> bool {
-        let len = self.to_u8_vec().len();
+        let len = self.to_iso_buf().len();
         if len != Header::BLOCK_HEADER_SIZE {
             return false;
         }
@@ -225,11 +225,11 @@ impl Header {
     }
 
     pub fn hash(&self) -> [u8; 32] {
-        blake3_hash(&self.to_u8_vec())
+        blake3_hash(&self.to_iso_buf())
     }
 
     pub fn id(&self) -> [u8; 32] {
-        double_blake3_hash(&self.to_u8_vec())
+        double_blake3_hash(&self.to_iso_buf())
     }
 
     pub fn get_new_timestamp() -> u64 {
@@ -340,7 +340,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_to_u8_vec_and_from_u8_vec() {
+    fn test_to_iso_buf_and_from_iso_buf() {
         let bh1 = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -353,8 +353,8 @@ mod tests {
             work_ser: [0; 32],
             work_par: [0; 32],
         };
-        let buf = bh1.to_u8_vec();
-        let bh2 = Header::from_u8_vec(buf).unwrap();
+        let buf = bh1.to_iso_buf();
+        let bh2 = Header::from_iso_buf(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
@@ -378,8 +378,8 @@ mod tests {
             work_ser: [0; 32],
             work_par: [0; 32],
         };
-        let buf = bh1.to_u8_vec();
-        let bh2 = Header::from_u8_vec(buf).unwrap();
+        let buf = bh1.to_iso_buf();
+        let bh2 = Header::from_iso_buf(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
