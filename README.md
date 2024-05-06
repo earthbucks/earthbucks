@@ -4,9 +4,7 @@
 
 42 trillion EBX. No pre-mine. GPUs. Big blocks. Script.
 
-Genesis block in 2024.
-
-Estimated launch in July.
+Genesis block in July 2024.
 
 Website: [earthbucks.com](https://earthbucks.com)
 
