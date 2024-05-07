@@ -3,7 +3,6 @@ import Tx from "./tx";
 import VarInt from "./var-int";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
-import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "ts-results";
 
@@ -19,14 +18,14 @@ export default class Block {
   static fromIsoBufReader(br: IsoBufReader): Result<Block, string> {
     try {
       const header = Header.fromIsoBufReader(br)
-        .mapErr(() => "unable to parse header")
+        .mapErr((err) => `Unable to parse header: ${err}`)
         .unwrap();
       const txCountVarInt = VarInt.fromIsoBufReader(br)
-        .mapErr(() => "unable to parse tx count 1")
+        .mapErr((err) => `Unable to parse tx count 1: ${err}`)
         .unwrap();
       const txCount = txCountVarInt
         .toBigInt()
-        .mapErr(() => "unable to parse tx count 2")
+        .mapErr((err) => `Unable to parse tx count 2: ${err}`)
         .unwrap();
 
       const txs: Tx[] = [];
@@ -34,8 +33,8 @@ export default class Block {
         try {
           const tx = Tx.fromIsoBufReader(br);
           txs.push(tx);
-        } catch (e) {
-          return Err("unable to parse transactions");
+        } catch (err) {
+          return Err(`Unable to parse transactions: ${err}`);
         }
       }
       return Ok(new Block(header, txs));

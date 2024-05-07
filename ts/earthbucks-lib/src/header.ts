@@ -65,43 +65,43 @@ export default class Header {
       const br = new IsoBufReader(buf);
       const version = br
         .readUInt32BE()
-        .mapErr(() => "Could not read version number")
+        .mapErr((err) => `Could not read version number: ${err}`)
         .unwrap();
       const previousBlockHash = br
         .readBuffer(32)
-        .mapErr(() => "Could not read previous block hash")
+        .mapErr((err) => `Could not read previous block hash: ${err}`)
         .unwrap();
       const merkleRoot = br
         .readBuffer(32)
-        .mapErr(() => "Could not read merkle root")
+        .mapErr((err) => `Could not read merkle root: ${err}`)
         .unwrap();
       const timestamp = br
         .readUInt64BE()
-        .mapErr(() => "Could not read timestamp")
+        .mapErr((err) => `Could not read timestamp: ${err}`)
         .unwrap();
       const blockNum = br
         .readUInt64BE()
-        .mapErr(() => "Could not read block number")
+        .mapErr((err) => `Could not read block number: ${err}`)
         .unwrap();
       const target = br
         .readBuffer(32)
-        .mapErr(() => "Could not read target")
+        .mapErr((err) => `Could not read target: ${err}`)
         .unwrap();
       const nonce = br
         .readBuffer(32)
-        .mapErr(() => "Could not read nonce")
+        .mapErr((err) => `Could not read nonce: ${err}`)
         .unwrap();
       const workAlgo = br
         .readUInt64BE()
-        .mapErr(() => "Could not read work algorithm")
+        .mapErr((err) => `Could not read work algorithm: ${err}`)
         .unwrap();
       const workSer = br
         .readBuffer(32)
-        .mapErr(() => "Could not read serial work")
+        .mapErr((err) => `Could not read serial work: ${err}`)
         .unwrap();
       const workPar = br
         .readBuffer(32)
-        .mapErr(() => "Could not read parallel work")
+        .mapErr((err) => `Could not read parallel work: ${err}`)
         .unwrap();
       return Ok(
         new Header(
@@ -126,43 +126,43 @@ export default class Header {
     try {
       const version = br
         .readUInt32BE()
-        .mapErr(() => "Could not read version number")
+        .mapErr((err) => `Could not read version number: ${err}`)
         .unwrap();
       const previousBlockHash = br
         .readBuffer(32)
-        .mapErr(() => "Could not read previous block hash")
+        .mapErr((err) => `Could not read previous block hash: ${err}`)
         .unwrap();
       const merkleRoot = br
         .readBuffer(32)
-        .mapErr(() => "Could not read merkle root")
+        .mapErr((err) => `Could not read merkle root: ${err}`)
         .unwrap();
       const timestamp = br
         .readUInt64BE()
-        .mapErr(() => "Could not read timestamp")
+        .mapErr((err) => `Could not read timestamp: ${err}`)
         .unwrap();
       const blockNum = br
         .readUInt64BE()
-        .mapErr(() => "Could not read block number")
+        .mapErr((err) => `Could not read block number: ${err}`)
         .unwrap();
       const target = br
         .readBuffer(32)
-        .mapErr(() => "Could not read target")
+        .mapErr((err) => `Could not read target: ${err}`)
         .unwrap();
       const nonce = br
         .readBuffer(32)
-        .mapErr(() => "Could not read nonce")
+        .mapErr((err) => `Could not read nonce: ${err}`)
         .unwrap();
       const workAlgo = br
         .readUInt64BE()
-        .mapErr(() => "Could not read work algorithm")
+        .mapErr((err) => `Could not read work algorithm: ${err}`)
         .unwrap();
       const workSer = br
         .readBuffer(32)
-        .mapErr(() => "Could not read serial work")
+        .mapErr((err) => `Could not read serial work: ${err}`)
         .unwrap();
       const workPar = br
         .readBuffer(32)
-        .mapErr(() => "Could not read parallel work")
+        .mapErr((err) => `Could not read parallel work: ${err}`)
         .unwrap();
       return Ok(
         new Header(
