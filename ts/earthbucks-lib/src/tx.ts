@@ -34,21 +34,8 @@ export default class Tx {
     this.lockNum = lockNum;
   }
 
-  static fromU8Vec(buf: Buffer): Tx {
-    const reader = new IsoBufReader(buf);
-    const version = reader.readUInt8().unwrap();
-    const numInputs = reader.readVarIntNum().unwrap();
-    const inputs = [];
-    for (let i = 0; i < numInputs; i++) {
-      inputs.push(TxInput.fromIsoBufReader(reader));
-    }
-    const numOutputs = reader.readVarIntNum().unwrap();
-    const outputs = [];
-    for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TxOutput.fromIsoBufReader(reader));
-    }
-    const lockNum = reader.readUInt64BE().unwrap();
-    return new Tx(version, inputs, outputs, BigInt(lockNum));
+  static fromIsoBuf(buf: Buffer): Tx {
+    return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Tx {
@@ -87,7 +74,7 @@ export default class Tx {
   }
 
   static fromIsoStr(hex: string): Tx {
-    return Tx.fromU8Vec(Buffer.from(hex, "hex"));
+    return Tx.fromIsoBuf(Buffer.from(hex, "hex"));
   }
 
   static fromCoinbase(

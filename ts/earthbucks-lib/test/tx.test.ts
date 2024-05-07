@@ -36,7 +36,7 @@ describe("Tx", () => {
     const lockNum = BigInt(0);
 
     const tx = new Tx(version, inputs, outputs, lockNum);
-    const result = Tx.fromU8Vec(tx.toIsoBuf());
+    const result = Tx.fromIsoBuf(tx.toIsoBuf());
     expect(tx.toIsoBuf().toString("hex")).toEqual(
       result.toIsoBuf().toString("hex"),
     );
@@ -53,7 +53,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = Tx.fromU8Vec(tx.toIsoBuf());
+      const result = Tx.fromIsoBuf(tx.toIsoBuf());
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);

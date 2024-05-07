@@ -61,65 +61,7 @@ export default class Header {
   }
 
   static fromIsoBuf(buf: Buffer): Result<Header, string> {
-    try {
-      const br = new IsoBufReader(buf);
-      const version = br
-        .readUInt32BE()
-        .mapErr((err) => `Could not read version number: ${err}`)
-        .unwrap();
-      const previousBlockHash = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read previous block hash: ${err}`)
-        .unwrap();
-      const merkleRoot = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read merkle root: ${err}`)
-        .unwrap();
-      const timestamp = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read timestamp: ${err}`)
-        .unwrap();
-      const blockNum = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read block number: ${err}`)
-        .unwrap();
-      const target = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read target: ${err}`)
-        .unwrap();
-      const nonce = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read nonce: ${err}`)
-        .unwrap();
-      const workAlgo = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read work algorithm: ${err}`)
-        .unwrap();
-      const workSer = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read serial work: ${err}`)
-        .unwrap();
-      const workPar = br
-        .readBuffer(32)
-        .mapErr((err) => `Could not read parallel work: ${err}`)
-        .unwrap();
-      return Ok(
-        new Header(
-          version,
-          previousBlockHash,
-          merkleRoot,
-          timestamp,
-          blockNum,
-          target,
-          nonce,
-          workAlgo,
-          workSer,
-          workPar,
-        ),
-      );
-    } catch (err) {
-      return Err(err?.toString() || "Unknown error parsing header");
-    }
+    return Header.fromIsoBufReader(new IsoBufReader(buf));
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<Header, string> {
