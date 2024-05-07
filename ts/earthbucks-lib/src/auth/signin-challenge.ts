@@ -50,7 +50,7 @@ export default class SigninChallenge {
 
   isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
-    const permissionToken = PermissionToken.fromIsoBuf(message);
+    const permissionToken = PermissionToken.fromIsoBuf(message).unwrap();
     if (!permissionToken.isValid()) {
       return false;
     }

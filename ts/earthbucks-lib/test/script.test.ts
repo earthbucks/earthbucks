@@ -30,14 +30,14 @@ describe("Script", () => {
     expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toIsoBuf and fromU8Vec", () => {
+  test("toIsoBuf and fromIsoBuf", () => {
     const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     const arr = originalScript.toIsoBuf();
     const script = Script.fromIsoBuf(arr).unwrap();
     expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toIsoBuf and fromU8Vec with PUSHDATA1", () => {
+  test("toIsoBuf and fromIsoBuf with PUSHDATA1", () => {
     const originalScript = Script.fromIsoStr("0xff 0xff").unwrap();
     const arr = originalScript.toIsoBuf();
     const script = Script.fromIsoBuf(arr).unwrap();

@@ -1,5 +1,7 @@
 import IsoBufReader from "../iso-buf-reader";
 import IsoBufWriter from "../iso-buf-writer";
+import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class PermissionToken {
   randValue: Buffer;
@@ -17,14 +19,24 @@ export default class PermissionToken {
     return writer.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: Buffer): PermissionToken {
-    if (buf.length !== 32 + 8) {
-      throw new Error("invalid buffer length");
+  static fromIsoBuf(buf: Buffer): Result<PermissionToken, string> {
+    try {
+      if (buf.length !== 32 + 8) {
+        return Err("invalid buffer length");
+      }
+      const reader = new IsoBufReader(buf);
+      const randValue = reader
+        .readBuffer(32)
+        .mapErr((err) => `Unable to read rand value: ${err}`)
+        .unwrap();
+      const timestamp = reader
+        .readUInt64BE()
+        .mapErr((err) => `Unable to read timestamp: ${err}`)
+        .unwrap();
+      return Ok(new PermissionToken(randValue, timestamp));
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing permission token");
     }
-    const reader = new IsoBufReader(buf);
-    const randValue = reader.readBuffer(32).unwrap();
-    const timestamp = reader.readUInt64BE().unwrap();
-    return new PermissionToken(randValue, timestamp);
   }
 
   static fromRandom(): PermissionToken {
