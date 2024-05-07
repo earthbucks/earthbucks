@@ -373,8 +373,9 @@ describe("Tx", () => {
         expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey =
-          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toIsoBuf();
+        const publicKey = KeyPair.fromPrivKeyBuffer(privateKey)
+          .unwrap()
+          .pubKey.toIsoBuf();
         const result = tx.verifyNoCache(
           inputIndex,
           publicKey,
@@ -430,8 +431,9 @@ describe("Tx", () => {
         expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey =
-          KeyPair.fromPrivKeyBuffer(privateKey).pubKey.toIsoBuf();
+        const publicKey = KeyPair.fromPrivKeyBuffer(privateKey)
+          .unwrap()
+          .pubKey.toIsoBuf();
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,

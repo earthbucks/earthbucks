@@ -1,6 +1,7 @@
 import PrivKey from "./priv-key";
 import PubKey from "./pub-key";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class KeyPair {
   privKey: PrivKey;
@@ -16,10 +17,17 @@ export default class KeyPair {
     return new KeyPair(privKey, pubKey);
   }
 
-  static fromPrivKeyBuffer(privKeyBuf: Buffer) {
-    let privKey = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf));
-    let pubKey = PubKey.fromPrivKey(privKey);
-    return new KeyPair(privKey, pubKey);
+  static fromPrivKeyBuffer(privKeyBuf: Buffer): Result<KeyPair, string> {
+    try {
+      let privKey = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf))
+        .mapErr((err) => "Error parsing private key: " + err)
+        .unwrap();
+
+      let pubKey = PubKey.fromPrivKey(privKey);
+      return Ok(new KeyPair(privKey, pubKey));
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error creating key pair");
+    }
   }
 
   static fromRandom(): KeyPair {

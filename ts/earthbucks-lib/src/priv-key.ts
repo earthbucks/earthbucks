@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import IsoHex from "./iso-hex";
 import bs58 from "bs58";
 import { blake3Hash } from "./blake3";
+import { Result, Ok, Err } from "ts-results";
 
 export default class PrivKey {
   buf: Buffer;
@@ -31,18 +32,21 @@ export default class PrivKey {
     return this.toPubKeyBuffer().toString("hex");
   }
 
-  static fromIsoBuf(buf: Buffer): PrivKey {
+  static fromIsoBuf(buf: Buffer): Result<PrivKey, string> {
     if (buf.length !== 32) {
-      throw new Error("Invalid private key length");
+      return Err("Invalid private key length");
     }
-    return new PrivKey(buf);
+    if (!secp256k1.privateKeyVerify(buf)) {
+      return Err("Invalid private key");
+    }
+    return Ok(new PrivKey(buf));
   }
 
   toIsoHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): PrivKey {
+  static fromIsoHex(hex: string): Result<PrivKey, string> {
     return PrivKey.fromIsoBuf(IsoHex.decode(hex).unwrap());
   }
 
@@ -53,32 +57,30 @@ export default class PrivKey {
     return "ebxprv" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromIsoStr(str: string): PrivKey {
-    if (!str.startsWith("ebxprv")) {
-      throw new Error("Invalid private key format");
-    }
-    let checkBuf = IsoHex.decode(str.slice(6, 14)).unwrap();
-    let decoded: Buffer;
+  static fromIsoStr(str: string): Result<PrivKey, string> {
     try {
-      decoded = Buffer.from(bs58.decode(str.slice(14)));
-    } catch (e) {
-      throw new Error("Invalid base58 encoding");
+      if (!str.startsWith("ebxprv")) {
+        return Err("Invalid private key format");
+      }
+      let checkBuf = IsoHex.decode(str.slice(6, 14)).unwrap();
+      let decoded: Buffer;
+      try {
+        decoded = Buffer.from(bs58.decode(str.slice(14)));
+      } catch (e) {
+        return Err("Invalid base58 encoding");
+      }
+      let hashBuf = blake3Hash(decoded);
+      let checkBuf2 = hashBuf.subarray(0, 4);
+      if (!checkBuf.equals(checkBuf2)) {
+        return Err("Checksum mismatch");
+      }
+      return PrivKey.fromIsoBuf(decoded);
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing private key");
     }
-    let hashBuf = blake3Hash(decoded);
-    let checkBuf2 = hashBuf.subarray(0, 4);
-    if (!checkBuf.equals(checkBuf2)) {
-      throw new Error("Checksum mismatch");
-    }
-    return PrivKey.fromIsoBuf(decoded);
   }
 
   static isValidStringFmt(str: string): boolean {
-    let privKey: PrivKey;
-    try {
-      privKey = PrivKey.fromIsoStr(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
+    return PrivKey.fromIsoStr(str).ok;
   }
 }
