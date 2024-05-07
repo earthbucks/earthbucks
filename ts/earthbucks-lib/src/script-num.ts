@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 // big integers, positive or negative, encoded as big endian, two's complement
-
 export default class ScriptNum {
   num: bigint;
 
@@ -9,7 +9,8 @@ export default class ScriptNum {
     this.num = num;
   }
 
-  fromIsoBuf(buffer: Buffer): this {
+  static fromIsoBuf(buffer: Buffer): ScriptNum {
+    const scriptNum = new ScriptNum();
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
@@ -18,16 +19,12 @@ export default class ScriptNum {
         invertedBuffer[i] = ~buffer[i]; // Invert all bits
       }
       const invertedBigInt = BigInt("0x" + invertedBuffer.toString("hex"));
-      this.num = -(invertedBigInt + 1n); // Add one and negate to get the original number
+      scriptNum.num = -(invertedBigInt + 1n); // Add one and negate to get the original number
     } else {
       // If the number is positive
-      this.num = BigInt("0x" + buffer.toString("hex"));
+      scriptNum.num = BigInt("0x" + buffer.toString("hex"));
     }
-    return this;
-  }
-
-  static fromIsoBuf(buffer: Buffer): ScriptNum {
-    return new ScriptNum().fromIsoBuf(buffer);
+    return scriptNum;
   }
 
   toIsoBuf(): Buffer {
@@ -58,13 +55,10 @@ export default class ScriptNum {
     return this.num.toString();
   }
 
-  fromIsoStr(str: string): this {
-    this.num = BigInt(str);
-    return this;
-  }
-
   static fromIsoStr(str: string): ScriptNum {
-    return new ScriptNum().fromIsoStr(str);
+    const scriptNum = new ScriptNum();
+    scriptNum.num = BigInt(str);
+    return scriptNum;
   }
 
   toU32(): number {

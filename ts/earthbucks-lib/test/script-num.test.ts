@@ -24,9 +24,8 @@ describe("ScriptNum", () => {
 
   testCases.forEach(({ hex, dec }) => {
     test(`fromIsoBuf correctly converts ${hex} to ${dec}`, () => {
-      const scriptNum = new ScriptNum();
       const buffer = Buffer.from(hex, "hex");
-      scriptNum.fromIsoBuf(buffer);
+      const scriptNum = ScriptNum.fromIsoBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });
   });
