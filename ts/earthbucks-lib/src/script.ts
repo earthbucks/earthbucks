@@ -34,8 +34,21 @@ export default class Script {
     }
   }
 
-  toIsoStr(): string {
-    return this.chunks.map((chunk) => chunk.toIsoStr().unwrap()).join(" ");
+  toIsoStr(): Result<string, string> {
+    try {
+      return Ok(
+        this.chunks
+          .map((chunk) =>
+            chunk
+              .toIsoStr()
+              .mapErr((err) => `Unable to stringify chunk: ${err}`)
+              .unwrap(),
+          )
+          .join(" "),
+      );
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error serializing script");
+    }
   }
 
   toIsoBuf(): Buffer {

@@ -17,31 +17,31 @@ describe("Script", () => {
 
   test("fromIsoStr toString with PUSHDATA1", () => {
     const script = Script.fromIsoStr("0x00").unwrap();
-    expect(script.toIsoStr()).toBe("0x00");
+    expect(script.toIsoStr().unwrap()).toBe("0x00");
   });
 
   test("fromIsoStr toString with PUSHDATA2", () => {
     const script = Script.fromIsoStr("0x" + "00".repeat(256)).unwrap();
-    expect(script.toIsoStr()).toBe("0x" + "00".repeat(256));
+    expect(script.toIsoStr().unwrap()).toBe("0x" + "00".repeat(256));
   });
 
   test("toString", () => {
     const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
-    expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
+    expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromU8Vec", () => {
     const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     const arr = originalScript.toIsoBuf();
     const script = Script.fromIsoBuf(arr).unwrap();
-    expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
+    expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromU8Vec with PUSHDATA1", () => {
     const originalScript = Script.fromIsoStr("0xff 0xff").unwrap();
     const arr = originalScript.toIsoBuf();
     const script = Script.fromIsoBuf(arr).unwrap();
-    expect(script.toIsoStr()).toBe("0xff 0xff");
+    expect(script.toIsoStr().unwrap()).toBe("0xff 0xff");
   });
 
   it("should correctly convert between string and Buffer for two PUSHDATA2 operations", () => {
@@ -55,7 +55,7 @@ describe("Script", () => {
     const finalScript = Script.fromIsoBuf(arr).unwrap();
 
     // Convert the final Script back to a string
-    const finalString = finalScript.toIsoStr();
+    const finalString = finalScript.toIsoStr().unwrap();
 
     // Check that the final string matches the initial string
     expect(finalString).toEqual("0xffff 0xffff");
@@ -66,7 +66,7 @@ describe("Script", () => {
       const script = Script.fromAddressOutput(
         Buffer.from("01".repeat(32), "hex"),
       );
-      expect(script.toIsoStr()).toBe(
+      expect(script.toIsoStr().unwrap()).toBe(
         "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
       );
     });
