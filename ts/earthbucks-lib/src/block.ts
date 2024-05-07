@@ -5,6 +5,7 @@ import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class Block {
   public header: Header;
@@ -15,15 +16,22 @@ export default class Block {
     this.txs = txs;
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Block {
-    const header = Header.fromIsoBuf(
-      br.readBuffer(Header.BLOCK_HEADER_SIZE).unwrap(),
-    );
-    const txCountVarInt = VarInt.fromIsoBufReader(br).unwrap();
-    if (!txCountVarInt.isMinimal()) {
-      throw new Error("non-minimally encoded varint");
+  static fromIsoBufReader(br: IsoBufReader): Result<Block, string> {
+    let headerRes = Header.fromIsoBufReader(br);
+    if (headerRes.err) {
+      return Err(headerRes.val);
     }
-    const txCount = txCountVarInt.toBigInt().unwrap();
+    const header = headerRes.val;
+    const txCountVarIntRes = VarInt.fromIsoBufReader(br);
+    if (txCountVarIntRes.err) {
+      return Err(txCountVarIntRes.val);
+    }
+    const txCountVarInt = txCountVarIntRes.val;
+    const txCountRes = txCountVarInt.toBigInt();
+    if (txCountRes.err) {
+      return Err(txCountRes.val);
+    }
+    const txCount = txCountRes.val;
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
       try {
@@ -33,7 +41,7 @@ export default class Block {
         throw new Error("unable to parse transactions");
       }
     }
-    return new Block(header, txs);
+    return Ok(new Block(header, txs));
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
@@ -49,7 +57,7 @@ export default class Block {
     return this.toIsoBufWriter(new IsoBufWriter()).toIsoBuf();
   }
 
-  static fromU8Vec(buf: Buffer): Block {
+  static fromIsoBuf(buf: Buffer): Result<Block, string> {
     return Block.fromIsoBufReader(new IsoBufReader(buf));
   }
 

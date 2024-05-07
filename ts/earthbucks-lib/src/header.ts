@@ -2,6 +2,7 @@ import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
@@ -59,54 +60,138 @@ export default class Header {
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: Buffer): Header {
+  static fromIsoBuf(buf: Buffer): Result<Header, string> {
     const br = new IsoBufReader(buf);
-    const version = br.readUInt32BE().unwrap();
-    const previousBlockHash = br.readBuffer(32).unwrap();
-    const merkleRoot = br.readBuffer(32).unwrap();
-    const timestamp = br.readUInt64BE().unwrap();
-    const blockNum = br.readUInt64BE().unwrap();
-    const target = br.readBuffer(32).unwrap();
-    const nonce = br.readBuffer(32).unwrap();
-    const workAlgo = br.readUInt64BE().unwrap();
-    const workSer = br.readBuffer(32).unwrap();
-    const workPar = br.readBuffer(32).unwrap();
-    return new Header(
-      version,
-      previousBlockHash,
-      merkleRoot,
-      timestamp,
-      blockNum,
-      target,
-      nonce,
-      workAlgo,
-      workSer,
-      workPar,
+    const versionRes = br.readUInt32BE();
+    if (versionRes.err) {
+      return Err("Could not read version number");
+    }
+    const version = versionRes.val;
+    const previousBlockHashRes = br.readBuffer(32);
+    if (previousBlockHashRes.err) {
+      return Err("Could not read previous block hash");
+    }
+    const previousBlockHash = previousBlockHashRes.val;
+    const merkleRootRes = br.readBuffer(32);
+    if (merkleRootRes.err) {
+      return Err("Could not read merkle root");
+    }
+    const merkleRoot = merkleRootRes.val;
+    const timestampRes = br.readUInt64BE();
+    if (timestampRes.err) {
+      return Err("Could not read timestamp");
+    }
+    const timestamp = timestampRes.val;
+    const blockNumRes = br.readUInt64BE();
+    if (blockNumRes.err) {
+      return Err("Could not read block number");
+    }
+    const blockNum = blockNumRes.val;
+    const targetRes = br.readBuffer(32);
+    if (targetRes.err) {
+      return Err("Could not read target");
+    }
+    const target = targetRes.val;
+    const nonceRes = br.readBuffer(32);
+    if (nonceRes.err) {
+      return Err("Could not read nonce");
+    }
+    const nonce = nonceRes.val;
+    const workAlgoRes = br.readUInt64BE();
+    if (workAlgoRes.err) {
+      return Err("Could not read work algorithm");
+    }
+    const workAlgo = workAlgoRes.val;
+    const workSerRes = br.readBuffer(32);
+    if (workSerRes.err) {
+      return Err("Could not read serial work");
+    }
+    const workSer = workSerRes.val;
+    const workParRes = br.readBuffer(32);
+    if (workParRes.err) {
+      return Err("Could not read parallel work");
+    }
+    const workPar = workParRes.val;
+    return Ok(
+      new Header(
+        version,
+        previousBlockHash,
+        merkleRoot,
+        timestamp,
+        blockNum,
+        target,
+        nonce,
+        workAlgo,
+        workSer,
+        workPar,
+      ),
     );
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Header {
-    const version = br.readUInt32BE().unwrap();
-    const previousBlockHash = br.readBuffer(32).unwrap();
-    const merkleRoot = br.readBuffer(32).unwrap();
-    const timestamp = br.readUInt64BE().unwrap();
-    const blockNum = br.readUInt64BE().unwrap();
-    const target = br.readBuffer(32).unwrap();
-    const nonce = br.readBuffer(32).unwrap();
-    const workAlgo = br.readUInt64BE().unwrap();
-    const workSer = br.readBuffer(32).unwrap();
-    const workPar = br.readBuffer(32).unwrap();
-    return new Header(
-      version,
-      previousBlockHash,
-      merkleRoot,
-      timestamp,
-      blockNum,
-      target,
-      nonce,
-      workAlgo,
-      workSer,
-      workPar,
+  static fromIsoBufReader(br: IsoBufReader): Result<Header, string> {
+    const versionRes = br.readUInt32BE();
+    if (versionRes.err) {
+      return Err("Could not read version number");
+    }
+    const version = versionRes.val;
+    const previousBlockHashRes = br.readBuffer(32);
+    if (previousBlockHashRes.err) {
+      return Err("Could not read previous block hash");
+    }
+    const previousBlockHash = previousBlockHashRes.val;
+    const merkleRootRes = br.readBuffer(32);
+    if (merkleRootRes.err) {
+      return Err("Could not read merkle root");
+    }
+    const merkleRoot = merkleRootRes.val;
+    const timestampRes = br.readUInt64BE();
+    if (timestampRes.err) {
+      return Err("Could not read timestamp");
+    }
+    const timestamp = timestampRes.val;
+    const blockNumRes = br.readUInt64BE();
+    if (blockNumRes.err) {
+      return Err("Could not read block number");
+    }
+    const blockNum = blockNumRes.val;
+    const targetRes = br.readBuffer(32);
+    if (targetRes.err) {
+      return Err("Could not read target");
+    }
+    const target = targetRes.val;
+    const nonceRes = br.readBuffer(32);
+    if (nonceRes.err) {
+      return Err("Could not read nonce");
+    }
+    const nonce = nonceRes.val;
+    const workAlgoRes = br.readUInt64BE();
+    if (workAlgoRes.err) {
+      return Err("Could not read work algorithm");
+    }
+    const workAlgo = workAlgoRes.val;
+    const workSerRes = br.readBuffer(32);
+    if (workSerRes.err) {
+      return Err("Could not read serial work");
+    }
+    const workSer = workSerRes.val;
+    const workParRes = br.readBuffer(32);
+    if (workParRes.err) {
+      return Err("Could not read parallel work");
+    }
+    const workPar = workParRes.val;
+    return Ok(
+      new Header(
+        version,
+        previousBlockHash,
+        merkleRoot,
+        timestamp,
+        blockNum,
+        target,
+        nonce,
+        workAlgo,
+        workSer,
+        workPar,
+      ),
     );
   }
 
@@ -124,11 +209,11 @@ export default class Header {
     return bw;
   }
 
-  toIsoStr(): string {
+  toIsoHex(): string {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromIsoStr(str: string): Header {
+  static fromIsoHex(str: string): Result<Header, string> {
     return Header.fromIsoBuf(Buffer.from(str, "hex"));
   }
 

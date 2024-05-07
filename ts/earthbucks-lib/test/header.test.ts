@@ -17,7 +17,7 @@ describe("BlockHeader", () => {
       Buffer.alloc(32),
     );
     const buf = bh1.toIsoBuf();
-    const bh2 = Header.fromIsoBuf(buf);
+    const bh2 = Header.fromIsoBuf(buf).unwrap();
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
@@ -41,7 +41,7 @@ describe("BlockHeader", () => {
       Buffer.alloc(32),
     );
     const buf = bh1.toIsoBuf();
-    const bh2 = Header.fromIsoBuf(buf);
+    const bh2 = Header.fromIsoBuf(buf).unwrap();
     expect(bh1.version).toBe(bh2.version);
     expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);

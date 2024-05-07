@@ -63,7 +63,7 @@ describe("Block", () => {
     const bw = block.toIsoBufWriter(new IsoBufWriter());
     const buf = bw.toIsoBuf();
     const br = new IsoBufReader(buf);
-    const block2 = Block.fromIsoBufReader(br);
+    const block2 = Block.fromIsoBufReader(br).unwrap();
     expect(block2.header.version).toBe(bh.version);
     expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
