@@ -16,7 +16,7 @@ export default class HeaderMine {
 
   getIdHashNum(): HashNum {
     const headerId = this.header.id();
-    const hashNum = HashNum.fromIsoBuf(Buffer.from(headerId));
+    const hashNum = HashNum.fromIsoBuf(Buffer.from(headerId)).unwrap();
     return hashNum;
   }
 
