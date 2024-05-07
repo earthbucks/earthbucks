@@ -2,7 +2,7 @@
 
 <img src="./earth-coin-2.png" width="200" height="200">
 
-42 EBX. No pre-mine. GPUs. Big blocks. Script.
+42 million EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in July 2024.
 
@@ -56,6 +56,7 @@ The first six mines are distributed globally to make sure everyone in the world
 has low latency.
 
 The first six mines:
+
 - 1.earthbucks.com (North America)
 - 2.earthbucks.com (Europe)
 - 3.earthbucks.com (Asia)
