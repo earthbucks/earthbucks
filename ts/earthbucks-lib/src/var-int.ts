@@ -1,6 +1,7 @@
 import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class VarInt {
   private buf: Buffer;
@@ -10,7 +11,7 @@ export default class VarInt {
   }
 
   fromBigInt(bn: bigint) {
-    this.buf = new IsoBufWriter().writeVarIntBigInt(bn).toIsoBuf();
+    this.buf = new IsoBufWriter().writeVarInt(bn).toIsoBuf();
     return this;
   }
 
@@ -31,21 +32,29 @@ export default class VarInt {
     return this.buf;
   }
 
-  toBigInt(): bigint {
-    return new IsoBufReader(this.buf).readVarIntBigInt();
+  toBigInt(): Result<bigint, string> {
+    return new IsoBufReader(this.buf).readVarInt();
   }
 
   toNumber() {
     return new IsoBufReader(this.buf).readVarIntNum();
   }
 
-  static fromIsoBufReader(br: IsoBufReader): VarInt {
-    const buf = Buffer.from(br.readVarIntBuf());
-    return new VarInt(buf);
+  static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
+    let res = br.readVarIntBuf();
+    if (res.err) {
+      return Err(res.val);
+    }
+    const buf = res.unwrap();
+    return Ok(new VarInt(buf));
   }
 
   isMinimal() {
-    const bn = this.toBigInt();
+    const res = this.toBigInt();
+    if (res.err) {
+      return false;
+    }
+    const bn = res.unwrap();
     const varint = new VarInt().fromBigInt(bn);
     return Buffer.compare(this.buf, varint.toIsoBuf()) === 0;
   }

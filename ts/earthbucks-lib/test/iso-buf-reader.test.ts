@@ -24,7 +24,7 @@ describe("BufferReader", () => {
 
   test("read returns correct subarray", () => {
     const len = 4;
-    const result = bufferReader.readBuffer(len);
+    const result = bufferReader.readBuffer(len).unwrap();
     expect(result).toEqual(testBuffer.subarray(0, len));
   });
 
@@ -35,62 +35,38 @@ describe("BufferReader", () => {
   });
 
   test("readUInt8 returns correct value and updates position", () => {
-    const result = bufferReader.readUInt8();
+    const result = bufferReader.readUInt8().unwrap();
     expect(result).toBe(1);
     expect(bufferReader["pos"]).toBe(1);
   });
 
   test("readInt8 returns correct value and updates position", () => {
-    const result = bufferReader.readInt8();
+    const result = bufferReader.readInt8().unwrap();
     expect(result).toBe(1);
     expect(bufferReader["pos"]).toBe(1);
   });
 
   test("readUInt16BE returns correct value and updates position", () => {
-    const result = bufferReader.readUInt16BE();
+    const result = bufferReader.readUInt16BE().unwrap();
     expect(result).toBe(Buffer.from([1, 2]).readUInt16BE());
     expect(bufferReader["pos"]).toBe(2);
   });
 
-  test("readUInt16LE returns correct value and updates position", () => {
-    const result = bufferReader.readUInt16LE();
-    expect(result).toBe(Buffer.from([1, 2]).readUInt16LE());
-    expect(bufferReader["pos"]).toBe(2);
-  });
-
-  test("readUInt16LE returns correct value and updates position", () => {
-    const result = bufferReader.readUInt16LE();
-    expect(result).toBe(Buffer.from([1, 2]).readUInt16LE());
-    expect(bufferReader["pos"]).toBe(2);
-  });
-
-  test("readInt16LE returns correct value and updates position", () => {
-    const result = bufferReader.readInt16LE();
-    expect(result).toBe(Buffer.from([1, 2]).readInt16LE());
+  test("readInt16BE returns correct value and updates position", () => {
+    const result = bufferReader.readInt16BE().unwrap();
+    expect(result).toBe(Buffer.from([1, 2]).readInt16BE());
     expect(bufferReader["pos"]).toBe(2);
   });
 
   test("readUInt32BE returns correct value and updates position", () => {
-    const result = bufferReader.readUInt32BE();
+    const result = bufferReader.readUInt32BE().unwrap();
     expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32BE());
     expect(bufferReader["pos"]).toBe(4);
   });
 
   test("readInt32BE returns correct value and updates position", () => {
-    const result = bufferReader.readInt32BE();
+    const result = bufferReader.readInt32BE().unwrap();
     expect(result).toBe(Buffer.from([1, 2, 3, 4]).readInt32BE());
-    expect(bufferReader["pos"]).toBe(4);
-  });
-
-  test("readUInt32LE returns correct value and updates position", () => {
-    const result = bufferReader.readUInt32LE();
-    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32LE());
-    expect(bufferReader["pos"]).toBe(4);
-  });
-
-  test("readInt32LE returns correct value and updates position", () => {
-    const result = bufferReader.readInt32LE();
-    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readInt32LE());
     expect(bufferReader["pos"]).toBe(4);
   });
 
@@ -100,7 +76,7 @@ describe("BufferReader", () => {
       Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
-    const result = bufferReader.readUInt64BEBigInt();
+    const result = bufferReader.readUInt64BE().unwrap();
 
     // Check that the method returns the correct BigInt
     expect(result).toEqual(BigInt("0x0123456789ABCDEF"));
@@ -109,23 +85,8 @@ describe("BufferReader", () => {
     expect(bufferReader["pos"]).toBe(8);
   });
 
-  test("readUInt64LEBigInt returns correct value and updates position", () => {
-    // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0xEFCDAB8967452301 in little-endian order
-    bufferReader = new IsoBufReader(
-      Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
-    );
-
-    const result = bufferReader.readUInt64LEBigInt();
-
-    // Check that the method returns the correct BigInt
-    expect(result).toEqual(BigInt("0xEFCDAB8967452301"));
-
-    // Check that the position has been updated correctly
-    expect(bufferReader["pos"]).toBe(8);
-  });
-
   test("readVarIntNum returns correct value and updates position for small numbers", () => {
-    const result = bufferReader.readVarIntNum();
+    const result = bufferReader.readVarIntNum().unwrap();
     expect(result).toBe(1); // Assuming that the implementation treats a single byte as a varint
     expect(bufferReader["pos"]).toBe(1);
   });
@@ -134,7 +95,7 @@ describe("BufferReader", () => {
     const buf = Buffer.from([0xfd, 0, 0, 0, 0]);
     buf.writeUInt16BE(500, 1);
     bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
-    const result = bufferReader.readVarIntNum();
+    const result = bufferReader.readVarIntNum().unwrap();
     expect(result).toBe(500); // 2^30
     expect(bufferReader["pos"]).toBe(3);
   });
@@ -143,68 +104,80 @@ describe("BufferReader", () => {
     const buf = Buffer.from([254, 0, 0, 0, 0]);
     buf.writeUInt32BE(2000000000, 1);
     bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
-    const result = bufferReader.readVarIntNum();
+    const result = bufferReader.readVarIntNum().unwrap();
     expect(result).toBe(2000000000); // 2^30
     expect(bufferReader["pos"]).toBe(5);
   });
 
   test("readVarIntNum", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntNum()).toBe(1);
+    expect(bufferReader.readVarIntNum().val).toBe(
+      "Non-minimal varint encoding 1",
+    );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntNum()).toBe(1);
+    expect(bufferReader.readVarIntNum().val).toBe(
+      "Non-minimal varint encoding 2",
+    );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntNum()).toBe(1);
+    expect(bufferReader.readVarIntNum().val).toBe(
+      "Non-minimal varint encoding 3",
+    );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
-    expect(bufferReader.readVarIntNum()).toBe(1);
+    expect(bufferReader.readVarIntNum().unwrap()).toBe(1);
   });
 
   test("readVarIntBuf", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntBuf()).toEqual(
-      Buffer.from([0xfd, 0x00, 0x01]),
+    expect(bufferReader.readVarIntBuf().val).toEqual(
+      "Non-minimal varint encoding 1",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBuf()).toEqual(
-      Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
+    expect(bufferReader.readVarIntBuf().val).toEqual(
+      "Non-minimal varint encoding 2",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBuf()).toEqual(
-      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+    expect(bufferReader.readVarIntBuf().val).toEqual(
+      "Non-minimal varint encoding 3",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
-    expect(bufferReader.readVarIntBuf()).toEqual(Buffer.from([0x01]));
+    expect(bufferReader.readVarIntBuf().unwrap()).toEqual(Buffer.from([0x01]));
   });
 
   test("readVarIntBigInt", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
+    expect(bufferReader.readVarInt().val).toEqual(
+      "Non-minimal varint encoding 1",
+    );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
+    expect(bufferReader.readVarInt().val).toEqual(
+      "Non-minimal varint encoding 2",
+    );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
+    expect(bufferReader.readVarInt().val).toEqual(
+      "Non-minimal varint encoding 3",
+    );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
-    expect(bufferReader.readVarIntBigInt()).toEqual(BigInt(1));
+    expect(bufferReader.readVarInt().unwrap()).toEqual(BigInt(1));
   });
 });

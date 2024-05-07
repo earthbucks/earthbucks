@@ -65,34 +65,6 @@ describe("BufferWriter", () => {
     });
   });
 
-  describe("writeUInt16LE", () => {
-    it("should write an unsigned 16-bit integer in little-endian format", () => {
-      // Arrange
-      const n: number = 12345;
-
-      // Act
-      bufferWriter.writeUInt16LE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readUInt16LE(0)).toBe(n);
-    });
-  });
-
-  describe("writeInt16LE", () => {
-    it("should write a signed 16-bit integer in little-endian format", () => {
-      // Arrange
-      const n: number = -12345;
-
-      // Act
-      bufferWriter.writeInt16LE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readInt16LE(0)).toBe(n);
-    });
-  });
-
   describe("writeUInt32BE", () => {
     it("should write an unsigned 32-bit integer in big-endian format", () => {
       // Arrange
@@ -121,59 +93,17 @@ describe("BufferWriter", () => {
     });
   });
 
-  describe("writeUInt32LE", () => {
-    it("should write an unsigned 32-bit integer in little-endian format", () => {
-      // Arrange
-      const n: number = 1234567890;
-
-      // Act
-      bufferWriter.writeUInt32LE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readUInt32LE(0)).toBe(n);
-    });
-  });
-
-  describe("writeInt32LE", () => {
-    it("should write a signed 32-bit integer in little-endian format", () => {
-      // Arrange
-      const n: number = -1234567890;
-
-      // Act
-      bufferWriter.writeInt32LE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readInt32LE(0)).toBe(n);
-    });
-  });
-
   describe("writeUInt64BEBn", () => {
     it("should write an unsigned 64-bit integer in big-endian format", () => {
       // Arrange
       const bn: bigint = BigInt("1234567890123456789");
 
       // Act
-      bufferWriter.writeUInt64BEBigInt(bn);
+      bufferWriter.writeUInt64BE(bn);
 
       // Assert
       const result = bufferWriter.toIsoBuf();
       expect(result.readBigInt64BE(0)).toBe(bn);
-    });
-  });
-
-  describe("writeUInt64LEBn", () => {
-    it("should write an unsigned 64-bit integer in little-endian format", () => {
-      // Arrange
-      const bn: bigint = BigInt("1234567890123456789");
-
-      // Act
-      bufferWriter.writeUInt64LEBigInt(bn);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readBigInt64LE(0)).toBe(bn);
     });
   });
 
@@ -197,7 +127,7 @@ describe("BufferWriter", () => {
       const bn: bigint = BigInt("1234567890123456789");
 
       // Act
-      bufferWriter.writeVarIntBigInt(bn);
+      bufferWriter.writeVarInt(bn);
 
       // Assert
       const result = bufferWriter.toIsoBuf();
@@ -240,27 +170,27 @@ describe("BufferWriter", () => {
   describe("varIntBufBigInt", () => {
     it("should write a bigint less than 253 as a single byte", () => {
       const bn = BigInt(252);
-      const result = IsoBufWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBuf(bn);
       expect(result[0]).toBe(Number(bn));
     });
 
     it("should write a bigint less than 0x10000 as a 3-byte integer", () => {
       const bn = BigInt(0xffff);
-      const result = IsoBufWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBuf(bn);
       expect(result[0]).toBe(253);
       expect((result[1] << 8) | result[2]).toBe(Number(bn));
     });
 
     it("should write a bigint less than 0x100000000 as a 5-byte integer", () => {
       const bn = BigInt(0xffffffff);
-      const result = IsoBufWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBuf(bn);
       expect(result[0]).toBe(254);
       expect(Buffer.from(result).toString("hex")).toBe("feffffffff");
     });
 
     it("should write a bigint greater than or equal to 0x100000000 as a 9-byte integer", () => {
       const bn = BigInt("0x100000000");
-      const result = IsoBufWriter.varIntBufBigInt(bn);
+      const result = IsoBufWriter.varIntBuf(bn);
       expect(result[0]).toBe(255);
       const readBn =
         (BigInt(result[1]) << 56n) |

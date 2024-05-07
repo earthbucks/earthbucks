@@ -16,12 +16,14 @@ export default class Block {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Block {
-    const header = Header.fromIsoBuf(br.readBuffer(80));
-    const txCountVarInt = VarInt.fromIsoBufReader(br);
+    const header = Header.fromIsoBuf(
+      br.readBuffer(Header.BLOCK_HEADER_SIZE).unwrap(),
+    );
+    const txCountVarInt = VarInt.fromIsoBufReader(br).unwrap();
     if (!txCountVarInt.isMinimal()) {
       throw new Error("non-minimally encoded varint");
     }
-    const txCount = txCountVarInt.toBigInt();
+    const txCount = txCountVarInt.toBigInt().unwrap();
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
       try {

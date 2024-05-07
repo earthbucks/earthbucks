@@ -36,34 +36,34 @@ export default class Tx {
 
   static fromU8Vec(buf: Buffer): Tx {
     const reader = new IsoBufReader(buf);
-    const version = reader.readUInt8();
-    const numInputs = reader.readVarIntNum();
+    const version = reader.readUInt8().unwrap();
+    const numInputs = reader.readVarIntNum().unwrap();
     const inputs = [];
     for (let i = 0; i < numInputs; i++) {
       inputs.push(TxInput.fromIsoBufReader(reader));
     }
-    const numOutputs = reader.readVarIntNum();
+    const numOutputs = reader.readVarIntNum().unwrap();
     const outputs = [];
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TxOutput.fromIsoBufReader(reader));
     }
-    const lockNum = reader.readUInt64BEBigInt();
+    const lockNum = reader.readUInt64BE().unwrap();
     return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Tx {
-    const version = reader.readUInt8();
-    const numInputs = reader.readVarIntNum();
+    const version = reader.readUInt8().unwrap();
+    const numInputs = reader.readVarIntNum().unwrap();
     const inputs = [];
     for (let i = 0; i < numInputs; i++) {
       inputs.push(TxInput.fromIsoBufReader(reader));
     }
-    const numOutputs = reader.readVarIntNum();
+    const numOutputs = reader.readVarIntNum().unwrap();
     const outputs = [];
     for (let i = 0; i < numOutputs; i++) {
       outputs.push(TxOutput.fromIsoBufReader(reader));
     }
-    const lockNum = reader.readUInt64BEBigInt();
+    const lockNum = reader.readUInt64BE().unwrap();
     return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
@@ -78,7 +78,7 @@ export default class Tx {
     for (const output of this.outputs) {
       writer.writeBuffer(output.toIsoBuf());
     }
-    writer.writeUInt64BEBigInt(this.lockNum);
+    writer.writeUInt64BE(this.lockNum);
     return writer.toIsoBuf();
   }
 
@@ -126,7 +126,7 @@ export default class Tx {
   hashSequence(): Buffer {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
-      writer.writeUInt32LE(input.sequence);
+      writer.writeUInt32BE(input.sequence);
     }
     return doubleBlake3Hash(writer.toIsoBuf());
   }
@@ -195,10 +195,10 @@ export default class Tx {
     writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut);
     writer.writeVarIntNum(script.length);
     writer.writeBuffer(script);
-    writer.writeUInt64BEBigInt(amount);
+    writer.writeUInt64BE(amount);
     writer.writeUInt32BE(this.inputs[inputIndex].sequence);
     writer.writeBuffer(outputsHash);
-    writer.writeUInt64BEBigInt(this.lockNum);
+    writer.writeUInt64BE(this.lockNum);
     writer.writeUInt8(hashType);
     return writer.toIsoBuf();
   }

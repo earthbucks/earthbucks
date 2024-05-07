@@ -61,7 +61,8 @@ describe("Block", () => {
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
     const bw = block.toIsoBufWriter(new IsoBufWriter());
-    const br = new IsoBufReader(bw.toIsoBuf());
+    const buf = bw.toIsoBuf();
+    const br = new IsoBufReader(buf);
     const block2 = Block.fromIsoBufReader(br);
     expect(block2.header.version).toBe(bh.version);
     expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);

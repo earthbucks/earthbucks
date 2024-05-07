@@ -64,10 +64,10 @@ export default class SignedMessage {
 
   static fromIsoBuf(buf: Buffer, keyStr: string): SignedMessage {
     const reader = new IsoBufReader(buf);
-    const sig = reader.readBuffer(64);
-    const pubKey = reader.readBuffer(33);
-    const mac = reader.readBuffer(32);
-    const message = reader.readRemainder();
+    const sig = reader.readBuffer(64).unwrap();
+    const pubKey = reader.readBuffer(33).unwrap();
+    const mac = reader.readBuffer(32).unwrap();
+    const message = reader.readRemainder().unwrap();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 

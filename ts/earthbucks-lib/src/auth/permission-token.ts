@@ -13,7 +13,7 @@ export default class PermissionToken {
   toIsoBuf(): Buffer {
     const writer = new IsoBufWriter();
     writer.writeBuffer(this.randValue);
-    writer.writeUInt64BEBigInt(this.timestamp);
+    writer.writeUInt64BE(this.timestamp);
     return writer.toIsoBuf();
   }
 
@@ -23,7 +23,7 @@ export default class PermissionToken {
     }
     const reader = new IsoBufReader(buf);
     const randValue = reader.readBuffer(32);
-    const timestamp = reader.readUInt64BEBigInt();
+    const timestamp = reader.readUInt64BE();
     return new PermissionToken(randValue, timestamp);
   }
 

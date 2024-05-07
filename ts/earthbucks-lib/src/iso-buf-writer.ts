@@ -61,20 +61,6 @@ export default class IsoBufWriter {
     return this;
   }
 
-  writeUInt16LE(n: number): this {
-    const buf = Buffer.alloc(2);
-    buf.writeUInt16LE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeInt16LE(n: number): this {
-    const buf = Buffer.alloc(2);
-    buf.writeInt16LE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
   writeUInt32BE(n: number): this {
     const buf = Buffer.alloc(4);
     buf.writeUInt32BE(n, 0);
@@ -89,30 +75,9 @@ export default class IsoBufWriter {
     return this;
   }
 
-  writeUInt32LE(n: number): this {
-    const buf = Buffer.alloc(4);
-    buf.writeUInt32LE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeInt32LE(n: number): this {
-    const buf = Buffer.alloc(4);
-    buf.writeInt32LE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeUInt64BEBigInt(bn: bigint): this {
+  writeUInt64BE(bn: bigint): this {
     const buf = Buffer.alloc(8);
     buf.writeBigInt64BE(bn);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeUInt64LEBigInt(bn: bigint): this {
-    const buf = Buffer.alloc(8);
-    buf.writeBigInt64LE(bn);
     this.writeBuffer(buf);
     return this;
   }
@@ -123,8 +88,8 @@ export default class IsoBufWriter {
     return this;
   }
 
-  writeVarIntBigInt(bn: bigint): this {
-    const buf = IsoBufWriter.varIntBufBigInt(bn);
+  writeVarInt(bn: bigint): this {
+    const buf = IsoBufWriter.varIntBuf(bn);
     this.writeBuffer(buf);
     return this;
   }
@@ -151,7 +116,7 @@ export default class IsoBufWriter {
     return buf;
   }
 
-  static varIntBufBigInt(bn: bigint): Buffer {
+  static varIntBuf(bn: bigint): Buffer {
     let buf: Buffer;
     const n = Number(bn);
     if (n < 253) {
@@ -168,7 +133,7 @@ export default class IsoBufWriter {
     } else {
       const bw = new IsoBufWriter();
       bw.writeUInt8(255);
-      bw.writeUInt64BEBigInt(bn);
+      bw.writeUInt64BE(bn);
       buf = bw.toIsoBuf();
     }
     return buf;

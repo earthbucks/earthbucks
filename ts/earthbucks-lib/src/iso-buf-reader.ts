@@ -1,12 +1,12 @@
 import { Buffer } from "buffer";
+import { Err, Ok, Result } from "ts-results";
 
 export default class IsoBufReader {
-  private buf: Buffer;
-  private pos: number;
+  buf: Buffer;
+  pos: number;
 
   constructor(buf: Buffer) {
-    // create a Buffer with the same memory as the ArrayBuffer
-    this.buf = Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength);
+    this.buf = buf;
     this.pos = 0;
   }
 
@@ -14,149 +14,185 @@ export default class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  readBuffer(len: number = this.buf.length): Buffer {
+  readBuffer(len: number): Result<Buffer, string> {
+    if (this.pos + len > this.buf.length) {
+      return Err("readBuffer: Not enough bytes left in the buffer to read");
+    }
     const buf = this.buf.subarray(this.pos, this.pos + len);
-    const arr = Buffer.alloc(len);
-    arr.set(buf);
+    const newBuf = Buffer.alloc(len);
+    newBuf.set(buf);
     this.pos += len;
-    return arr;
+    return Ok(newBuf);
   }
 
-  readRemainder(): Buffer {
+  readRemainder(): Result<Buffer, string> {
     return this.readBuffer(this.buf.length - this.pos);
   }
 
-  readReverse(len: number = this.buf.length): Buffer {
-    const buf = this.buf.subarray(this.pos, this.pos + len);
-    this.pos += len;
-    const buf2 = Buffer.alloc(buf.length);
-    for (let i = 0; i < buf2.length; i++) {
-      buf2[i] = buf[buf.length - 1 - i];
+  readUInt8(): Result<number, string> {
+    if (this.pos + 1 > this.buf.length) {
+      return Err("readUint8: Not enough bytes left in the buffer to read");
     }
-    return buf2;
-  }
-
-  readUInt8(): number {
     const val = this.buf.readUInt8(this.pos);
     this.pos += 1;
-    return val;
+    return Ok(val);
   }
 
-  readInt8(): number {
+  readInt8(): Result<number, string> {
+    if (this.pos + 1 > this.buf.length) {
+      return Err("readInt8: Not enough bytes left in the buffer to read");
+    }
     const val = this.buf.readInt8(this.pos);
     this.pos += 1;
-    return val;
+    return Ok(val);
   }
 
-  readUInt16BE(): number {
+  readUInt16BE(): Result<number, string> {
+    if (this.pos + 2 > this.buf.length) {
+      return Err("readUInt16BE: Not enough bytes left in the buffer to read");
+    }
     const val = this.buf.readUInt16BE(this.pos);
     this.pos += 2;
-    return val;
+    return Ok(val);
   }
 
-  readInt16BE(): number {
+  readInt16BE(): Result<number, string> {
+    if (this.pos + 2 > this.buf.length) {
+      return Err("readInt16BE: Not enough bytes left in the buffer to read");
+    }
     const val = this.buf.readInt16BE(this.pos);
     this.pos += 2;
-    return val;
+    return Ok(val);
   }
 
-  readUInt16LE(): number {
-    const val = this.buf.readUInt16LE(this.pos);
-    this.pos += 2;
-    return val;
-  }
-
-  readInt16LE(): number {
-    const val = this.buf.readInt16LE(this.pos);
-    this.pos += 2;
-    return val;
-  }
-
-  readUInt32BE(): number {
+  readUInt32BE(): Result<number, string> {
+    if (this.pos + 4 > this.buf.length) {
+      return Err("readUInt32BE: Not enough bytes left in the buffer to read");
+    }
     const val = this.buf.readUInt32BE(this.pos);
     this.pos += 4;
-    return val;
+    return Ok(val);
   }
 
-  readInt32BE(): number {
+  readInt32BE(): Result<number, string> {
+    if (this.pos + 4 > this.buf.length) {
+      return Err("readInt32BE: Not enough bytes left in the buffer to read");
+    }
     const val = this.buf.readInt32BE(this.pos);
     this.pos += 4;
-    return val;
+    return Ok(val);
   }
 
-  readUInt32LE(): number {
-    const val = this.buf.readUInt32LE(this.pos);
-    this.pos += 4;
-    return val;
-  }
-
-  readInt32LE(): number {
-    const val = this.buf.readInt32LE(this.pos);
-    this.pos += 4;
-    return val;
-  }
-
-  readUInt64BEBigInt(): bigint {
-    const buf = this.buf.subarray(this.pos, this.pos + 8);
-    const bn = BigInt("0x" + (buf.toString("hex") || "00"));
+  readUInt64BE(): Result<bigint, string> {
+    if (this.pos + 8 > this.buf.length) {
+      return Err(
+        "readUInt64BEBigInt: Not enough bytes left in the buffer to read",
+      );
+    }
+    const high = this.buf.readUInt32BE(this.pos);
+    const low = this.buf.readUInt32BE(this.pos + 4);
+    const bn = BigInt(high) * BigInt(0x100000000) + BigInt(low);
     this.pos += 8;
-    return bn;
+    return Ok(bn);
   }
 
-  readUInt64LEBigInt(): bigint {
-    const buf = this.readReverse(8);
-    const bn = BigInt("0x" + (buf.toString("hex") || "00"));
-    return bn;
-  }
-
-  readVarIntNum(): number {
-    const first = this.readUInt8();
-    let bn: bigint, n: number;
-    switch (first) {
-      case 0xfd:
-        return this.readUInt16BE();
-      case 0xfe:
-        return this.readUInt32BE();
-      case 0xff:
-        bn = this.readUInt64BEBigInt();
-        n = Number(bn);
-        if (n <= Number.MAX_SAFE_INTEGER) {
-          return n;
-        } else {
-          throw new Error(
-            "number too large to retain precision - use readVarIntBn",
-          );
-        }
-      default:
-        return first;
+  readVarIntBuf(): Result<Buffer, string> {
+    if (this.eof()) {
+      return Err("readVarIntBuf: Not enough bytes left in the buffer to read");
     }
-  }
-
-  readVarIntBuf(): Buffer {
     const first = this.buf.readUInt8(this.pos);
-    switch (first) {
-      case 0xfd:
-        return this.readBuffer(1 + 2);
-      case 0xfe:
-        return this.readBuffer(1 + 4);
-      case 0xff:
-        return this.readBuffer(1 + 8);
-      default:
-        return this.readBuffer(1);
+    if (first === 0xfd) {
+      const res = this.readBuffer(1 + 2);
+      if (res.err) {
+        return res;
+      }
+      const buf = res.unwrap();
+      if (buf.readUInt16BE(1) < 0xfd) {
+        return Err("Non-minimal varint encoding 1");
+      }
+      return Ok(buf);
+    } else if (first === 0xfe) {
+      const res = this.readBuffer(1 + 4);
+      if (res.err) {
+        return res;
+      }
+      const buf = res.unwrap();
+      if (buf.readUInt32BE(1) < 0x10000) {
+        return Err("Non-minimal varint encoding 2");
+      }
+      return Ok(buf);
+    } else if (first === 0xff) {
+      const res = this.readBuffer(1 + 8);
+      if (res.err) {
+        return res;
+      }
+      const buf = res.unwrap();
+      const high = buf.readUInt32BE(1);
+      const low = buf.readUInt32BE(5);
+      if (high === 0 && low < 0x100000000) {
+        return Err("Non-minimal varint encoding 3");
+      }
+      return Ok(buf);
+    } else {
+      return this.readBuffer(1);
     }
   }
 
-  readVarIntBigInt(): bigint {
-    const first = this.readUInt8();
+  readVarInt(): Result<bigint, string> {
+    const res = this.readVarIntBuf();
+    if (res.err) {
+      return res;
+    }
+    const buf = res.unwrap();
+    const first = buf.readUInt8(0);
+    let value: bigint;
     switch (first) {
       case 0xfd:
-        return BigInt(this.readUInt16BE());
+        value = BigInt(buf.readUInt16BE(1));
+        break;
       case 0xfe:
-        return BigInt(this.readUInt32BE());
+        value = BigInt(buf.readUInt32BE(1));
+        break;
       case 0xff:
-        return this.readUInt64BEBigInt();
+        const high = buf.readUInt32BE(1);
+        const low = buf.readUInt32BE(5);
+        value = BigInt(high) * BigInt(0x100000000) + BigInt(low);
+        break;
       default:
-        return BigInt(first);
+        value = BigInt(first);
+        break;
     }
+    return Ok(value);
+  }
+
+  readVarIntNum(): Result<number, string> {
+    const res = this.readVarIntBuf();
+    if (res.err) {
+      return res;
+    }
+    const buf = res.unwrap();
+    const first = buf.readUInt8(0);
+    let value: number;
+    switch (first) {
+      case 0xfd:
+        value = buf.readUInt16BE(1);
+        break;
+      case 0xfe:
+        value = buf.readUInt32BE(1);
+        break;
+      case 0xff:
+        const high = buf.readUInt32BE(1);
+        const low = buf.readUInt32BE(5);
+        const bigValue = BigInt(high) * BigInt(0x100000000) + BigInt(low);
+        if (bigValue > BigInt(Number.MAX_SAFE_INTEGER)) {
+          return Err("Number too large to retain precision - use readVarInt");
+        }
+        value = Number(bigValue);
+        break;
+      default:
+        value = first;
+        break;
+    }
+    return Ok(value);
   }
 }

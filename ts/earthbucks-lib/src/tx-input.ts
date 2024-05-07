@@ -24,31 +24,31 @@ export default class TxInput {
 
   static fromIsoBuf(buf: Buffer): TxInput {
     const reader = new IsoBufReader(buf);
-    const inputTxHash = reader.readBuffer(32);
-    const inputTxIndex = reader.readUInt32LE();
-    const scriptLen = reader.readVarIntNum();
-    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen));
-    const sequence = reader.readUInt32LE();
+    const inputTxHash = reader.readBuffer(32).unwrap();
+    const inputTxIndex = reader.readUInt32BE().unwrap();
+    const scriptLen = reader.readVarIntNum().unwrap();
+    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen).unwrap());
+    const sequence = reader.readUInt32BE().unwrap();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
   static fromIsoBufReader(reader: IsoBufReader): TxInput {
-    const inputTxHash = reader.readBuffer(32);
-    const inputTxIndex = reader.readUInt32LE();
-    const scriptLen = reader.readVarIntNum();
-    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen));
-    const sequence = reader.readUInt32LE();
+    const inputTxHash = reader.readBuffer(32).unwrap();
+    const inputTxIndex = reader.readUInt32BE().unwrap();
+    const scriptLen = reader.readVarIntNum().unwrap();
+    const script = Script.fromIsoBuf(reader.readBuffer(scriptLen).unwrap());
+    const sequence = reader.readUInt32BE().unwrap();
     return new TxInput(inputTxHash, inputTxIndex, script, sequence);
   }
 
   toIsoBuf(): Buffer {
     const writer = new IsoBufWriter();
     writer.writeBuffer(this.inputTxId);
-    writer.writeUInt32LE(this.inputTxNOut);
+    writer.writeUInt32BE(this.inputTxNOut);
     const scriptBuf = this.script.toIsoBuf();
     writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.writeBuffer(scriptBuf);
-    writer.writeUInt32LE(this.sequence);
+    writer.writeUInt32BE(this.sequence);
     return writer.toIsoBuf();
   }
 

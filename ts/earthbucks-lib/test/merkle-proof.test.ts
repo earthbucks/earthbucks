@@ -113,7 +113,7 @@ describe("MerkleProof", () => {
     expect(verified2).toBe(true);
   });
 
-  test("to/from U8Vec", () => {
+  test("to/from Buf", () => {
     const data1 = doubleBlake3Hash(Buffer.from("data1"));
     const data2 = doubleBlake3Hash(Buffer.from("data2"));
 
@@ -121,10 +121,10 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
-    const u8vec1 = proof1.toIsoBuf();
-    const proof1FromU8Vec = MerkleProof.fromU8Vec(u8vec1);
-    const u8vec2 = proof1FromU8Vec.toIsoBuf();
-    expect(Buffer.compare(u8vec1, u8vec2)).toBe(0);
+    const buf1 = proof1.toIsoBuf();
+    const proof1FromBuf = MerkleProof.fromIsoBuf(buf1);
+    const buf2 = proof1FromBuf.toIsoBuf();
+    expect(Buffer.compare(buf1, buf2)).toBe(0);
   });
 
   test("to/from string", () => {

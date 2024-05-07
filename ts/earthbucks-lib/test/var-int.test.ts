@@ -18,7 +18,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toNumber()).toBe(n);
+      expect(varInt.toNumber().unwrap()).toBe(n);
     });
   });
 
@@ -31,7 +31,7 @@ describe("VarInt", () => {
       varInt.fromBigInt(bn);
 
       // Assert
-      expect(varInt.toBigInt()).toBe(bn);
+      expect(varInt.toBigInt().unwrap()).toBe(bn);
     });
   });
 
@@ -44,7 +44,7 @@ describe("VarInt", () => {
       varInt = VarInt.fromBigInt(bn);
 
       // Assert
-      expect(varInt.toBigInt()).toBe(bn);
+      expect(varInt.toBigInt().unwrap()).toBe(bn);
     });
   });
 
@@ -57,7 +57,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toNumber()).toBe(n);
+      expect(varInt.toNumber().unwrap()).toBe(n);
     });
   });
 
@@ -70,7 +70,7 @@ describe("VarInt", () => {
       varInt = VarInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toNumber()).toBe(n);
+      expect(varInt.toNumber().unwrap()).toBe(n);
     });
   });
 
@@ -109,7 +109,7 @@ describe("VarInt", () => {
       varInt.fromBigInt(bn);
 
       // Assert
-      expect(varInt.toBigInt()).toBe(BigInt(123));
+      expect(varInt.toBigInt().unwrap()).toBe(BigInt(123));
     });
   });
 
@@ -122,7 +122,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toNumber()).toBe(123);
+      expect(varInt.toNumber().unwrap()).toBe(123);
     });
   });
 

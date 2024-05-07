@@ -49,11 +49,11 @@ export default class Header {
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
-    bw.writeUInt64BEBigInt(this.timestamp);
-    bw.writeUInt64BEBigInt(this.blockNum);
+    bw.writeUInt64BE(this.timestamp);
+    bw.writeUInt64BE(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BEBigInt(this.workAlgo);
+    bw.writeUInt64BE(this.workAlgo);
     bw.writeBuffer(this.workSer);
     bw.writeBuffer(this.workPar);
     return bw.toIsoBuf();
@@ -61,16 +61,16 @@ export default class Header {
 
   static fromIsoBuf(buf: Buffer): Header {
     const br = new IsoBufReader(buf);
-    const version = br.readUInt32BE();
-    const previousBlockHash = br.readBuffer(32);
-    const merkleRoot = br.readBuffer(32);
-    const timestamp = br.readUInt64BEBigInt();
-    const blockNum = br.readUInt64BEBigInt();
-    const target = br.readBuffer(32);
-    const nonce = br.readBuffer(32);
-    const workAlgo = br.readUInt64BEBigInt();
-    const workSer = br.readBuffer(32);
-    const workPar = br.readBuffer(32);
+    const version = br.readUInt32BE().unwrap();
+    const previousBlockHash = br.readBuffer(32).unwrap();
+    const merkleRoot = br.readBuffer(32).unwrap();
+    const timestamp = br.readUInt64BE().unwrap();
+    const blockNum = br.readUInt64BE().unwrap();
+    const target = br.readBuffer(32).unwrap();
+    const nonce = br.readBuffer(32).unwrap();
+    const workAlgo = br.readUInt64BE().unwrap();
+    const workSer = br.readBuffer(32).unwrap();
+    const workPar = br.readBuffer(32).unwrap();
     return new Header(
       version,
       previousBlockHash,
@@ -86,16 +86,16 @@ export default class Header {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Header {
-    const version = br.readUInt32BE();
-    const previousBlockHash = br.readBuffer(32);
-    const merkleRoot = br.readBuffer(32);
-    const timestamp = br.readUInt64BEBigInt();
-    const blockNum = br.readUInt64BEBigInt();
-    const target = br.readBuffer(32);
-    const nonce = br.readBuffer(32);
-    const workAlgo = br.readUInt64BEBigInt();
-    const workSer = br.readBuffer(32);
-    const workPar = br.readBuffer(32);
+    const version = br.readUInt32BE().unwrap();
+    const previousBlockHash = br.readBuffer(32).unwrap();
+    const merkleRoot = br.readBuffer(32).unwrap();
+    const timestamp = br.readUInt64BE().unwrap();
+    const blockNum = br.readUInt64BE().unwrap();
+    const target = br.readBuffer(32).unwrap();
+    const nonce = br.readBuffer(32).unwrap();
+    const workAlgo = br.readUInt64BE().unwrap();
+    const workSer = br.readBuffer(32).unwrap();
+    const workPar = br.readBuffer(32).unwrap();
     return new Header(
       version,
       previousBlockHash,
@@ -114,11 +114,11 @@ export default class Header {
     bw.writeUInt32BE(this.version);
     bw.writeBuffer(this.prevBlockId);
     bw.writeBuffer(this.merkleRoot);
-    bw.writeUInt64BEBigInt(this.timestamp);
-    bw.writeUInt64BEBigInt(this.blockNum);
+    bw.writeUInt64BE(this.timestamp);
+    bw.writeUInt64BE(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BEBigInt(this.workAlgo);
+    bw.writeUInt64BE(this.workAlgo);
     bw.writeBuffer(this.workSer);
     bw.writeBuffer(this.workPar);
     return bw;

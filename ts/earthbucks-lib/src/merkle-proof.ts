@@ -78,14 +78,14 @@ export default class MerkleProof {
     return bw.toIsoBuf();
   }
 
-  static fromU8Vec(buf: Buffer): MerkleProof {
+  static fromIsoBuf(buf: Buffer): MerkleProof {
     const br = new IsoBufReader(buf);
-    const root = br.readBuffer(32);
+    const root = br.readBuffer(32).unwrap();
     const proof: Array<[Buffer, boolean]> = [];
-    const proofLength = br.readVarIntNum();
+    const proofLength = br.readVarIntNum().unwrap();
     for (let i = 0; i < proofLength; i++) {
-      const sibling = br.readBuffer(32);
-      const isLeft = br.readUInt8() === 1;
+      const sibling = br.readBuffer(32).unwrap();
+      const isLeft = br.readUInt8().unwrap() === 1;
       proof.push([sibling, isLeft]);
     }
     return new MerkleProof(root, proof);
@@ -99,6 +99,6 @@ export default class MerkleProof {
 
   static fromIsoStr(hex: string): MerkleProof {
     const u8vec = Buffer.from(hex, "hex");
-    return MerkleProof.fromU8Vec(u8vec);
+    return MerkleProof.fromIsoBuf(u8vec);
   }
 }

@@ -35,17 +35,17 @@ export default class Script {
     const reader = new IsoBufReader(arr);
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
-      chunk.opcode = reader.readUInt8();
+      chunk.opcode = reader.readUInt8().unwrap();
       if (chunk.opcode <= OP.PUSHDATA4) {
         let len = chunk.opcode;
         if (len === OP.PUSHDATA1) {
-          len = reader.readUInt8();
+          len = reader.readUInt8().unwrap();
         } else if (len === OP.PUSHDATA2) {
-          len = reader.readUInt16LE();
+          len = reader.readUInt16BE().unwrap();
         } else if (len === OP.PUSHDATA4) {
-          len = reader.readUInt32LE();
+          len = reader.readUInt32BE().unwrap();
         }
-        chunk.buf = Buffer.from(reader.readBuffer(len));
+        chunk.buf = Buffer.from(reader.readBuffer(len).unwrap());
         if (chunk.buf.length !== len) {
           throw new Error("invalid buffer length");
         }
