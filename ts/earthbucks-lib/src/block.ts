@@ -17,31 +17,31 @@ export default class Block {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<Block, string> {
-    let headerRes = Header.fromIsoBufReader(br);
-    if (headerRes.err) {
-      return Err(headerRes.val);
-    }
-    const header = headerRes.val;
-    const txCountVarIntRes = VarInt.fromIsoBufReader(br);
-    if (txCountVarIntRes.err) {
-      return Err(txCountVarIntRes.val);
-    }
-    const txCountVarInt = txCountVarIntRes.val;
-    const txCountRes = txCountVarInt.toBigInt();
-    if (txCountRes.err) {
-      return Err(txCountRes.val);
-    }
-    const txCount = txCountRes.val;
-    const txs: Tx[] = [];
-    for (let i = 0; i < txCount; i++) {
-      try {
-        const tx = Tx.fromIsoBufReader(br);
-        txs.push(tx);
-      } catch (e) {
-        throw new Error("unable to parse transactions");
+    try {
+      const header = Header.fromIsoBufReader(br)
+        .mapErr(() => "unable to parse header")
+        .unwrap();
+      const txCountVarInt = VarInt.fromIsoBufReader(br)
+        .mapErr(() => "unable to parse tx count 1")
+        .unwrap();
+      const txCount = txCountVarInt
+        .toBigInt()
+        .mapErr(() => "unable to parse tx count 2")
+        .unwrap();
+
+      const txs: Tx[] = [];
+      for (let i = 0; i < txCount; i++) {
+        try {
+          const tx = Tx.fromIsoBufReader(br);
+          txs.push(tx);
+        } catch (e) {
+          return Err("unable to parse transactions");
+        }
       }
+      return Ok(new Block(header, txs));
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing block");
     }
-    return Ok(new Block(header, txs));
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
