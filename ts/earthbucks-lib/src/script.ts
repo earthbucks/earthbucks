@@ -2,6 +2,7 @@ import { OP } from "./opcode";
 import ScriptChunk from "./script-chunk";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class Script {
   chunks: ScriptChunk[] = [];
@@ -10,19 +11,27 @@ export default class Script {
     this.chunks = chunks;
   }
 
-  fromIsoStr(str: string): this {
-    if (str === "") {
-      return this;
-    }
-    this.chunks = str
-      .split(" ")
-      .map(ScriptChunk.fromIsoStr)
-      .map((res) => res.unwrap());
-    return this;
-  }
+  static fromIsoStr(str: string): Result<Script, string> {
+    try {
+      const script = new Script();
+      if (str === "") {
+        return Ok(script);
+      }
 
-  static fromIsoStr(str: string): Script {
-    return new Script().fromIsoStr(str);
+      if (/ {2,}/.test(str)) {
+        return Err("String should not contain two or more consecutive spaces");
+      }
+
+      script.chunks = str
+        .split(" ")
+        .map(ScriptChunk.fromIsoStr)
+        .map((res) =>
+          res.mapErr((err) => `Unable to parse script chunk: ${err}`).unwrap(),
+        );
+      return Ok(script);
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing script");
+    }
   }
 
   toIsoStr(): string {
@@ -34,32 +43,45 @@ export default class Script {
     return Buffer.concat(bufArray);
   }
 
-  fromIsoBuf(arr: Buffer): this {
-    const reader = new IsoBufReader(arr);
-    while (!reader.eof()) {
-      const chunk = new ScriptChunk();
-      chunk.opcode = reader.readUInt8().unwrap();
-      if (chunk.opcode <= OP.PUSHDATA4) {
-        let len = chunk.opcode;
-        if (len === OP.PUSHDATA1) {
-          len = reader.readUInt8().unwrap();
-        } else if (len === OP.PUSHDATA2) {
-          len = reader.readUInt16BE().unwrap();
-        } else if (len === OP.PUSHDATA4) {
-          len = reader.readUInt32BE().unwrap();
+  static fromIsoBuf(arr: Buffer): Result<Script, string> {
+    try {
+      let script = new Script();
+      const reader = new IsoBufReader(arr);
+      while (!reader.eof()) {
+        const chunk = new ScriptChunk();
+        chunk.opcode = reader
+          .readUInt8()
+          .mapErr((err) => `Unable to read opcode: ${err}`)
+          .unwrap();
+        if (chunk.opcode <= OP.PUSHDATA4) {
+          let len = chunk.opcode;
+          if (len === OP.PUSHDATA1) {
+            len = reader
+              .readUInt8()
+              .mapErr((err) => `Unable to read pushdata 1: ${err}`)
+              .unwrap();
+          } else if (len === OP.PUSHDATA2) {
+            len = reader
+              .readUInt16BE()
+              .mapErr((err) => `Unable to read pushdata 2: ${err}`)
+              .unwrap();
+          } else if (len === OP.PUSHDATA4) {
+            len = reader
+              .readUInt32BE()
+              .mapErr((err) => `Unable to read pushdata 4: ${err}`)
+              .unwrap();
+          }
+          chunk.buf = Buffer.from(reader.readBuffer(len).unwrap());
+          if (chunk.buf.length !== len) {
+            return Err("invalid buffer length");
+          }
         }
-        chunk.buf = Buffer.from(reader.readBuffer(len).unwrap());
-        if (chunk.buf.length !== len) {
-          throw new Error("invalid buffer length");
-        }
+        script.chunks.push(chunk);
       }
-      this.chunks.push(chunk);
+      return Ok(script);
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing script");
     }
-    return this;
-  }
-
-  static fromIsoBuf(arr: Buffer): Script {
-    return new Script().fromIsoBuf(arr);
   }
 
   static fromAddressOutput(pkh: Buffer): Script {

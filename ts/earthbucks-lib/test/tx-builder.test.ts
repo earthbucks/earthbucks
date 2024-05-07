@@ -26,7 +26,7 @@ describe("TxBuilder", () => {
       txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
     }
 
-    const changeScript = Script.fromIsoStr("");
+    const changeScript = Script.fromIsoStr("").unwrap();
     txBuilder = new TxBuilder(txOutMap, changeScript);
   });
 
@@ -35,7 +35,7 @@ describe("TxBuilder", () => {
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromAddressOutput(pkh.buf);
     const output = new TxOutput(BigInt(50), script);
-    txBuilder.addOutput(BigInt(50), Script.fromIsoStr(""));
+    txBuilder.addOutput(BigInt(50), Script.fromIsoStr("").unwrap());
 
     const tx = txBuilder.build();
 
@@ -45,7 +45,7 @@ describe("TxBuilder", () => {
   });
 
   test("should build an invalid tx when input is insufficient to cover the output", () => {
-    txBuilder.addOutput(BigInt(10000), Script.fromIsoStr(""));
+    txBuilder.addOutput(BigInt(10000), Script.fromIsoStr("").unwrap());
 
     const tx = txBuilder.build();
 

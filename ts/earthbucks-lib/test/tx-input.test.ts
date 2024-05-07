@@ -57,7 +57,7 @@ describe("TxInput", () => {
     test("toIsoBuf with script", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
-      const script = new Script().fromIsoStr("DOUBLEBLAKE3");
+      const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
       const sequence = 0xffffffff;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -71,7 +71,7 @@ describe("TxInput", () => {
   test("toIsoBuf with pushdata", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromIsoStr("0x121212");
+    const script = Script.fromIsoStr("0x121212").unwrap();
     const sequence = 0xffffffff;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -84,7 +84,7 @@ describe("TxInput", () => {
   test("isNull", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromIsoStr("0x121212");
+    const script = Script.fromIsoStr("0x121212").unwrap();
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -102,7 +102,7 @@ describe("TxInput", () => {
   test("isFinal", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromIsoStr("0x121212");
+    const script = Script.fromIsoStr("0x121212").unwrap();
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -120,7 +120,7 @@ describe("TxInput", () => {
   test("isCoinbase", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
-    const script = new Script().fromIsoStr("0x121212");
+    const script = Script.fromIsoStr("0x121212").unwrap();
     const sequence = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, sequence);
@@ -136,7 +136,7 @@ describe("TxInput", () => {
   });
 
   test("fromCoinbase", () => {
-    const script = new Script().fromIsoStr("0x121212");
+    const script = Script.fromIsoStr("0x121212").unwrap();
     const txInput = TxInput.fromCoinbase(script);
     expect(txInput).toBeInstanceOf(TxInput);
     expect(txInput.isNull()).toBe(true);

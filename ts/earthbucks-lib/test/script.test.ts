@@ -9,52 +9,50 @@ describe("Script", () => {
   });
 
   test("fromIsoStr", () => {
-    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3");
+    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     expect(script.chunks.length).toBe(2);
     expect(script.chunks[0].toIsoStr()).toBe("DUP");
     expect(script.chunks[1].toIsoStr()).toBe("DOUBLEBLAKE3");
   });
 
   test("fromIsoStr toString with PUSHDATA1", () => {
-    const script = Script.fromIsoStr("0x00");
+    const script = Script.fromIsoStr("0x00").unwrap();
     expect(script.toIsoStr()).toBe("0x00");
   });
 
   test("fromIsoStr toString with PUSHDATA2", () => {
-    const script = Script.fromIsoStr("0x" + "00".repeat(256));
+    const script = Script.fromIsoStr("0x" + "00".repeat(256)).unwrap();
     expect(script.toIsoStr()).toBe("0x" + "00".repeat(256));
   });
 
   test("toString", () => {
-    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3");
+    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromU8Vec", () => {
-    const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3");
+    const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr);
+    const script = Script.fromIsoBuf(arr).unwrap();
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromU8Vec with PUSHDATA1", () => {
-    const originalScript = Script.fromIsoStr("0xff 0xff");
+    const originalScript = Script.fromIsoStr("0xff 0xff").unwrap();
     const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr);
+    const script = Script.fromIsoBuf(arr).unwrap();
     expect(script.toIsoStr()).toBe("0xff 0xff");
   });
 
   it("should correctly convert between string and Buffer for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
-    const initialScript = new Script();
-    initialScript.fromIsoStr("0xffff 0xffff");
+    const initialScript = Script.fromIsoStr("0xffff 0xffff").unwrap();
 
     // Convert the Script to a Buffer
     const arr = initialScript.toIsoBuf();
 
     // Create a new Script from the Buffer
-    const finalScript = new Script();
-    finalScript.fromIsoBuf(arr);
+    const finalScript = Script.fromIsoBuf(arr).unwrap();
 
     // Convert the final Script back to a string
     const finalString = finalScript.toIsoStr();
@@ -83,7 +81,7 @@ describe("Script", () => {
     test("isAddressOutput false", () => {
       const script = Script.fromIsoStr(
         "DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG",
-      );
+      ).unwrap();
       expect(script.isAddressOutput()).toBe(false);
     });
 

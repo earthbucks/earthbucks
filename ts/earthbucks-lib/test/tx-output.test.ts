@@ -24,7 +24,7 @@ describe("TxOutput", () => {
       const value = BigInt(100);
       const script = Script.fromIsoStr(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
-      );
+      ).unwrap();
       const txOutput = new TxOutput(value, script);
       const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
@@ -35,7 +35,7 @@ describe("TxOutput", () => {
     test("big push data", () => {
       const data = "0x" + "00".repeat(0xffff);
       const value = BigInt(100);
-      const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`);
+      const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`).unwrap();
       const txOutput = new TxOutput(value, script);
       const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
