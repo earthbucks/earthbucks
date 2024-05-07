@@ -36,7 +36,7 @@ describe("Tx", () => {
     const lockNum = BigInt(0);
 
     const tx = new Tx(version, inputs, outputs, lockNum);
-    const result = Tx.fromIsoBuf(tx.toIsoBuf());
+    const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
     expect(tx.toIsoBuf().toString("hex")).toEqual(
       result.toIsoBuf().toString("hex"),
     );
@@ -53,7 +53,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = Tx.fromIsoBuf(tx.toIsoBuf());
+      const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
@@ -74,7 +74,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockNum);
 
       const reader = new IsoBufReader(tx.toIsoBuf());
-      const result = Tx.fromIsoBufReader(reader);
+      const result = Tx.fromIsoBufReader(reader).unwrap();
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
@@ -94,7 +94,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = Tx.fromIsoStr(tx.toIsoStr());
+      const result = Tx.fromIsoHex(tx.toIsoHex()).unwrap();
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);

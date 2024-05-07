@@ -1,6 +1,5 @@
 import Header from "./header";
 import Tx from "./tx";
-import VarInt from "./var-int";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
@@ -20,23 +19,19 @@ export default class Block {
       const header = Header.fromIsoBufReader(br)
         .mapErr((err) => `Unable to parse header: ${err}`)
         .unwrap();
-      const txCountVarInt = VarInt.fromIsoBufReader(br)
-        .mapErr((err) => `Unable to parse tx count 1: ${err}`)
-        .unwrap();
-      const txCount = txCountVarInt
-        .toBigInt()
-        .mapErr((err) => `Unable to parse tx count 2: ${err}`)
+      const txCount = br
+        .readVarInt()
+        .mapErr((err) => `Unable to parse tx count: ${err}`)
         .unwrap();
 
       const txs: Tx[] = [];
       for (let i = 0; i < txCount; i++) {
-        try {
-          const tx = Tx.fromIsoBufReader(br);
-          txs.push(tx);
-        } catch (err) {
-          return Err(`Unable to parse transactions: ${err}`);
-        }
+        const tx = Tx.fromIsoBufReader(br)
+          .mapErr((err) => `Unable to parse tx ${i}: ${err}`)
+          .unwrap();
+        txs.push(tx);
       }
+
       return Ok(new Block(header, txs));
     } catch (err) {
       return Err(err?.toString() || "Unknown error parsing block");

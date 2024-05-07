@@ -9,6 +9,8 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import TxSignature from "./tx-signature";
 import Script from "./script";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
+import IsoHex from "./iso-hex";
 
 export class HashCache {
   public hashPrevouts?: Buffer;
@@ -34,24 +36,28 @@ export default class Tx {
     this.lockNum = lockNum;
   }
 
-  static fromIsoBuf(buf: Buffer): Tx {
+  static fromIsoBuf(buf: Buffer): Result<Tx, string> {
     return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Tx {
-    const version = reader.readUInt8().unwrap();
-    const numInputs = reader.readVarIntNum().unwrap();
-    const inputs = [];
-    for (let i = 0; i < numInputs; i++) {
-      inputs.push(TxInput.fromIsoBufReader(reader));
+  static fromIsoBufReader(reader: IsoBufReader): Result<Tx, string> {
+    try {
+      const version = reader.readUInt8().unwrap();
+      const numInputs = reader.readVarIntNum().unwrap();
+      const inputs = [];
+      for (let i = 0; i < numInputs; i++) {
+        inputs.push(TxInput.fromIsoBufReader(reader));
+      }
+      const numOutputs = reader.readVarIntNum().unwrap();
+      const outputs = [];
+      for (let i = 0; i < numOutputs; i++) {
+        outputs.push(TxOutput.fromIsoBufReader(reader));
+      }
+      const lockNum = reader.readUInt64BE().unwrap();
+      return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing tx");
     }
-    const numOutputs = reader.readVarIntNum().unwrap();
-    const outputs = [];
-    for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TxOutput.fromIsoBufReader(reader));
-    }
-    const lockNum = reader.readUInt64BE().unwrap();
-    return new Tx(version, inputs, outputs, BigInt(lockNum));
   }
 
   toIsoBuf(): Buffer {
@@ -69,12 +75,19 @@ export default class Tx {
     return writer.toIsoBuf();
   }
 
-  toIsoStr(): string {
+  toIsoHex(): string {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromIsoStr(hex: string): Tx {
-    return Tx.fromIsoBuf(Buffer.from(hex, "hex"));
+  static fromIsoHex(hex: string): Result<Tx, string> {
+    try {
+      const buf = IsoHex.decode(hex)
+        .mapErr((err) => `Could not decode hex: ${err}`)
+        .unwrap();
+      return Tx.fromIsoBuf(buf);
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error parsing hex tx");
+    }
   }
 
   static fromCoinbase(
