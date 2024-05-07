@@ -43,7 +43,7 @@ export default class PrivKey {
   }
 
   static fromIsoHex(hex: string): PrivKey {
-    return PrivKey.fromIsoBuf(IsoHex.decode(hex));
+    return PrivKey.fromIsoBuf(IsoHex.decode(hex).unwrap());
   }
 
   toIsoStr(): string {
@@ -57,7 +57,7 @@ export default class PrivKey {
     if (!str.startsWith("ebxprv")) {
       throw new Error("Invalid private key format");
     }
-    let checkBuf = IsoHex.decode(str.slice(6, 14));
+    let checkBuf = IsoHex.decode(str.slice(6, 14)).unwrap();
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));

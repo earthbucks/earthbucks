@@ -54,7 +54,7 @@ describe("Pkh", () => {
       const pkhPairs: AddressPair[] = JSON.parse(data).pkh;
 
       for (const pair of pkhPairs) {
-        const pubKey = PubKey.fromIsoStr(pair.pub_key);
+        const pubKey = PubKey.fromIsoStr(pair.pub_key).unwrap();
         const pkh = Pkh.fromPubKey(pubKey);
         expect(pkh.toIsoStr()).toBe(pair.pkh);
       }

@@ -40,7 +40,7 @@ export default class Pkh {
       return Err("Invalid pkh format");
     }
     let checkHex = pkhStr.slice(6, 14);
-    let checkBuf = IsoHex.decode(checkHex);
+    let checkBuf = IsoHex.decode(checkHex).unwrap();
     let buf = Buffer.from(bs58.decode(pkhStr.slice(14)));
     let hashBuf = blake3Hash(buf);
     let checkHash = hashBuf.subarray(0, 4);

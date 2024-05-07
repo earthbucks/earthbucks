@@ -36,7 +36,7 @@ export default class SigninChallenge {
   }
 
   static fromIsoHex(hex: string, domain: string): SigninChallenge {
-    const buf = IsoHex.decode(hex);
+    const buf = IsoHex.decode(hex).unwrap();
     return SigninChallenge.fromIsoBuf(buf, domain);
   }
 

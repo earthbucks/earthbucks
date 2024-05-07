@@ -43,7 +43,7 @@ export default class SigninResponse {
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const buf = IsoHex.decode(hex);
+    const buf = IsoHex.decode(hex).unwrap();
     return SigninResponse.toIsoBuf(buf, domain);
   }
 

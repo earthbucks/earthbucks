@@ -28,7 +28,7 @@ describe("PubKey", () => {
 
     let pubKey = PubKey.fromIsoStr(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
-    );
+    ).unwrap();
     expect(pubKey.toIsoStr()).toEqual(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );

@@ -17,7 +17,7 @@ describe("strictHex", () => {
   test("encode/decode", () => {
     const buffer = Buffer.from("1234567890abcdef", "hex");
     const hex = strictHex.encode(buffer);
-    const decodedBuffer = strictHex.decode(hex);
+    const decodedBuffer = strictHex.decode(hex).unwrap();
     expect(decodedBuffer).toEqual(buffer);
   });
 });

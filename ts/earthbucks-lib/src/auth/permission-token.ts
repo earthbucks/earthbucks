@@ -22,8 +22,8 @@ export default class PermissionToken {
       throw new Error("invalid buffer length");
     }
     const reader = new IsoBufReader(buf);
-    const randValue = reader.readBuffer(32);
-    const timestamp = reader.readUInt64BE();
+    const randValue = reader.readBuffer(32).unwrap();
+    const timestamp = reader.readUInt64BE().unwrap();
     return new PermissionToken(randValue, timestamp);
   }
 

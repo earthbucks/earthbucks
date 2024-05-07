@@ -1,9 +1,9 @@
-import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import IsoHex, { isValid } from "./iso-hex";
+import IsoHex from "./iso-hex";
 import bs58 from "bs58";
 import PrivKey from "./priv-key";
 import { blake3Hash } from "./blake3";
+import { Result, Ok, Err } from "ts-results";
 
 export default class PubKey {
   buf: Buffer;
@@ -31,8 +31,13 @@ export default class PubKey {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): PubKey {
-    return PubKey.fromIsoBuf(IsoHex.decode(hex));
+  static fromIsoHex(hex: string): Result<PubKey, string> {
+    let res = IsoHex.decode(hex);
+    if (res.err) {
+      return Err(res.val);
+    }
+    const buf = res.unwrap();
+    return Ok(PubKey.fromIsoBuf(buf));
   }
 
   toIsoStr(): string {
@@ -42,33 +47,32 @@ export default class PubKey {
     return "ebxpub" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromIsoStr(str: string): PubKey {
+  static fromIsoStr(str: string): Result<PubKey, string> {
     if (!str.startsWith("ebxpub")) {
-      throw new Error("Invalid public key format");
+      return Err("Invalid public key format");
     }
     let checkHex = str.slice(6, 14);
-    let checkBuf = IsoHex.decode(checkHex);
+    let res = IsoHex.decode(checkHex);
+    if (res.err) {
+      return Err(res.val);
+    }
+    let checkBuf = res.unwrap();
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      throw new Error("Invalid base58 encoding");
+      return Err("Invalid base58 encoding");
     }
     let checkHash = blake3Hash(decoded);
     let checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
-      throw new Error("Invalid checksum");
+      return Err("Invalid checksum");
     }
-    return PubKey.fromIsoBuf(decoded);
+    return Ok(PubKey.fromIsoBuf(decoded));
   }
 
   static isValidStringFmt(str: string): boolean {
-    let pubKey: PubKey;
-    try {
-      pubKey = PubKey.fromIsoStr(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
+    let res = PubKey.fromIsoStr(str);
+    return res.ok;
   }
 }
