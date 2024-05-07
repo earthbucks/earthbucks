@@ -14,7 +14,10 @@ export default class Script {
     if (str === "") {
       return this;
     }
-    this.chunks = str.split(" ").map(ScriptChunk.fromIsoStr);
+    this.chunks = str
+      .split(" ")
+      .map(ScriptChunk.fromIsoStr)
+      .map((res) => res.unwrap());
     return this;
   }
 
