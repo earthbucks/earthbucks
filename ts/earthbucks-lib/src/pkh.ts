@@ -13,13 +13,13 @@ export default class Pkh {
     this.buf = pkhBuf;
   }
 
-  static fromPubKeyBuffer(publicKey: Buffer): Pkh {
-    let pkhBuf = doubleBlake3Hash(publicKey);
+  static fromPubKeyBuf(pubKeyBuf: Buffer): Pkh {
+    let pkhBuf = doubleBlake3Hash(pubKeyBuf);
     return new Pkh(pkhBuf);
   }
 
   static fromPubKey(pubKey: PubKey): Pkh {
-    return Pkh.fromPubKeyBuffer(pubKey.toIsoBuf());
+    return Pkh.fromPubKeyBuf(pubKey.toIsoBuf());
   }
 
   static fromIsoBuf(buf: Buffer): Result<Pkh, string> {

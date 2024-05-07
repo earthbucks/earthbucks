@@ -30,7 +30,7 @@ function main() {
         const publicKey = key.pubKey.toIsoBuf();
 
         // Get the corresponding pkh
-        const pkh = Pkh.fromPubKeyBuffer(publicKey);
+        const pkh = Pkh.fromPubKeyBuf(publicKey);
 
         // Print them out
         const privateKeyHex = Buffer.from(key.privKey.toIsoBuf()).toString(

@@ -13,13 +13,13 @@ export default class PkhKeyMap {
     this.map.set(pkhHex, key);
   }
 
-  remove(pkhU8Vec: Buffer): void {
-    const pkhHex = pkhU8Vec.toString("hex");
+  remove(pkhIsoBuf: Buffer): void {
+    const pkhHex = pkhIsoBuf.toString("hex");
     this.map.delete(pkhHex);
   }
 
-  get(pkhU8Vec: Buffer): KeyPair | undefined {
-    const pkhHex = pkhU8Vec.toString("hex");
+  get(pkhIsoBuf: Buffer): KeyPair | undefined {
+    const pkhHex = pkhIsoBuf.toString("hex");
     return this.map.get(pkhHex);
   }
 

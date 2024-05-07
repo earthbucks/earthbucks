@@ -10,7 +10,7 @@ import { Ok } from "ts-results";
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuffer(Buffer.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     expect(pkh.buf).toBeDefined();
   });
 

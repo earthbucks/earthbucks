@@ -16,11 +16,11 @@ export default class PubKey {
     return new PubKey(privKey.toPubKeyBuffer());
   }
 
-  static fromIsoBuf(buf: Buffer): PubKey {
+  static fromIsoBuf(buf: Buffer): Result<PubKey, string> {
     if (buf.length !== 33) {
-      throw new Error("Invalid public key length");
+      return Err("Invalid public key length");
     }
-    return new PubKey(buf);
+    return Ok(new PubKey(buf));
   }
 
   toIsoBuf(): Buffer {
@@ -37,7 +37,7 @@ export default class PubKey {
       return Err(res.val);
     }
     const buf = res.unwrap();
-    return Ok(PubKey.fromIsoBuf(buf));
+    return PubKey.fromIsoBuf(buf);
   }
 
   toIsoStr(): string {
@@ -68,7 +68,7 @@ export default class PubKey {
     if (!checkBuf.equals(checkSum)) {
       return Err("Invalid checksum");
     }
-    return Ok(PubKey.fromIsoBuf(decoded));
+    return PubKey.fromIsoBuf(decoded);
   }
 
   static isValidStringFmt(str: string): boolean {
