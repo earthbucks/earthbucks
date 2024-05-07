@@ -1,5 +1,6 @@
 import { doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class MerkleNode {
   public left: MerkleNode | null;
@@ -26,37 +27,41 @@ export default class MerkleNode {
     }
   }
 
-  static fromU8Vecs(hashedDatas: Buffer[]): MerkleNode {
+  static fromIsoBufs(hashedDatas: Buffer[]): Result<MerkleNode, string> {
     if (hashedDatas.length === 0) {
-      throw new Error("Cannot create MerkleNode from empty array");
+      return Err("Cannot create MerkleNode from empty array");
     }
     if (hashedDatas.length === 1) {
-      return new MerkleNode(null, null, hashedDatas[0]);
+      return Ok(new MerkleNode(null, null, hashedDatas[0]));
     }
     if (hashedDatas.length === 2) {
       const left = new MerkleNode(null, null, hashedDatas[0]);
       const right = new MerkleNode(null, null, hashedDatas[1]);
-      return new MerkleNode(
-        left,
-        right,
-        doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+      return Ok(
+        new MerkleNode(
+          left,
+          right,
+          doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+        ),
       );
     }
     // Make sure the number of elements is a power of two
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
       hashedDatas.push(hashedDatas[hashedDatas.length - 1]);
     }
-    const left = MerkleNode.fromU8Vecs(
+    const left = MerkleNode.fromIsoBufs(
       hashedDatas.slice(0, hashedDatas.length / 2),
-    );
-    const right = MerkleNode.fromU8Vecs(
+    ).unwrap();
+    const right = MerkleNode.fromIsoBufs(
       hashedDatas.slice(hashedDatas.length / 2),
-    );
+    ).unwrap();
 
-    return new MerkleNode(
-      left,
-      right,
-      doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+    return Ok(
+      new MerkleNode(
+        left,
+        right,
+        doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+      ),
     );
   }
 }
