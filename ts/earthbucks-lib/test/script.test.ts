@@ -11,8 +11,8 @@ describe("Script", () => {
   test("fromIsoStr", () => {
     const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
     expect(script.chunks.length).toBe(2);
-    expect(script.chunks[0].toIsoStr()).toBe("DUP");
-    expect(script.chunks[1].toIsoStr()).toBe("DOUBLEBLAKE3");
+    expect(script.chunks[0].toIsoStr().unwrap()).toBe("DUP");
+    expect(script.chunks[1].toIsoStr().unwrap()).toBe("DOUBLEBLAKE3");
   });
 
   test("fromIsoStr toString with PUSHDATA1", () => {

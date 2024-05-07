@@ -35,7 +35,7 @@ export default class Script {
   }
 
   toIsoStr(): string {
-    return this.chunks.map((chunk) => chunk.toIsoStr()).join(" ");
+    return this.chunks.map((chunk) => chunk.toIsoStr().unwrap()).join(" ");
   }
 
   toIsoBuf(): Buffer {

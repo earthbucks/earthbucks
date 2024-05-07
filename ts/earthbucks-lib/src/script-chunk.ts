@@ -12,15 +12,15 @@ export default class ScriptChunk {
     this.buf = buf;
   }
 
-  toIsoStr(): string {
+  toIsoStr(): Result<string, string> {
     if (this.buf) {
-      return `0x${this.buf.toString("hex")}`;
+      return Ok(`0x${this.buf.toString("hex")}`);
     } else {
       const name = OPCODE_TO_NAME[this.opcode];
       if (name !== undefined) {
-        return name;
+        return Ok(name);
       } else {
-        throw new Error("invalid opcode");
+        return Err("invalid opcode");
       }
     }
   }
