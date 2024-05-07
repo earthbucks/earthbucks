@@ -20,9 +20,9 @@ export default class TxSignature {
     return Buffer.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromU8Vec(u8vec: Buffer): TxSignature {
-    const hashType = u8vec[0];
-    const sigBuf = u8vec.slice(1);
+  static fromIsoBuf(buf: Buffer): TxSignature {
+    const hashType = buf[0];
+    const sigBuf = buf.subarray(1);
     return new TxSignature(hashType, sigBuf);
   }
 }

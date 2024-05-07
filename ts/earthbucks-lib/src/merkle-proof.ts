@@ -2,6 +2,7 @@ import { doubleBlake3Hash } from "./blake3";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class MerkleProof {
   public root: Buffer;
@@ -26,14 +27,16 @@ export default class MerkleProof {
     return Buffer.compare(proof.root, root) === 0 || proof.verify(data);
   }
 
-  static generateProofsAndRoot(hashedDatas: Buffer[]): [Buffer, MerkleProof[]] {
+  static generateProofsAndRoot(
+    hashedDatas: Buffer[],
+  ): Result<[Buffer, MerkleProof[]], string> {
     if (hashedDatas.length === 0) {
-      throw new Error("Cannot create Merkle tree from empty array");
+      return Err("Cannot create Merkle tree from empty array");
     }
     if (hashedDatas.length === 1) {
       const root = hashedDatas[0];
       const proof = new MerkleProof(root, []);
-      return [root, [proof]];
+      return Ok([root, [proof]]);
     }
     if (hashedDatas.length === 2) {
       const root = doubleBlake3Hash(
@@ -43,7 +46,7 @@ export default class MerkleProof {
         new MerkleProof(root, [[hashedDatas[1], true]]),
         new MerkleProof(root, [[hashedDatas[0], false]]),
       ];
-      return [root, proofs];
+      return Ok([root, proofs]);
     }
     // Make sure the number of elements is a power of two
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
@@ -51,10 +54,10 @@ export default class MerkleProof {
     }
     const [leftRoot, leftProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(0, hashedDatas.length / 2),
-    );
+    ).unwrap();
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(hashedDatas.length / 2),
-    );
+    ).unwrap();
     const root = doubleBlake3Hash(Buffer.concat([leftRoot, rightRoot]));
     const proofs = [
       ...leftProofs.map(
@@ -64,7 +67,7 @@ export default class MerkleProof {
         (proof) => new MerkleProof(root, [[leftRoot, false], ...proof.proof]),
       ),
     ];
-    return [root, proofs];
+    return Ok([root, proofs]);
   }
 
   toIsoBuf() {

@@ -8,9 +8,13 @@ export default class MerkleTxs {
   public proofs: MerkleProof[];
 
   constructor(txs: Tx[]) {
+    if (txs.length === 0) {
+      throw new Error("Cannot create Merkle tree from empty array");
+    }
     this.txs = txs;
     const hashedDatas = txs.map((tx) => tx.id());
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(hashedDatas);
+    const [root, proofs] =
+      MerkleProof.generateProofsAndRoot(hashedDatas).unwrap();
     this.root = root;
     this.proofs = proofs;
   }

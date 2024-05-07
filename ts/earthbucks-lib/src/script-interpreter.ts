@@ -801,7 +801,7 @@ export default class ScriptInterpreter {
             this.errStr = "invalid signature length";
             break;
           }
-          const signature = TxSignature.fromU8Vec(sigBuf);
+          const signature = TxSignature.fromIsoBuf(sigBuf);
 
           let execScriptBuf = this.script.toIsoBuf();
 
@@ -871,7 +871,7 @@ export default class ScriptInterpreter {
               const success = this.tx.verifyWithCache(
                 this.nIn,
                 pubKeys[j],
-                TxSignature.fromU8Vec(sigs[i]),
+                TxSignature.fromIsoBuf(sigs[i]),
                 execScriptBuf,
                 this.value,
                 this.hashCache,
