@@ -6,6 +6,7 @@ import Script from "./script";
 import TxInput from "./tx-input";
 import TxOutput from "./tx-output";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "ts-results";
 
 export default class BlockBuilder {
   public header: Header;
@@ -47,20 +48,26 @@ export default class BlockBuilder {
     prevAdjustmentBlockHeader: Header | null, // exactly 2016 blocks before
     outputScript: Script,
     outputAmount: bigint,
-  ): BlockBuilder {
-    const header = Header.fromPrevBlockHeader(
-      prevBlockHeader,
-      prevAdjustmentBlockHeader,
-    );
-    const txs = [];
-    const txInput = TxInput.fromCoinbase(outputScript);
-    const txOutput = new TxOutput(outputAmount, outputScript);
-    const coinbaseTx = new Tx(1, [txInput], [txOutput], 0n);
-    txs.push(coinbaseTx);
-    const merkleTxs = new MerkleTxs(txs);
-    const root = merkleTxs.root;
-    header.merkleRoot = root;
-    return new BlockBuilder(header, txs, merkleTxs);
+  ): Result<BlockBuilder, string> {
+    try {
+      const header = Header.fromPrevBlockHeader(
+        prevBlockHeader,
+        prevAdjustmentBlockHeader,
+      )
+        .mapErr((err) => `Error creating block builder: ${err}`)
+        .unwrap();
+      const txs = [];
+      const txInput = TxInput.fromCoinbase(outputScript);
+      const txOutput = new TxOutput(outputAmount, outputScript);
+      const coinbaseTx = new Tx(1, [txInput], [txOutput], 0n);
+      txs.push(coinbaseTx);
+      const merkleTxs = new MerkleTxs(txs);
+      const root = merkleTxs.root;
+      header.merkleRoot = root;
+      return Ok(new BlockBuilder(header, txs, merkleTxs));
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error creating block builder");
+    }
   }
 
   toBlock(): Block {

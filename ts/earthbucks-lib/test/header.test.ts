@@ -137,7 +137,7 @@ describe("BlockHeader", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      );
+      ).unwrap();
       expect(bh.version).toBe(1);
       expect(bh.prevBlockId).toEqual(prevBlockHeader.id());
       expect(bh.merkleRoot).toEqual(Buffer.alloc(32));
@@ -173,7 +173,7 @@ describe("BlockHeader", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      );
+      ).unwrap();
       expect(bh.blockNum).toBe(Header.BLOCKS_PER_ADJUSTMENT);
       expect(bh.target).toEqual(Header.adjustTarget(Buffer.alloc(32), 0n));
     });
@@ -211,7 +211,7 @@ describe("BlockHeader", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      );
+      ).unwrap();
       expect(bh.blockNum).toBe(Header.BLOCKS_PER_ADJUSTMENT);
       expect(Buffer.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",

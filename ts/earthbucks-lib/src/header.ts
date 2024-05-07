@@ -166,44 +166,50 @@ export default class Header {
   static fromPrevBlockHeader(
     prevBlockHeader: Header,
     prevAdjustmentBlockHeader: Header | null,
-  ): Header {
-    let target = null;
-    const blockNum = prevBlockHeader.blockNum + 1n;
-    if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
-      if (
-        !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
-          blockNum
-      ) {
-        throw new Error(
-          "must provide previous adjustment block header 2016 blocks before",
-        );
+  ): Result<Header, string> {
+    try {
+      let target = null;
+      const blockNum = prevBlockHeader.blockNum + 1n;
+      if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
+        if (
+          !prevAdjustmentBlockHeader ||
+          prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
+            blockNum
+        ) {
+          return Err(
+            "must provide previous adjustment block header 2016 blocks before",
+          );
+        }
+        const timeDiff =
+          prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
+        const prevTarget = prevBlockHeader.target;
+        target = Header.adjustTarget(prevTarget, timeDiff);
+      } else {
+        target = prevBlockHeader.target;
       }
-      const timeDiff =
-        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
-      const prevTarget = prevBlockHeader.target;
-      target = Header.adjustTarget(prevTarget, timeDiff);
-    } else {
-      target = prevBlockHeader.target;
+      const prevBlockId = prevBlockHeader.id();
+      const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
+      const nonce = Buffer.alloc(32);
+      const workAlgo = prevBlockHeader.workAlgo;
+      const workSer = Buffer.alloc(32);
+      const workPar = Buffer.alloc(32);
+      return Ok(
+        new Header(
+          1,
+          prevBlockId,
+          Buffer.alloc(32),
+          timestamp,
+          blockNum,
+          target,
+          nonce,
+          workAlgo,
+          workSer,
+          workPar,
+        ),
+      );
+    } catch (err) {
+      return Err(err?.toString() || "Unknown error creating block header");
     }
-    const prevBlockId = prevBlockHeader.id();
-    const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = Buffer.alloc(32);
-    const workAlgo = prevBlockHeader.workAlgo;
-    const workSer = Buffer.alloc(32);
-    const workPar = Buffer.alloc(32);
-    return new Header(
-      1,
-      prevBlockId,
-      Buffer.alloc(32),
-      timestamp,
-      blockNum,
-      target,
-      nonce,
-      workAlgo,
-      workSer,
-      workPar,
-    );
   }
 
   static isValidVersion(version: number): boolean {

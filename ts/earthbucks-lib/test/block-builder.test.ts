@@ -67,7 +67,7 @@ describe("BlockBuilder", () => {
       null,
       outputScript,
       outputAmount,
-    );
+    ).unwrap();
     expect(bb.header.version).toBe(1);
     expect(bb.header.prevBlockId).toEqual(prevBlockHeader.id());
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
