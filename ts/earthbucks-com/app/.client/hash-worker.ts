@@ -23,7 +23,7 @@ self.onmessage = async (event) => {
       console.log("Worker received hash request");
       let { buf } = event.data.buf;
       let resHash = myBlake3Hash(buf);
-      console.log('worker: ' + resHash.toString("hex"));
+      console.log("worker: " + resHash.toString("hex"));
       self.postMessage({ type: "result", data: resHash });
       break;
     default:

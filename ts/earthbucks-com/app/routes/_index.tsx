@@ -15,14 +15,14 @@ export default function Index() {
         <div className="mx-auto">
           <div className="inline-block align-middle">
             <Logo />
-            <div className="hidden dark:block my-4">
+            <div className="my-4 hidden dark:block">
               <img
                 src="/earthbucks-text-white.png"
                 alt="EarthBucks"
                 className="mx-auto block h-[50px]"
               />
             </div>
-            <div className="block dark:hidden my-4">
+            <div className="my-4 block dark:hidden">
               <img
                 src="/earthbucks-text-black.png"
                 alt="EarthBucks"
