@@ -53,9 +53,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ blogPost });
 }
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const blogPost = data?.blogPost as BlogPost;
   return [
-    { title: "Blog | EarthBucks" },
+    { title: `${blogPost.title} | Blog | EarthBucks` },
     { name: "description", content: "Welcome to EarthBucks!" },
   ];
 };
