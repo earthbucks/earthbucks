@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 import Logo from "~/components/logo";
 
 export const meta: MetaFunction = () => {
@@ -36,6 +37,10 @@ export default function Index() {
               July 2024.
               <br />
               <br />
+              <Link to="/blog" className="underline">
+                Blog
+              </Link>{" "}
+              &middot;{" "}
               <a
                 href="https://t.me/+e-PoBNNgdDU3MDUx"
                 target="_blank"

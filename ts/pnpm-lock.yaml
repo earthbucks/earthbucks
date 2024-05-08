@@ -98,6 +98,9 @@ importers:
       react-markdown:
         specifier: ^9.0.1
         version: 9.0.1(@types/react@18.2.79)(react@18.2.0)
+      remix-routes:
+        specifier: ^1.7.3
+        version: 1.7.3
       toml:
         specifier: ^3.0.0
         version: 3.0.0

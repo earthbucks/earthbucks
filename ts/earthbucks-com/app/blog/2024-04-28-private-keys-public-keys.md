@@ -5,7 +5,7 @@ date = "2024-04-28"
 +++
 
 There is no such thing as an "address" in EarthBucks. One of the big differences
-between Bitcoin and EarthBuck is that there is no such thing as "pay to address"
+between Bitcoin and EarthBucks is that there is no such thing as "pay to address"
 in the sense of Bitcoin. Instead of an address consisting of a string of random
 characters, an address is a human-readable email address. This "email address",
 or "EBX address", includes a name so that the user is recognizable to whoever is

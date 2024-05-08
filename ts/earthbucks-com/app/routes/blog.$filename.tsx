@@ -5,12 +5,14 @@ import {
 } from "@remix-run/node";
 import Logo from "~/components/logo";
 import blogPosts from "~/blog/index.json";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import MyMarkdown from "~/components/MyMarkdown";
+import { $path } from "remix-routes";
+import Footer from "~/components/footer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -68,7 +70,7 @@ export default function BlogIndex() {
       <div className="mx-auto my-4">
         <Logo />
       </div>
-      <div className="mx-auto my-4 max-w-[400px]">
+      <div className="mx-auto my-4 max-w-[500px]">
         <div>
           <h1 className="my-4 text-center text-2xl font-bold text-black dark:text-white">
             {blogPost.title}
@@ -81,6 +83,14 @@ export default function BlogIndex() {
           </div>
         </div>
       </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <div className="text-center text-black dark:text-white">
+        <Link className="text-lg font-bold underline" to={$path("/blog")}>
+          Back to Blog
+        </Link>
+      </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <Footer />
     </div>
   );
 }

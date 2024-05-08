@@ -5,7 +5,9 @@ import {
 } from "@remix-run/node";
 import Logo from "~/components/logo";
 import blogPosts from "~/blog/index.json";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
+import Footer from "~/components/footer";
+import { $path } from "remix-routes";
 
 interface BlogPost {
   title: string;
@@ -68,6 +70,14 @@ export default function BlogIndex() {
           </div>
         </div>
       </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <div className="text-center text-black dark:text-white">
+        <Link className="text-lg font-bold underline" to={$path("/")}>
+          Back to Home
+        </Link>
+      </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <Footer />
     </div>
   );
 }
