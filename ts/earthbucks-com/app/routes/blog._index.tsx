@@ -14,6 +14,7 @@ interface BlogPost {
   date: string;
   author: string;
   filename: string;
+  content: string;
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -24,6 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         date: post.date,
         author: post.author,
         filename: post.filename,
+        content: "",
       };
     })
     .sort((a, b) => a.date.localeCompare(b.date))

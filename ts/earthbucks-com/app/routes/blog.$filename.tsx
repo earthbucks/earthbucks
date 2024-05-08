@@ -6,16 +6,9 @@ import {
 import Logo from "~/components/logo";
 import blogPosts from "~/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import MyMarkdown from "~/components/MyMarkdown";
 import { $path } from "remix-routes";
 import Footer from "~/components/footer";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 interface BlogPost {
   title: string;
@@ -34,22 +27,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         date: post.date,
         author: post.author,
         filename: post.filename,
-        content: "",
+        content: post.content,
       };
     })
     .sort((a, b) => a.date.localeCompare(b.date))
     .reverse();
 
   const blogPost = newBlogPosts.find((post) => post.filename === `${filename}`);
-  if (!blogPost) {
-    throw new Response("Not found", { status: 404 });
-  }
-
-  const blogDir = path.join(__dirname, "..", "blog");
-  const filePath = path.join(blogDir, `${filename}`);
-  const fileContent = fs.readFileSync(filePath, "utf8");
-  const content = fileContent.split("+++")[2]?.trim() || "";
-  blogPost.content = content;
 
   return json({ blogPost });
 }
@@ -64,7 +48,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function BlogIndex() {
   let loaderData = useLoaderData<typeof loader>();
-  let blogPost = loaderData.blogPost;
+  let blogPost = loaderData.blogPost as BlogPost;
   return (
     <div>
       <div className="mx-auto my-4">

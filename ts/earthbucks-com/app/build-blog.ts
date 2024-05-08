@@ -12,7 +12,7 @@ interface BlogPost {
   title: string;
   author: string;
   date: string;
-  //content: string;
+  content: string;
   filename: string;
 }
 
@@ -31,14 +31,14 @@ const blogPosts: BlogPost[] = filenames.map((filename) => {
   const frontmatterDelimiter = "+++";
   const splitContent = fileContent.split(frontmatterDelimiter);
   const frontmatter = toml.parse(splitContent[1] as string);
-  //const content = splitContent.slice(2).join(frontmatterDelimiter).trim();
+  const content = splitContent.slice(2).join(frontmatterDelimiter).trim();
 
   return {
     filename,
     title: frontmatter.title as string,
     author: frontmatter.author as string,
     date: frontmatter.date as string,
-    //content,
+    content,
   };
 });
 
