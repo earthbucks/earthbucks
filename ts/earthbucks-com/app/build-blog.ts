@@ -17,7 +17,7 @@ interface BlogPost {
 }
 
 // Get all markdown files in the docs/blog directory
-const blogDir = path.join(__dirname, "..", "..", "..", "docs", "blog");
+const blogDir = path.join(__dirname, "blog");
 const filenames = fs
   .readdirSync(blogDir)
   .filter((filename) => filename.endsWith(".md"));
@@ -43,4 +43,5 @@ const blogPosts: BlogPost[] = filenames.map((filename) => {
 });
 
 // Write the blogPosts array to a JSON file
-fs.writeFileSync("app/blog-posts.json", JSON.stringify(blogPosts, null, 2));
+const jsonPath = path.join(__dirname, "blog", "index.json");
+fs.writeFileSync(jsonPath, JSON.stringify(blogPosts, null, 2));

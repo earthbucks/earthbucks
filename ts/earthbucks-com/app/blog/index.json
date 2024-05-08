@@ -1,0 +1,152 @@
+[
+  {
+    "filename": "2024-03-25-introduction.md",
+    "title": "Introduction",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-25"
+  },
+  {
+    "filename": "2024-03-26-one-gpu-one-vote.md",
+    "title": "One-GPU-one-vote",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-26"
+  },
+  {
+    "filename": "2024-03-28-blake-3-and-big-endian.md",
+    "title": "Blake3 and Big Endian",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-28"
+  },
+  {
+    "filename": "2024-03-29-var-ints-script-and-names.md",
+    "title": "Var Ints, Script, and Names",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-29"
+  },
+  {
+    "filename": "2024-03-30-data-structures.md",
+    "title": "Data Structures",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-30"
+  },
+  {
+    "filename": "2024-03-30-why-we-need-another-blockchain.md",
+    "title": "Why We Need Another Blockchain",
+    "author": "Ryan X. Charles",
+    "date": "2024-03-30"
+  },
+  {
+    "filename": "2024-04-01-script-num-etc.md",
+    "title": "ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-01"
+  },
+  {
+    "filename": "2024-04-04-checksig-etc.md",
+    "title": "CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-04"
+  },
+  {
+    "filename": "2024-04-05-thoughts-on-decentralization.md",
+    "title": "Thoughts on Decentralization",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-05"
+  },
+  {
+    "filename": "2024-04-05-thoughts-on-fees.md",
+    "title": "Thoughts on Fees",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-05"
+  },
+  {
+    "filename": "2024-04-05-verifying-transactions.md",
+    "title": "Verifying Transactions and Input/Output Equality",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-05"
+  },
+  {
+    "filename": "2024-04-09-merkle-proofs.md",
+    "title": "Merkle Proofs and Blocks",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-09"
+  },
+  {
+    "filename": "2024-04-10-library-prototoype-etc.md",
+    "title": "Library Prototype and Software Architecture Plan",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-10"
+  },
+  {
+    "filename": "2024-04-13-building-the-full-node.md",
+    "title": "Building the Full Node",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-13"
+  },
+  {
+    "filename": "2024-04-15-database-architecture.md",
+    "title": "Database Architecture",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-15"
+  },
+  {
+    "filename": "2024-04-17-incentivizing-accurate-timestamps.md",
+    "title": "Incentivizing Accurate Timestamps with Continuous Target Adjustment",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-17"
+  },
+  {
+    "filename": "2024-04-18-preventing-reorgs-with-a-vote.md",
+    "title": "Preventing Reorgs with a Vote on Blocks and Transactions",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-18"
+  },
+  {
+    "filename": "2024-04-21-network-structure.md",
+    "title": "Network Structure, Domain Names, and Email Addresses",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-21"
+  },
+  {
+    "filename": "2024-04-25-a-pow-algo-for-gpus.md",
+    "title": "A Proof-of-Work Algorithm for GPUs",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-25"
+  },
+  {
+    "filename": "2024-04-26-questions-about-forks-and-reorgs.md",
+    "title": "Questions about Forks and Reorgs",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-26"
+  },
+  {
+    "filename": "2024-04-27-more-thoughts-on-network.md",
+    "title": "More Thoughts on Network Architecture",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-27"
+  },
+  {
+    "filename": "2024-04-28-private-keys-public-keys.md",
+    "title": "Private Keys, Public Keys, and Public Key Hashes",
+    "author": "Ryan X. Charles",
+    "date": "2024-04-28"
+  },
+  {
+    "filename": "2024-05-01-client-side-key-management.md",
+    "title": "Client-Side Key Management",
+    "author": "Ryan X. Charles",
+    "date": "2024-05-01"
+  },
+  {
+    "filename": "2024-05-05-signing-in-and-rpc.md",
+    "title": "Signing In with a Key and the RPC API",
+    "author": "Ryan X. Charles",
+    "date": "2024-05-05"
+  },
+  {
+    "filename": "2024-05-08-42-million.md",
+    "title": "42 Million EarthBucks",
+    "author": "Ryan X. Charles",
+    "date": "2024-05-08"
+  }
+]

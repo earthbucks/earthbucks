@@ -3,6 +3,7 @@ title = "Preventing Reorgs with a Vote on Blocks and Transactions"
 author = "Ryan X. Charles"
 date = "2024-04-18"
 +++
+
 Like Bitcoin, EarthBucks mines will validate each transaction and each block.
 But unlike Bitcoin, each block also includes a domain name where the mine can
 be reached. This domain name can be validated to be correct by asking that
