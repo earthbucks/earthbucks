@@ -243,7 +243,7 @@ function Slider({
               style={{
                 animation:
                   buttonX === 0 && sliderState !== "disabled"
-                    ? "manyButtonBounce 1s infinite"
+                    ? "buttonBounce 1s infinite"
                     : undefined,
                 transform: `translateX(${buttonX}px)`, // Use translateX to move the button along X-axis
                 cursor:

@@ -54,7 +54,7 @@ export default function BlogIndex() {
               {blogPosts.map((post) => (
                 <div key={post.filename} className="mb-4">
                   <a
-                    href={`/blog/${post.filename.replace(".md", "")}`}
+                    href={`/blog/${post.filename}`}
                     className="text-lg font-semibold leading-3 underline"
                   >
                     {post.title}

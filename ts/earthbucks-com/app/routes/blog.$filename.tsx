@@ -10,6 +10,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import MyMarkdown from "~/components/MyMarkdown";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,15 +38,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     .sort((a, b) => a.date.localeCompare(b.date))
     .reverse();
 
-  const blogPost = newBlogPosts.find(
-    (post) => post.filename === `${filename}.md`,
-  );
+  const blogPost = newBlogPosts.find((post) => post.filename === `${filename}`);
   if (!blogPost) {
     throw new Response("Not found", { status: 404 });
   }
 
   const blogDir = path.join(__dirname, "..", "blog");
-  const filePath = path.join(blogDir, `${filename}.md`);
+  const filePath = path.join(blogDir, `${filename}`);
   const fileContent = fs.readFileSync(filePath, "utf8");
   const content = fileContent.split("+++")[2]?.trim() || "";
   blogPost.content = content;
@@ -77,7 +76,9 @@ export default function BlogIndex() {
           <div className="my-4 text-center text-sm text-gray-600 dark:text-gray-400">
             {blogPost.date} &middot; {blogPost.author}
           </div>
-          <div className="text-black dark:text-white">{blogPost.content}</div>
+          <div className="text-black dark:text-white">
+            <MyMarkdown>{blogPost.content}</MyMarkdown>
+          </div>
         </div>
       </div>
     </div>
