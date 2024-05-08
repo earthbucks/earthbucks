@@ -4,8 +4,6 @@ export default function Footer() {
       <div className="mx-auto">
         <div className="inline-block align-middle">
           <div className="text-center text-sm text-black dark:text-white">
-            Virginia, USA, North American Sextant
-            <br />
             Copyright &copy; 2024 Ryan X. Charles LLC
           </div>
         </div>
