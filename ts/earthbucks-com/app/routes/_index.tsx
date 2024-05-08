@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
+import Footer from "~/components/footer";
 import Logo from "~/components/logo";
 
 export const meta: MetaFunction = () => {
@@ -76,6 +77,8 @@ export default function Index() {
           </div>
         </div>
       </div>
+      <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
+      <Footer />
     </div>
   );
 }
