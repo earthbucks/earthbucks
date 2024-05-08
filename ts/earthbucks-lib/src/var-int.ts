@@ -1,7 +1,7 @@
 import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class VarInt {
   private buf: Buffer;
@@ -43,10 +43,10 @@ export default class VarInt {
   static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
     let res = br.readVarIntBuf();
     if (res.err) {
-      return Err(res.val);
+      return new Err(res.val);
     }
     const buf = res.unwrap();
-    return Ok(new VarInt(buf));
+    return new Ok(new VarInt(buf));
   }
 
   isMinimal() {

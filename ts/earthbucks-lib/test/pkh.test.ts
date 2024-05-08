@@ -5,7 +5,6 @@ import path from "path";
 import Pkh from "../src/pkh";
 import { Buffer } from "buffer";
 import PubKey from "../src/pub-key";
-import { Ok } from "ts-results";
 
 describe("Pkh", () => {
   test("Pkh", () => {

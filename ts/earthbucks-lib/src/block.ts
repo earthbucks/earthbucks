@@ -3,7 +3,7 @@ import Tx from "./tx";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class Block {
   public header: Header;
@@ -32,9 +32,9 @@ export default class Block {
         txs.push(tx);
       }
 
-      return Ok(new Block(header, txs));
+      return new Ok(new Block(header, txs));
     } catch (err) {
-      return Err(err?.toString() || "Unknown error parsing block");
+      return new Err(err?.toString() || "Unknown error parsing block");
     }
   }
 

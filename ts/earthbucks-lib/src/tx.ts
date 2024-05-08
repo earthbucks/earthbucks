@@ -9,7 +9,7 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import TxSignature from "./tx-signature";
 import Script from "./script";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 import IsoHex from "./iso-hex";
 
 export class HashCache {
@@ -54,9 +54,9 @@ export default class Tx {
         outputs.push(TxOutput.fromIsoBufReader(reader));
       }
       const lockNum = reader.readUInt64BE().unwrap();
-      return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
+      return new Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
     } catch (err) {
-      return Err(err?.toString() || "Unknown error parsing tx");
+      return new Err(err?.toString() || "Unknown error parsing tx");
     }
   }
 
@@ -86,7 +86,7 @@ export default class Tx {
         .unwrap();
       return Tx.fromIsoBuf(buf);
     } catch (err) {
-      return Err(err?.toString() || "Unknown error parsing hex tx");
+      return new Err(err?.toString() || "Unknown error parsing hex tx");
     }
   }
 

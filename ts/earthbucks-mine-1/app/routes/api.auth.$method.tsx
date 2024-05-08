@@ -85,7 +85,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         }
         let userPubKey: PubKey;
         try {
-          userPubKey = PubKey.fromIsoBuf(signinResponse.signedMessage.pubKey);
+          userPubKey = PubKey.fromIsoBuf(signinResponse.signedMessage.pubKey).unwrap();
         } catch (err) {
           throw new Response("Invalid user public key", { status: 400 });
         }
@@ -172,8 +172,11 @@ export async function signin(
   }
   {
     // verify signin challenge
-    let signinChallenge = SigninChallenge.fromIsoHex(signinChallengeHex, DOMAIN);
-    let DOMAIN_PUB_KEY = PubKey.fromIsoStr(DOMAIN_PUB_KEY_STR);
+    let signinChallenge = SigninChallenge.fromIsoHex(
+      signinChallengeHex,
+      DOMAIN,
+    );
+    let DOMAIN_PUB_KEY = PubKey.fromIsoStr(DOMAIN_PUB_KEY_STR).unwrap();
     let isValidChallenge = signinChallenge.isValid(DOMAIN_PUB_KEY, DOMAIN);
     if (!isValidChallenge) {
       throw new Error("Invalid signin challenge");

@@ -3,7 +3,7 @@ import IsoHex from "./iso-hex";
 import bs58 from "bs58";
 import PrivKey from "./priv-key";
 import { blake3Hash } from "./blake3";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class PubKey {
   buf: Buffer;
@@ -18,9 +18,9 @@ export default class PubKey {
 
   static fromIsoBuf(buf: Buffer): Result<PubKey, string> {
     if (buf.length !== 33) {
-      return Err("Invalid public key length");
+      return new Err("Invalid public key length");
     }
-    return Ok(new PubKey(buf));
+    return new Ok(new PubKey(buf));
   }
 
   toIsoBuf(): Buffer {
@@ -34,7 +34,7 @@ export default class PubKey {
   static fromIsoHex(hex: string): Result<PubKey, string> {
     let res = IsoHex.decode(hex);
     if (res.err) {
-      return Err(res.val);
+      return new Err(res.val);
     }
     const buf = res.unwrap();
     return PubKey.fromIsoBuf(buf);
@@ -49,24 +49,24 @@ export default class PubKey {
 
   static fromIsoStr(str: string): Result<PubKey, string> {
     if (!str.startsWith("ebxpub")) {
-      return Err("Invalid public key format");
+      return new Err("Invalid public key format");
     }
     let checkHex = str.slice(6, 14);
     let res = IsoHex.decode(checkHex);
     if (res.err) {
-      return Err(res.val);
+      return new Err(res.val);
     }
     let checkBuf = res.unwrap();
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return Err("Invalid base58 encoding");
+      return new Err("Invalid base58 encoding");
     }
     let checkHash = blake3Hash(decoded);
     let checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
-      return Err("Invalid checksum");
+      return new Err("Invalid checksum");
     }
     return PubKey.fromIsoBuf(decoded);
   }

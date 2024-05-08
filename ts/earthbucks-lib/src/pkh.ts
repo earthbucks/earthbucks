@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import bs58 from "bs58";
 import IsoHex from "./iso-hex";
 import PubKey from "./pub-key";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 // public key hash
 export default class Pkh {
@@ -24,9 +24,9 @@ export default class Pkh {
 
   static fromIsoBuf(buf: Buffer): Result<Pkh, string> {
     if (buf.length !== 32) {
-      return Err("Invalid public key hash length");
+      return new Err("Invalid public key hash length");
     }
-    return Ok(new Pkh(buf));
+    return new Ok(new Pkh(buf));
   }
 
   toIsoStr(): string {
@@ -37,7 +37,7 @@ export default class Pkh {
 
   static fromIsoStr(pkhStr: string): Result<Pkh, string> {
     if (!pkhStr.startsWith("ebxpkh")) {
-      return Err("Invalid pkh format");
+      return new Err("Invalid pkh format");
     }
     let checkHex = pkhStr.slice(6, 14);
     let checkBuf = IsoHex.decode(checkHex).unwrap();
@@ -45,7 +45,7 @@ export default class Pkh {
     let hashBuf = blake3Hash(buf);
     let checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {
-      return Err("Invalid pkh checksum");
+      return new Err("Invalid pkh checksum");
     }
     return Pkh.fromIsoBuf(buf);
   }

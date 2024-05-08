@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Err, Ok, Result } from "ts-results";
+import { Err, Ok, Result } from "./ts-results/result";
 
 export default class IsoBufReader {
   buf: Buffer;
@@ -16,13 +16,13 @@ export default class IsoBufReader {
 
   readBuffer(len: number): Result<Buffer, string> {
     if (this.pos + len > this.buf.length) {
-      return Err("readBuffer: Not enough bytes left in the buffer to read");
+      return new Err("readBuffer: Not enough bytes left in the buffer to read");
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = Buffer.alloc(len);
     newBuf.set(buf);
     this.pos += len;
-    return Ok(newBuf);
+    return new Ok(newBuf);
   }
 
   readRemainder(): Result<Buffer, string> {
@@ -31,61 +31,69 @@ export default class IsoBufReader {
 
   readUInt8(): Result<number, string> {
     if (this.pos + 1 > this.buf.length) {
-      return Err("readUint8: Not enough bytes left in the buffer to read");
+      return new Err("readUint8: Not enough bytes left in the buffer to read");
     }
     const val = this.buf.readUInt8(this.pos);
     this.pos += 1;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readInt8(): Result<number, string> {
     if (this.pos + 1 > this.buf.length) {
-      return Err("readInt8: Not enough bytes left in the buffer to read");
+      return new Err("readInt8: Not enough bytes left in the buffer to read");
     }
     const val = this.buf.readInt8(this.pos);
     this.pos += 1;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readUInt16BE(): Result<number, string> {
     if (this.pos + 2 > this.buf.length) {
-      return Err("readUInt16BE: Not enough bytes left in the buffer to read");
+      return new Err(
+        "readUInt16BE: Not enough bytes left in the buffer to read",
+      );
     }
     const val = this.buf.readUInt16BE(this.pos);
     this.pos += 2;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readInt16BE(): Result<number, string> {
     if (this.pos + 2 > this.buf.length) {
-      return Err("readInt16BE: Not enough bytes left in the buffer to read");
+      return new Err(
+        "readInt16BE: Not enough bytes left in the buffer to read",
+      );
     }
     const val = this.buf.readInt16BE(this.pos);
     this.pos += 2;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readUInt32BE(): Result<number, string> {
     if (this.pos + 4 > this.buf.length) {
-      return Err("readUInt32BE: Not enough bytes left in the buffer to read");
+      return new Err(
+        "readUInt32BE: Not enough bytes left in the buffer to read",
+      );
     }
     const val = this.buf.readUInt32BE(this.pos);
     this.pos += 4;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readInt32BE(): Result<number, string> {
     if (this.pos + 4 > this.buf.length) {
-      return Err("readInt32BE: Not enough bytes left in the buffer to read");
+      return new Err(
+        "readInt32BE: Not enough bytes left in the buffer to read",
+      );
     }
     const val = this.buf.readInt32BE(this.pos);
     this.pos += 4;
-    return Ok(val);
+    return new Ok(val);
   }
 
   readUInt64BE(): Result<bigint, string> {
     if (this.pos + 8 > this.buf.length) {
-      return Err(
+      return new Err(
         "readUInt64BEBigInt: Not enough bytes left in the buffer to read",
       );
     }
@@ -93,12 +101,14 @@ export default class IsoBufReader {
     const low = this.buf.readUInt32BE(this.pos + 4);
     const bn = BigInt(high) * BigInt(0x100000000) + BigInt(low);
     this.pos += 8;
-    return Ok(bn);
+    return new Ok(bn);
   }
 
   readVarIntBuf(): Result<Buffer, string> {
     if (this.eof()) {
-      return Err("readVarIntBuf: Not enough bytes left in the buffer to read");
+      return new Err(
+        "readVarIntBuf: Not enough bytes left in the buffer to read",
+      );
     }
     const first = this.buf.readUInt8(this.pos);
     if (first === 0xfd) {
@@ -108,9 +118,9 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(1) < 0xfd) {
-        return Err("Non-minimal varint encoding 1");
+        return new Err("Non-minimal varint encoding 1");
       }
-      return Ok(buf);
+      return new Ok(buf);
     } else if (first === 0xfe) {
       const res = this.readBuffer(1 + 4);
       if (res.err) {
@@ -118,9 +128,9 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(1) < 0x10000) {
-        return Err("Non-minimal varint encoding 2");
+        return new Err("Non-minimal varint encoding 2");
       }
-      return Ok(buf);
+      return new Ok(buf);
     } else if (first === 0xff) {
       const res = this.readBuffer(1 + 8);
       if (res.err) {
@@ -130,9 +140,9 @@ export default class IsoBufReader {
       const high = buf.readUInt32BE(1);
       const low = buf.readUInt32BE(5);
       if (high === 0 && low < 0x100000000) {
-        return Err("Non-minimal varint encoding 3");
+        return new Err("Non-minimal varint encoding 3");
       }
-      return Ok(buf);
+      return new Ok(buf);
     } else {
       return this.readBuffer(1);
     }
@@ -162,7 +172,7 @@ export default class IsoBufReader {
         value = BigInt(first);
         break;
     }
-    return Ok(value);
+    return new Ok(value);
   }
 
   readVarIntNum(): Result<number, string> {
@@ -185,7 +195,9 @@ export default class IsoBufReader {
         const low = buf.readUInt32BE(5);
         const bigValue = BigInt(high) * BigInt(0x100000000) + BigInt(low);
         if (bigValue > BigInt(Number.MAX_SAFE_INTEGER)) {
-          return Err("Number too large to retain precision - use readVarInt");
+          return new Err(
+            "Number too large to retain precision - use readVarInt",
+          );
         }
         value = Number(bigValue);
         break;
@@ -193,6 +205,6 @@ export default class IsoBufReader {
         value = first;
         break;
     }
-    return Ok(value);
+    return new Ok(value);
   }
 }

@@ -1,7 +1,7 @@
 import PrivKey from "./priv-key";
 import PubKey from "./pub-key";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class KeyPair {
   privKey: PrivKey;
@@ -24,9 +24,9 @@ export default class KeyPair {
         .unwrap();
 
       let pubKey = PubKey.fromPrivKey(privKey);
-      return Ok(new KeyPair(privKey, pubKey));
+      return new Ok(new KeyPair(privKey, pubKey));
     } catch (err) {
-      return Err(err?.toString() || "Unknown error creating key pair");
+      return new Err(err?.toString() || "Unknown error creating key pair");
     }
   }
 

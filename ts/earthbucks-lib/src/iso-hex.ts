@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export function isValid(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
@@ -11,10 +11,10 @@ export function encode(buffer: Buffer): string {
 
 export function decode(hex: string): Result<Buffer, string> {
   if (!isValid(hex)) {
-    return Err("Invalid hex string");
+    return new Err("Invalid hex string");
   }
   const buffer = Buffer.from(hex, "hex");
-  return Ok(buffer);
+  return new Ok(buffer);
 }
 
 let IsoHex = { encode, decode, isValid };

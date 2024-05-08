@@ -2,7 +2,7 @@ import { doubleBlake3Hash } from "./blake3";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class MerkleProof {
   public root: Buffer;
@@ -31,12 +31,12 @@ export default class MerkleProof {
     hashedDatas: Buffer[],
   ): Result<[Buffer, MerkleProof[]], string> {
     if (hashedDatas.length === 0) {
-      return Err("Cannot create Merkle tree from empty array");
+      return new Err("Cannot create Merkle tree from empty array");
     }
     if (hashedDatas.length === 1) {
       const root = hashedDatas[0];
       const proof = new MerkleProof(root, []);
-      return Ok([root, [proof]]);
+      return new Ok([root, [proof]]);
     }
     if (hashedDatas.length === 2) {
       const root = doubleBlake3Hash(
@@ -46,7 +46,7 @@ export default class MerkleProof {
         new MerkleProof(root, [[hashedDatas[1], true]]),
         new MerkleProof(root, [[hashedDatas[0], false]]),
       ];
-      return Ok([root, proofs]);
+      return new Ok([root, proofs]);
     }
     // Make sure the number of elements is a power of two
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
@@ -67,7 +67,7 @@ export default class MerkleProof {
         (proof) => new MerkleProof(root, [[leftRoot, false], ...proof.proof]),
       ),
     ];
-    return Ok([root, proofs]);
+    return new Ok([root, proofs]);
   }
 
   toIsoBuf() {

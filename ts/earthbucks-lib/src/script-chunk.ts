@@ -1,7 +1,7 @@
 import { OPCODE_TO_NAME, OP, OpcodeName } from "./opcode";
 import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class ScriptChunk {
   opcode: number;
@@ -14,13 +14,13 @@ export default class ScriptChunk {
 
   toIsoStr(): Result<string, string> {
     if (this.buf) {
-      return Ok(`0x${this.buf.toString("hex")}`);
+      return new Ok(`0x${this.buf.toString("hex")}`);
     } else {
       const name = OPCODE_TO_NAME[this.opcode];
       if (name !== undefined) {
-        return Ok(name);
+        return new Ok(name);
       } else {
-        return Err("invalid opcode");
+        return new Err("invalid opcode");
       }
     }
   }
@@ -40,7 +40,7 @@ export default class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        return Err("too much data");
+        return new Err("too much data");
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -50,12 +50,12 @@ export default class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        return Err("invalid opcode");
+        return new Err("invalid opcode");
       }
 
       scriptChunk.buf = undefined;
     }
-    return Ok(scriptChunk);
+    return new Ok(scriptChunk);
   }
 
   toIsoBuf(): Buffer {
@@ -88,21 +88,21 @@ export default class ScriptChunk {
     if (opcode === OP.PUSHDATA1) {
       const len = buf[1];
       if (buf.byteLength < len + 2) {
-        return Err("Buffer length is other than expected");
+        return new Err("Buffer length is other than expected");
       }
       scriptChunk.opcode = opcode;
       scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 2, len);
     } else if (opcode === OP.PUSHDATA2) {
       const len = buf.readUInt16BE(1);
       if (buf.byteLength < len + 3) {
-        return Err("Buffer length is other than expected");
+        return new Err("Buffer length is other than expected");
       }
       scriptChunk.opcode = opcode;
       scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 3, len);
     } else if (opcode === OP.PUSHDATA4) {
       const len = buf.readUInt32BE(1);
       if (buf.byteLength < len + 5) {
-        return Err("Buffer length is other than expected");
+        return new Err("Buffer length is other than expected");
       }
       scriptChunk.opcode = opcode;
       scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 5, len);
@@ -110,7 +110,7 @@ export default class ScriptChunk {
       scriptChunk.opcode = opcode;
       scriptChunk.buf = undefined;
     }
-    return Ok(scriptChunk);
+    return new Ok(scriptChunk);
   }
 
   static fromData(data: Buffer): ScriptChunk {

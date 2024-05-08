@@ -21,7 +21,11 @@ export default function Buttons() {
         <Button initialText="EarthBucks" mode="pay" delayComputedMs={200} />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Computcha" mode="computcha" delayComputedMs={200} />
+        <Button
+          initialText="Computcha"
+          mode="computcha"
+          delayComputedMs={200}
+        />
       </div>
       <div className="mx-auto my-4 w-[320px]">
         <Button initialText="Computcha" mode="mine" delayComputedMs={200} />
@@ -30,7 +34,11 @@ export default function Buttons() {
         <Button initialText="Compusecret" mode="secret" delayComputedMs={200} />
       </div>
       <div className="mx-auto my-4 w-[320px]">
-        <Button initialText="Compucredits" mode="credits" delayComputedMs={200} />
+        <Button
+          initialText="Compucredits"
+          mode="credits"
+          delayComputedMs={200}
+        />
       </div>
       <div className="mx-auto my-4 w-[320px]">
         <Button initialText="Artintellica" mode="ai" delayComputedMs={200} />

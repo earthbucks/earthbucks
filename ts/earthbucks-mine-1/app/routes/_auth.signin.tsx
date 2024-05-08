@@ -64,7 +64,7 @@ export default function Signin() {
     if (!isValidStrFmt) {
       return false;
     }
-    let privKey = PrivKey.fromIsoStr(keyStr);
+    let privKey = PrivKey.fromIsoStr(keyStr).unwrap();
     let pubKey = PubKey.fromPrivKey(privKey);
     return pubKey.toIsoStr() === publicKey;
   };
@@ -92,7 +92,7 @@ export default function Signin() {
       let res = await signin(
         DOMAIN,
         DOMAIN_PUB_KEY_STR,
-        PrivKey.fromIsoStr(privateKey),
+        PrivKey.fromIsoStr(privateKey).unwrap(),
       );
       if (res) {
         window.location.href = $path("/home");

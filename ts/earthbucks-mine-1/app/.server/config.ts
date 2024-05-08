@@ -8,20 +8,20 @@ const DOMAIN: string = process.env.DOMAIN || "";
 let DOMAIN_PRIV_KEY: PrivKey;
 let DOMAIN_PUB_KEY: PubKey;
 try {
-  DOMAIN_PRIV_KEY = PrivKey.fromIsoStr(DOMAIN_PRIV_KEY_STR);
+  DOMAIN_PRIV_KEY = PrivKey.fromIsoStr(DOMAIN_PRIV_KEY_STR).unwrap();
   DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
 } catch (err) {
   console.error(err);
-  throw new Error("Invalid AUTH_PERMISSION_PRIV_KEY");
+  throw new Error("Invalid DOMAIN_PRIV_KEY");
 }
 
 {
   let domainIsValid = Domain.isValidDomain(DOMAIN);
   if (!domainIsValid) {
-    throw new Error("Invalid AUTH_DOMAIN_NAME");
+    throw new Error("Invalid DOMAIN_NAME");
   }
 }
 
-const DOMAIN_PUB_KEY_STR = DOMAIN_PUB_KEY.toIsoStr();
+const DOMAIN_PUB_KEY_STR: string = DOMAIN_PUB_KEY.toIsoStr();
 
 export { DOMAIN, DOMAIN_PRIV_KEY, DOMAIN_PUB_KEY, DOMAIN_PUB_KEY_STR };

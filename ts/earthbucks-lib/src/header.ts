@@ -2,7 +2,7 @@ import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
@@ -106,7 +106,7 @@ export default class Header {
         .readBuffer(32)
         .mapErr((err) => `Could not read parallel work: ${err}`)
         .unwrap();
-      return Ok(
+      return new Ok(
         new Header(
           version,
           previousBlockHash,
@@ -121,7 +121,7 @@ export default class Header {
         ),
       );
     } catch (err) {
-      return Err(err?.toString() || "Unknown error parsing header");
+      return new Err(err?.toString() || "Unknown error parsing header");
     }
   }
 
@@ -176,7 +176,7 @@ export default class Header {
           prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
             blockNum
         ) {
-          return Err(
+          return new Err(
             "must provide previous adjustment block header 2016 blocks before",
           );
         }
@@ -193,7 +193,7 @@ export default class Header {
       const workAlgo = prevBlockHeader.workAlgo;
       const workSer = Buffer.alloc(32);
       const workPar = Buffer.alloc(32);
-      return Ok(
+      return new Ok(
         new Header(
           1,
           prevBlockId,
@@ -208,7 +208,7 @@ export default class Header {
         ),
       );
     } catch (err) {
-      return Err(err?.toString() || "Unknown error creating block header");
+      return new Err(err?.toString() || "Unknown error creating block header");
     }
   }
 

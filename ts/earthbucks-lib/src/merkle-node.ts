@@ -1,6 +1,6 @@
 import { doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class MerkleNode {
   public left: MerkleNode | null;
@@ -29,15 +29,15 @@ export default class MerkleNode {
 
   static fromIsoBufs(hashedDatas: Buffer[]): Result<MerkleNode, string> {
     if (hashedDatas.length === 0) {
-      return Err("Cannot create MerkleNode from empty array");
+      return new Err("Cannot create MerkleNode from empty array");
     }
     if (hashedDatas.length === 1) {
-      return Ok(new MerkleNode(null, null, hashedDatas[0]));
+      return new Ok(new MerkleNode(null, null, hashedDatas[0]));
     }
     if (hashedDatas.length === 2) {
       const left = new MerkleNode(null, null, hashedDatas[0]);
       const right = new MerkleNode(null, null, hashedDatas[1]);
-      return Ok(
+      return new Ok(
         new MerkleNode(
           left,
           right,
@@ -56,7 +56,7 @@ export default class MerkleNode {
       hashedDatas.slice(hashedDatas.length / 2),
     ).unwrap();
 
-    return Ok(
+    return new Ok(
       new MerkleNode(
         left,
         right,

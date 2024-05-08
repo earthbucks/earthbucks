@@ -6,7 +6,7 @@ import Script from "./script";
 import TxInput from "./tx-input";
 import TxOutput from "./tx-output";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-results";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class BlockBuilder {
   public header: Header;
@@ -64,9 +64,9 @@ export default class BlockBuilder {
       const merkleTxs = new MerkleTxs(txs);
       const root = merkleTxs.root;
       header.merkleRoot = root;
-      return Ok(new BlockBuilder(header, txs, merkleTxs));
+      return new Ok(new BlockBuilder(header, txs, merkleTxs));
     } catch (err) {
-      return Err(err?.toString() || "Unknown error creating block builder");
+      return new Err(err?.toString() || "Unknown error creating block builder");
     }
   }
 
