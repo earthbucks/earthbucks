@@ -1,6 +1,8 @@
-# Signing In with a Key and the RPC API
-
-May 5, 2024
++++
+title = "Signing In with a Key and the RPC API"
+author = "Ryan X. Charles"
+date = "2024-05-05"
++++
 
 I have made the sign up and sign in flow for the wallet. In order to sign in,
 the user must generate a key pair which they save in a password manager. Then
@@ -39,5 +41,3 @@ I am considering launching an "early registration" product soon, where users can
 reserve their user numbers. I would like to allow up to 100 people to mine the
 genesis block, so the order in which the user registers will govern who can mine
 the genesis block.
-
-Ryan X. Charles

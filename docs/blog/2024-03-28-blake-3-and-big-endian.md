@@ -1,6 +1,8 @@
-# Blake3 and Big Endian
-
-March 28, 2024
++++
+title = "Blake3 and Big Endian"
+author = "Ryan X. Charles"
+date = "2024-03-28"
++++
 
 I am proceeding to build the core data structers, starting with the Buffer
 Reader and Buffer Writer and core hash function.
@@ -19,5 +21,3 @@ the network.
 More changes are coming. The code is being written in Rust and TypeScript
 simultaneously to guarantee a fast node software and a toolkit for developers to
 build web apps.
-
-Ryan X. Charles

@@ -1,10 +1,12 @@
-# One-GPU-one-vote
-
-March 26, 2024
++++
+title = "One-GPU-one-vote"
+author = "Ryan X. Charles"
+date = "2024-03-26"
++++
 
 We are building new implementation of the blockchain described by Satoshi
 Nakamoto in the original Bitcoin white paper, but with some parameters adjusted
-to conditions in 2024. Please follow @earthbucks_com (http://earthbucks.com) to
+to conditions in 2024. Please follow [earthbucks.com](http://earthbucks.com) to
 stay up-to-date!
 
 Although Bitcoin (BTC) has been a remarkably successful project by many metrics,
@@ -39,7 +41,5 @@ ago, but to retain the spirit of Satoshi by doing what we believe Satoshi would
 have done in 2024.
 
 EarthBucks is only just getting started and the first code was only just
-committed. Please follow @earthbucks_com (http://earthbucks.com) to subscribe to
+committed. Please follow [earthbucks.com](http://earthbucks.com) to subscribe to
 our channels and stay up-to-date.
-
-Ryan X. Charles

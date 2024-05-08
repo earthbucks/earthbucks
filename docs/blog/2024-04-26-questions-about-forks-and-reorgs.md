@@ -1,6 +1,8 @@
-# Questions about Forks and Reorgs
-
-April 26, 2024
++++
+title = "Questions about Forks and Reorgs"
+author = "Ryan X. Charles"
+date = "2024-04-26"
++++
 
 Q: Can EarthBucks have a reorg?
 
@@ -62,5 +64,3 @@ altchain-friendly. Any mine who disagrees with changes to the rules should be
 able to create an altchain. This is a feature, not a bug. The protocol includes
 a sighash algorithm with the most recent block ID to provide automatic replay
 protection for all forks. This makes forks safe.
-
-Ryan X. Charles

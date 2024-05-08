@@ -1,6 +1,8 @@
-# Var Ints, Script, and Names
-
-March 29, 2024
++++
+title = "Var Ints, Script, and Names"
+author = "Ryan X. Charles"
+date = "2024-03-29"
++++
 
 I am building the data structures one-by-one simultaneously in both Rust and
 TypeScript (thanks to AI, this is not as hard as it may sound). I plan to
@@ -21,5 +23,3 @@ This is the simplest naming scheme that is derived from the original Bitcoin,
 but consistent with the new project name. The ticker symbol will be SRED (one
 earthbucks). It is still possible the name of the project will change before launch
 if I can secure a more premium domain name.
-
-Ryan X. Charles

@@ -1,6 +1,8 @@
-# A Proof-of-Work Algorithm for GPUs
-
-April 25, 2024
++++
+title = "A Proof-of-Work Algorithm for GPUs"
+author = "Ryan X. Charles"
+date = "2024-04-25"
++++
 
 I have finished the first proof-of-work (PoW) algorithm for GPUs. The
 fundamental idea is to use the sort of operations that run best on a GPU, in
@@ -70,5 +72,3 @@ Either way, it is unlikely this is the optimal algorithm. Instead of pretending
 we can find one perfect algorithm before launch, we will plan to upgrade the
 algorithm periodically to continue to optimize the use of GPUs and to discourage
 the development of ASICs.
-
-Ryan X. Charles

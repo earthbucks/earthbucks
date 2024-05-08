@@ -1,6 +1,8 @@
-# Database Architecture
-
-April 15, 2024
++++
+title = "Database Architecture"
+author = "Ryan X. Charles"
+date = "2024-04-15"
++++
 
 I am using MySQL for the database. I want to be able to access the database not
 just in Rust, but also in node.js. Unfortunately, the tool I am using for MySQL
@@ -14,5 +16,3 @@ time (Bitcoin didn't reach that limit until 8 years after launch), the extra
 storage space is not a big deal. The other thing is that this data can be pruned
 eventually. We can use an object store like AWS S3 for archival data at some
 point in the future.
-
-Ryan X. Charles

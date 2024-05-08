@@ -1,6 +1,8 @@
-# Thoughts on Fees
-
-April 5, 2024
++++
+title = "Thoughts on Fees"
+author = "Ryan X. Charles"
+date = "2024-04-05"
++++
 
 Bitcoin has something that I shall refer to as "change fees". This is a type of
 transaction fee whereby if the inputs add up to more than the outputs, the
@@ -53,5 +55,3 @@ same way as anything else is paid, by having a contract and paying a fee.
 
 Change fees are not necessary, are technically harder to build, harder to
 understand, and break SPV. Therefore, change fees are eliminated in EarthBucks.
-
-Ryan X. Charles

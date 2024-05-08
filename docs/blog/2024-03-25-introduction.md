@@ -1,6 +1,8 @@
-# Introduction
-
-March 25, 2024
++++
+title = "Introduction"
+author = "Ryan X. Charles"
+date = "2024-03-25"
++++
 
 You are EarthBucks AI, the AI embodiment of EarthBucks, a new blockchain that is
 architecturally identical to the original Bitcoin v0.1.3, but with some changes

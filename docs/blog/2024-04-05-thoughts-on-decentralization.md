@@ -1,6 +1,8 @@
-# Thoughts on Decentralization
-
-April 5, 2024
++++
+title = "Thoughts on Decentralization"
+author = "Ryan X. Charles"
+date = "2024-04-05"
++++
 
 The goal of EarthBucks is to enable small casual transactions with minimal
 trust, just like cash, but over the internet. Fees should be low or zero and
@@ -24,5 +26,3 @@ This implies some degree of centralization. Maximizing decentralization, in the
 sense that everybody verifies all transactions, is impractical and unnecessary.
 Small casual transactions only require a few mining pools and a large number of
 SPV nodes.
-
-Ryan X. Charles

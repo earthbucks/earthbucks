@@ -1,6 +1,8 @@
-# Network Structure, Domain Names, and Email Addresses
-
-April 21, 2024
++++
+title = "Network Structure, Domain Names, and Email Addresses"
+author = "Ryan X. Charles"
+date = "2024-04-21"
++++
 
 EarthBucks has a radically different peer-to-peer network than Bitcoin. While
 Bitcoin used a custom protocol on port 8333, which did not include a notion of
@@ -13,13 +15,13 @@ Let's consider three examples: a mine, a wallet, and a user.
 The very first mine will be hosted at earthbucks.com. Users will be able to
 visit the website, sign up, save their master private key, and start mining, all
 from inside the browser. The user will have an address which can be their name,
-say, name@earthbucks.com, exactly like email addresses. Users can send money to
+say, name\@earthbucks.com, exactly like email addresses. Users can send money to
 each other using these addresses, exactly like email.
 
 Now consider a wallet. Wallets don't mine, but they otherwise work exactly the
 same as mines. Users can visit the website, say, ebxpay.com, sign up, and create
 a wallet. The wallet will have an address which can be their name, say,
-name@ebxpay.com. Users can send money to each other using these addresses,
+name\@ebxpay.com. Users can send money to each other using these addresses,
 exactly like email.
 
 Finally, consider an independent user. Most users will not want to bother
@@ -47,5 +49,3 @@ mines, as few as three and as numerous as 2016, will all directly connect to
 each other. Wallets will connect to mines. Users will connect to wallets. Some
 enthusiast users will run their own wallet, but by and large, mines and wallets
 are expected to be professional businesses, not enthusiasts.
-
-Ryan X. Charles

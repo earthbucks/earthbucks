@@ -1,6 +1,8 @@
-# Building the Full Node
-
-April 13, 2024
++++
+title = "Building the Full Node"
+author = "Ryan X. Charles"
+date = "2024-04-13"
++++
 
 I have started building the full node, which is actually a mining pool that
 builds blocks and must run at a particular domain name. Unlike Bitcoin, I am not
@@ -39,5 +41,3 @@ The full node, which includes the mining pool system, is necessary for launch. I
 also plan to build a light node, which monitors only the users' transactions but
 does not validate full blocks. The light node may or may not be finished by
 launch.
-
-Ryan X. Charles

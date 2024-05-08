@@ -1,6 +1,8 @@
-# Client-Side Key Management
-
-May 1, 2024
++++
+title = "Client-Side Key Management"
+author = "Ryan X. Charles"
+date = "2024-05-01"
++++
 
 It is important for security that users manage their own keys. If one or a
 handful of servers have all the keys, that creates a giant security honeypot
@@ -38,5 +40,3 @@ However, we can and will improve the user experience of managing keys over time.
 Note that, although I do not plan to launch a custodial service, custodial key
 management is, of course, also possible, which may be better for some users,
 even though it creates a honeypot for attackers.
-
-Ryan X. Charles

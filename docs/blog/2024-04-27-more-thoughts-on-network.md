@@ -1,6 +1,8 @@
-# More Thoughts on Network Architecture
-
-April 27, 2024
++++
+title = "More Thoughts on Network Architecture"
+author = "Ryan X. Charles"
+date = "2024-04-27"
++++
 
 I have put a lot of thought into how to bootstrap this network. Currently my
 plan is to start with one mining node and one wallet. I will then manually add
@@ -59,5 +61,3 @@ Part 3:
 - No KYC
 - Must agree to ToS
 - No more than 1/3 blocks
-
-Ryan X. Charles

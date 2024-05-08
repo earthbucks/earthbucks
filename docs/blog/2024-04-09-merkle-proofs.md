@@ -1,6 +1,8 @@
-### Merkle Proofs and Blocks
-
-April 9, 2024
++++
+title = "Merkle Proofs and Blocks"
+author = "Ryan X. Charles"
+date = "2024-04-09"
++++
 
 I have reimplemented Merkle trees. Next up are blocks. I have changed the block
 header in the following ways:
@@ -15,5 +17,3 @@ header in the following ways:
   mine. We should be able to change the nonce only to mine.
 - I have added the block index. This simply gives a convenient way to verify the
   block index for anyone tracking the block headers.
-
-Ryan X. Charles

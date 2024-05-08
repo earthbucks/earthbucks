@@ -1,6 +1,8 @@
-# ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions
-
-April 1, 2024
++++
+title = "ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions"
+author = "Ryan X. Charles"
+date = "2024-04-01"
++++
 
 - ScriptNum, the type of number that lives on the stack during script execution,
   now supports numbers bigger than 4 bytes and is encoded in big endian two's
@@ -16,5 +18,3 @@ April 1, 2024
   the script language. We are using Blake3 for all hashing operations.
 - I have removed CODESEPARATOR from the script language as it has almost never
   been used for anything.
-
-Ryan X. Charles

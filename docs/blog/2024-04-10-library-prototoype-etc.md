@@ -1,6 +1,8 @@
-# Library Prototype and Software Architecture Plan
-
-April 10, 2024
++++
+title = "Library Prototype and Software Architecture Plan"
+author = "Ryan X. Charles"
+date = "2024-04-10"
++++
 
 The library, which builds, signs, verifies transactions and builds blocks, and
 is simultaneously written in rust and typescript, is now finished in prototype
@@ -17,5 +19,3 @@ written in typescript. Every "full node" is actually a mining pool at a domain
 name. While the fundamental architecture of this chain is the same as the
 original Bitcoin, the p2p protocol will be completely different and based on the
 internet as it is today, not 2008.
-
-Ryan X. Charles

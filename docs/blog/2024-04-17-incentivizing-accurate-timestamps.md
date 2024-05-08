@@ -1,6 +1,8 @@
-# Incentivizing Accurate Timestamps with Continuous Target Adjustment
-
-April 17, 2024
++++
+title = "Incentivizing Accurate Timestamps with Continuous Target Adjustment"
+author = "Ryan X. Charles"
+date = "2024-04-17"
++++
 
 The target is the value in the block header that miners must find a hash below.
 In EarthBucks, the target adjusts moment by moment to keep the block time at 10
@@ -19,5 +21,3 @@ incentivize accurate timestamps. You don't want to produce a block with a future
 timestamp, because it will be ignored. Nor do you want to produce a block with
 an old timestamp, because it will be hard to find a hash below the target. What
 you want is to produce a block with exactly the right timestamp.
-
-Ryan X. Charles

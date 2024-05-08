@@ -1,6 +1,8 @@
-# CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions
-
-April 4, 2024
++++
+title = "CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions"
+author = "Ryan X. Charles"
+date = "2024-04-04"
++++
 
 As of today I have finished implementing CHECKSIG, CHECKMULTISIG,
 TransactionBuilder, TransactionSigner, and TransactionVerifier. This means that
@@ -43,5 +45,3 @@ Details:
   the full stack of software works for PubKeyHash and will await until later to
   enable more complex transactions. The way this will work in practice is that
   there will be a list of standard transaction templates that grows with time.
-
-Ryan X. Charles

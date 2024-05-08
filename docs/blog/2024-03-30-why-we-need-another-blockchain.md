@@ -1,4 +1,8 @@
-# Why We Need Another Blockchain
++++
+title = "Why We Need Another Blockchain"
+author = "Ryan X. Charles"
+date = "2024-03-30"
++++
 
 March 30, 2024
 
@@ -45,6 +49,4 @@ Thanks to modern tooling, especially AI, the project is proceeding very quickly.
 I am optimistic we will be able to launch the first version in just a few
 months.
 
-Please follow @earthbucks_com (http://earthbucks.com) to stay up-to-date.
-
-Ryan X. Charles
+Please follow [earthbucks.com](http://earthbucks.com) to stay up-to-date.

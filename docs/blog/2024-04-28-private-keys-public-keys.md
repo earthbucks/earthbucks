@@ -1,6 +1,8 @@
-# Private Keys, Public Keys, and Public Key Hashes
-
-April 28, 2024
++++
+title = "Private Keys, Public Keys, and Public Key Hashes"
+author = "Ryan X. Charles"
+date = "2024-04-28"
++++
 
 There is no such thing as an "address" in EarthBucks. One of the big differences
 between Bitcoin and EarthBuck is that there is no such thing as "pay to address"
@@ -54,5 +56,3 @@ even that can be prevented with some sophisticated multi-user key management
 EarthBucks should be as user-friendly as possible. For the most part, that means
 not seeing keys, but when keys are visible, they should be readable and include
 a checksum. The EarthBucks key string format solves this problem.
-
-Ryan X. Charles
