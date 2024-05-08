@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
+    "build-blog": "tsx app/build-blog.ts",
     "dev": "remix vite:dev --port=3000",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "PORT=3000 remix-serve ./build/server/index.js",
@@ -39,6 +40,7 @@
     "mysql2": "^3.9.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "toml": "^3.0.0",
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
