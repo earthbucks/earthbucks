@@ -890,6 +890,35 @@ export default class ScriptInterpreter {
             this.errStr = "CHECKMULTISIGVERIFY failed";
             break;
           }
+        } else if (opcode === OP.CHECKLOCKABSVERIFY) {
+          if (this.stack.length < 1) {
+            this.errStr = "invalid stack operation";
+            break;
+          }
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          if (scriptNum.num < 0n) {
+            this.errStr = "negative lockabs";
+            break;
+          }
+          if (this.tx.lockAbs < scriptNum.num) {
+            this.errStr = "lockabs requirement not met";
+            break;
+          }
+        } else if (opcode === OP.CHECKLOCKRELVERIFY) {
+          if (this.stack.length < 1) {
+            this.errStr = "invalid stack operation";
+            break;
+          }
+          let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+          if (scriptNum.num < 0n) {
+            this.errStr = "negative lockrel";
+            break;
+          }
+          const txInput = this.tx.inputs[this.nIn];
+          if (txInput.lockRel < scriptNum.num) {
+            this.errStr = "lockrel requirement not met";
+            break;
+          }
         } else {
           this.errStr = "invalid opcode";
           break;

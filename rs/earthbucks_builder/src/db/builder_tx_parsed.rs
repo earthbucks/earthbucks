@@ -24,7 +24,7 @@ impl MineTxParsed {
             version: tx.version,
             tx_in_count: tx.inputs.len() as u32,
             tx_out_count: tx.outputs.len() as u32,
-            lock_num: tx.abs_lock,
+            lock_num: tx.lock_abs,
             is_valid: None,
             is_vote_valid: None,
             confirmed_block_id: None,

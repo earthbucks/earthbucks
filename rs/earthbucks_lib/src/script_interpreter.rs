@@ -943,6 +943,35 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "CHECKMULTISIGVERIFY failed".to_string();
                         break;
                     }
+                } else if opcode == OP["CHECKLOCKABSVERIFY"] {
+                    if self.stack.is_empty() {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    if script_num.num < 0.to_bigint().unwrap() {
+                        self.err_str = "negative lockabs".to_string();
+                        break;
+                    }
+                    if self.tx.lock_abs.to_bigint().unwrap() < script_num.num {
+                        self.err_str = "lockabs requirement not met".to_string();
+                        break;
+                    }
+                } else if opcode == OP["CHECKLOCKRELVERIFY"] {
+                    if self.stack.is_empty() {
+                        self.err_str = "invalid stack operation".to_string();
+                        break;
+                    }
+                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    if script_num.num < 0.to_bigint().unwrap() {
+                        self.err_str = "negative lockrel".to_string();
+                        break;
+                    }
+                    let tx_input = &self.tx.inputs[self.n_in];
+                    if tx_input.lock_rel.to_bigint().unwrap() < script_num.num {
+                        self.err_str = "lockrel requirement not met".to_string();
+                        break;
+                    }
                 } else {
                     self.err_str = "invalid opcode".to_string();
                     break;

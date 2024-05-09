@@ -33,16 +33,16 @@ pub struct Tx {
     pub version: u8,
     pub inputs: Vec<TxInput>,
     pub outputs: Vec<TxOutput>,
-    pub abs_lock: u64,
+    pub lock_abs: u64,
 }
 
 impl Tx {
-    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, abs_lock: u64) -> Self {
+    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_abs: u64) -> Self {
         Self {
             version,
             inputs,
             outputs,
-            abs_lock,
+            lock_abs,
         }
     }
 
@@ -84,7 +84,7 @@ impl Tx {
         for output in &self.outputs {
             writer.write_u8_vec(output.to_iso_buf());
         }
-        writer.write_u64_be(self.abs_lock);
+        writer.write_u64_be(self.lock_abs);
         writer
     }
 
@@ -212,7 +212,7 @@ impl Tx {
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].lock_rel);
         bw.write_u8_vec(outputs_hash);
-        bw.write_u64_be(self.abs_lock);
+        bw.write_u64_be(self.lock_abs);
         bw.write_u8(hash_type);
         bw.to_iso_buf()
     }
@@ -374,7 +374,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.abs_lock, tx2.abs_lock);
+        assert_eq!(tx.lock_abs, tx2.lock_abs);
         Ok(())
     }
 
@@ -402,7 +402,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.abs_lock, tx2.abs_lock);
+        assert_eq!(tx.lock_abs, tx2.lock_abs);
         Ok(())
     }
 
@@ -429,7 +429,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.abs_lock, tx2.abs_lock);
+        assert_eq!(tx.lock_abs, tx2.lock_abs);
         Ok(())
     }
 
@@ -442,7 +442,7 @@ mod tests {
         assert_eq!(tx.version, 1);
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 1);
-        assert_eq!(tx.abs_lock, 0);
+        assert_eq!(tx.lock_abs, 0);
     }
 
     #[test]
