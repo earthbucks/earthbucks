@@ -9,7 +9,7 @@ describe("TxInput", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
     const script = new Script();
-    const lockRel = 0xffffffff;
+    const lockRel = 0;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput).toBeInstanceOf(TxInput);
@@ -24,7 +24,7 @@ describe("TxInput", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
-      const lockRel = 0xffffffff;
+      const lockRel = 0;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, lockRel);
 
@@ -45,12 +45,12 @@ describe("TxInput", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
-      const lockRel = 0xffffffff;
+      const lockRel = 0;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, lockRel);
       const result = txInput.toIsoBuf();
       expect(result.toString("hex")).toEqual(
-        "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
       );
     });
 
@@ -58,12 +58,12 @@ describe("TxInput", () => {
       const inputTxHash = Buffer.alloc(32);
       const inputTxIndex = 0;
       const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
-      const lockRel = 0xffffffff;
+      const lockRel = 0;
 
       const txInput = new TxInput(inputTxHash, inputTxIndex, script, lockRel);
       const result = txInput.toIsoBuf();
       expect(result.toString("hex")).toEqual(
-        "00000000000000000000000000000000000000000000000000000000000000000000000001a7ffffffff",
+        "00000000000000000000000000000000000000000000000000000000000000000000000001a700000000",
       );
     });
   });
@@ -94,27 +94,27 @@ describe("TxInput", () => {
       Buffer.alloc(32),
       0xffffffff,
       new Script(),
-      0xffffffff,
+      0,
     );
     expect(nullTxInput.isNull()).toBe(true);
   });
 
-  test("isFinal", () => {
+  test("isMinimalLock", () => {
     const inputTxHash = Buffer.alloc(32);
     const inputTxIndex = 0;
     const script = Script.fromIsoStr("0x121212").unwrap();
-    const lockRel = 0;
+    const lockRel = 0xffffffff;
 
     const txInput = new TxInput(inputTxHash, inputTxIndex, script, lockRel);
-    expect(txInput.isFinal()).toBe(false);
+    expect(txInput.isMinimalLock()).toBe(false);
 
     const finalTxInput = new TxInput(
       Buffer.alloc(32),
       0xffffffff,
       new Script(),
-      0xffffffff,
+      0,
     );
-    expect(finalTxInput.isFinal()).toBe(true);
+    expect(finalTxInput.isMinimalLock()).toBe(true);
   });
 
   test("isCoinbase", () => {
@@ -130,7 +130,7 @@ describe("TxInput", () => {
       Buffer.alloc(32),
       0xffffffff,
       new Script(),
-      0xffffffff,
+      0,
     );
     expect(coinbaseTxInput.isCoinbase()).toBe(true);
   });
@@ -140,7 +140,7 @@ describe("TxInput", () => {
     const txInput = TxInput.fromCoinbase(script);
     expect(txInput).toBeInstanceOf(TxInput);
     expect(txInput.isNull()).toBe(true);
-    expect(txInput.isFinal()).toBe(true);
+    expect(txInput.isMinimalLock()).toBe(true);
     expect(txInput.script.toIsoStr()).toEqual(script.toIsoStr());
   });
 });

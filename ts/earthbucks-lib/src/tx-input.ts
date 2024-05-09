@@ -63,15 +63,15 @@ export default class TxInput {
     );
   }
 
-  isFinal(): boolean {
-    return this.lockRel === 0xffffffff;
+  isMinimalLock(): boolean {
+    return this.lockRel === 0;
   }
 
   isCoinbase(): boolean {
-    return this.isNull() && this.isFinal();
+    return this.isNull() && this.isMinimalLock();
   }
 
   static fromCoinbase(script: Script): TxInput {
-    return new TxInput(Buffer.alloc(32), 0xffffffff, script, 0xffffffff);
+    return new TxInput(Buffer.alloc(32), 0xffffffff, script, 0);
   }
 }

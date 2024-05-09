@@ -16,26 +16,26 @@ describe("Tx", () => {
       const version = 1;
       const inputs: TxInput[] = [];
       const outputs: TxOutput[] = [];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
       expect(tx).toBeInstanceOf(Tx);
       expect(tx.version).toBe(version);
       expect(tx.inputs).toBe(inputs);
       expect(tx.outputs).toBe(outputs);
-      expect(tx.lockAbs).toBe(lockNum);
+      expect(tx.lockAbs).toBe(lockAbs);
     });
   });
 
   test("to/from u8Vec", () => {
     const version = 1;
     const inputs: TxInput[] = [
-      new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+      new TxInput(Buffer.alloc(32), 0, new Script(), 0),
     ];
     const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-    const lockNum = BigInt(0);
+    const lockAbs = BigInt(0);
 
-    const tx = new Tx(version, inputs, outputs, lockNum);
+    const tx = new Tx(version, inputs, outputs, lockAbs);
     const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
     expect(tx.toIsoBuf().toString("hex")).toEqual(
       result.toIsoBuf().toString("hex"),
@@ -46,19 +46,19 @@ describe("Tx", () => {
     test("fromU8Vec", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockAbs).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockAbs);
     });
   });
 
@@ -66,12 +66,12 @@ describe("Tx", () => {
     test("fromIsoBufReader", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const reader = new IsoBufReader(tx.toIsoBuf());
       const result = Tx.fromIsoBufReader(reader).unwrap();
@@ -79,7 +79,7 @@ describe("Tx", () => {
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockAbs).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockAbs);
     });
   });
 
@@ -87,19 +87,19 @@ describe("Tx", () => {
     test("to/from string", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const result = Tx.fromIsoHex(tx.toIsoHex()).unwrap();
       expect(result).toBeInstanceOf(Tx);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockAbs).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockAbs);
     });
   });
 
@@ -111,7 +111,7 @@ describe("Tx", () => {
       expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut).toBe(0xffffffff);
       expect(txInput.script.toIsoStr()).toEqual(script.toIsoStr());
-      expect(txInput.lockRel).toBe(0xffffffff);
+      expect(txInput.lockRel).toBe(0);
     });
   });
 
@@ -119,24 +119,24 @@ describe("Tx", () => {
     test("isCoinbase", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0xffffffff, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0xffffffff, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
       expect(tx.isCoinbase()).toBe(true);
     });
 
     test("is not coinbase", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
       expect(tx.isCoinbase()).toBe(false);
     });
 
@@ -152,12 +152,12 @@ describe("Tx", () => {
     it("should return the hash of the tx", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
       const expectedHash = blake3Hash(tx.toIsoBuf());
       expect(tx.blake3Hash()).toEqual(expectedHash);
     });
@@ -167,12 +167,12 @@ describe("Tx", () => {
     it("should return the hash of the hash of the tx", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
       const expectedHash = blake3Hash(blake3Hash(tx.toIsoBuf()));
       expect(tx.id()).toEqual(expectedHash);
     });
@@ -182,12 +182,12 @@ describe("Tx", () => {
     test("hashPrevouts", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const result = tx.hashPrevouts();
 
@@ -201,31 +201,31 @@ describe("Tx", () => {
     test("hashLockRel", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const result = tx.hashLockRel();
 
       expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
-        "5c9bc5bfc9fe60992fb5432ba6d5da1b5e232127b6a5678f93063b2d766cfbf5",
+        "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
       );
     });
 
     test("hashOutputs", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
+        new TxInput(Buffer.alloc(32), 0, new Script(), 0),
       ];
       const outputs: TxOutput[] = [new TxOutput(BigInt(100), new Script())];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const result = tx.hashOutputs();
 
@@ -239,19 +239,14 @@ describe("Tx", () => {
     test("sighash", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(
-          Buffer.alloc(32),
-          0,
-          Script.fromIsoStr("").unwrap(),
-          0xffffffff,
-        ),
+        new TxInput(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
       ];
       const outputs: TxOutput[] = [
         new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap()),
       ];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const script = Script.fromIsoStr("").unwrap();
       const scriptU8Vec = script.toIsoBuf();
@@ -265,26 +260,21 @@ describe("Tx", () => {
       expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
-        "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+        "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
       );
     });
 
     test("sighash with cache", () => {
       const version = 1;
       const inputs: TxInput[] = [
-        new TxInput(
-          Buffer.alloc(32),
-          0,
-          Script.fromIsoStr("").unwrap(),
-          0xffffffff,
-        ),
+        new TxInput(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
       ];
       const outputs: TxOutput[] = [
         new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap()),
       ];
-      const lockNum = BigInt(0);
+      const lockAbs = BigInt(0);
 
-      const tx = new Tx(version, inputs, outputs, lockNum);
+      const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const script = Script.fromIsoStr("").unwrap();
       const scriptU8Vec = script.toIsoBuf();
@@ -300,7 +290,7 @@ describe("Tx", () => {
       expect(result).toBeInstanceOf(Buffer);
 
       expect(Buffer.from(result).toString("hex")).toEqual(
-        "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+        "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
       );
     });
 
@@ -316,12 +306,7 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
-          new TxInput(
-            Buffer.alloc(32),
-            0,
-            Script.fromIsoStr("").unwrap(),
-            0xffffffff,
-          ),
+          new TxInput(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
         ];
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap()),
@@ -339,7 +324,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
+          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
         expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -356,16 +341,11 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
-          new TxInput(
-            Buffer.alloc(32),
-            0,
-            Script.fromIsoStr("").unwrap(),
-            0xffffffff,
-          ),
+          new TxInput(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
-          "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
+          "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap()),
@@ -375,7 +355,7 @@ describe("Tx", () => {
         );
         const tx = new Tx(1, inputs, outputs, BigInt(0));
         expect(tx.toIsoBuf().toString("hex")).toEqual(
-          "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000",
+          "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
 
         // Act
@@ -389,7 +369,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
+          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
         expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -417,16 +397,11 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxInput[] = [
-          new TxInput(
-            Buffer.alloc(32),
-            0,
-            Script.fromIsoStr("").unwrap(),
-            0xffffffff,
-          ),
+          new TxInput(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
-          "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff",
+          "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
         const outputs: TxOutput[] = [
           new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap()),
@@ -436,7 +411,7 @@ describe("Tx", () => {
         );
         const tx = new Tx(1, inputs, outputs, BigInt(0));
         expect(tx.toIsoBuf().toString("hex")).toEqual(
-          "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000",
+          "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
         const hashCache1 = new HashCache();
 
@@ -452,7 +427,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3"; // your expected signature in hex
+          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
         expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
