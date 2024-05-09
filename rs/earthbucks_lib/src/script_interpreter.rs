@@ -1244,13 +1244,13 @@ mod tests {
             ];
 
             // Convert private keys to Vec<u8> format
-            let priv_keys_u8_vec: Vec<Vec<u8>> = priv_keys_hex
+            let priv_keys_iso_buf: Vec<Vec<u8>> = priv_keys_hex
                 .iter()
                 .map(|hex| hex::decode(hex).unwrap())
                 .collect();
 
             // Generate public keys
-            let pub_keys: Vec<Vec<u8>> = priv_keys_u8_vec
+            let pub_keys: Vec<Vec<u8>> = priv_keys_iso_buf
                 .iter()
                 .map(|priv_key| {
                     PrivKey::from_iso_buf(priv_key.clone())
@@ -1284,7 +1284,7 @@ mod tests {
             );
 
             // Sign the tx with the first 3 private keys
-            let sigs: Vec<Vec<u8>> = priv_keys_u8_vec[0..3]
+            let sigs: Vec<Vec<u8>> = priv_keys_iso_buf[0..3]
                 .iter()
                 .map(|priv_key| {
                     tx.sign_no_cache(

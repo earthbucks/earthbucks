@@ -18,7 +18,7 @@ impl TxOutput {
         let mut reader = IsoBufReader::new(buf);
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read_u8_vec(script_len);
+        let script_arr = reader.read_iso_buf(script_len);
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -31,7 +31,7 @@ impl TxOutput {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let value = reader.read_u64_be();
         let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read_u8_vec(script_len);
+        let script_arr = reader.read_iso_buf(script_len);
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -43,8 +43,8 @@ impl TxOutput {
         let mut writer = IsoBufWriter::new();
         writer.write_u64_be(self.value);
         let script_buf = self.script.to_iso_buf();
-        writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
-        writer.write_u8_vec(script_buf);
+        writer.write_iso_buf(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
+        writer.write_iso_buf(script_buf);
         writer.to_iso_buf()
     }
 }

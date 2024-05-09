@@ -24,10 +24,10 @@ impl TxInput {
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
         let mut reader = IsoBufReader::new(buf);
-        let input_tx_id = reader.read_u8_vec(32);
+        let input_tx_id = reader.read_iso_buf(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
-        let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
+        let script = Script::from_iso_buf(reader.read_iso_buf(size).as_slice())?;
         let lock_rel = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
@@ -35,21 +35,21 @@ impl TxInput {
     pub fn from_buffer_reader(
         reader: &mut IsoBufReader,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let input_tx_id = reader.read_u8_vec(32);
+        let input_tx_id = reader.read_iso_buf(32);
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_var_int() as usize;
-        let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
+        let script = Script::from_iso_buf(reader.read_iso_buf(size).as_slice())?;
         let lock_rel = reader.read_u32_be();
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut writer = IsoBufWriter::new();
-        writer.write_u8_vec(self.input_tx_id.clone());
+        writer.write_iso_buf(self.input_tx_id.clone());
         writer.write_u32_be(self.input_tx_out_num);
         let script_buf = self.script.to_iso_buf();
-        writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
-        writer.write_u8_vec(script_buf);
+        writer.write_iso_buf(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
+        writer.write_iso_buf(script_buf);
         writer.write_u32_be(self.lock_rel);
         writer.to_iso_buf()
     }
@@ -126,10 +126,10 @@ mod tests {
         };
 
         let mut writer = IsoBufWriter::new();
-        writer.write_u8_vec(input_tx_id.clone());
+        writer.write_iso_buf(input_tx_id.clone());
         writer.write_u32_be(input_tx_index);
         writer.write_var_int(script_v8_vec.len() as u64);
-        writer.write_u8_vec(script_v8_vec);
+        writer.write_iso_buf(script_v8_vec);
         writer.write_u32_be(lock_rel);
 
         let mut reader = IsoBufReader::new(writer.to_iso_buf());

@@ -76,13 +76,13 @@ impl Tx {
     pub fn to_buffer_writer(&self) -> IsoBufWriter {
         let mut writer = IsoBufWriter::new();
         writer.write_u8(self.version);
-        writer.write_u8_vec(VarInt::from_u64_new(self.inputs.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64_new(self.inputs.len() as u64).to_iso_buf());
         for input in &self.inputs {
-            writer.write_u8_vec(input.to_iso_buf());
+            writer.write_iso_buf(input.to_iso_buf());
         }
-        writer.write_u8_vec(VarInt::from_u64_new(self.outputs.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64_new(self.outputs.len() as u64).to_iso_buf());
         for output in &self.outputs {
-            writer.write_u8_vec(output.to_iso_buf());
+            writer.write_iso_buf(output.to_iso_buf());
         }
         writer.write_u64_be(self.lock_abs);
         writer
@@ -153,7 +153,7 @@ impl Tx {
     pub fn sighash_preimage(
         &self,
         input_index: usize,
-        script_u8_vec: Vec<u8>,
+        script_iso_buf: Vec<u8>,
         amount: u64,
         hash_type: u8,
         hash_cache: &mut HashCache,
@@ -203,15 +203,15 @@ impl Tx {
 
         let mut bw = IsoBufWriter::new();
         bw.write_u8(self.version);
-        bw.write_u8_vec(prevouts_hash);
-        bw.write_u8_vec(lock_rel_hash);
-        bw.write_u8_vec(self.inputs[input_index].input_tx_id.clone());
+        bw.write_iso_buf(prevouts_hash);
+        bw.write_iso_buf(lock_rel_hash);
+        bw.write_iso_buf(self.inputs[input_index].input_tx_id.clone());
         bw.write_u32_be(self.inputs[input_index].input_tx_out_num);
-        bw.write_var_int(script_u8_vec.len() as u64);
-        bw.write_u8_vec(script_u8_vec);
+        bw.write_var_int(script_iso_buf.len() as u64);
+        bw.write_iso_buf(script_iso_buf);
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].lock_rel);
-        bw.write_u8_vec(outputs_hash);
+        bw.write_iso_buf(outputs_hash);
         bw.write_u64_be(self.lock_abs);
         bw.write_u8(hash_type);
         bw.to_iso_buf()
@@ -220,7 +220,7 @@ impl Tx {
     pub fn sighash_no_cache(
         &mut self,
         input_index: usize,
-        script_u8_vec: Vec<u8>,
+        script_iso_buf: Vec<u8>,
         amount: u64,
         hash_type: u8,
     ) -> Vec<u8> {
@@ -231,7 +231,7 @@ impl Tx {
         };
         let preimage = self.sighash_preimage(
             input_index,
-            script_u8_vec,
+            script_iso_buf,
             amount,
             hash_type,
             &mut hash_cache,
@@ -242,13 +242,13 @@ impl Tx {
     pub fn sighash_with_cache(
         &mut self,
         input_index: usize,
-        script_u8_vec: Vec<u8>,
+        script_iso_buf: Vec<u8>,
         amount: u64,
         hash_type: u8,
         hash_cache: &mut HashCache,
     ) -> Vec<u8> {
         let preimage =
-            self.sighash_preimage(input_index, script_u8_vec, amount, hash_type, hash_cache);
+            self.sighash_preimage(input_index, script_iso_buf, amount, hash_type, hash_cache);
         double_blake3_hash(&preimage).to_vec()
     }
 

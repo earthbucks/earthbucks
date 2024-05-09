@@ -13,18 +13,18 @@ impl PkhKeyMap {
         }
     }
 
-    pub fn add(&mut self, key: KeyPair, pkh_u8_vec: &[u8]) {
-        let pkh_hex = hex::encode(pkh_u8_vec);
+    pub fn add(&mut self, key: KeyPair, pkh_iso_buf: &[u8]) {
+        let pkh_hex = hex::encode(pkh_iso_buf);
         self.map.insert(pkh_hex, key);
     }
 
-    pub fn remove(&mut self, pkh_u8_vec: &[u8]) {
-        let pkh_hex = hex::encode(pkh_u8_vec);
+    pub fn remove(&mut self, pkh_iso_buf: &[u8]) {
+        let pkh_hex = hex::encode(pkh_iso_buf);
         self.map.remove(&pkh_hex);
     }
 
-    pub fn get(&self, pkh_u8_vec: &[u8]) -> Option<&KeyPair> {
-        let pkh_hex = hex::encode(pkh_u8_vec);
+    pub fn get(&self, pkh_iso_buf: &[u8]) -> Option<&KeyPair> {
+        let pkh_hex = hex::encode(pkh_iso_buf);
         self.map.get(&pkh_hex)
     }
 
@@ -46,9 +46,9 @@ mod tests {
         let key = KeyPair::from_random();
         let key_clone = key.clone();
         let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.buf;
-        pkh_key_map.add(key.clone(), &pkh_u8_vec);
-        let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
+        let pkh_iso_buf = pkh.buf;
+        pkh_key_map.add(key.clone(), &pkh_iso_buf);
+        let retrieved_key = pkh_key_map.get(&pkh_iso_buf).unwrap();
         assert_eq!(
             hex::encode(retrieved_key.priv_key.buf),
             hex::encode(key.priv_key.buf)
@@ -61,10 +61,10 @@ mod tests {
         let key = KeyPair::from_random();
         let key_clone = key.clone();
         let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.buf;
-        pkh_key_map.add(key.clone(), &pkh_u8_vec);
-        pkh_key_map.remove(&pkh_u8_vec);
-        assert!(pkh_key_map.get(&pkh_u8_vec).is_none());
+        let pkh_iso_buf = pkh.buf;
+        pkh_key_map.add(key.clone(), &pkh_iso_buf);
+        pkh_key_map.remove(&pkh_iso_buf);
+        assert!(pkh_key_map.get(&pkh_iso_buf).is_none());
     }
 
     #[test]
@@ -73,9 +73,9 @@ mod tests {
         let key = KeyPair::from_random();
         let key_clone = key.clone();
         let pkh = Pkh::from_pub_key_buffer(key_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec = pkh.buf;
-        pkh_key_map.add(key.clone(), &pkh_u8_vec);
-        let retrieved_key = pkh_key_map.get(&pkh_u8_vec).unwrap();
+        let pkh_iso_buf = pkh.buf;
+        pkh_key_map.add(key.clone(), &pkh_iso_buf);
+        let retrieved_key = pkh_key_map.get(&pkh_iso_buf).unwrap();
         assert_eq!(
             hex::encode(retrieved_key.priv_key.buf),
             hex::encode(key.priv_key.buf)
@@ -88,13 +88,13 @@ mod tests {
         let key1 = KeyPair::from_random();
         let key1_clone = key1.clone();
         let pkh1 = Pkh::from_pub_key_buffer(key1_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec1 = pkh1.buf;
+        let pkh_iso_buf1 = pkh1.buf;
         let key2 = KeyPair::from_random();
         let key2_clone = key2.clone();
         let pkh2 = Pkh::from_pub_key_buffer(key2_clone.pub_key.buf.to_vec());
-        let pkh_u8_vec2 = pkh2.buf;
-        pkh_key_map.add(key1.clone(), &pkh_u8_vec1);
-        pkh_key_map.add(key2.clone(), &pkh_u8_vec2);
+        let pkh_iso_buf2 = pkh2.buf;
+        pkh_key_map.add(key1.clone(), &pkh_iso_buf1);
+        pkh_key_map.add(key2.clone(), &pkh_iso_buf2);
         let values: Vec<&KeyPair> = pkh_key_map.values().collect();
         assert_eq!(values.len(), 2);
 

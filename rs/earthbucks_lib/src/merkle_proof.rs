@@ -108,10 +108,10 @@ impl MerkleProof {
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut bw = IsoBufWriter::new();
-        bw.write_u8_vec(self.root.to_vec());
+        bw.write_iso_buf(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
         for (sibling, is_left) in &self.proof {
-            bw.write_u8_vec(sibling.to_vec());
+            bw.write_iso_buf(sibling.to_vec());
             bw.write_u8(if *is_left { 1 } else { 0 });
         }
         bw.to_iso_buf()
@@ -119,11 +119,11 @@ impl MerkleProof {
 
     pub fn from_iso_buf(u8: &[u8]) -> MerkleProof {
         let mut br = IsoBufReader::new(u8.to_vec());
-        let root: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+        let root: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
         let mut proof = vec![];
         let proof_length = br.read_var_int() as usize;
         for _ in 0..proof_length {
-            let sibling: [u8; 32] = br.read_u8_vec(32).try_into().unwrap();
+            let sibling: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
             let is_left = br.read_u8() == 1;
             proof.push((sibling, is_left));
         }

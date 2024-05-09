@@ -60,7 +60,7 @@ impl Script {
                     _ => unreachable!(),
                 };
 
-                chunk.buffer = Some(reader.read_u8_vec(len as usize).to_vec());
+                chunk.buffer = Some(reader.read_iso_buf(len as usize).to_vec());
 
                 let buffer_length = match &chunk.buffer {
                     Some(buffer) => buffer.len(),
@@ -234,9 +234,9 @@ mod tests {
         let script = Script::from_iso_str(input_string).unwrap();
 
         // Convert the Script to a u8 vector
-        let u8_vec = script.to_iso_buf();
+        let iso_buf = script.to_iso_buf();
 
-        let script2 = Script::from_iso_buf(&u8_vec).unwrap();
+        let script2 = Script::from_iso_buf(&iso_buf).unwrap();
 
         // Convert the Script back to a string
         let output_string = script2.to_iso_str().unwrap();

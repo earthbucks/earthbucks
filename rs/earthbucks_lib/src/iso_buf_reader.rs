@@ -20,7 +20,7 @@ impl IsoBufReader {
         self.buf.get_ref().len() - self.buf.position() as usize
     }
 
-    pub fn read_u8_vec(&mut self, len: usize) -> Vec<u8> {
+    pub fn read_iso_buf(&mut self, len: usize) -> Vec<u8> {
         let pos = self.buf.position() as usize;
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
@@ -67,17 +67,17 @@ impl IsoBufReader {
         match first {
             0xfd => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_u8_vec(2));
+                buf.extend_from_slice(&self.read_iso_buf(2));
                 buf
             }
             0xfe => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_u8_vec(4));
+                buf.extend_from_slice(&self.read_iso_buf(4));
                 buf
             }
             0xff => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_u8_vec(8));
+                buf.extend_from_slice(&self.read_iso_buf(8));
                 buf
             }
             _ => vec![first],
@@ -103,8 +103,8 @@ mod tests {
     #[test]
     fn test_read() {
         let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
-        assert_eq!(reader.read_u8_vec(3), vec![1, 2, 3]);
-        assert_eq!(reader.read_u8_vec(2), vec![4, 5]);
+        assert_eq!(reader.read_iso_buf(3), vec![1, 2, 3]);
+        assert_eq!(reader.read_iso_buf(2), vec![4, 5]);
     }
 
     #[test]
