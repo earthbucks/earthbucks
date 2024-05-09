@@ -17,4 +17,3 @@ header in the following ways:
   mine. We should be able to change the nonce only to mine.
 - I have added the block index. This simply gives a convenient way to verify the
   block index for anyone tracking the block headers.
-  

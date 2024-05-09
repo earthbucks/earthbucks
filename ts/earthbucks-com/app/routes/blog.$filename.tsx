@@ -42,7 +42,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   // load content from app/blog/filename
   const blogDir = path.join("app", "blog");
   const filePath = path.join(blogDir, `${filename}`);
-  const fileContent = fs.readFileSync(filePath, "utf8").split('+++')[2] as string;
+  const fileContent = fs
+    .readFileSync(filePath, "utf8")
+    .split("+++")[2] as string;
   blogPost.content = fileContent;
 
   return json({ blogPost });

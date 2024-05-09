@@ -45,4 +45,3 @@ Details:
   the full stack of software works for PubKeyHash and will await until later to
   enable more complex transactions. The way this will work in practice is that
   there will be a list of standard transaction templates that grows with time.
-  

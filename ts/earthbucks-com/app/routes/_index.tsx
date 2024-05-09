@@ -72,6 +72,14 @@ export default function Index() {
                 className="underline"
               >
                 GitHub
+              </a>{" "}
+              &middot;{" "}
+              <a
+                href="https://www.reddit.com/r/earthbucks/"
+                target="_blank"
+                className="underline"
+              >
+                reddit
               </a>
             </div>
           </div>
