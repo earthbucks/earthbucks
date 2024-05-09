@@ -137,7 +137,7 @@ impl Tx {
     pub fn hash_lock_rel(&self) -> Vec<u8> {
         let mut data = Vec::new();
         for input in &self.inputs {
-            data.extend(&input.lock_rel.to_le_bytes());
+            data.extend(&input.lock_rel.to_be_bytes());
         }
         double_blake3_hash(&data).to_vec()
     }

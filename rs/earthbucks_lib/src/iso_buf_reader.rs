@@ -1,4 +1,4 @@
-use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
+use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 
 pub struct IsoBufReader {
@@ -50,14 +50,6 @@ impl IsoBufReader {
         self.buf.read_i16::<BigEndian>().unwrap()
     }
 
-    pub fn read_u16_le(&mut self) -> u16 {
-        self.buf.read_u16::<LittleEndian>().unwrap()
-    }
-
-    pub fn read_i16_le(&mut self) -> i16 {
-        self.buf.read_i16::<LittleEndian>().unwrap()
-    }
-
     pub fn read_u32_be(&mut self) -> u32 {
         self.buf.read_u32::<BigEndian>().unwrap()
     }
@@ -66,20 +58,8 @@ impl IsoBufReader {
         self.buf.read_i32::<BigEndian>().unwrap()
     }
 
-    pub fn read_u32_le(&mut self) -> u32 {
-        self.buf.read_u32::<LittleEndian>().unwrap()
-    }
-
-    pub fn read_i32_le(&mut self) -> i32 {
-        self.buf.read_i32::<LittleEndian>().unwrap()
-    }
-
     pub fn read_u64_be(&mut self) -> u64 {
         self.buf.read_u64::<BigEndian>().unwrap()
-    }
-
-    pub fn read_u64_le(&mut self) -> u64 {
-        self.buf.read_u64::<LittleEndian>().unwrap()
     }
 
     pub fn read_var_int_buf(&mut self) -> Vec<u8> {
@@ -118,7 +98,7 @@ impl IsoBufReader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
+    use byteorder::{BigEndian, WriteBytesExt};
 
     #[test]
     fn test_read() {
@@ -167,28 +147,6 @@ mod tests {
     }
 
     #[test]
-    fn test_read_u16_le() {
-        let mut data = vec![];
-        data.write_u16::<LittleEndian>(12345).unwrap();
-        data.write_u16::<LittleEndian>(54321).unwrap();
-
-        let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_u16_le(), 12345);
-        assert_eq!(reader.read_u16_le(), 54321);
-    }
-
-    #[test]
-    fn test_read_i16_le() {
-        let mut data = vec![];
-        data.write_i16::<LittleEndian>(12345).unwrap();
-        data.write_i16::<LittleEndian>(-12345).unwrap();
-
-        let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_i16_le(), 12345);
-        assert_eq!(reader.read_i16_le(), -12345);
-    }
-
-    #[test]
     fn test_read_u32_be() {
         let mut data = vec![];
         data.write_u32::<BigEndian>(1234567890).unwrap();
@@ -211,28 +169,6 @@ mod tests {
     }
 
     #[test]
-    fn test_read_u32_le() {
-        let mut data = vec![];
-        data.write_u32::<LittleEndian>(1234567890).unwrap();
-        data.write_u32::<LittleEndian>(987654321).unwrap();
-
-        let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_u32_le(), 1234567890);
-        assert_eq!(reader.read_u32_le(), 987654321);
-    }
-
-    #[test]
-    fn test_read_i32_le() {
-        let mut data = vec![];
-        data.write_i32::<LittleEndian>(1234567890).unwrap();
-        data.write_i32::<LittleEndian>(-1234567890).unwrap();
-
-        let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_i32_le(), 1234567890);
-        assert_eq!(reader.read_i32_le(), -1234567890);
-    }
-
-    #[test]
     fn test_read_u64_be_big_int() {
         let mut data = vec![];
         data.write_u64::<BigEndian>(12345678901234567890).unwrap();
@@ -241,18 +177,6 @@ mod tests {
         let mut reader = IsoBufReader::new(data);
         assert_eq!(reader.read_u64_be(), 12345678901234567890);
         assert_eq!(reader.read_u64_be(), 9876543210987654321);
-    }
-
-    #[test]
-    fn test_read_u64_le_big_int() {
-        let mut data = vec![];
-        data.write_u64::<LittleEndian>(12345678901234567890)
-            .unwrap();
-        data.write_u64::<LittleEndian>(9876543210987654321).unwrap();
-
-        let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_u64_le(), 12345678901234567890);
-        assert_eq!(reader.read_u64_le(), 9876543210987654321);
     }
 
     #[test]

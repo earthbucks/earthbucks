@@ -1,4 +1,4 @@
-use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
+use byteorder::{BigEndian, WriteBytesExt};
 
 // add Default
 #[derive(Default)]
@@ -59,18 +59,6 @@ impl IsoBufWriter {
         self.bufs.push(buf);
     }
 
-    pub fn write_u16_le(&mut self, n: u16) {
-        let mut buf = vec![0; 2];
-        buf.as_mut_slice().write_u16::<LittleEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
-    pub fn write_i16_le(&mut self, n: i16) {
-        let mut buf = vec![0; 2];
-        buf.as_mut_slice().write_i16::<LittleEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
     pub fn write_u32_be(&mut self, n: u32) {
         let mut buf = vec![0; 4];
         buf.as_mut_slice().write_u32::<BigEndian>(n).unwrap();
@@ -83,27 +71,9 @@ impl IsoBufWriter {
         self.bufs.push(buf);
     }
 
-    pub fn write_u32_le(&mut self, n: u32) {
-        let mut buf = vec![0; 4];
-        buf.as_mut_slice().write_u32::<LittleEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
-    pub fn write_i32_le(&mut self, n: i32) {
-        let mut buf = vec![0; 4];
-        buf.as_mut_slice().write_i32::<LittleEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
     pub fn write_u64_be(&mut self, n: u64) {
         let mut buf = vec![0; 8];
         buf.as_mut_slice().write_u64::<BigEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
-    pub fn write_u64_le(&mut self, n: u64) {
-        let mut buf = vec![0; 8];
-        buf.as_mut_slice().write_u64::<LittleEndian>(n).unwrap();
         self.bufs.push(buf);
     }
 
@@ -212,24 +182,6 @@ mod tests {
     }
 
     #[test]
-    fn test_write_u16_le() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_u16_le(0x0102);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![2, 1]); // 0x0102 in little-endian is [2, 1]
-    }
-
-    #[test]
-    fn test_write_i16_le() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_i16_le(-0x0102);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![254, 254]); // -0x0102 in little-endian is [254, 254]
-    }
-
-    #[test]
     fn test_write_u32_be() {
         let mut writer = IsoBufWriter::new();
         writer.write_u32_be(0x01020304);
@@ -248,39 +200,12 @@ mod tests {
     }
 
     #[test]
-    fn test_write_u32_le() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_u32_le(0x01020304);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![4, 3, 2, 1]); // 0x01020304 in little-endian is [4, 3, 2, 1]
-    }
-
-    #[test]
-    fn test_write_i32_le() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_i32_le(-0x01020304);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![252, 252, 253, 254]); // -0x01020304 in little-endian is [252, 252, 253, 254]
-    }
-
-    #[test]
     fn test_write_u64_be() {
         let mut writer = IsoBufWriter::new();
         writer.write_u64_be(0x0102030405060708);
 
         assert_eq!(writer.bufs.len(), 1);
         assert_eq!(writer.bufs[0], vec![1, 2, 3, 4, 5, 6, 7, 8]); // 0x0102030405060708 in big-endian is [1, 2, 3, 4, 5, 6, 7, 8]
-    }
-
-    #[test]
-    fn test_write_u64_le() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_u64_le(0x0102030405060708);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![8, 7, 6, 5, 4, 3, 2, 1]); // 0x0102030405060708 in little-endian is [8, 7, 6, 5, 4, 3, 2, 1]
     }
 
     #[test]
