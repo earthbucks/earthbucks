@@ -35,11 +35,5 @@
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   },
   "sql-formatter.uppercase": true,
-  "rust-analyzer.check.command": "clippy",
-  "json.schemas": [
-    {
-      "fileMatch": ["/.prettierrc"],
-      "url": "../schemas/prettierrc-schema.json"
-    }
-  ]
+  "rust-analyzer.check.command": "clippy"
 }
