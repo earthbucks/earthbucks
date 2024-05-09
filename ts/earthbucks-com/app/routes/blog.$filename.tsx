@@ -9,6 +9,8 @@ import { Link, useLoaderData } from "@remix-run/react";
 import MyMarkdown from "~/components/MyMarkdown";
 import { $path } from "remix-routes";
 import Footer from "~/components/footer";
+import fs from "fs";
+import path from "path";
 
 interface BlogPost {
   title: string;
@@ -27,13 +29,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         date: post.date,
         author: post.author,
         filename: post.filename,
-        content: post.content,
+        content: "",
       };
     })
     .sort((a, b) => a.date.localeCompare(b.date))
     .reverse();
 
   const blogPost = newBlogPosts.find((post) => post.filename === `${filename}`);
+  if (!blogPost) {
+    throw new Response("Not found", { status: 404 });
+  }
+  // load content from app/blog/filename
+  const blogDir = path.join("app", "blog");
+  const filePath = path.join(blogDir, `${filename}`);
+  const fileContent = fs.readFileSync(filePath, "utf8").split('+++')[2] as string;
+  blogPost.content = fileContent;
 
   return json({ blogPost });
 }
