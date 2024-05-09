@@ -11,7 +11,7 @@ that make sense in 2024.
 Things have changed since Bitcoin was launched in 2008. One thing that happened
 was that the maximum block size that was added to Bitcoin in 2010, and was only
 ever intended to be a temporary measure, was never removed. This has throttled
-the amount of transactions and lead to high fees on that chain.
+the amount of transactions and led to high fees on that chain.
 
 The primary mission of EarthBucks is to enable small casual transactions for
 everyone on Planet Earth. This means transactions approximately in the range of

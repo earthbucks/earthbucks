@@ -7,7 +7,7 @@ date = "2024-04-21"
 EarthBucks has a radically different peer-to-peer network than Bitcoin. While
 Bitcoin used a custom protocol on port 8333, which did not include a notion of
 names or authenticated communications, EarthBucks is based on domain names (DNS)
-and the web (HTTPS). EarthBucks mines and wallets have a domain name, and all
+and the web (HTTPS). EarthBucks miners and wallets have a domain name, and all
 communications are authenticated and encrypted using HTTPS.
 
 Let's consider three examples: a mine, a wallet, and a user.

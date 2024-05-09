@@ -4,8 +4,6 @@ author = "Ryan X. Charles"
 date = "2024-03-30"
 +++
 
-March 30, 2024
-
 Bitcoin and the cryptocurrency industry has been a remarkable success by many
 metrics. We have mainstream consciousness, regulatory clarity, and huge amounts
 of apps for users and open-source software for developers.
@@ -21,7 +19,7 @@ This original idea has not been tried, not even by Bitcoin, which has been
 throttled for most of its history. By unthrottling the caps, this enables the
 "small casual transactions" and "micropayments" that Satoshi Nakamoto described.
 
-By launching a new blockchain with a new gensis block, we solve many problems:
+By launching a new blockchain with a new genesis block, we solve many problems:
 
 1. Starting over with the mining subsidy means everyone has a chance to
    participate in mining early on. When Bitcoin launched almost no one heard

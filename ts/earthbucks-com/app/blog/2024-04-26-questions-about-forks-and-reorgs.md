@@ -41,7 +41,7 @@ It is very important that transactions can be voted so quickly. The voting
 should happen in about 300ms, enough for two round trip messages round the
 world. One for broadcasting the transaction and another for voting on it.
 (Perhaps this could be optimized by doing a single round trip message). This
-gives users very rapid acknowlegement that their transaction is valid, not just
+gives users very rapid acknowledgement that their transaction is valid, not just
 with one miner, but across the entire network.
 
 Q: What happens if most miners create block A, but one miner creates an

@@ -16,7 +16,7 @@ exactly the same way you would pay anybody else.
 In EarthBucks, my intention is that users will have relationships with service
 providers. Even miners will have relationships with other miners. All fees can
 be determined and paid the same way as anything else, by having a contract
-(explicit or implict), and paying a fee. This is exactly how it works in the
+(explicit or implicit), and paying a fee. This is exactly how it works in the
 real world, and I see no reason for this system to be any different.
 
 There are many reasons to eliminate the change fee from transactions, but the
@@ -53,5 +53,5 @@ fees. Commercial entities, such as miners, also have relationships with
 commercial entities, such as other miners, and pay fees. Fees are paid in the
 same way as anything else is paid, by having a contract and paying a fee.
 
-Change fees are not necessary, are technically harder to build, harder to
-understand, and break SPV. Therefore, change fees are eliminated in EarthBucks.
+Change fees are unnecessary, technically harder to build, and break SPV.
+Therefore, change fees are eliminated in EarthBucks.

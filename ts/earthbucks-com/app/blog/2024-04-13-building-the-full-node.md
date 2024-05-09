@@ -27,7 +27,7 @@ will perform the proof-of-work and submit the block headers to the builder,
 otherwise the builder is unlikely to ever find a block.
 
 The second piece of the full node is the API, which listens to incoming requests
-and can either return data, such as a getting a transaction, or writing data,
+and can either return data, such as getting a transaction, or writing data,
 such as submitting a new block header. The API scales horizontally, so that it
 can be deployed in rolling fashion and never go down, and the builder scales
 vertically, so it can handle large blocks. Making the full node highly available

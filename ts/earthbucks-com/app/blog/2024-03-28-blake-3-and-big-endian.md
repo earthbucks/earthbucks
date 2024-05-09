@@ -4,7 +4,7 @@ author = "Ryan X. Charles"
 date = "2024-03-28"
 +++
 
-I am proceeding to build the core data structers, starting with the Buffer
+I am proceeding to build the core data structures, starting with the Buffer
 Reader and Buffer Writer and core hash function.
 
 The primary hash function is Blake3. Some argue this is better than SHA256, but

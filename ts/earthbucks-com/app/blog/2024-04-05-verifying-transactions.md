@@ -9,5 +9,5 @@ and rust and it has an important feature: it checks that the input values are
 equal to the output values.
 
 Checking that input value = output value is consistent with my earlier
-declaration that change fees are eliminated. What this means in practice that a
+declaration that change fees are eliminated. What this means in practice is that a
 transaction is not valid if it includes a change fee.

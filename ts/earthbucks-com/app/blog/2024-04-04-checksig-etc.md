@@ -39,9 +39,10 @@ Details:
   was valid or not without verifying the block. Preserving SPV in a pure way
   means eliminating transaction fees. Again, this does not mean there are no
   fees, but that the fees are paid in a different way than unspent inputs.
-- Currently I suppose building and signing PubKeyHash transactions only. Because
+- Currently I support building and signing PubKeyHash transactions only. Because
   the primary use-case is for payments, and because even CHECKMULTISIG is both
   not necessary for payments and not widely used in practice, I will make sure
   the full stack of software works for PubKeyHash and will await until later to
   enable more complex transactions. The way this will work in practice is that
   there will be a list of standard transaction templates that grows with time.
+  
