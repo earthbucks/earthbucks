@@ -90,7 +90,9 @@ export type OpcodeName =
   | "CHECKSIG"
   | "CHECKSIGVERIFY"
   | "CHECKMULTISIG"
-  | "CHECKMULTISIGVERIFY";
+  | "CHECKMULTISIGVERIFY"
+  | "CHECKLOCKABSVERIFY"
+  | "CHECKLOCKRELVERIFY";
 
 export const OP: { [key in OpcodeName]: number } = {
   "0": 0x00,
@@ -183,6 +185,8 @@ export const OP: { [key in OpcodeName]: number } = {
   CHECKSIGVERIFY: 0xad,
   CHECKMULTISIG: 0xae,
   CHECKMULTISIGVERIFY: 0xaf,
+  CHECKLOCKABSVERIFY: 0xb1,
+  CHECKLOCKRELVERIFY: 0xb2,
 };
 
 export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
@@ -276,4 +280,6 @@ export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
   0xad: "CHECKSIGVERIFY",
   0xae: "CHECKMULTISIG",
   0xaf: "CHECKMULTISIGVERIFY",
+  0xb1: "CHECKLOCKABSVERIFY",
+  0xb2: "CHECKLOCKRELVERIFY",
 };

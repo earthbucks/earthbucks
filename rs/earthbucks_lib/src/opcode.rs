@@ -94,6 +94,8 @@ lazy_static! {
         map.insert("CHECKSIGVERIFY", 0xad);
         map.insert("CHECKMULTISIG", 0xae);
         map.insert("CHECKMULTISIGVERIFY", 0xaf);
+        map.insert("CHECKLOCKABSVERIFY", 0xb1);
+        map.insert("CHECKLOCKRELVERIFY", 0xb2);
         map
     };
     pub static ref OPCODE_TO_NAME: HashMap<u8, &'static str> = {
@@ -188,6 +190,8 @@ lazy_static! {
         map.insert(0xad, "CHECKSIGVERIFY");
         map.insert(0xae, "CHECKMULTISIG");
         map.insert(0xaf, "CHECKMULTISIGVERIFY");
+        map.insert(0xb1, "CHECKLOCKABSVERIFY");
+        map.insert(0xb2, "CHECKLOCKRELVERIFY");
         map
     };
 }
