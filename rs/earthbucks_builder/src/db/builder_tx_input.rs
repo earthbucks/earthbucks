@@ -8,7 +8,7 @@ pub struct MineTxInput {
     pub input_tx_id: Vec<u8>,
     pub input_tx_out_num: u32,
     pub script: Vec<u8>,
-    pub sequence: u32,
+    pub lock_rel: u32,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -23,7 +23,7 @@ impl MineTxInput {
                 input_tx_id: tx_in.input_tx_id.clone(),
                 input_tx_out_num: tx_in.input_tx_out_num,
                 script: tx_in.script.to_iso_buf(),
-                sequence: tx_in.sequence,
+                lock_rel: tx_in.lock_rel,
                 created_at: chrono::Utc::now().naive_utc(),
             })
             .collect()

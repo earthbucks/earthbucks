@@ -9,16 +9,16 @@ pub struct TxInput {
     pub input_tx_id: Vec<u8>,
     pub input_tx_out_num: u32,
     pub script: Script,
-    pub sequence: u32,
+    pub lock_rel: u32,
 }
 
 impl TxInput {
-    pub fn new(input_tx_id: Vec<u8>, input_tx_out_num: u32, script: Script, sequence: u32) -> Self {
+    pub fn new(input_tx_id: Vec<u8>, input_tx_out_num: u32, script: Script, lock_rel: u32) -> Self {
         Self {
             input_tx_id,
             input_tx_out_num,
             script,
-            sequence,
+            lock_rel,
         }
     }
 
@@ -28,8 +28,8 @@ impl TxInput {
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_u8() as usize;
         let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
-        let sequence = reader.read_u32_be();
-        Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
+        let lock_rel = reader.read_u32_be();
+        Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
     pub fn from_buffer_reader(
@@ -39,8 +39,8 @@ impl TxInput {
         let input_tx_index = reader.read_u32_be();
         let size = reader.read_var_int() as usize;
         let script = Script::from_iso_buf(reader.read_u8_vec(size).as_slice())?;
-        let sequence = reader.read_u32_be();
-        Ok(Self::new(input_tx_id, input_tx_index, script, sequence))
+        let lock_rel = reader.read_u32_be();
+        Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
@@ -50,7 +50,7 @@ impl TxInput {
         let script_buf = self.script.to_iso_buf();
         writer.write_u8_vec(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
         writer.write_u8_vec(script_buf);
-        writer.write_u32_be(self.sequence);
+        writer.write_u32_be(self.lock_rel);
         writer.to_iso_buf()
     }
 
@@ -59,7 +59,7 @@ impl TxInput {
     }
 
     pub fn is_final(&self) -> bool {
-        self.sequence == 0xffffffff
+        self.lock_rel == 0xffffffff
     }
 
     pub fn is_coinbase(&self) -> bool {
@@ -71,7 +71,7 @@ impl TxInput {
             input_tx_id: vec![0; 32],
             input_tx_out_num: 0xffffffff,
             script,
-            sequence: 0xffffffff,
+            lock_rel: 0xffffffff,
         }
     }
 }
@@ -85,14 +85,14 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("");
-        let sequence = 0;
+        let lock_rel = 0;
 
         let script_clone = match script {
             Ok(script) => script.clone(),
             Err(_) => return Err("Failed to clone script".to_string()),
         };
 
-        let tx_input = TxInput::new(input_tx_id.clone(), input_tx_index, script_clone, sequence);
+        let tx_input = TxInput::new(input_tx_id.clone(), input_tx_index, script_clone, lock_rel);
 
         // Test to_iso_buf
         let buf = tx_input.to_iso_buf();
@@ -108,7 +108,7 @@ mod tests {
             }
             _ => return Err("Failed to compare scripts".to_string()),
         }
-        assert_eq!(tx_input2.sequence, sequence);
+        assert_eq!(tx_input2.lock_rel, lock_rel);
         Ok(())
     }
 
@@ -118,7 +118,7 @@ mod tests {
         let input_tx_index = 1u32;
         let script_hex = "";
         let script = Script::from_iso_str(script_hex);
-        let sequence = 2u32;
+        let lock_rel = 2u32;
 
         let script_v8_vec = match script {
             Ok(script) => script.to_iso_buf(),
@@ -130,7 +130,7 @@ mod tests {
         writer.write_u32_be(input_tx_index);
         writer.write_var_int(script_v8_vec.len() as u64);
         writer.write_u8_vec(script_v8_vec);
-        writer.write_u32_be(sequence);
+        writer.write_u32_be(lock_rel);
 
         let mut reader = IsoBufReader::new(writer.to_iso_buf());
         let tx_input = TxInput::from_buffer_reader(&mut reader).unwrap();
@@ -144,7 +144,7 @@ mod tests {
         assert_eq!(tx_input.input_tx_id, input_tx_id);
         assert_eq!(tx_input.input_tx_out_num, input_tx_index);
         assert_eq!(script2_hex, script_hex);
-        assert_eq!(tx_input.sequence, sequence);
+        assert_eq!(tx_input.lock_rel, lock_rel);
     }
 
     #[test]
@@ -153,7 +153,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
-            sequence: 0,
+            lock_rel: 0,
         };
         assert!(!tx_input.is_null());
 
@@ -161,7 +161,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            sequence: 0xffffffff,
+            lock_rel: 0xffffffff,
         };
         assert!(null_tx_input.is_null());
     }
@@ -172,7 +172,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
-            sequence: 0,
+            lock_rel: 0,
         };
         assert!(!tx_input.is_final());
 
@@ -180,7 +180,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            sequence: 0xffffffff,
+            lock_rel: 0xffffffff,
         };
         assert!(final_tx_input.is_final());
     }
@@ -191,7 +191,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
-            sequence: 0,
+            lock_rel: 0,
         };
         assert!(!tx_input.is_coinbase());
 
@@ -199,7 +199,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            sequence: 0xffffffff,
+            lock_rel: 0xffffffff,
         };
         assert!(coinbase_tx_input.is_coinbase());
     }
@@ -212,6 +212,6 @@ mod tests {
         assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
         assert_eq!(tx_input.input_tx_out_num, 0xffffffff);
         assert_eq!(tx_input.script.to_iso_str().unwrap(), "0x121212");
-        assert_eq!(tx_input.sequence, 0xffffffff);
+        assert_eq!(tx_input.lock_rel, 0xffffffff);
     }
 }

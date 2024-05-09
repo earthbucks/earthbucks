@@ -171,7 +171,7 @@ export const BuilderTxInput = mysqlTable(
     inputTxId: binary("input_tx_id", { length: 32 }).notNull(),
     inputTxOutNum: int("input_tx_out_num", { unsigned: true }).notNull(),
     script: text("script").notNull(),
-    sequence: int("sequence", { unsigned: true }).notNull(),
+    lockRel: int("lock_rel", { unsigned: true }).notNull(),
     // database metadata
     createdAt: datetime("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)

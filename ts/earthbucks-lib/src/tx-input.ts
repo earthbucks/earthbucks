@@ -8,18 +8,18 @@ export default class TxInput {
   public inputTxId: Buffer;
   public inputTxNOut: number;
   public script: Script;
-  public sequence: number;
+  public lockRel: number;
 
   constructor(
     inputTxId: Buffer,
     inputTxNOut: number,
     script: Script,
-    sequence: number,
+    lockRel: number,
   ) {
     this.inputTxId = inputTxId;
     this.inputTxNOut = inputTxNOut;
     this.script = script;
-    this.sequence = sequence;
+    this.lockRel = lockRel;
   }
 
   static fromIsoBuf(buf: Buffer): TxInput {
@@ -30,8 +30,8 @@ export default class TxInput {
     const script = Script.fromIsoBuf(
       reader.readBuffer(scriptLen).unwrap(),
     ).unwrap();
-    const sequence = reader.readUInt32BE().unwrap();
-    return new TxInput(inputTxHash, inputTxIndex, script, sequence);
+    const lockRel = reader.readUInt32BE().unwrap();
+    return new TxInput(inputTxHash, inputTxIndex, script, lockRel);
   }
 
   static fromIsoBufReader(reader: IsoBufReader): TxInput {
@@ -41,8 +41,8 @@ export default class TxInput {
     const script = Script.fromIsoBuf(
       reader.readBuffer(scriptLen).unwrap(),
     ).unwrap();
-    const sequence = reader.readUInt32BE().unwrap();
-    return new TxInput(inputTxHash, inputTxIndex, script, sequence);
+    const lockRel = reader.readUInt32BE().unwrap();
+    return new TxInput(inputTxHash, inputTxIndex, script, lockRel);
   }
 
   toIsoBuf(): Buffer {
@@ -52,7 +52,7 @@ export default class TxInput {
     const scriptBuf = this.script.toIsoBuf();
     writer.writeBuffer(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.writeBuffer(scriptBuf);
-    writer.writeUInt32BE(this.sequence);
+    writer.writeUInt32BE(this.lockRel);
     return writer.toIsoBuf();
   }
 
@@ -64,7 +64,7 @@ export default class TxInput {
   }
 
   isFinal(): boolean {
-    return this.sequence === 0xffffffff;
+    return this.lockRel === 0xffffffff;
   }
 
   isCoinbase(): boolean {

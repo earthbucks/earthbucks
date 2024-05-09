@@ -23,7 +23,7 @@ describe("Tx", () => {
       expect(tx.version).toBe(version);
       expect(tx.inputs).toBe(inputs);
       expect(tx.outputs).toBe(outputs);
-      expect(tx.lockNum).toBe(lockNum);
+      expect(tx.lockAbs).toBe(lockNum);
     });
   });
 
@@ -58,7 +58,7 @@ describe("Tx", () => {
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockNum).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockNum);
     });
   });
 
@@ -79,7 +79,7 @@ describe("Tx", () => {
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockNum).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockNum);
     });
   });
 
@@ -99,7 +99,7 @@ describe("Tx", () => {
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
-      expect(result.lockNum).toEqual(lockNum);
+      expect(result.lockAbs).toEqual(lockNum);
     });
   });
 
@@ -111,7 +111,7 @@ describe("Tx", () => {
       expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut).toBe(0xffffffff);
       expect(txInput.script.toIsoStr()).toEqual(script.toIsoStr());
-      expect(txInput.sequence).toBe(0xffffffff);
+      expect(txInput.lockRel).toBe(0xffffffff);
     });
   });
 
@@ -198,7 +198,7 @@ describe("Tx", () => {
       );
     });
 
-    test("hashSequence", () => {
+    test("hashLockRel", () => {
       const version = 1;
       const inputs: TxInput[] = [
         new TxInput(Buffer.alloc(32), 0, new Script(), 0xffffffff),
@@ -208,7 +208,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockNum);
 
-      const result = tx.hashSequence();
+      const result = tx.hashLockRel();
 
       expect(result).toBeInstanceOf(Buffer);
 

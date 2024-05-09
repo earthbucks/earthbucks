@@ -14,7 +14,7 @@ import IsoHex from "./iso-hex";
 
 export class HashCache {
   public hashPrevouts?: Buffer;
-  public hashSequence?: Buffer;
+  public hashLockRel?: Buffer;
   public hashOutputs?: Buffer;
 }
 
@@ -22,18 +22,18 @@ export default class Tx {
   public version: number;
   public inputs: TxInput[];
   public outputs: TxOutput[];
-  public lockNum: bigint;
+  public lockAbs: bigint;
 
   constructor(
     version: number,
     inputs: TxInput[],
     outputs: TxOutput[],
-    lockNum: bigint,
+    lockAbs: bigint,
   ) {
     this.version = version;
     this.inputs = inputs;
     this.outputs = outputs;
-    this.lockNum = lockNum;
+    this.lockAbs = lockAbs;
   }
 
   static fromIsoBuf(buf: Buffer): Result<Tx, string> {
@@ -71,7 +71,7 @@ export default class Tx {
     for (const output of this.outputs) {
       writer.writeBuffer(output.toIsoBuf());
     }
-    writer.writeUInt64BE(this.lockNum);
+    writer.writeUInt64BE(this.lockAbs);
     return writer.toIsoBuf();
   }
 
@@ -123,10 +123,10 @@ export default class Tx {
     return doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashSequence(): Buffer {
+  hashLockRel(): Buffer {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
-      writer.writeUInt32BE(input.sequence);
+      writer.writeUInt32BE(input.lockRel);
     }
     return doubleBlake3Hash(writer.toIsoBuf());
   }
@@ -151,7 +151,7 @@ export default class Tx {
     const SIGHASH_NONE = 0x02;
 
     let prevoutsHash = Buffer.alloc(32);
-    let sequenceHash = Buffer.alloc(32);
+    let lockRelHash = Buffer.alloc(32);
     let outputsHash = Buffer.alloc(32);
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
@@ -166,10 +166,10 @@ export default class Tx {
       (hashType & 0x1f) !== SIGHASH_SINGLE &&
       (hashType & 0x1f) !== SIGHASH_NONE
     ) {
-      if (!hashCache.hashSequence) {
-        hashCache.hashSequence = this.hashSequence();
+      if (!hashCache.hashLockRel) {
+        hashCache.hashLockRel = this.hashLockRel();
       }
-      sequenceHash = hashCache.hashSequence;
+      lockRelHash = hashCache.hashLockRel;
     }
 
     if (
@@ -190,15 +190,15 @@ export default class Tx {
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
     writer.writeBuffer(prevoutsHash);
-    writer.writeBuffer(sequenceHash);
+    writer.writeBuffer(lockRelHash);
     writer.writeBuffer(this.inputs[inputIndex].inputTxId);
     writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut);
     writer.writeVarIntNum(script.length);
     writer.writeBuffer(script);
     writer.writeUInt64BE(amount);
-    writer.writeUInt32BE(this.inputs[inputIndex].sequence);
+    writer.writeUInt32BE(this.inputs[inputIndex].lockRel);
     writer.writeBuffer(outputsHash);
-    writer.writeUInt64BE(this.lockNum);
+    writer.writeUInt64BE(this.lockAbs);
     writer.writeUInt8(hashType);
     return writer.toIsoBuf();
   }

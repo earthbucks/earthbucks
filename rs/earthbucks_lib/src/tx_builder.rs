@@ -42,7 +42,7 @@ impl TxBuilder {
         // therefore invalid txs. you must input enough to cover the
         // total spend amount or the output will be invalid. note also that this
         // tx is not signed.
-        self.tx.lock_num = self.lock_num;
+        self.tx.abs_lock = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;

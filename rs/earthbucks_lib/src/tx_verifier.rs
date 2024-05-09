@@ -103,7 +103,7 @@ impl<'a> TxVerifier<'a> {
     }
 
     pub fn verify_block_num(&self, block_num: u64) -> bool {
-        if self.tx.lock_num > block_num {
+        if self.tx.abs_lock > block_num {
             return false;
         }
         true

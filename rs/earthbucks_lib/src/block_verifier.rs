@@ -46,7 +46,7 @@ impl<'a> BlockVerifier<'a> {
             return false;
         }
         // 2. lockNum equals block number
-        if coinbase_tx.lock_num != self.block.header.block_num {
+        if coinbase_tx.abs_lock != self.block.header.block_num {
             return false;
         }
         // 3. version is 1

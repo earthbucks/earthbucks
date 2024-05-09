@@ -123,7 +123,7 @@ impl MineTxRaw {
               .execute(
                   sqlx::query(
                   r#"
-                  INSERT INTO builder_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, sequence, created_at)
+                  INSERT INTO builder_tx_input (tx_id, tx_in_num, input_tx_id, input_tx_out_num, script, lock_rel, created_at)
                   VALUES (?, ?, ?, ?, ?, ?, ?)
                   "#,
                   )
@@ -132,7 +132,7 @@ impl MineTxRaw {
                   .bind(tx_input.input_tx_id)
                   .bind(tx_input.input_tx_out_num)
                   .bind(tx_input.script)
-                  .bind(tx_input.sequence)
+                  .bind(tx_input.lock_rel)
                   .bind(tx_input.created_at)
              ).await?;
         }

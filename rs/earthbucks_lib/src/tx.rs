@@ -13,7 +13,7 @@ use secp256k1::{Message, PublicKey, Secp256k1};
 #[derive(Debug, Default)]
 pub struct HashCache {
     pub prevouts_hash: Option<Vec<u8>>,
-    pub sequence_hash: Option<Vec<u8>>,
+    pub lock_rel_hash: Option<Vec<u8>>,
     pub outputs_hash: Option<Vec<u8>>,
 }
 
@@ -21,7 +21,7 @@ impl HashCache {
     pub fn new() -> Self {
         Self {
             prevouts_hash: None,
-            sequence_hash: None,
+            lock_rel_hash: None,
             outputs_hash: None,
         }
     }
@@ -33,16 +33,16 @@ pub struct Tx {
     pub version: u8,
     pub inputs: Vec<TxInput>,
     pub outputs: Vec<TxOutput>,
-    pub lock_num: u64,
+    pub abs_lock: u64,
 }
 
 impl Tx {
-    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_num: u64) -> Self {
+    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, abs_lock: u64) -> Self {
         Self {
             version,
             inputs,
             outputs,
-            lock_num,
+            abs_lock,
         }
     }
 
@@ -84,7 +84,7 @@ impl Tx {
         for output in &self.outputs {
             writer.write_u8_vec(output.to_iso_buf());
         }
-        writer.write_u64_be(self.lock_num);
+        writer.write_u64_be(self.abs_lock);
         writer
     }
 
@@ -134,10 +134,10 @@ impl Tx {
         double_blake3_hash(&data).to_vec()
     }
 
-    pub fn hash_sequence(&self) -> Vec<u8> {
+    pub fn hash_lock_rel(&self) -> Vec<u8> {
         let mut data = Vec::new();
         for input in &self.inputs {
-            data.extend(&input.sequence.to_le_bytes());
+            data.extend(&input.lock_rel.to_le_bytes());
         }
         double_blake3_hash(&data).to_vec()
     }
@@ -163,7 +163,7 @@ impl Tx {
         const SIGHASH_NONE: u8 = 0x02;
 
         let mut prevouts_hash = vec![0; 32];
-        let mut sequence_hash = vec![0; 32];
+        let mut lock_rel_hash = vec![0; 32];
         let mut outputs_hash = vec![0; 32];
 
         if hash_type & SIGHASH_ANYONECANPAY == 0 {
@@ -180,13 +180,13 @@ impl Tx {
             && hash_type & 0x1f != SIGHASH_SINGLE
             && hash_type & 0x1f != SIGHASH_NONE
         {
-            // sequence_hash = self.hash_sequence();
-            if hash_cache.sequence_hash.is_none() {
-                let hash = self.hash_sequence();
-                hash_cache.sequence_hash = Some(hash);
+            // lock_rel_hash = self.hash_lock_rel();
+            if hash_cache.lock_rel_hash.is_none() {
+                let hash = self.hash_lock_rel();
+                hash_cache.lock_rel_hash = Some(hash);
             }
 
-            sequence_hash = hash_cache.sequence_hash.as_ref().unwrap().clone();
+            lock_rel_hash = hash_cache.lock_rel_hash.as_ref().unwrap().clone();
         }
 
         if hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
@@ -204,15 +204,15 @@ impl Tx {
         let mut bw = IsoBufWriter::new();
         bw.write_u8(self.version);
         bw.write_u8_vec(prevouts_hash);
-        bw.write_u8_vec(sequence_hash);
+        bw.write_u8_vec(lock_rel_hash);
         bw.write_u8_vec(self.inputs[input_index].input_tx_id.clone());
         bw.write_u32_be(self.inputs[input_index].input_tx_out_num);
         bw.write_var_int(script_u8_vec.len() as u64);
         bw.write_u8_vec(script_u8_vec);
         bw.write_u64_be(amount);
-        bw.write_u32_be(self.inputs[input_index].sequence);
+        bw.write_u32_be(self.inputs[input_index].lock_rel);
         bw.write_u8_vec(outputs_hash);
-        bw.write_u64_be(self.lock_num);
+        bw.write_u64_be(self.abs_lock);
         bw.write_u8(hash_type);
         bw.to_iso_buf()
     }
@@ -226,7 +226,7 @@ impl Tx {
     ) -> Vec<u8> {
         let mut hash_cache = HashCache {
             prevouts_hash: None,
-            sequence_hash: None,
+            lock_rel_hash: None,
             outputs_hash: None,
         };
         let preimage = self.sighash_preimage(
@@ -356,8 +356,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -374,7 +374,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_num, tx2.lock_num);
+        assert_eq!(tx.abs_lock, tx2.abs_lock);
         Ok(())
     }
 
@@ -383,8 +383,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -402,7 +402,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_num, tx2.lock_num);
+        assert_eq!(tx.abs_lock, tx2.abs_lock);
         Ok(())
     }
 
@@ -411,8 +411,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -429,7 +429,7 @@ mod tests {
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
-        assert_eq!(tx.lock_num, tx2.lock_num);
+        assert_eq!(tx.abs_lock, tx2.abs_lock);
         Ok(())
     }
 
@@ -442,7 +442,7 @@ mod tests {
         assert_eq!(tx.version, 1);
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 1);
-        assert_eq!(tx.lock_num, 0);
+        assert_eq!(tx.abs_lock, 0);
     }
 
     #[test]
@@ -450,8 +450,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -476,8 +476,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -497,8 +497,8 @@ mod tests {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let sequence = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, sequence);
+        let lock_rel = 0;
+        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -537,7 +537,7 @@ mod tests {
     }
 
     #[test]
-    fn hash_sequence() {
+    fn hash_lock_rel() {
         let version = 1;
         let inputs = vec![TxInput::new(
             vec![0; 32],
@@ -549,7 +549,7 @@ mod tests {
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
-        let result = tx.hash_sequence();
+        let result = tx.hash_lock_rel();
 
         assert_eq!(result.len(), 32);
 
