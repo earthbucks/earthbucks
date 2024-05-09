@@ -32,7 +32,7 @@ misunderstanding in the eyes of many users who believe they must pay a random
 miner to mine their transaction. This is not the case. The way the configuration
 will work for most users is that wallet providers will pay fees to miners to
 mine transactions, and the user will pay the wallet provider, or the wallet
-provider will fund thew wallet with ads and the user will pay nothing. In this
+provider will fund the wallet with ads and the user will pay nothing. In this
 configuration, which is what would be expected in any ordinary supply chain,
 there is no reason to have change fees.
 
