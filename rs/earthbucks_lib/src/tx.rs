@@ -514,13 +514,13 @@ mod tests {
     }
 
     #[test]
-    fn hash_prevouts() {
+    fn test_hash_prevouts() {
         let version = 1;
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
@@ -537,13 +537,13 @@ mod tests {
     }
 
     #[test]
-    fn hash_lock_rel() {
+    fn test_hash_lock_rel() {
         let version = 1;
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
@@ -554,19 +554,19 @@ mod tests {
         assert_eq!(result.len(), 32);
 
         let expected =
-            hex::decode("5c9bc5bfc9fe60992fb5432ba6d5da1b5e232127b6a5678f93063b2d766cfbf5")
+            hex::decode("406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931")
                 .unwrap();
         assert_eq!(result, expected);
     }
 
     #[test]
-    fn hash_outputs() {
+    fn test_hash_outputs() {
         let version = 1;
         let inputs = vec![TxInput::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
@@ -589,7 +589,7 @@ mod tests {
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
@@ -601,7 +601,7 @@ mod tests {
         let preimage = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
 
         let expected =
-            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
+            hex::decode("a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51")
                 .unwrap();
         assert_eq!(preimage, expected);
     }
@@ -613,7 +613,7 @@ mod tests {
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
 
@@ -626,7 +626,7 @@ mod tests {
         let preimage = tx.sighash_with_cache(0, script.to_iso_buf(), amount, hash_type, hash_cache);
 
         let expected =
-            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
+            hex::decode("a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51")
                 .unwrap();
         assert_eq!(preimage, expected);
     }
@@ -645,16 +645,16 @@ mod tests {
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
-            "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
+            "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_iso_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
 
         // Act
         let signature = tx.sign_no_cache(
@@ -666,7 +666,7 @@ mod tests {
         );
 
         // Assert
-        let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
+        let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
         assert_eq!(hex::encode(signature.to_iso_buf()), expected_signature_hex);
 
         // Arrange
@@ -698,16 +698,16 @@ mod tests {
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
-            0xffffffff,
+            0,
         )];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
-            "00000000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
+            "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
         let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_iso_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000ffffffff010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
         let hash_cache_1 = &mut HashCache::new();
 
         // Act
@@ -721,7 +721,7 @@ mod tests {
         );
 
         // Assert
-        let expected_signature_hex = "0176da08c70dd993c7d21f68e923f0f2585ca51a765b3a12f184176cc4277583bf544919a8c36ca9bd5d25d6b4b2a4ab6f303937725c134df86db82d78f627c7c3";
+        let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
         assert_eq!(hex::encode(signature.to_iso_buf()), expected_signature_hex);
 
         // Arrange

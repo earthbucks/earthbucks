@@ -58,12 +58,12 @@ impl TxInput {
         self.input_tx_id.iter().all(|&byte| byte == 0) && self.input_tx_out_num == 0xffffffff
     }
 
-    pub fn is_final(&self) -> bool {
-        self.lock_rel == 0xffffffff
+    pub fn is_minimal_lock(&self) -> bool {
+        self.lock_rel == 0
     }
 
     pub fn is_coinbase(&self) -> bool {
-        self.is_null() && self.is_final()
+        self.is_null() && self.is_minimal_lock()
     }
 
     pub fn from_coinbase(script: Script) -> Self {
@@ -71,7 +71,7 @@ impl TxInput {
             input_tx_id: vec![0; 32],
             input_tx_out_num: 0xffffffff,
             script,
-            lock_rel: 0xffffffff,
+            lock_rel: 0,
         }
     }
 }
@@ -161,28 +161,28 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            lock_rel: 0xffffffff,
+            lock_rel: 0,
         };
         assert!(null_tx_input.is_null());
     }
 
     #[test]
-    fn test_is_final() {
+    fn test_is_minimal_lock() {
         let tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
-            lock_rel: 0,
+            lock_rel: 0xffffffff,
         };
-        assert!(!tx_input.is_final());
+        assert!(!tx_input.is_minimal_lock());
 
         let final_tx_input = TxInput {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            lock_rel: 0xffffffff,
+            lock_rel: 0,
         };
-        assert!(final_tx_input.is_final());
+        assert!(final_tx_input.is_minimal_lock());
     }
 
     #[test]
@@ -199,7 +199,7 @@ mod tests {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
-            lock_rel: 0xffffffff,
+            lock_rel: 0,
         };
         assert!(coinbase_tx_input.is_coinbase());
     }
@@ -212,6 +212,6 @@ mod tests {
         assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
         assert_eq!(tx_input.input_tx_out_num, 0xffffffff);
         assert_eq!(tx_input.script.to_iso_str().unwrap(), "0x121212");
-        assert_eq!(tx_input.lock_rel, 0xffffffff);
+        assert_eq!(tx_input.lock_rel, 0);
     }
 }
