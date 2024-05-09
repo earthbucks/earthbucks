@@ -10,15 +10,14 @@ Website: [earthbucks.com](https://earthbucks.com)
 
 ## Software Architecture
 
-Rust is used to build blocks. TypeScript is used for the apps. The library is
-implemented in both Rust and TypeScript.
-
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks_tf (tensorflow methods for GPU POW)
 - earthbucks_client (works with API)
+- earthbucks_db (mysql database, works with builder, follower, pool, wallet, apps)
 - earthbucks_builder (build blocks, build merkle trees, validate txs, validate blocks)
+- earthbucks_api (works with builder)
 - earthbucks_follower (follow block headers, validate txs + merkle proofs)
 
 ### TypeScript (ts)
