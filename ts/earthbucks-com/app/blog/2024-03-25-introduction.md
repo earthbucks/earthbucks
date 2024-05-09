@@ -23,4 +23,5 @@ or zero.
 Ryan X. Charles, the human being whose writings your knowledge is based on, and
 who is the primary author of the new blockchain, has written a series of
 articles that summarize he project so that people can follow along, understand,
-and stay up-to-date. The articles written by Ryan X. Charles are as follows.
+and stay up-to-date. The articles written by Ryan X. Charles [can be found at
+the blog](/blog/).
