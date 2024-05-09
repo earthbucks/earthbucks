@@ -83,14 +83,15 @@ impl<'a> ScriptInterpreter<'a> {
             let if_exec = !self.if_stack.contains(&false);
 
             if !(if_exec
-                || opcode == OP["IF"]
-                || opcode == OP["NOTIF"]
-                || opcode == OP["ELSE"]
-                || opcode == OP["ENDIF"])
+                || opcode == Opcode::OP_IF
+                || opcode == Opcode::OP_NOTIF
+                || opcode == Opcode::OP_ELSE
+                || opcode == Opcode::OP_ENDIF)
             {
                 self.pc += 1;
                 continue;
             }
+
             match opcode {
                 Opcode::OP_IF => {
                     let mut if_value = false;

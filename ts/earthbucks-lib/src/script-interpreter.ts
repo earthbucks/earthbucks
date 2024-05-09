@@ -1,4 +1,4 @@
-import { OPCODE_TO_NAME, OP } from "./opcode";
+import { OPCODE_TO_NAME, OP, Opcode } from "./opcode";
 import Script from "./script";
 import Tx, { HashCache } from "./tx";
 import ScriptNum from "./script-num";
@@ -112,10 +112,10 @@ export default class ScriptInterpreter {
       if (
         !(
           ifExec ||
-          opcode == OP.IF ||
-          opcode == OP.NOTIF ||
-          opcode == OP.ELSE ||
-          opcode == OP.ENDIF
+          opcode == Opcode.OP_IF ||
+          opcode == Opcode.OP_NOTIF ||
+          opcode == Opcode.OP_ELSE ||
+          opcode == Opcode.OP_ENDIF
         )
       ) {
         this.pc++;
@@ -123,7 +123,7 @@ export default class ScriptInterpreter {
       }
 
       switch (opcode) {
-        case OP.IF:
+        case Opcode.OP_IF:
           {
             let ifValue = false;
             if (ifExec) {
@@ -137,7 +137,7 @@ export default class ScriptInterpreter {
             this.ifStack.push(ifValue);
           }
           break;
-        case OP.NOTIF:
+        case Opcode.OP_NOTIF:
           {
             let ifValue = false;
             if (ifExec) {
@@ -152,7 +152,7 @@ export default class ScriptInterpreter {
             this.ifStack.push(ifValue);
           }
           break;
-        case OP.ELSE:
+        case Opcode.OP_ELSE:
           {
             if (this.ifStack.length === 0) {
               this.errStr = "unbalanced conditional";
@@ -162,7 +162,7 @@ export default class ScriptInterpreter {
               !this.ifStack[this.ifStack.length - 1];
           }
           break;
-        case OP.ENDIF:
+        case Opcode.OP_ENDIF:
           {
             if (this.ifStack.length === 0) {
               this.errStr = "unbalanced conditional";
@@ -176,9 +176,9 @@ export default class ScriptInterpreter {
             this.stack.push(Buffer.from([0]));
           }
           break;
-        case OP.PUSHDATA1:
-        case OP.PUSHDATA2:
-        case OP.PUSHDATA4:
+        case Opcode.OP_PUSHDATA1:
+        case Opcode.OP_PUSHDATA2:
+        case Opcode.OP_PUSHDATA4:
           {
             if (chunk.buf) {
               this.stack.push(chunk.buf);
@@ -188,109 +188,109 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP["1NEGATE"]:
+        case Opcode.OP_1NEGATE:
           {
             const scriptNum = new ScriptNum(BigInt(-1));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["1"]:
+        case Opcode.OP_1:
           {
             const scriptNum = new ScriptNum(BigInt(1));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["2"]:
+        case Opcode.OP_2:
           {
             const scriptNum = new ScriptNum(BigInt(2));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["3"]:
+        case Opcode.OP_3:
           {
             const scriptNum = new ScriptNum(BigInt(3));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["4"]:
+        case Opcode.OP_4:
           {
             const scriptNum = new ScriptNum(BigInt(4));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["5"]:
+        case Opcode.OP_5:
           {
             const scriptNum = new ScriptNum(BigInt(5));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["6"]:
+        case Opcode.OP_6:
           {
             const scriptNum = new ScriptNum(BigInt(6));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["7"]:
+        case Opcode.OP_7:
           {
             const scriptNum = new ScriptNum(BigInt(7));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["8"]:
+        case Opcode.OP_8:
           {
             const scriptNum = new ScriptNum(BigInt(8));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["9"]:
+        case Opcode.OP_9:
           {
             const scriptNum = new ScriptNum(BigInt(9));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["10"]:
+        case Opcode.OP_10:
           {
             const scriptNum = new ScriptNum(BigInt(10));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["11"]:
+        case Opcode.OP_11:
           {
             const scriptNum = new ScriptNum(BigInt(11));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["12"]:
+        case Opcode.OP_12:
           {
             const scriptNum = new ScriptNum(BigInt(12));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["13"]:
+        case Opcode.OP_13:
           {
             const scriptNum = new ScriptNum(BigInt(13));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["14"]:
+        case Opcode.OP_14:
           {
             const scriptNum = new ScriptNum(BigInt(14));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["15"]:
+        case Opcode.OP_15:
           {
             const scriptNum = new ScriptNum(BigInt(15));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["16"]:
+        case Opcode.OP_16:
           {
             const scriptNum = new ScriptNum(BigInt(16));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.VERIFY:
+        case Opcode.OP_VERIFY:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -303,12 +303,12 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP["RETURN"]:
+        case Opcode.OP_RETURN:
           {
             break loop;
           }
           break;
-        case OP.TOALTSTACK:
+        case Opcode.OP_TOALTSTACK:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -317,7 +317,7 @@ export default class ScriptInterpreter {
             this.altStack.push(this.stack.pop() as Buffer);
           }
           break;
-        case OP.FROMALTSTACK:
+        case Opcode.OP_FROMALTSTACK:
           {
             if (this.altStack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -326,7 +326,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.altStack.pop() as Buffer);
           }
           break;
-        case OP["2DROP"]:
+        case Opcode.OP_2DROP:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -336,7 +336,7 @@ export default class ScriptInterpreter {
             this.stack.pop();
           }
           break;
-        case OP["2DUP"]:
+        case Opcode.OP_2DUP:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -346,7 +346,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - 2]);
           }
           break;
-        case OP["3DUP"]:
+        case Opcode.OP_3DUP:
           {
             if (this.stack.length < 3) {
               this.errStr = "invalid stack operation";
@@ -357,7 +357,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - 3]);
           }
           break;
-        case OP["2OVER"]:
+        case Opcode.OP_2OVER:
           {
             if (this.stack.length < 4) {
               this.errStr = "invalid stack operation";
@@ -367,7 +367,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - 4]);
           }
           break;
-        case OP["2ROT"]:
+        case Opcode.OP_2ROT:
           {
             // (x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2)
             if (this.stack.length < 6) {
@@ -379,7 +379,7 @@ export default class ScriptInterpreter {
             this.stack.push(spliced[1]);
           }
           break;
-        case OP["2SWAP"]:
+        case Opcode.OP_2SWAP:
           {
             // (x1 x2 x3 x4 -- x3 x4 x1 x2)
             if (this.stack.length < 4) {
@@ -391,7 +391,7 @@ export default class ScriptInterpreter {
             this.stack.push(spliced[1]);
           }
           break;
-        case OP.IFDUP:
+        case Opcode.OP_IFDUP:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -403,13 +403,13 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP.DEPTH:
+        case Opcode.OP_DEPTH:
           {
             let scriptNum = new ScriptNum(BigInt(this.stack.length));
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.DROP:
+        case Opcode.OP_DROP:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -418,7 +418,7 @@ export default class ScriptInterpreter {
             this.stack.pop();
           }
           break;
-        case OP.DUP:
+        case Opcode.OP_DUP:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -427,7 +427,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - 1]);
           }
           break;
-        case OP.NIP:
+        case Opcode.OP_NIP:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -438,7 +438,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf as Buffer);
           }
           break;
-        case OP.OVER:
+        case Opcode.OP_OVER:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -447,7 +447,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - 2]);
           }
           break;
-        case OP.PICK:
+        case Opcode.OP_PICK:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -464,7 +464,7 @@ export default class ScriptInterpreter {
             this.stack.push(this.stack[this.stack.length - num - 1]);
           }
           break;
-        case OP.ROLL:
+        case Opcode.OP_ROLL:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -482,7 +482,7 @@ export default class ScriptInterpreter {
             this.stack.push(spliced[0]);
           }
           break;
-        case OP.ROT:
+        case Opcode.OP_ROT:
           {
             // (x1 x2 x3 -- x2 x3 x1)
             if (this.stack.length < 3) {
@@ -493,7 +493,7 @@ export default class ScriptInterpreter {
             this.stack.push(spliced[0]);
           }
           break;
-        case OP.SWAP:
+        case Opcode.OP_SWAP:
           {
             // (x1 x2 -- x2 x1)
             if (this.stack.length < 2) {
@@ -504,7 +504,7 @@ export default class ScriptInterpreter {
             this.stack.push(spliced[0]);
           }
           break;
-        case OP.TUCK:
+        case Opcode.OP_TUCK:
           {
             // (x1 x2 -- x2 x1 x2)
             if (this.stack.length < 2) {
@@ -518,7 +518,7 @@ export default class ScriptInterpreter {
             );
           }
           break;
-        case OP.CAT:
+        case Opcode.OP_CAT:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -529,7 +529,7 @@ export default class ScriptInterpreter {
             this.stack.push(Buffer.concat([buf2, buf1]));
           }
           break;
-        case OP.SUBSTR:
+        case Opcode.OP_SUBSTR:
           {
             if (this.stack.length < 3) {
               this.errStr = "invalid stack operation";
@@ -545,7 +545,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf.subarray(Number(offset), Number(offset + len)));
           }
           break;
-        case OP.LEFT:
+        case Opcode.OP_LEFT:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -560,7 +560,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf.subarray(0, Number(len)));
           }
           break;
-        case OP.RIGHT:
+        case Opcode.OP_RIGHT:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -575,7 +575,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf.subarray(buf.length - Number(len)));
           }
           break;
-        case OP.SIZE:
+        case Opcode.OP_SIZE:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -586,7 +586,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.INVERT:
+        case Opcode.OP_INVERT:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -599,7 +599,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf);
           }
           break;
-        case OP.AND:
+        case Opcode.OP_AND:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -618,7 +618,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf);
           }
           break;
-        case OP.OR:
+        case Opcode.OP_OR:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -637,7 +637,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf);
           }
           break;
-        case OP.XOR:
+        case Opcode.OP_XOR:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -656,7 +656,7 @@ export default class ScriptInterpreter {
             this.stack.push(buf);
           }
           break;
-        case OP.EQUAL:
+        case Opcode.OP_EQUAL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -668,7 +668,7 @@ export default class ScriptInterpreter {
             this.stack.push(Buffer.from([equal ? 1 : 0]));
           }
           break;
-        case OP.EQUALVERIFY:
+        case Opcode.OP_EQUALVERIFY:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -682,7 +682,7 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP["1ADD"]:
+        case Opcode.OP_1ADD:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -693,7 +693,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["1SUB"]:
+        case Opcode.OP_1SUB:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -704,7 +704,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["2MUL"]:
+        case Opcode.OP_2MUL:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -715,7 +715,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["2DIV"]:
+        case Opcode.OP_2DIV:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -726,7 +726,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.NEGATE:
+        case Opcode.OP_NEGATE:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -737,7 +737,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.ABS:
+        case Opcode.OP_ABS:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -748,7 +748,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.NOT:
+        case Opcode.OP_NOT:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -759,7 +759,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP["0NOTEQUAL"]:
+        case Opcode.OP_0NOTEQUAL:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -770,7 +770,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum.toIsoBuf());
           }
           break;
-        case OP.ADD:
+        case Opcode.OP_ADD:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -782,7 +782,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.SUB:
+        case Opcode.OP_SUB:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -794,7 +794,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.MUL:
+        case Opcode.OP_MUL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -806,7 +806,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.DIV:
+        case Opcode.OP_DIV:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -822,7 +822,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.MOD:
+        case Opcode.OP_MOD:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -838,7 +838,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.LSHIFT:
+        case Opcode.OP_LSHIFT:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -854,7 +854,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.RSHIFT:
+        case Opcode.OP_RSHIFT:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -870,7 +870,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.BOOLAND:
+        case Opcode.OP_BOOLAND:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -883,7 +883,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.BOOLOR:
+        case Opcode.OP_BOOLOR:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -896,7 +896,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.NUMEQUAL:
+        case Opcode.OP_NUMEQUAL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -908,7 +908,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.NUMEQUALVERIFY:
+        case Opcode.OP_NUMEQUALVERIFY:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -922,7 +922,7 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP.NUMNOTEQUAL:
+        case Opcode.OP_NUMNOTEQUAL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -934,7 +934,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.LESSTHAN:
+        case Opcode.OP_LESSTHAN:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -946,7 +946,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.GREATERTHAN:
+        case Opcode.OP_GREATERTHAN:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -958,7 +958,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.LESSTHANOREQUAL:
+        case Opcode.OP_LESSTHANOREQUAL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -970,7 +970,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.GREATERTHANOREQUAL:
+        case Opcode.OP_GREATERTHANOREQUAL:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -982,7 +982,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.MIN:
+        case Opcode.OP_MIN:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -995,7 +995,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.MAX:
+        case Opcode.OP_MAX:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -1008,7 +1008,7 @@ export default class ScriptInterpreter {
             this.stack.push(scriptNum1.toIsoBuf());
           }
           break;
-        case OP.WITHIN:
+        case Opcode.OP_WITHIN:
           {
             // (x min max -- out)
             if (this.stack.length < 3) {
@@ -1024,7 +1024,7 @@ export default class ScriptInterpreter {
             this.stack.push(Buffer.from([within ? 1 : 0]));
           }
           break;
-        case OP.BLAKE3:
+        case Opcode.OP_BLAKE3:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -1034,7 +1034,7 @@ export default class ScriptInterpreter {
             this.stack.push(blake3Hash(buf));
           }
           break;
-        case OP.DOUBLEBLAKE3:
+        case Opcode.OP_DOUBLEBLAKE3:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -1044,8 +1044,8 @@ export default class ScriptInterpreter {
             this.stack.push(doubleBlake3Hash(buf));
           }
           break;
-        case OP.CHECKSIG:
-        case OP.CHECKSIGVERIFY:
+        case Opcode.OP_CHECKSIG:
+        case Opcode.OP_CHECKSIGVERIFY:
           {
             if (this.stack.length < 2) {
               this.errStr = "invalid stack operation";
@@ -1081,8 +1081,8 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP.CHECKMULTISIG:
-        case OP.CHECKMULTISIGVERIFY:
+        case Opcode.OP_CHECKMULTISIG:
+        case Opcode.OP_CHECKMULTISIGVERIFY:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -1153,7 +1153,7 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP.CHECKLOCKABSVERIFY:
+        case Opcode.OP_CHECKLOCKABSVERIFY:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
@@ -1170,7 +1170,7 @@ export default class ScriptInterpreter {
             }
           }
           break;
-        case OP.CHECKLOCKRELVERIFY:
+        case Opcode.OP_CHECKLOCKRELVERIFY:
           {
             if (this.stack.length < 1) {
               this.errStr = "invalid stack operation";
