@@ -19,14 +19,14 @@ export default function Index() {
           <img
             src="/earthbucks-text-white.png"
             alt="EarthBucks"
-            className="mx-auto block h-[100px]"
+            className="mx-auto block w-[250px]"
           />
         </div>
         <div className="my-4 block dark:hidden">
           <img
             src="/earthbucks-text-black.png"
             alt="EarthBucks"
-            className="mx-auto block h-[100px]"
+            className="mx-auto block w-[250px]"
           />
         </div>
         <div className="mb-4 text-center text-black dark:text-white">
