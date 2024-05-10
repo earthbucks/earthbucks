@@ -85,7 +85,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
         }
         let userPubKey: PubKey;
         try {
-          userPubKey = PubKey.fromIsoBuf(signinResponse.signedMessage.pubKey).unwrap();
+          userPubKey = PubKey.fromIsoBuf(
+            signinResponse.signedMessage.pubKey,
+          ).unwrap();
         } catch (err) {
           throw new Response("Invalid user public key", { status: 400 });
         }

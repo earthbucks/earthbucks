@@ -6,7 +6,7 @@ import { json, redirect, useNavigate } from "@remix-run/react";
 import { Buffer } from "buffer";
 import { getUserPubKey } from "~/.server/session";
 import { $path } from "remix-routes";
-import { $image } from "~/util";
+import { $image } from "~/images";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);

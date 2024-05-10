@@ -16,7 +16,7 @@ import PubKey from "earthbucks-lib/src/pub-key";
 import { getSession, getUserPubKey } from "~/.server/session";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 import { $path } from "remix-routes";
-import { $image } from "~/util";
+import { $image } from "~/images";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);

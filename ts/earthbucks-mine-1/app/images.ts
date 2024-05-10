@@ -1,7 +1,3 @@
-export const classNames = (...classes: String[]) => {
-  return classes.filter(Boolean).join(" ");
-};
-
 type ImagePath =
   | "/artintellica-button-128.png"
   | "/black-button-128.png"
@@ -11,19 +7,17 @@ type ImagePath =
   | "/compubutton-text-white.png"
   | "/computcha-bottlecap-128.png"
   | "/compute-circle-128.png"
-  | "/earth-coin-2.png"
-  | "/earthbucks-eb.png"
-  | "/earthbucks-eb-2.png"
-  | "/earthbucks-eb-3.png"
-  | "/earthbucks-earth.png"
+  | "/earthbucks-42-128.png"
+  | "/earthbucks-earth-1-128.png"
+  | "/earthbucks-42.png"
   | "/earthbucks-coin-1.png"
   | "/earthbucks-coin-128.png"
   | "/earthbucks-coin-3-128.png"
   | "/earthbucks-coin-3.png"
+  | "/earthbucks-mine-1-text-black.png"
+  | "/earthbucks-mine-1-text-white.png"
   | "/earthbucks-text-black.png"
   | "/earthbucks-text-white.png"
-  | "/earthbucks-wallet-2-big.png"
-  | "/earthbucks-wallet-2.png"
   | "/error-2-96.png"
   | "/imp-avatar-bw.png"
   | "/mining-button-128.png"

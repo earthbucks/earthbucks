@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
-import { $image, classNames } from "~/util";
+import { $image } from "~/images";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/iso-hex";

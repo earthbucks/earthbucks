@@ -10,7 +10,7 @@ import Footer from "~/components/footer";
 import { Buffer } from "buffer";
 import { blake3PowAsync, blake3Sync } from "earthbucks-blake3/src/blake3-async";
 import { $path } from "remix-routes";
-import { $image } from "~/util";
+import { $image } from "~/images";
 
 export const meta: MetaFunction = () => {
   return [

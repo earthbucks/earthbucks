@@ -1,4 +1,4 @@
-import { $image } from "~/util";
+import { $image } from "~/images";
 import Logo from "./logo";
 
 export default function Header() {

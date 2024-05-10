@@ -1,4 +1,4 @@
-import { $image } from "~/util";
+import { $image } from "~/images";
 
 export default function Logo() {
   return (

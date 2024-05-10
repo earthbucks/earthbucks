@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import PubKey from "earthbucks-lib/src/pub-key";
 import PrivKey from "earthbucks-lib/src/priv-key";
-import { $image, classNames } from "~/util";
+import { $image } from "~/images";
 import SigninChallenge from "earthbucks-lib/src/auth/signin-challenge";
 import SigninResponse from "earthbucks-lib/src/auth/signin-response";
 import { isValid } from "earthbucks-lib/src/iso-hex";
@@ -26,6 +26,7 @@ import { signin, signout } from "./api.auth.$method";
 import { DOMAIN, DOMAIN_PUB_KEY_STR } from "~/.server/config";
 import { getUserPubKey } from "~/.server/session";
 import { $path } from "remix-routes";
+import { twMerge } from "tailwind-merge";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   let userPubKey = await getUserPubKey(request);
@@ -144,7 +145,7 @@ export default function Signin() {
               }
             }}
             value={publicKey}
-            className={classNames(
+            className={twMerge(
               "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPublicKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"
@@ -179,7 +180,7 @@ export default function Signin() {
               }
             }}
             value={privateKey}
-            className={classNames(
+            className={twMerge(
               "w-full flex-grow overflow-hidden rounded-full border-[1px] bg-white p-2 pl-[36px] text-gray-600 focus:border-primary-blue-500 focus:outline focus:outline-2 focus:outline-primary-blue-500 dark:bg-black dark:text-gray-400",
               isPrivateKeyValid === null
                 ? "border-gray-700 dark:border-gray-300"

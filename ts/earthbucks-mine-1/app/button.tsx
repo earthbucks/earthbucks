@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { $image, classNames } from "./util";
+import { $image } from "./images";
 import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
+import { twMerge } from "tailwind-merge";
 
 function Spinner() {
   return (
@@ -230,7 +231,7 @@ function Slider({
         <div className="flex h-full">
           <div className="relative h-full flex-shrink">
             <div
-              className={classNames(
+              className={twMerge(
                 "absolute z-40 m-[-8px] h-[52px] w-[52px] p-[8px]",
                 sliderState === "dragging"
                   ? "rounded-full outline outline-4 outline-[#42f6eb]"
@@ -257,7 +258,7 @@ function Slider({
               <img src={buttonSrc} alt="" className="h-[36px] w-[36px]" />
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "computing"
                   ? "absolute top-0 block h-[36px] w-[36px]"
                   : "hidden",
@@ -266,7 +267,7 @@ function Slider({
               <Spinner />
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "success"
                   ? "absolute top-0 flex h-[36px] w-[36px] items-center"
                   : "hidden",
@@ -288,7 +289,7 @@ function Slider({
               </div>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "finished-success"
                   ? "absolute top-0 flex h-[36px] w-[36px] items-center"
                   : "hidden",
@@ -304,7 +305,7 @@ function Slider({
               </div>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "error"
                   ? "absolute top-0 flex h-[36px] w-[36px] items-center"
                   : "hidden",
@@ -326,7 +327,7 @@ function Slider({
               </div>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "finished-error"
                   ? "absolute top-0 flex h-[36px] w-[36px] items-center"
                   : "hidden",
@@ -344,7 +345,7 @@ function Slider({
           </div>
           <div className="flex h-full flex-grow items-center overflow-x-hidden">
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "disabled" ? "flex items-center" : "hidden",
                 "",
               )}
@@ -354,7 +355,7 @@ function Slider({
               </span>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "initial" || sliderState === "dragging"
                   ? "flex items-center"
                   : "hidden",
@@ -369,7 +370,7 @@ function Slider({
             </div>
 
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "computing"
                   ? "flex animate-pulse items-center"
                   : "hidden",
@@ -380,7 +381,7 @@ function Slider({
               </span>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "success"
                   ? "flex animate-pulse items-center"
                   : "hidden",
@@ -392,7 +393,7 @@ function Slider({
             </div>
 
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "finished-success"
                   ? "flex items-center"
                   : "hidden",
@@ -403,7 +404,7 @@ function Slider({
               </span>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "error"
                   ? "flex animate-pulse items-center"
                   : "hidden",
@@ -414,7 +415,7 @@ function Slider({
               </span>
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 sliderState === "finished-error"
                   ? "flex items-center"
                   : "hidden",
@@ -427,7 +428,7 @@ function Slider({
           </div>
           <div className="relative z-30 h-full flex-shrink">
             <div
-              className={classNames(
+              className={twMerge(
                 "aspect-square h-full rounded-full",
                 sliderState === "initial"
                   ? "outline-dotted outline-2 outline-[#42f6eb]"
@@ -449,7 +450,7 @@ function Slider({
               />
             </div>
             <div
-              className={classNames(
+              className={twMerge(
                 "aspect-square h-full rounded-full",
                 sliderState === "error"
                   ? "outline-dashed outline-2 outline-black"
@@ -465,7 +466,7 @@ function Slider({
             <img
               src={buttonSrc}
               alt=""
-              className={classNames(
+              className={twMerge(
                 "relative z-[35] h-full",
                 sliderState === "computing" ? "block animate-ping" : "hidden",
               )}
@@ -519,8 +520,8 @@ export default function Button({
   let buttonSrc = "";
   if (buttonMode === "standard") {
     buttonSrc = $image("/button-128.png");
-  // } else if (buttonMode === "pay") {
-  //   buttonSrc = $image("/earthbucks-42-128.png");
+    // } else if (buttonMode === "pay") {
+    //   buttonSrc = $image("/earthbucks-42-128.png");
   } else if (buttonMode === "pay") {
     buttonSrc = $image("/earthbucks-earth-1-128.png");
   } else if (buttonMode === "computcha") {

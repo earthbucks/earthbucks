@@ -43,6 +43,7 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
     "remix-routes": "^1.7.3",
+    "tailwind-merge": "^2.3.0",
     "toml": "^3.0.0",
     "vite-plugin-wasm": "^3.3.0"
   },

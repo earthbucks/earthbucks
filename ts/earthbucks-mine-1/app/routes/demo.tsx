@@ -3,7 +3,7 @@ import Button from "../button";
 import { Buffer } from "buffer";
 import PowGpu from "../.client/pow-gpu";
 import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
-import { $image } from "~/util";
+import { $image } from "~/images";
 
 export const meta: MetaFunction = () => {
   return [
