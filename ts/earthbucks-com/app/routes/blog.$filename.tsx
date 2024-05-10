@@ -6,7 +6,7 @@ import {
 import Logo from "~/components/logo";
 import blogPosts from "~/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
-import MyMarkdown from "~/components/MyMarkdown";
+import MyMarkdown from "~/components/my-markdown";
 import { $path } from "remix-routes";
 import Footer from "~/components/footer";
 import fs from "fs";

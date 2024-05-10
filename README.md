@@ -2,6 +2,10 @@
 
 <img src="./earthbucks.png" width="200" height="200">
 
+Small casual transactions for everybody on Planet Earth
+
+## Launch Information
+
 42 million EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Genesis block in July 2024.
