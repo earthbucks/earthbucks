@@ -519,8 +519,10 @@ export default function Button({
   let buttonSrc = "";
   if (buttonMode === "standard") {
     buttonSrc = $image("/button-128.png");
+  // } else if (buttonMode === "pay") {
+  //   buttonSrc = $image("/earthbucks-42-128.png");
   } else if (buttonMode === "pay") {
-    buttonSrc = $image("/earthbucks-42-128.png");
+    buttonSrc = $image("/earthbucks-earth-1-128.png");
   } else if (buttonMode === "computcha") {
     buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
