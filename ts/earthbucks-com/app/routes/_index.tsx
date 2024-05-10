@@ -46,6 +46,14 @@ export default function Index() {
           </Link>{" "}
           &middot;{" "}
           <a
+            href="https://x.com/earthbucks_com"
+            target="_blank"
+            className="underline"
+          >
+            X (Twitter)
+          </a>{" "}
+          &middot;{" "}
+          <a
             href="https://t.me/+e-PoBNNgdDU3MDUx"
             target="_blank"
             className="underline"
@@ -62,11 +70,11 @@ export default function Index() {
           </a>{" "}
           &middot;{" "}
           <a
-            href="https://x.com/earthbucks_com"
+            href="https://www.reddit.com/r/earthbucks/"
             target="_blank"
             className="underline"
           >
-            X (Twitter)
+            reddit
           </a>{" "}
           &middot;{" "}
           <a
@@ -75,14 +83,6 @@ export default function Index() {
             className="underline"
           >
             GitHub
-          </a>{" "}
-          &middot;{" "}
-          <a
-            href="https://www.reddit.com/r/earthbucks/"
-            target="_blank"
-            className="underline"
-          >
-            reddit
           </a>
         </div>
       </div>
