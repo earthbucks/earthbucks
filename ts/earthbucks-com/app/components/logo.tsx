@@ -14,13 +14,4 @@ export default function Logo() {
       </div>
     </div>
   );
-  // return (
-  //   <div className="mx-auto block aspect-square w-[120px] ">
-  //     <img
-  //       src={$image("/earthbucks-wallet-2-big.png")}
-  //       alt=""
-  //       className="block"
-  //     />
-  //   </div>
-  // );
 }

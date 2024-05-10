@@ -6,9 +6,9 @@ Small casual transactions for everybody on Planet Earth
 
 ## Launch Information
 
-42 million EBX. No pre-mine. GPUs. Big blocks. Script.
+Launch: **Mining starts July 2024**
 
-Genesis block in July 2024.
+42 million EBX. No pre-mine. GPUs. Big blocks. Script.
 
 Website: [earthbucks.com](https://earthbucks.com)
 
