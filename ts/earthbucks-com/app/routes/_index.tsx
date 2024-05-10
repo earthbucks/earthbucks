@@ -19,14 +19,14 @@ export default function Index() {
           <img
             src="/earthbucks-text-white.png"
             alt="EarthBucks"
-            className="mx-auto block h-[50px]"
+            className="mx-auto block h-[100px]"
           />
         </div>
         <div className="my-4 block dark:hidden">
           <img
             src="/earthbucks-text-black.png"
             alt="EarthBucks"
-            className="mx-auto block h-[50px]"
+            className="mx-auto block h-[100px]"
           />
         </div>
         <div className="mb-4 text-center text-black dark:text-white">
@@ -36,9 +36,10 @@ export default function Index() {
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
       <div className="mb-y mx-auto">
         <div className="text-center text-black dark:text-white">
-          <h2 className='text-2xl font-bold'>Mining starts July 2024</h2>
-          <br />
           42 million EBX. No pre-mine. GPUs. Big blocks. Script.
+          <br />
+          <br />
+          July 2024.
           <br />
           <br />
           <Link to="/blog" className="underline">
