@@ -1,8 +1,9 @@
-import { OP } from "./opcode";
+import { OP, Opcode } from "./opcode";
 import ScriptChunk from "./script-chunk";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
+import ScriptNum from "./script-num";
 
 export default class Script {
   chunks: ScriptChunk[] = [];
@@ -68,19 +69,19 @@ export default class Script {
           .readUInt8()
           .mapErr((err) => `Unable to read opcode: ${err}`)
           .unwrap();
-        if (chunk.opcode <= OP.PUSHDATA4) {
+        if (chunk.opcode <= Opcode.OP_PUSHDATA4) {
           let len = chunk.opcode;
-          if (len === OP.PUSHDATA1) {
+          if (len === Opcode.OP_PUSHDATA1) {
             len = reader
               .readUInt8()
               .mapErr((err) => `Unable to read pushdata 1: ${err}`)
               .unwrap();
-          } else if (len === OP.PUSHDATA2) {
+          } else if (len === Opcode.OP_PUSHDATA2) {
             len = reader
               .readUInt16BE()
               .mapErr((err) => `Unable to read pushdata 2: ${err}`)
               .unwrap();
-          } else if (len === OP.PUSHDATA4) {
+          } else if (len === Opcode.OP_PUSHDATA4) {
             len = reader
               .readUInt32BE()
               .mapErr((err) => `Unable to read pushdata 4: ${err}`)
@@ -99,46 +100,46 @@ export default class Script {
     }
   }
 
-  static fromAddressOutput(pkh: Buffer): Script {
+  static fromPkhOutput(pkh: Buffer): Script {
     return new Script([
-      new ScriptChunk(OP.DUP),
-      new ScriptChunk(OP.DOUBLEBLAKE3),
+      new ScriptChunk(Opcode.OP_DUP),
+      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
       ScriptChunk.fromData(pkh),
-      new ScriptChunk(OP.EQUALVERIFY),
-      new ScriptChunk(OP.CHECKSIG),
+      new ScriptChunk(Opcode.OP_EQUALVERIFY),
+      new ScriptChunk(Opcode.OP_CHECKSIG),
     ]);
   }
 
-  isAddressOutput(): boolean {
+  isPkhOutput(): boolean {
     return (
       this.chunks.length === 5 &&
-      this.chunks[0].opcode === OP.DUP &&
-      this.chunks[1].opcode === OP.DOUBLEBLAKE3 &&
-      this.chunks[2].opcode === OP.PUSHDATA1 &&
+      this.chunks[0].opcode === Opcode.OP_DUP &&
+      this.chunks[1].opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[2].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[2].buf?.length === 32 &&
-      this.chunks[3].opcode === OP.EQUALVERIFY &&
-      this.chunks[4].opcode === OP.CHECKSIG
+      this.chunks[3].opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[4].opcode === Opcode.OP_CHECKSIG
     );
   }
 
-  static fromAddressInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+  static fromPkhInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
     ]);
   }
 
-  isAddressInput(): boolean {
+  isPkhInput(): boolean {
     return (
       this.chunks.length === 2 &&
-      this.chunks[0].opcode === OP["PUSHDATA1"] &&
+      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === 65 &&
-      this.chunks[1].opcode === OP["PUSHDATA1"] &&
+      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === 33
     );
   }
 
-  static fromAddressInputPlaceholder(): Script {
+  static fromPkhInputPlaceholder(): Script {
     const sig = Buffer.alloc(65);
     sig.fill(0);
     const pubKey = Buffer.alloc(33);
@@ -154,7 +155,7 @@ export default class Script {
       ScriptChunk.fromSmallNumber(m),
       ...pubKeys.map(ScriptChunk.fromData),
       ScriptChunk.fromSmallNumber(pubKeys.length),
-      new ScriptChunk(OP.CHECKMULTISIG),
+      new ScriptChunk(Opcode.OP_CHECKMULTISIG),
     ]);
   }
 
@@ -162,7 +163,149 @@ export default class Script {
     return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
+  // PKH1YX = PubKey Hash with 1 Year Expiry
+  static fromPkh1yxOutput(pkh: Buffer): Script {
+    const lockRel = 52416;
+    return new Script([
+      new ScriptChunk(Opcode.OP_IF),
+      new ScriptChunk(Opcode.OP_DUP),
+      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
+      ScriptChunk.fromData(pkh),
+      new ScriptChunk(Opcode.OP_EQUALVERIFY),
+      new ScriptChunk(Opcode.OP_CHECKSIG),
+      new ScriptChunk(Opcode.OP_ELSE),
+      ScriptChunk.fromData(ScriptNum.fromNumber(lockRel).toIsoBuf()),
+      new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
+      new ScriptChunk(Opcode.OP_DROP),
+      new ScriptChunk(Opcode.OP_1),
+      new ScriptChunk(Opcode.OP_ENDIF),
+    ]);
+  }
+
+  isPkh1yxOutput(): boolean {
+    return (
+      this.chunks.length === 12 &&
+      this.chunks[0].opcode === Opcode.OP_IF &&
+      this.chunks[1].opcode === Opcode.OP_DUP &&
+      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[3].buf?.length === 32 &&
+      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6].opcode === Opcode.OP_ELSE &&
+      this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
+      this.chunks[7].buf?.readUInt16BE(0) === 52416 &&
+      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[8].opcode === Opcode.OP_DROP &&
+      this.chunks[10].opcode === Opcode.OP_1 &&
+      this.chunks[11].opcode === Opcode.OP_ENDIF
+    );
+  }
+
+  // PKH2WX = PubKey Hash with 2 Week Expiry
+  static fromPkh2wxOutput(pkh: Buffer): Script {
+    const lockRel = 2016;
+    return new Script([
+      new ScriptChunk(Opcode.OP_IF),
+      new ScriptChunk(Opcode.OP_DUP),
+      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
+      ScriptChunk.fromData(pkh),
+      new ScriptChunk(Opcode.OP_EQUALVERIFY),
+      new ScriptChunk(Opcode.OP_CHECKSIG),
+      new ScriptChunk(Opcode.OP_ELSE),
+      ScriptChunk.fromData(ScriptNum.fromNumber(lockRel).toIsoBuf()),
+      new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
+      new ScriptChunk(Opcode.OP_DROP),
+      new ScriptChunk(Opcode.OP_1),
+      new ScriptChunk(Opcode.OP_ENDIF),
+    ]);
+  }
+
+  isPkh2wxOutput(): boolean {
+    return (
+      this.chunks.length === 12 &&
+      this.chunks[0].opcode === Opcode.OP_IF &&
+      this.chunks[1].opcode === Opcode.OP_DUP &&
+      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[3].buf?.length === 32 &&
+      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6].opcode === Opcode.OP_ELSE &&
+      this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
+      this.chunks[7].buf?.readUInt16BE(0) === 2016 &&
+      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[9].opcode === Opcode.OP_DROP &&
+      this.chunks[10].opcode === Opcode.OP_1 &&
+      this.chunks[11].opcode === Opcode.OP_ENDIF
+    );
+  }
+
+  // PKH1HX = PubKey Hash with 1 Hour Expiry
+  static fromPkh1hxOutput(pkh: Buffer): Script {
+    const lockRel = 6;
+    return new Script([
+      new ScriptChunk(Opcode.OP_IF),
+      new ScriptChunk(Opcode.OP_DUP),
+      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
+      ScriptChunk.fromData(pkh),
+      new ScriptChunk(Opcode.OP_EQUALVERIFY),
+      new ScriptChunk(Opcode.OP_CHECKSIG),
+      new ScriptChunk(Opcode.OP_ELSE),
+      ScriptChunk.fromSmallNumber(lockRel),
+      new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
+      new ScriptChunk(Opcode.OP_DROP),
+      new ScriptChunk(Opcode.OP_1),
+      new ScriptChunk(Opcode.OP_ENDIF),
+    ]);
+  }
+
+  isPkh1hxOutput(): boolean {
+    return (
+      this.chunks.length === 12 &&
+      this.chunks[0].opcode === Opcode.OP_IF &&
+      this.chunks[1].opcode === Opcode.OP_DUP &&
+      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[3].buf?.length === 32 &&
+      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6].opcode === Opcode.OP_ELSE &&
+      this.chunks[7].opcode === Opcode.OP_6 &&
+      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[9].opcode === Opcode.OP_DROP &&
+      this.chunks[10].opcode === Opcode.OP_1 &&
+      this.chunks[11].opcode === Opcode.OP_ENDIF
+    );
+  }
+
+  static fromExpiredInput(): Script {
+    return new Script([new ScriptChunk(Opcode.OP_0)]);
+  }
+
+  isExpiredInput(): boolean {
+    return this.chunks.length === 1 && this.chunks[0].opcode === Opcode.OP_0;
+  }
+
+  static fromUnexpiredPkhInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+    return new Script([
+      ScriptChunk.fromData(sigBuf),
+      ScriptChunk.fromData(pubKeyBuf),
+      new ScriptChunk(Opcode.OP_1),
+    ]);
+  }
+
   isPushOnly(): boolean {
-    return this.chunks.every((chunk) => chunk.opcode <= OP.PUSHDATA4);
+    return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_PUSHDATA4);
+  }
+
+  isStandardInput(): boolean {
+    return this.isPushOnly();
+  }
+
+  isStandardOutput(): boolean {
+    return (
+      this.isPkh2wxOutput() || this.isPkh1yxOutput() || this.isPkh1hxOutput()
+    );
   }
 }

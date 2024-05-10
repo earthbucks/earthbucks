@@ -41,13 +41,13 @@ export default class TxBuilder {
     let changeAmount = BigInt(0);
     let inputAmount = BigInt(0);
     for (const [txOutId, txOut] of this.txOutMap.map) {
-      const isAddressOutput = txOut.script.isAddressOutput();
+      const isAddressOutput = txOut.script.isPkhOutput();
       if (!isAddressOutput) {
         continue;
       }
       const txIdHash = TxOutputMap.nameToTxIdHash(txOutId);
       const outputIndex = TxOutputMap.nameToOutputIndex(txOutId);
-      const inputScript = Script.fromAddressInputPlaceholder();
+      const inputScript = Script.fromPkhInputPlaceholder();
       const txInput = new TxInput(
         txIdHash,
         outputIndex,

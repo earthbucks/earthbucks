@@ -23,12 +23,12 @@ export default class TxSigner {
     if (!txOut) {
       return false;
     }
-    if (!txOut.script.isAddressOutput()) {
+    if (!txOut.script.isPkhOutput()) {
       return false;
     }
     const pkh = txOut.script.chunks[2].buf as Buffer;
     const inputScript = txInput.script;
-    if (!inputScript.isAddressInput()) {
+    if (!inputScript.isPkhInput()) {
       return false;
     }
     const key = this.pkhKeyMap.get(pkh);

@@ -63,31 +63,27 @@ describe("Script", () => {
 
   describe("pubkeyhash", () => {
     test("fromAddressOutput", () => {
-      const script = Script.fromAddressOutput(
-        Buffer.from("01".repeat(32), "hex"),
-      );
+      const script = Script.fromPkhOutput(Buffer.from("01".repeat(32), "hex"));
       expect(script.toIsoStr().unwrap()).toBe(
         "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
       );
     });
 
     test("isAddressOutput", () => {
-      const script = Script.fromAddressOutput(
-        Buffer.from("01".repeat(32), "hex"),
-      );
-      expect(script.isAddressOutput()).toBe(true);
+      const script = Script.fromPkhOutput(Buffer.from("01".repeat(32), "hex"));
+      expect(script.isPkhOutput()).toBe(true);
     });
 
     test("isAddressOutput false", () => {
       const script = Script.fromIsoStr(
         "DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG",
       ).unwrap();
-      expect(script.isAddressOutput()).toBe(false);
+      expect(script.isPkhOutput()).toBe(false);
     });
 
     test("fromAddressInputPlacholder", () => {
-      const script = Script.fromAddressInputPlaceholder();
-      expect(script.isAddressInput()).toBe(true);
+      const script = Script.fromPkhInputPlaceholder();
+      expect(script.isPkhInput()).toBe(true);
     });
   });
 });

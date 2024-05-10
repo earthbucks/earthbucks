@@ -9,6 +9,12 @@ export default class ScriptNum {
     this.num = num;
   }
 
+  static fromNumber(num: number): ScriptNum {
+    const scriptNum = new ScriptNum();
+    scriptNum.num = BigInt(num);
+    return scriptNum;
+  }
+
   static fromIsoBuf(buffer: Buffer): ScriptNum {
     const scriptNum = new ScriptNum();
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
