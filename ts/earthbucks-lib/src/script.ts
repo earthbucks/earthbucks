@@ -183,6 +183,7 @@ export default class Script {
   }
 
   isPkh1yxOutput(): boolean {
+    const lockRel = 52416;
     return (
       this.chunks.length === 12 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
@@ -194,7 +195,7 @@ export default class Script {
       this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
       this.chunks[6].opcode === Opcode.OP_ELSE &&
       this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
-      this.chunks[7].buf?.readUInt16BE(0) === 52416 &&
+      this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
       this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[8].opcode === Opcode.OP_DROP &&
       this.chunks[10].opcode === Opcode.OP_1 &&
@@ -222,6 +223,7 @@ export default class Script {
   }
 
   isPkh2wxOutput(): boolean {
+    const lockRel = 2016;
     return (
       this.chunks.length === 12 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
@@ -233,7 +235,7 @@ export default class Script {
       this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
       this.chunks[6].opcode === Opcode.OP_ELSE &&
       this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
-      this.chunks[7].buf?.readUInt16BE(0) === 2016 &&
+      this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
       this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[9].opcode === Opcode.OP_DROP &&
       this.chunks[10].opcode === Opcode.OP_1 &&
