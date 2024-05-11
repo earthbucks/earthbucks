@@ -3,20 +3,20 @@ use crate::domain::Domain;
 use crate::header::Header;
 use crate::header_chain::HeaderChain;
 use crate::merkle_txs::MerkleTxs;
-use crate::tx_out_map::TxOutMap;
+use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_verifier::TxVerifier;
 
 pub struct BlockVerifier<'a> {
     pub block: Block,
-    pub tx_output_map: TxOutMap, // from earlier blocks
-    pub lch: &'a HeaderChain,    // longest chain
+    pub tx_out_bn_map: TxOutBnMap, // from earlier blocks
+    pub lch: &'a HeaderChain,      // longest chain
 }
 
 impl<'a> BlockVerifier<'a> {
-    pub fn new(block: Block, tx_output_map: TxOutMap, lch: &'a HeaderChain) -> Self {
+    pub fn new(block: Block, tx_out_bn_map: TxOutBnMap, lch: &'a HeaderChain) -> Self {
         Self {
             block,
-            tx_output_map,
+            tx_out_bn_map,
             lch,
         }
     }
@@ -102,14 +102,16 @@ impl<'a> BlockVerifier<'a> {
         // if invalid, return false
         // if valid, add outputs to tx_output_map and remove used outputs
         for tx in txs {
-            let mut tx_verifier = TxVerifier::new(tx.clone(), &self.tx_output_map);
+            let mut tx_verifier = TxVerifier::new(tx.clone(), &self.tx_out_bn_map);
             if !tx_verifier.verify(self.block.header.block_num) {
                 return false;
             }
-            self.tx_output_map.add_tx_outputs(tx);
+            let header = &self.block.header;
+            let block_num = header.block_num;
+            self.tx_out_bn_map.add_tx_outputs(tx, block_num);
             // remove used outputs to prevent double spending
             for tx_input in &tx.inputs {
-                self.tx_output_map
+                self.tx_out_bn_map
                     .remove(&tx_input.input_tx_id, tx_input.input_tx_out_num);
             }
         }

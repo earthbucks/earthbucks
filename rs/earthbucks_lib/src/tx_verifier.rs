@@ -1,19 +1,19 @@
 use crate::script_interpreter::ScriptInterpreter;
 use crate::tx::{HashCache, Tx};
-use crate::tx_out_map::TxOutMap;
+use crate::tx_out_bn_map::TxOutBnMap;
 
 pub struct TxVerifier<'a> {
     tx: Tx,
-    tx_out_map: &'a TxOutMap,
+    tx_out_bn_map: &'a TxOutBnMap,
     hash_cache: HashCache,
 }
 
 impl<'a> TxVerifier<'a> {
-    pub fn new(tx: Tx, tx_out_map: &'a TxOutMap) -> Self {
+    pub fn new(tx: Tx, tx_out_bn_map: &'a TxOutBnMap) -> Self {
         let hash_cache = HashCache::new();
         Self {
             tx,
-            tx_out_map,
+            tx_out_bn_map,
             hash_cache,
         }
     }
@@ -22,11 +22,11 @@ impl<'a> TxVerifier<'a> {
         let tx_input = &self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
-        let tx_out = self.tx_out_map.get(tx_out_hash, output_index);
+        let tx_out = self.tx_out_bn_map.get(tx_out_hash, output_index);
         match tx_out {
             None => false,
-            Some(tx_out) => {
-                let output_script = &tx_out.script;
+            Some(tx_out_bn) => {
+                let output_script = &tx_out_bn.tx_out.script;
                 let input_script = &tx_input.script;
                 if !input_script.is_push_only() {
                     return false;
@@ -41,7 +41,7 @@ impl<'a> TxVerifier<'a> {
                     self.tx.clone(),
                     n_in,
                     stack,
-                    tx_out.value,
+                    tx_out_bn.tx_out.value,
                     &mut self.hash_cache,
                 );
                 script_interpreter.eval_script()
@@ -62,7 +62,7 @@ impl<'a> TxVerifier<'a> {
         let mut spent_outputs = Vec::new();
         for input in &self.tx.inputs {
             let tx_out = self
-                .tx_out_map
+                .tx_out_bn_map
                 .get(&input.input_tx_id, input.input_tx_out_num);
             match tx_out {
                 None => return false,
@@ -84,12 +84,12 @@ impl<'a> TxVerifier<'a> {
         }
         let mut total_input_value = 0;
         for input in &self.tx.inputs {
-            let tx_out = self
-                .tx_out_map
+            let tx_out_bn = self
+                .tx_out_bn_map
                 .get(&input.input_tx_id, input.input_tx_out_num);
-            match tx_out {
+            match tx_out_bn {
                 None => return false,
-                Some(tx_out) => total_input_value += tx_out.value,
+                Some(tx_out_bn) => total_input_value += tx_out_bn.tx_out.value,
             }
         }
         total_input_value == total_output_value
@@ -137,6 +137,7 @@ mod tests {
     use crate::script::Script;
     use crate::tx_builder::TxBuilder;
     use crate::tx_out::TxOut;
+    use crate::tx_out_bn_map::TxOutBnMap;
     use crate::tx_out_map::TxOutMap;
     use crate::tx_signer::TxSigner;
 
@@ -144,6 +145,7 @@ mod tests {
 
     #[test]
     fn should_sign_and_verify_a_tx() {
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
@@ -153,7 +155,9 @@ mod tests {
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, &[0; 32], i);
+            let block_num = 0;
+            tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
+            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_iso_str("").unwrap();
@@ -173,7 +177,7 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(signed);
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
         let verified_input = tx_verifier.verify_input_script(0);
         assert!(verified_input);
 
@@ -189,6 +193,7 @@ mod tests {
 
     #[test]
     fn should_sign_and_not_verify_a_tx_with_wrong_lock_num() {
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
@@ -198,7 +203,9 @@ mod tests {
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, &[0; 32], i);
+            let block_num = 0;
+            tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
+            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_iso_str("").unwrap();
@@ -218,7 +225,7 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(signed);
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
         let verified_input = tx_verifier.verify_input_script(0);
         assert!(verified_input);
 
@@ -234,6 +241,7 @@ mod tests {
 
     #[test]
     fn should_sign_and_verify_a_tx_with_two_inputs() {
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
@@ -243,7 +251,9 @@ mod tests {
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, &[0; 32], i);
+            let block_num = 0;
+            tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
+            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_iso_str("").unwrap();
@@ -266,7 +276,7 @@ mod tests {
         assert!(signed2);
         let signed_tx = tx_signer.tx;
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
         let verified_input1 = tx_verifier.verify_input_script(0);
         assert!(verified_input1);
         let verified_input2 = tx_verifier.verify_input_script(1);

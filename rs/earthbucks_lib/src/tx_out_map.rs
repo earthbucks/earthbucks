@@ -26,7 +26,7 @@ impl TxOutMap {
         name.split(':').nth(1).unwrap().parse().unwrap()
     }
 
-    pub fn add(&mut self, output: TxOut, tx_id_hash: &[u8], output_index: u32) {
+    pub fn add(&mut self, tx_id_hash: &[u8], output_index: u32, output: TxOut) {
         let name = Self::name_from_output(tx_id_hash, output_index);
         self.map.insert(name, output);
     }
@@ -47,7 +47,7 @@ impl TxOutMap {
 
     pub fn add_tx_outputs(&mut self, tx: &Tx) {
         for (output_index, output) in tx.outputs.iter().enumerate() {
-            self.add(output.clone(), &tx.id(), output_index as u32);
+            self.add(&tx.id(), output_index as u32, output.clone());
         }
     }
 }
@@ -71,7 +71,7 @@ mod tests {
         let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
-        tx_output_map.add(tx_output.clone(), &tx_id_hash, output_index);
+        tx_output_map.add(&tx_id_hash, output_index, tx_output.clone());
         assert_eq!(
             tx_output_map.get(&tx_id_hash, output_index),
             Some(&tx_output)
@@ -84,7 +84,7 @@ mod tests {
         let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
-        tx_output_map.add(tx_output, &tx_id_hash, output_index);
+        tx_output_map.add(&tx_id_hash, output_index, tx_output);
         tx_output_map.remove(&tx_id_hash, output_index);
         assert_eq!(tx_output_map.get(&tx_id_hash, output_index), None);
     }
@@ -95,7 +95,7 @@ mod tests {
         let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
-        tx_output_map.add(tx_output.clone(), &tx_id_hash, output_index);
+        tx_output_map.add(&tx_id_hash, output_index, tx_output.clone());
         let retrieved_output = tx_output_map.get(&tx_id_hash, output_index);
         assert_eq!(retrieved_output, Some(&tx_output));
     }
@@ -108,8 +108,8 @@ mod tests {
         let tx_id_hash1 = [1, 2, 3, 4];
         let tx_id_hash2 = [5, 6, 7, 8];
         let output_index = 0;
-        tx_output_map.add(tx_output1.clone(), &tx_id_hash1, output_index);
-        tx_output_map.add(tx_output2.clone(), &tx_id_hash2, output_index);
+        tx_output_map.add(&tx_id_hash1, output_index, tx_output1.clone());
+        tx_output_map.add(&tx_id_hash2, output_index, tx_output2.clone());
         let values: Vec<&TxOut> = tx_output_map.values();
         assert_eq!(values.len(), 2);
         assert!(values.contains(&&tx_output1));

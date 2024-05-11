@@ -2,10 +2,11 @@ use crate::script::Script;
 use crate::tx::Tx;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
+use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_out_map::TxOutMap;
 
 pub struct TxBuilder {
-    tx_out_map: TxOutMap,
+    tx_out_map: TxOutMap, // TODO: This should be a vector of TxOutMap
     tx: Tx,
     change_script: Script,
     input_amount: u64,
@@ -26,9 +27,9 @@ impl TxBuilder {
     pub fn add_output(&mut self, value: u64, script: Script) {
         let tx_output = TxOut::new(value, script);
         self.tx_out_map.add(
-            tx_output.clone(),
             &self.tx.id(),
             self.tx.outputs.len() as u32,
+            tx_output.clone(),
         );
         self.tx.outputs.push(tx_output);
     }
@@ -51,8 +52,8 @@ impl TxBuilder {
             if !tx_out.script.is_pkh_output() {
                 continue;
             }
-            let tx_id_hash = TxOutMap::name_to_tx_id_hash(tx_out_id);
-            let output_index = TxOutMap::name_to_output_index(tx_out_id);
+            let tx_id_hash = TxOutBnMap::name_to_tx_id_hash(tx_out_id);
+            let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
             let input_script = Script::from_pkh_input_placeholder();
             let tx_input = TxIn::new(tx_id_hash, output_index, input_script, 0xffffffff);
             input_amount += tx_out.value;
@@ -86,7 +87,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
             let script = Script::from_pkh_output(pkh.to_iso_buf());
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, &[0; 32], i);
+            tx_out_map.add(&[0; 32], i, output);
         }
 
         TxBuilder::new(&tx_out_map, change_script.unwrap(), 0)

@@ -8,7 +8,7 @@ use earthbucks_lib::{
     block::Block, block_verifier::BlockVerifier, buffer::Buffer, domain::Domain, header::Header,
     header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh,
     priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_out::TxOut,
-    tx_out_map::TxOutMap,
+    tx_out_bn_map::TxOutBnMap,
 };
 
 use log::{debug, error, info};
@@ -176,7 +176,7 @@ async fn main() -> Result<()> {
                         &pool,
                     )
                     .await?;
-                let mut tx_out_map = TxOutMap::new();
+                let mut tx_out_bn_map = TxOutBnMap::new();
                 for builder_tx_output in &builder_tx_outputs {
                     let tx_id = builder_tx_output.tx_id.clone();
                     let tx_out_num = builder_tx_output.tx_out_num;
@@ -184,12 +184,12 @@ async fn main() -> Result<()> {
                         builder_tx_output.value,
                         Script::from_iso_buf(&builder_tx_output.script).unwrap(),
                     );
-                    tx_out_map.add(tx_output, &tx_id, tx_out_num);
+                    tx_out_bn_map.add( &tx_id, tx_out_num, tx_output, header.block_num);
                 }
 
                 // 5. Validate the block
                 let block = Block::new(header.clone(), txs);
-                let mut block_verifier = BlockVerifier::new(block, tx_out_map, &longest_chain);
+                let mut block_verifier = BlockVerifier::new(block, tx_out_bn_map, &longest_chain);
                 let is_block_valid = block_verifier.is_valid_now();
                 info!("Block is valid: {}", is_block_valid);
 

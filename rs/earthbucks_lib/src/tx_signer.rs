@@ -88,7 +88,6 @@ mod tests {
     use crate::tx::HashCache;
     use crate::tx_builder::TxBuilder;
     use crate::tx_out::TxOut;
-    use crate::tx_out_map::TxOutMap;
 
     #[test]
     fn should_sign_a_tx() {
@@ -102,7 +101,7 @@ mod tests {
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, vec![0; 32].as_slice(), i);
+            tx_out_map.add(vec![0; 32].as_slice(), i, output);
         }
 
         let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_iso_str("").unwrap(), 0);
@@ -157,7 +156,7 @@ mod tests {
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
-            tx_out_map.add(output, vec![0; 32].as_slice(), i);
+            tx_out_map.add(vec![0; 32].as_slice(), i, output);
         }
 
         let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_iso_str("").unwrap(), 0);
