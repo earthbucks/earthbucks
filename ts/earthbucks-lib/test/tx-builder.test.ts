@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import TxBuilder from "../src/tx-builder";
-import TxOutputMap from "../src/tx-output-map";
-import TxOutput from "../src/tx-output";
+import TxOutMap from "../src/tx-out-map";
+import TxOut from "../src/tx-out";
 import Script from "../src/script";
 import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
@@ -10,11 +10,11 @@ import { Buffer } from "buffer";
 
 describe("TxBuilder", () => {
   let txBuilder: TxBuilder;
-  let txOutMap: TxOutputMap;
+  let txOutMap: TxOutMap;
   let pkhKeyMap: PkhKeyMap;
 
   beforeEach(() => {
-    txOutMap = new TxOutputMap();
+    txOutMap = new TxOutMap();
     pkhKeyMap = new PkhKeyMap();
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
@@ -22,7 +22,7 @@ describe("TxBuilder", () => {
       const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
-      const output = new TxOutput(BigInt(100), script);
+      const output = new TxOut(BigInt(100), script);
       txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
     }
 
@@ -34,7 +34,7 @@ describe("TxBuilder", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
-    const output = new TxOutput(BigInt(50), script);
+    const output = new TxOut(BigInt(50), script);
     txBuilder.addOutput(BigInt(50), Script.fromIsoStr("").unwrap());
 
     const tx = txBuilder.build();

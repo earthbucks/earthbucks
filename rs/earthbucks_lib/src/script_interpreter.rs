@@ -1096,8 +1096,8 @@ impl<'a> ScriptInterpreter<'a> {
 mod tests {
     use super::*;
     use crate::pkh::Pkh;
-    use crate::tx_input::TxInput;
-    use crate::tx_output::TxOutput;
+    use crate::tx_in::TxIn;
+    use crate::tx_out::TxOut;
     use hex;
 
     mod sanity_tests {
@@ -1198,13 +1198,13 @@ mod tests {
 
             let mut tx = Tx::new(
                 1,
-                vec![TxInput::new(
+                vec![TxIn::new(
                     output_tx_id.clone(),
                     output_tx_index,
                     Script::from_iso_str("").unwrap(),
                     0xffffffff,
                 )],
-                vec![TxOutput::new(output_amount, output_script.clone())],
+                vec![TxOut::new(output_amount, output_script.clone())],
                 0,
             );
 
@@ -1273,13 +1273,13 @@ mod tests {
             // Create a tx
             let mut tx = Tx::new(
                 1,
-                vec![TxInput::new(
+                vec![TxIn::new(
                     output_tx_id.clone(),
                     output_tx_index,
                     Script::from_iso_str("").unwrap(),
                     0xffffffff,
                 )],
-                vec![TxOutput::new(output_amount, output_script.clone())],
+                vec![TxOut::new(output_amount, output_script.clone())],
                 0,
             );
 
@@ -1354,13 +1354,13 @@ mod tests {
                 let script = Script::from_iso_str(&test_script.script).unwrap();
                 let tx = Tx::new(
                     1,
-                    vec![TxInput::new(
+                    vec![TxIn::new(
                         vec![],
                         0,
                         Script::from_iso_str("").unwrap(),
                         0xffffffff,
                     )],
-                    vec![TxOutput::new(0, Script::from_iso_str("").unwrap())],
+                    vec![TxOut::new(0, Script::from_iso_str("").unwrap())],
                     0,
                 );
                 let mut hash_cache = HashCache::new();

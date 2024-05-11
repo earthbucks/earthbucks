@@ -7,8 +7,8 @@ use earthbucks_builder::db::{
 use earthbucks_lib::{
     block::Block, block_verifier::BlockVerifier, buffer::Buffer, domain::Domain, header::Header,
     header_chain::HeaderChain, key_pair::KeyPair, merkle_txs::MerkleTxs, pkh::Pkh,
-    priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_output::TxOutput,
-    tx_output_map::TxOutputMap,
+    priv_key::PrivKey, pub_key::PubKey, script::Script, tx::Tx, tx_out::TxOut,
+    tx_out_map::TxOutMap,
 };
 
 use log::{debug, error, info};
@@ -176,11 +176,11 @@ async fn main() -> Result<()> {
                         &pool,
                     )
                     .await?;
-                let mut tx_out_map = TxOutputMap::new();
+                let mut tx_out_map = TxOutMap::new();
                 for builder_tx_output in &builder_tx_outputs {
                     let tx_id = builder_tx_output.tx_id.clone();
                     let tx_out_num = builder_tx_output.tx_out_num;
-                    let tx_output = TxOutput::new(
+                    let tx_output = TxOut::new(
                         builder_tx_output.value,
                         Script::from_iso_buf(&builder_tx_output.script).unwrap(),
                     );

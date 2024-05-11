@@ -3,8 +3,8 @@ use crate::blake3::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
-use crate::tx_input::TxInput;
-use crate::tx_output::TxOutput;
+use crate::tx_in::TxIn;
+use crate::tx_out::TxOut;
 use crate::tx_signature::TxSignature;
 use crate::var_int::VarInt;
 use secp256k1::ecdsa::Signature;
@@ -31,13 +31,13 @@ impl HashCache {
 #[derive(Clone)]
 pub struct Tx {
     pub version: u8,
-    pub inputs: Vec<TxInput>,
-    pub outputs: Vec<TxOutput>,
+    pub inputs: Vec<TxIn>,
+    pub outputs: Vec<TxOut>,
     pub lock_abs: u64,
 }
 
 impl Tx {
-    pub fn new(version: u8, inputs: Vec<TxInput>, outputs: Vec<TxOutput>, lock_abs: u64) -> Self {
+    pub fn new(version: u8, inputs: Vec<TxIn>, outputs: Vec<TxOut>, lock_abs: u64) -> Self {
         Self {
             version,
             inputs,
@@ -62,12 +62,12 @@ impl Tx {
         let input_count = reader.read_var_int() as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
-            inputs.push(TxInput::from_buffer_reader(reader)?);
+            inputs.push(TxIn::from_buffer_reader(reader)?);
         }
         let output_count = reader.read_var_int() as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
-            outputs.push(TxOutput::from_buffer_reader(reader)?);
+            outputs.push(TxOut::from_buffer_reader(reader)?);
         }
         let lock_num = reader.read_u64_be();
         Ok(Self::new(version, inputs, outputs, lock_num))
@@ -107,8 +107,8 @@ impl Tx {
         block_num: u64,
     ) -> Self {
         let version = 1;
-        let inputs = vec![TxInput::from_coinbase(input_script)];
-        let outputs = vec![TxOutput::new(output_amount, output_script)];
+        let inputs = vec![TxIn::from_coinbase(input_script)];
+        let outputs = vec![TxOut::new(output_amount, output_script)];
         let lock_num = block_num;
         Self::new(version, inputs, outputs, lock_num)
     }
@@ -357,11 +357,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -384,11 +384,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -412,11 +412,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -451,11 +451,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -477,11 +477,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -498,11 +498,11 @@ mod tests {
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
-        let tx_input = TxInput::new(input_tx_id, input_tx_index, script, lock_rel);
+        let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
 
         let version = 1;
         let inputs = vec![tx_input];
@@ -516,13 +516,13 @@ mod tests {
     #[test]
     fn test_hash_prevouts() {
         let version = 1;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
             0,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -539,13 +539,13 @@ mod tests {
     #[test]
     fn test_hash_lock_rel() {
         let version = 1;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
             0,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -562,13 +562,13 @@ mod tests {
     #[test]
     fn test_hash_outputs() {
         let version = 1;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
             0,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -585,13 +585,13 @@ mod tests {
     #[test]
     fn test_sighash() {
         let version = 1;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
             0,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
@@ -609,13 +609,13 @@ mod tests {
     #[test]
     fn test_sighash_with_cache() {
         let version = 1;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
             0,
         )];
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
@@ -641,7 +641,7 @@ mod tests {
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
@@ -651,7 +651,7 @@ mod tests {
             hex::encode(inputs[0].to_iso_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
@@ -694,7 +694,7 @@ mod tests {
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let inputs = vec![TxInput::new(
+        let inputs = vec![TxIn::new(
             vec![0; 32],
             0,
             Script::from_iso_str("").unwrap(),
@@ -704,7 +704,7 @@ mod tests {
             hex::encode(inputs[0].to_iso_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
-        let outputs = vec![TxOutput::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");

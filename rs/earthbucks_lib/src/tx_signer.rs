@@ -1,16 +1,16 @@
 use crate::pkh_key_map::PkhKeyMap;
 use crate::tx::Tx;
-use crate::tx_output_map::TxOutputMap;
+use crate::tx_out_map::TxOutMap;
 use crate::tx_signature::TxSignature;
 
 pub struct TxSigner {
     pub tx: Tx,
     pub pkh_key_map: PkhKeyMap,
-    pub tx_out_map: TxOutputMap,
+    pub tx_out_map: TxOutMap,
 }
 
 impl TxSigner {
-    pub fn new(tx: Tx, tx_out_map: &TxOutputMap, pkh_key_map: &PkhKeyMap) -> Self {
+    pub fn new(tx: Tx, tx_out_map: &TxOutMap, pkh_key_map: &PkhKeyMap) -> Self {
         Self {
             tx,
             tx_out_map: tx_out_map.clone(),
@@ -87,12 +87,12 @@ mod tests {
     use crate::script_interpreter::ScriptInterpreter;
     use crate::tx::HashCache;
     use crate::tx_builder::TxBuilder;
-    use crate::tx_output::TxOutput;
-    use crate::tx_output_map::TxOutputMap;
+    use crate::tx_out::TxOut;
+    use crate::tx_out_map::TxOutMap;
 
     #[test]
     fn should_sign_a_tx() {
-        let mut tx_out_map = TxOutputMap::new();
+        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -101,7 +101,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
-            let output = TxOutput::new(100, script);
+            let output = TxOut::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 
@@ -147,7 +147,7 @@ mod tests {
 
     #[test]
     fn should_sign_two_inputs() {
-        let mut tx_out_map = TxOutputMap::new();
+        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -156,7 +156,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
-            let output = TxOutput::new(100, script);
+            let output = TxOut::new(100, script);
             tx_out_map.add(output, vec![0; 32].as_slice(), i);
         }
 

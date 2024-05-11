@@ -1,15 +1,15 @@
 import Tx from "./tx";
 import PkhKeyMap from "./pkh-key-map";
-import TxOutputMap from "./tx-output-map";
+import TxOutMap from "./tx-out-map";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
 
 export default class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
-  public txOutMap: TxOutputMap;
+  public txOutMap: TxOutMap;
 
-  constructor(tx: Tx, txOutMap: TxOutputMap, pkhKeyMap: PkhKeyMap) {
+  constructor(tx: Tx, txOutMap: TxOutMap, pkhKeyMap: PkhKeyMap) {
     this.tx = tx;
     this.txOutMap = txOutMap;
     this.pkhKeyMap = pkhKeyMap;

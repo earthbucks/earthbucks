@@ -1,15 +1,15 @@
 use crate::script_interpreter::ScriptInterpreter;
 use crate::tx::{HashCache, Tx};
-use crate::tx_output_map::TxOutputMap;
+use crate::tx_out_map::TxOutMap;
 
 pub struct TxVerifier<'a> {
     tx: Tx,
-    tx_out_map: &'a TxOutputMap,
+    tx_out_map: &'a TxOutMap,
     hash_cache: HashCache,
 }
 
 impl<'a> TxVerifier<'a> {
-    pub fn new(tx: Tx, tx_out_map: &'a TxOutputMap) -> Self {
+    pub fn new(tx: Tx, tx_out_map: &'a TxOutMap) -> Self {
         let hash_cache = HashCache::new();
         Self {
             tx,
@@ -136,15 +136,15 @@ mod tests {
     use crate::pkh_key_map::PkhKeyMap;
     use crate::script::Script;
     use crate::tx_builder::TxBuilder;
-    use crate::tx_output::TxOutput;
-    use crate::tx_output_map::TxOutputMap;
+    use crate::tx_out::TxOut;
+    use crate::tx_out_map::TxOutMap;
     use crate::tx_signer::TxSigner;
 
     use super::*;
 
     #[test]
     fn should_sign_and_verify_a_tx() {
-        let mut tx_out_map = TxOutputMap::new();
+        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -152,7 +152,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
-            let output = TxOutput::new(100, script);
+            let output = TxOut::new(100, script);
             tx_out_map.add(output, &[0; 32], i);
         }
 
@@ -189,7 +189,7 @@ mod tests {
 
     #[test]
     fn should_sign_and_not_verify_a_tx_with_wrong_lock_num() {
-        let mut tx_out_map = TxOutputMap::new();
+        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -197,7 +197,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
-            let output = TxOutput::new(100, script);
+            let output = TxOut::new(100, script);
             tx_out_map.add(output, &[0; 32], i);
         }
 
@@ -234,7 +234,7 @@ mod tests {
 
     #[test]
     fn should_sign_and_verify_a_tx_with_two_inputs() {
-        let mut tx_out_map = TxOutputMap::new();
+        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -242,7 +242,7 @@ mod tests {
             let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
             pkh_key_map.add(key, &pkh.buf);
             let script = Script::from_pkh_output(&pkh.buf);
-            let output = TxOutput::new(100, script);
+            let output = TxOut::new(100, script);
             tx_out_map.add(output, &[0; 32], i);
         }
 

@@ -1,5 +1,5 @@
-import TxInput from "./tx-input";
-import TxOutput from "./tx-output";
+import TxIn from "./tx-in";
+import TxOut from "./tx-out";
 import VarInt from "./var-int";
 import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
@@ -20,14 +20,14 @@ export class HashCache {
 
 export default class Tx {
   public version: number;
-  public inputs: TxInput[];
-  public outputs: TxOutput[];
+  public inputs: TxIn[];
+  public outputs: TxOut[];
   public lockAbs: bigint;
 
   constructor(
     version: number,
-    inputs: TxInput[],
-    outputs: TxOutput[],
+    inputs: TxIn[],
+    outputs: TxOut[],
     lockAbs: bigint,
   ) {
     this.version = version;
@@ -46,12 +46,12 @@ export default class Tx {
       const numInputs = reader.readVarIntNum().unwrap();
       const inputs = [];
       for (let i = 0; i < numInputs; i++) {
-        inputs.push(TxInput.fromIsoBufReader(reader));
+        inputs.push(TxIn.fromIsoBufReader(reader));
       }
       const numOutputs = reader.readVarIntNum().unwrap();
       const outputs = [];
       for (let i = 0; i < numOutputs; i++) {
-        outputs.push(TxOutput.fromIsoBufReader(reader));
+        outputs.push(TxOut.fromIsoBufReader(reader));
       }
       const lockNum = reader.readUInt64BE().unwrap();
       return new Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
@@ -96,8 +96,8 @@ export default class Tx {
     outputAmount: bigint,
   ): Tx {
     const version = 1;
-    const inputs = [TxInput.fromCoinbase(inputScript)];
-    const outputs = [new TxOutput(outputAmount, outputScript)];
+    const inputs = [TxIn.fromCoinbase(inputScript)];
+    const outputs = [new TxOut(outputAmount, outputScript)];
     const lockNum = BigInt(0);
     return new Tx(version, inputs, outputs, lockNum);
   }

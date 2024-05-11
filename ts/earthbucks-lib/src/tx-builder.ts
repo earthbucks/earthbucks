@@ -1,17 +1,17 @@
 import Tx from "./tx";
-import TxInput from "./tx-input";
-import TxOutput from "./tx-output";
-import TxOutputMap from "./tx-output-map";
+import TxIn from "./tx-in";
+import TxOut from "./tx-out";
+import TxOutMap from "./tx-out-map";
 import Script from "./script";
 import { Buffer } from "buffer";
 
 export default class TxBuilder {
-  public txOutMap: TxOutputMap;
+  public txOutMap: TxOutMap;
   public tx: Tx;
   public changeScript: Script;
   public inputAmount: bigint;
 
-  constructor(txOutMap: TxOutputMap, changeScript: Script) {
+  constructor(txOutMap: TxOutMap, changeScript: Script) {
     this.tx = new Tx(1, [], [], BigInt(0));
     this.txOutMap = txOutMap;
     this.changeScript = changeScript;
@@ -19,7 +19,7 @@ export default class TxBuilder {
   }
 
   addOutput(value: bigint, script: Script): void {
-    const txOutput = new TxOutput(value, script);
+    const txOutput = new TxOut(value, script);
     this.txOutMap.add(txOutput, this.tx.id(), this.tx.outputs.length);
     this.tx.outputs.push(txOutput);
   }
@@ -45,15 +45,10 @@ export default class TxBuilder {
       if (!isAddressOutput) {
         continue;
       }
-      const txIdHash = TxOutputMap.nameToTxIdHash(txOutId);
-      const outputIndex = TxOutputMap.nameToOutputIndex(txOutId);
+      const txIdHash = TxOutMap.nameToTxIdHash(txOutId);
+      const outputIndex = TxOutMap.nameToOutputIndex(txOutId);
       const inputScript = Script.fromPkhInputPlaceholder();
-      const txInput = new TxInput(
-        txIdHash,
-        outputIndex,
-        inputScript,
-        0xffffffff,
-      );
+      const txInput = new TxIn(txIdHash, outputIndex, inputScript, 0xffffffff);
       const outputAmount = txOut.value;
       inputAmount += outputAmount;
       this.tx.inputs.push(txInput);

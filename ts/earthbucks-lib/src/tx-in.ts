@@ -4,7 +4,7 @@ import Script from "./script";
 import VarInt from "./var-int";
 import { Buffer } from "buffer";
 
-export default class TxInput {
+export default class TxIn {
   public inputTxId: Buffer;
   public inputTxNOut: number;
   public script: Script;
@@ -22,7 +22,7 @@ export default class TxInput {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: Buffer): TxInput {
+  static fromIsoBuf(buf: Buffer): TxIn {
     const reader = new IsoBufReader(buf);
     const inputTxHash = reader.readBuffer(32).unwrap();
     const inputTxIndex = reader.readUInt32BE().unwrap();
@@ -31,10 +31,10 @@ export default class TxInput {
       reader.readBuffer(scriptLen).unwrap(),
     ).unwrap();
     const lockRel = reader.readUInt32BE().unwrap();
-    return new TxInput(inputTxHash, inputTxIndex, script, lockRel);
+    return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): TxInput {
+  static fromIsoBufReader(reader: IsoBufReader): TxIn {
     const inputTxHash = reader.readBuffer(32).unwrap();
     const inputTxIndex = reader.readUInt32BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
@@ -42,7 +42,7 @@ export default class TxInput {
       reader.readBuffer(scriptLen).unwrap(),
     ).unwrap();
     const lockRel = reader.readUInt32BE().unwrap();
-    return new TxInput(inputTxHash, inputTxIndex, script, lockRel);
+    return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
   }
 
   toIsoBuf(): Buffer {
@@ -71,7 +71,7 @@ export default class TxInput {
     return this.isNull() && this.isMinimalLock();
   }
 
-  static fromCoinbase(script: Script): TxInput {
-    return new TxInput(Buffer.alloc(32), 0xffffffff, script, 0);
+  static fromCoinbase(script: Script): TxIn {
+    return new TxIn(Buffer.alloc(32), 0xffffffff, script, 0);
   }
 }

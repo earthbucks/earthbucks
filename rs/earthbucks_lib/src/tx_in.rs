@@ -5,14 +5,14 @@ use crate::var_int::VarInt;
 
 // add clone support
 #[derive(Clone)]
-pub struct TxInput {
+pub struct TxIn {
     pub input_tx_id: Vec<u8>,
     pub input_tx_out_num: u32,
     pub script: Script,
     pub lock_rel: u32,
 }
 
-impl TxInput {
+impl TxIn {
     pub fn new(input_tx_id: Vec<u8>, input_tx_out_num: u32, script: Script, lock_rel: u32) -> Self {
         Self {
             input_tx_id,
@@ -92,14 +92,14 @@ mod tests {
             Err(_) => return Err("Failed to clone script".to_string()),
         };
 
-        let tx_input = TxInput::new(input_tx_id.clone(), input_tx_index, script_clone, lock_rel);
+        let tx_input = TxIn::new(input_tx_id.clone(), input_tx_index, script_clone, lock_rel);
 
         // Test to_iso_buf
         let buf = tx_input.to_iso_buf();
         assert!(!buf.is_empty());
 
         // Test from_iso_buf
-        let tx_input2 = TxInput::from_iso_buf(buf).map_err(|e| e.to_string())?;
+        let tx_input2 = TxIn::from_iso_buf(buf).map_err(|e| e.to_string())?;
         assert_eq!(tx_input2.input_tx_id, input_tx_id);
         assert_eq!(tx_input2.input_tx_out_num, input_tx_index);
         match (tx_input.script.to_iso_str(), tx_input2.script.to_iso_str()) {
@@ -133,7 +133,7 @@ mod tests {
         writer.write_u32_be(lock_rel);
 
         let mut reader = IsoBufReader::new(writer.to_iso_buf());
-        let tx_input = TxInput::from_buffer_reader(&mut reader).unwrap();
+        let tx_input = TxIn::from_buffer_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;
         let script2_hex = match script2.to_iso_str() {
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_is_null() {
-        let tx_input = TxInput {
+        let tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
@@ -157,7 +157,7 @@ mod tests {
         };
         assert!(!tx_input.is_null());
 
-        let null_tx_input = TxInput {
+        let null_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn test_is_minimal_lock() {
-        let tx_input = TxInput {
+        let tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
@@ -176,7 +176,7 @@ mod tests {
         };
         assert!(!tx_input.is_minimal_lock());
 
-        let final_tx_input = TxInput {
+        let final_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
@@ -187,7 +187,7 @@ mod tests {
 
     #[test]
     fn test_is_coinbase() {
-        let tx_input = TxInput {
+        let tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0,
             script: Script::from_iso_str("0x121212").unwrap(),
@@ -195,7 +195,7 @@ mod tests {
         };
         assert!(!tx_input.is_coinbase());
 
-        let coinbase_tx_input = TxInput {
+        let coinbase_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
             script: Script::from_iso_str("").unwrap(),
@@ -207,7 +207,7 @@ mod tests {
     #[test]
     fn test_from_coinbase() {
         let script = Script::from_iso_str("0x121212").unwrap();
-        let tx_input = TxInput::from_coinbase(script);
+        let tx_input = TxIn::from_coinbase(script);
 
         assert_eq!(tx_input.input_tx_id, [0; 32].to_vec());
         assert_eq!(tx_input.input_tx_out_num, 0xffffffff);

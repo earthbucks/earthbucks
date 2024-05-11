@@ -1,11 +1,11 @@
-import TxOutput from "./tx-output";
+import TxOut from "./tx-out";
 import { Buffer } from "buffer";
 
-export default class TxOutputMap {
-  public map: Map<string, TxOutput>;
+export default class TxOutMap {
+  public map: Map<string, TxOut>;
 
   constructor() {
-    this.map = new Map<string, TxOutput>();
+    this.map = new Map<string, TxOut>();
   }
 
   static nameFromOutput(txIdHash: Buffer, outputIndex: number): string {
@@ -22,22 +22,22 @@ export default class TxOutputMap {
     return parseInt(name.split(":")[1]);
   }
 
-  add(output: TxOutput, txIdHash: Buffer, outputIndex: number): void {
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+  add(output: TxOut, txIdHash: Buffer, outputIndex: number): void {
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     this.map.set(name, output);
   }
 
   remove(txIdHash: Buffer, outputIndex: number): void {
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     this.map.delete(name);
   }
 
-  get(txIdHash: Buffer, outputIndex: number): TxOutput | undefined {
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+  get(txIdHash: Buffer, outputIndex: number): TxOut | undefined {
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     return this.map.get(name);
   }
 
-  values(): IterableIterator<TxOutput> {
+  values(): IterableIterator<TxOut> {
     return this.map.values();
   }
 }

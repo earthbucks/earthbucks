@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import TxOutput from "../src/tx-output";
+import TxOut from "../src/tx-out";
 import Script from "../src/script";
 import IsoBufReader from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
@@ -9,11 +9,11 @@ describe("TxOutput", () => {
     test("fromIsoBufReader", () => {
       const value = BigInt(100);
       const script = new Script();
-      const txOutput = new TxOutput(value, script);
+      const txOutput = new TxOut(value, script);
 
       const reader = new IsoBufReader(txOutput.toIsoBuf());
-      const result = TxOutput.fromIsoBufReader(reader);
-      expect(result).toBeInstanceOf(TxOutput);
+      const result = TxOut.fromIsoBufReader(reader);
+      expect(result).toBeInstanceOf(TxOut);
       expect(result.value).toEqual(value);
       expect(result.script.toIsoStr()).toEqual(script.toIsoStr());
     });
@@ -25,8 +25,8 @@ describe("TxOutput", () => {
       const script = Script.fromIsoStr(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       ).unwrap();
-      const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
+      const txOutput = new TxOut(value, script);
+      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf());
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
         result.toIsoBuf().toString("hex"),
       );
@@ -36,8 +36,8 @@ describe("TxOutput", () => {
       const data = "0x" + "00".repeat(0xffff);
       const value = BigInt(100);
       const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`).unwrap();
-      const txOutput = new TxOutput(value, script);
-      const result = TxOutput.fromIsoBuf(txOutput.toIsoBuf());
+      const txOutput = new TxOut(value, script);
+      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf());
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
         result.toIsoBuf().toString("hex"),
       );

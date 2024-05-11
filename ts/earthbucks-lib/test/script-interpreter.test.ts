@@ -2,8 +2,8 @@ import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import ScriptInterpreter from "../src/script-interpreter";
 import Script from "../src/script";
 import Tx, { HashCache } from "../src/tx";
-import TxInput from "../src/tx-input";
-import TxOutput from "../src/tx-output";
+import TxIn from "../src/tx-in";
+import TxOut from "../src/tx-out";
 import fs from "fs";
 import path from "path";
 import KeyPair from "../src/key-pair";
@@ -19,8 +19,8 @@ describe("ScriptInterpreter", () => {
   beforeEach(() => {
     tx = new Tx(
       1,
-      [new TxInput(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
-      [new TxOutput(BigInt(0), new Script())],
+      [new TxIn(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
+      [new TxOut(BigInt(0), new Script())],
       BigInt(0),
     );
   });
@@ -150,8 +150,8 @@ describe("ScriptInterpreter", () => {
 
       const tx = new Tx(
         1,
-        [new TxInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
-        [new TxOutput(outputAmount, outputScript)],
+        [new TxIn(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
+        [new TxOut(outputAmount, outputScript)],
         BigInt(0),
       );
 
@@ -208,8 +208,8 @@ describe("ScriptInterpreter", () => {
       // Create a tx
       const tx = new Tx(
         1,
-        [new TxInput(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
-        [new TxOutput(outputAmount, outputScript)],
+        [new TxIn(outputTxId, outputTxIndex, new Script(), 0xffffffff)],
+        [new TxOut(outputAmount, outputScript)],
         BigInt(0),
       );
 
@@ -270,8 +270,8 @@ describe("ScriptInterpreter", () => {
       beforeEach(() => {
         tx = new Tx(
           1,
-          [new TxInput(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
-          [new TxOutput(BigInt(0), new Script())],
+          [new TxIn(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
+          [new TxOut(BigInt(0), new Script())],
           BigInt(0),
         );
       });

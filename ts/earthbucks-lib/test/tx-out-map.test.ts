@@ -1,37 +1,37 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
-import TxOutputMap from "../src/tx-output-map";
-import TxOutput from "../src/tx-output";
+import TxOutMap from "../src/tx-out-map";
+import TxOut from "../src/tx-out";
 import Script from "../src/script";
 import { Buffer } from "buffer";
 
 describe("TxOutputMap", () => {
-  let txOutputMap: TxOutputMap;
-  let txOutput: TxOutput;
+  let txOutputMap: TxOutMap;
+  let txOutput: TxOut;
   let txIdHash: Buffer;
   let outputIndex: number;
 
   beforeEach(() => {
-    txOutputMap = new TxOutputMap();
-    txOutput = new TxOutput(BigInt(100), Script.fromIsoStr("").unwrap());
+    txOutputMap = new TxOutMap();
+    txOutput = new TxOut(BigInt(100), Script.fromIsoStr("").unwrap());
     txIdHash = Buffer.from([1, 2, 3, 4]);
     outputIndex = 0;
   });
 
   test("nameFromOutput", () => {
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     expect(name).toBe("01020304:0");
   });
 
   test("add", () => {
     txOutputMap.add(txOutput, txIdHash, outputIndex);
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     expect(txOutputMap.map.get(name)).toBe(txOutput);
   });
 
   test("remove", () => {
     txOutputMap.add(txOutput, txIdHash, outputIndex);
     txOutputMap.remove(txIdHash, outputIndex);
-    const name = TxOutputMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutMap.nameFromOutput(txIdHash, outputIndex);
     expect(txOutputMap.map.get(name)).toBeUndefined();
   });
 
@@ -42,7 +42,7 @@ describe("TxOutputMap", () => {
   });
 
   test("values method should return all TxOutput values", () => {
-    const txOutputMap = new TxOutputMap();
+    const txOutputMap = new TxOutMap();
     const txOutput1 = txOutput;
     const txOutput2 = txOutput;
     txOutputMap.add(txOutput1, txIdHash, 0);

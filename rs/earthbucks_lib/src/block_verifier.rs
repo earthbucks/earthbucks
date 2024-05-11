@@ -3,17 +3,17 @@ use crate::domain::Domain;
 use crate::header::Header;
 use crate::header_chain::HeaderChain;
 use crate::merkle_txs::MerkleTxs;
-use crate::tx_output_map::TxOutputMap;
+use crate::tx_out_map::TxOutMap;
 use crate::tx_verifier::TxVerifier;
 
 pub struct BlockVerifier<'a> {
     pub block: Block,
-    pub tx_output_map: TxOutputMap, // from earlier blocks
-    pub lch: &'a HeaderChain,       // longest chain
+    pub tx_output_map: TxOutMap, // from earlier blocks
+    pub lch: &'a HeaderChain,    // longest chain
 }
 
 impl<'a> BlockVerifier<'a> {
-    pub fn new(block: Block, tx_output_map: TxOutputMap, lch: &'a HeaderChain) -> Self {
+    pub fn new(block: Block, tx_output_map: TxOutMap, lch: &'a HeaderChain) -> Self {
         Self {
             block,
             tx_output_map,

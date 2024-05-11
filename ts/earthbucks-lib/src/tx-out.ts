@@ -4,7 +4,7 @@ import VarInt from "./var-int";
 import Script from "./script";
 import { Buffer } from "buffer";
 
-export default class TxOutput {
+export default class TxOut {
   public value: bigint;
   public script: Script;
 
@@ -13,21 +13,21 @@ export default class TxOutput {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: Buffer): TxOutput {
+  static fromIsoBuf(buf: Buffer): TxOut {
     const reader = new IsoBufReader(buf);
     const value = reader.readUInt64BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
     const scriptArr = reader.readBuffer(scriptLen).unwrap();
     const script = Script.fromIsoBuf(scriptArr).unwrap();
-    return new TxOutput(value, script);
+    return new TxOut(value, script);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): TxOutput {
+  static fromIsoBufReader(reader: IsoBufReader): TxOut {
     const value = reader.readUInt64BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
     const scriptArr = reader.readBuffer(scriptLen).unwrap();
     const script = Script.fromIsoBuf(scriptArr).unwrap();
-    return new TxOutput(value, script);
+    return new TxOut(value, script);
   }
 
   toIsoBuf(): Buffer {

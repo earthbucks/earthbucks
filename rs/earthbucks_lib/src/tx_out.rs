@@ -4,12 +4,12 @@ use crate::script::Script;
 use crate::var_int::VarInt;
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct TxOutput {
+pub struct TxOut {
     pub value: u64,
     pub script: Script,
 }
 
-impl TxOutput {
+impl TxOut {
     pub fn new(value: u64, script: Script) -> Self {
         Self { value, script }
     }
@@ -58,8 +58,8 @@ mod tests {
     fn test_tx_output_from_iso_buf_and_to_iso_buf() {
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
-        let result = TxOutput::from_iso_buf(tx_output.to_iso_buf());
+        let tx_output = TxOut::new(value, script);
+        let result = TxOut::from_iso_buf(tx_output.to_iso_buf());
         let result = match result {
             Ok(tx_output) => tx_output,
             Err(e) => panic!("{}", e),
@@ -76,8 +76,8 @@ mod tests {
         let value = 100;
         let script =
             Script::from_iso_str(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
-        let tx_output = TxOutput::new(value, script);
-        let result = TxOutput::from_iso_buf(tx_output.to_iso_buf()).unwrap();
+        let tx_output = TxOut::new(value, script);
+        let result = TxOut::from_iso_buf(tx_output.to_iso_buf()).unwrap();
         assert_eq!(
             hex::encode(tx_output.to_iso_buf()),
             hex::encode(result.to_iso_buf())
@@ -88,9 +88,9 @@ mod tests {
     fn test_buffer_reader() {
         let value = 100;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let tx_output = TxOutput::new(value, script);
+        let tx_output = TxOut::new(value, script);
         let result =
-            TxOutput::from_buffer_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
+            TxOut::from_buffer_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
         assert_eq!(
             hex::encode(tx_output.to_iso_buf()),
             hex::encode(result.to_iso_buf())

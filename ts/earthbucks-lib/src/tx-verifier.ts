@@ -1,14 +1,14 @@
 import Tx, { HashCache } from "./tx";
-import TxOutputMap from "./tx-output-map";
+import TxOutMap from "./tx-out-map";
 import ScriptInterpreter from "./script-interpreter";
 import { Buffer } from "buffer";
 
 export default class TxVerifier {
   public tx: Tx;
-  public txOutMap: TxOutputMap;
+  public txOutMap: TxOutMap;
   public hashCache: HashCache;
 
-  constructor(tx: Tx, txOutMap: TxOutputMap) {
+  constructor(tx: Tx, txOutMap: TxOutMap) {
     this.tx = tx;
     this.txOutMap = txOutMap;
     this.hashCache = new HashCache();

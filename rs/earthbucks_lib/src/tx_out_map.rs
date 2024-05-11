@@ -1,13 +1,13 @@
 use crate::tx::Tx;
-use crate::tx_output::TxOutput;
+use crate::tx_out::TxOut;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Default)]
-pub struct TxOutputMap {
-    pub map: HashMap<String, TxOutput>,
+pub struct TxOutMap {
+    pub map: HashMap<String, TxOut>,
 }
 
-impl TxOutputMap {
+impl TxOutMap {
     pub fn new() -> Self {
         Self {
             map: HashMap::new(),
@@ -26,7 +26,7 @@ impl TxOutputMap {
         name.split(':').nth(1).unwrap().parse().unwrap()
     }
 
-    pub fn add(&mut self, output: TxOutput, tx_id_hash: &[u8], output_index: u32) {
+    pub fn add(&mut self, output: TxOut, tx_id_hash: &[u8], output_index: u32) {
         let name = Self::name_from_output(tx_id_hash, output_index);
         self.map.insert(name, output);
     }
@@ -36,12 +36,12 @@ impl TxOutputMap {
         self.map.remove(&name);
     }
 
-    pub fn get(&self, tx_id_hash: &[u8], output_index: u32) -> Option<&TxOutput> {
+    pub fn get(&self, tx_id_hash: &[u8], output_index: u32) -> Option<&TxOut> {
         let name = Self::name_from_output(tx_id_hash, output_index);
         self.map.get(&name)
     }
 
-    pub fn values(&self) -> Vec<&TxOutput> {
+    pub fn values(&self) -> Vec<&TxOut> {
         self.map.values().collect()
     }
 
@@ -61,14 +61,14 @@ mod tests {
     fn name_from_output() {
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
-        let name = TxOutputMap::name_from_output(&tx_id_hash, output_index);
+        let name = TxOutMap::name_from_output(&tx_id_hash, output_index);
         assert_eq!(name, "01020304:0");
     }
 
     #[test]
     fn add() {
-        let mut tx_output_map = TxOutputMap::new();
-        let tx_output = TxOutput::new(100, Script::from_iso_str("").unwrap());
+        let mut tx_output_map = TxOutMap::new();
+        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         tx_output_map.add(tx_output.clone(), &tx_id_hash, output_index);
@@ -80,8 +80,8 @@ mod tests {
 
     #[test]
     fn remove() {
-        let mut tx_output_map = TxOutputMap::new();
-        let tx_output = TxOutput::new(100, Script::from_iso_str("").unwrap());
+        let mut tx_output_map = TxOutMap::new();
+        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         tx_output_map.add(tx_output, &tx_id_hash, output_index);
@@ -91,8 +91,8 @@ mod tests {
 
     #[test]
     fn get() {
-        let mut tx_output_map = TxOutputMap::new();
-        let tx_output = TxOutput::new(100, Script::from_iso_str("").unwrap());
+        let mut tx_output_map = TxOutMap::new();
+        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         tx_output_map.add(tx_output.clone(), &tx_id_hash, output_index);
@@ -102,15 +102,15 @@ mod tests {
 
     #[test]
     fn test_values() {
-        let mut tx_output_map = TxOutputMap::new();
-        let tx_output1 = TxOutput::new(100, Script::from_iso_str("").unwrap());
-        let tx_output2 = TxOutput::new(200, Script::from_iso_str("").unwrap());
+        let mut tx_output_map = TxOutMap::new();
+        let tx_output1 = TxOut::new(100, Script::from_iso_str("").unwrap());
+        let tx_output2 = TxOut::new(200, Script::from_iso_str("").unwrap());
         let tx_id_hash1 = [1, 2, 3, 4];
         let tx_id_hash2 = [5, 6, 7, 8];
         let output_index = 0;
         tx_output_map.add(tx_output1.clone(), &tx_id_hash1, output_index);
         tx_output_map.add(tx_output2.clone(), &tx_id_hash2, output_index);
-        let values: Vec<&TxOutput> = tx_output_map.values();
+        let values: Vec<&TxOut> = tx_output_map.values();
         assert_eq!(values.len(), 2);
         assert!(values.contains(&&tx_output1));
         assert!(values.contains(&&tx_output2));
