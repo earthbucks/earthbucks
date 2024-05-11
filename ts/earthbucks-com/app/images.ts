@@ -9,6 +9,8 @@ type ImagePath =
   | "/compute-circle-128.png"
   | "/earth-coin-2.png"
   | "/earthbucks-eb.png"
+  | "/earthbucks-wallet.png"
+  | "/earthbucks-wallet-2.png"
   | "/earthbucks-eb-2.png"
   | "/earthbucks-eb-3.png"
   | "/earthbucks-earth.png"

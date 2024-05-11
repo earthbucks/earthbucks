@@ -1,6 +1,6 @@
 # EarthBucks
 
-<img src="./earthbucks.png" width="200" height="200">
+<img src="./earthbucks-wallet-5.png" width="200" height="200">
 
 Small casual transactions for everybody on Planet Earth
 
