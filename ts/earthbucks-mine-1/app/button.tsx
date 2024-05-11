@@ -444,6 +444,7 @@ function Slider({
               }}
             >
               <img
+                // src={$image("/earthbucks-earth-1-128.png")}
                 src={$image("/compute-circle-128.png")}
                 alt=""
                 className="h-20px] w-[40px]"
@@ -523,7 +524,7 @@ export default function Button({
     // } else if (buttonMode === "pay") {
     //   buttonSrc = $image("/earthbucks-42-128.png");
   } else if (buttonMode === "pay") {
-    buttonSrc = $image("/earthbucks-earth-1-128.png");
+    buttonSrc = $image("/earthbucks-wallet-5-128.png");
   } else if (buttonMode === "computcha") {
     buttonSrc = $image("/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
