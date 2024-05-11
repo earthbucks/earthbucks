@@ -39,7 +39,7 @@ export default function Index() {
           42 million EBX. No pre-mine. GPUs. Big blocks. Script.
           <br />
           <br />
-          July 2024.
+          <strong>July 2024.</strong>
           <br />
           <br />
           <Link to="/blog" className="underline">
