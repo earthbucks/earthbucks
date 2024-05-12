@@ -23,20 +23,6 @@ describe("BufferWriter", () => {
     });
   });
 
-  describe("writeInt8", () => {
-    it("should write a signed 8-bit integer", () => {
-      // Arrange
-      const n: number = -123;
-
-      // Act
-      bufferWriter.writeInt8(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readInt8(0)).toBe(n);
-    });
-  });
-
   describe("writeUInt16BE", () => {
     it("should write an unsigned 16-bit integer in big-endian format", () => {
       // Arrange
@@ -51,20 +37,6 @@ describe("BufferWriter", () => {
     });
   });
 
-  describe("writeInt16BE", () => {
-    it("should write a signed 16-bit integer in big-endian format", () => {
-      // Arrange
-      const n: number = -12345;
-
-      // Act
-      bufferWriter.writeInt16BE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readInt16BE(0)).toBe(n);
-    });
-  });
-
   describe("writeUInt32BE", () => {
     it("should write an unsigned 32-bit integer in big-endian format", () => {
       // Arrange
@@ -76,20 +48,6 @@ describe("BufferWriter", () => {
       // Assert
       const result = bufferWriter.toIsoBuf();
       expect(result.readUInt32BE(0)).toBe(n);
-    });
-  });
-
-  describe("writeInt32BE", () => {
-    it("should write a signed 32-bit integer in big-endian format", () => {
-      // Arrange
-      const n: number = -1234567890;
-
-      // Act
-      bufferWriter.writeInt32BE(n);
-
-      // Assert
-      const result = bufferWriter.toIsoBuf();
-      expect(result.readInt32BE(0)).toBe(n);
     });
   });
 

@@ -40,33 +40,15 @@ describe("BufferReader", () => {
     expect(bufferReader["pos"]).toBe(1);
   });
 
-  test("readInt8 returns correct value and updates position", () => {
-    const result = bufferReader.readInt8().unwrap();
-    expect(result).toBe(1);
-    expect(bufferReader["pos"]).toBe(1);
-  });
-
   test("readUInt16BE returns correct value and updates position", () => {
     const result = bufferReader.readUInt16BE().unwrap();
     expect(result).toBe(Buffer.from([1, 2]).readUInt16BE());
     expect(bufferReader["pos"]).toBe(2);
   });
 
-  test("readInt16BE returns correct value and updates position", () => {
-    const result = bufferReader.readInt16BE().unwrap();
-    expect(result).toBe(Buffer.from([1, 2]).readInt16BE());
-    expect(bufferReader["pos"]).toBe(2);
-  });
-
   test("readUInt32BE returns correct value and updates position", () => {
     const result = bufferReader.readUInt32BE().unwrap();
     expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32BE());
-    expect(bufferReader["pos"]).toBe(4);
-  });
-
-  test("readInt32BE returns correct value and updates position", () => {
-    const result = bufferReader.readInt32BE().unwrap();
-    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readInt32BE());
     expect(bufferReader["pos"]).toBe(4);
   });
 

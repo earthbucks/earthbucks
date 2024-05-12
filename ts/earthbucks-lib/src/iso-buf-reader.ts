@@ -38,15 +38,6 @@ export default class IsoBufReader {
     return new Ok(val);
   }
 
-  readInt8(): Result<number, string> {
-    if (this.pos + 1 > this.buf.length) {
-      return new Err("readInt8: Not enough bytes left in the buffer to read");
-    }
-    const val = this.buf.readInt8(this.pos);
-    this.pos += 1;
-    return new Ok(val);
-  }
-
   readUInt16BE(): Result<number, string> {
     if (this.pos + 2 > this.buf.length) {
       return new Err(
@@ -58,17 +49,6 @@ export default class IsoBufReader {
     return new Ok(val);
   }
 
-  readInt16BE(): Result<number, string> {
-    if (this.pos + 2 > this.buf.length) {
-      return new Err(
-        "readInt16BE: Not enough bytes left in the buffer to read",
-      );
-    }
-    const val = this.buf.readInt16BE(this.pos);
-    this.pos += 2;
-    return new Ok(val);
-  }
-
   readUInt32BE(): Result<number, string> {
     if (this.pos + 4 > this.buf.length) {
       return new Err(
@@ -76,17 +56,6 @@ export default class IsoBufReader {
       );
     }
     const val = this.buf.readUInt32BE(this.pos);
-    this.pos += 4;
-    return new Ok(val);
-  }
-
-  readInt32BE(): Result<number, string> {
-    if (this.pos + 4 > this.buf.length) {
-      return new Err(
-        "readInt32BE: Not enough bytes left in the buffer to read",
-      );
-    }
-    const val = this.buf.readInt32BE(this.pos);
     this.pos += 4;
     return new Ok(val);
   }

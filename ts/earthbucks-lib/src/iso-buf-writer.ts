@@ -24,25 +24,9 @@ export default class IsoBufWriter {
     return this;
   }
 
-  writeReverse(buf: Buffer): this {
-    const buf2 = Buffer.alloc(buf.length);
-    for (let i = 0; i < buf2.length; i++) {
-      buf2[i] = buf[buf.length - 1 - i];
-    }
-    this.bufs.push(buf2);
-    return this;
-  }
-
   writeUInt8(n: number): this {
     const buf = Buffer.alloc(1);
     buf.writeUInt8(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeInt8(n: number): this {
-    const buf = Buffer.alloc(1);
-    buf.writeInt8(n, 0);
     this.writeBuffer(buf);
     return this;
   }
@@ -54,23 +38,9 @@ export default class IsoBufWriter {
     return this;
   }
 
-  writeInt16BE(n: number): this {
-    const buf = Buffer.alloc(2);
-    buf.writeInt16BE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
   writeUInt32BE(n: number): this {
     const buf = Buffer.alloc(4);
     buf.writeUInt32BE(n, 0);
-    this.writeBuffer(buf);
-    return this;
-  }
-
-  writeInt32BE(n: number): this {
-    const buf = Buffer.alloc(4);
-    buf.writeInt32BE(n, 0);
     this.writeBuffer(buf);
     return this;
   }

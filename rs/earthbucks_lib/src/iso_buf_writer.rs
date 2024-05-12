@@ -43,31 +43,15 @@ impl IsoBufWriter {
         self.bufs.push(vec![n]);
     }
 
-    pub fn write_i8(&mut self, n: i8) {
-        self.bufs.push(vec![n as u8]);
-    }
-
     pub fn write_u16_be(&mut self, n: u16) {
         let mut buf = vec![0; 2];
         buf.as_mut_slice().write_u16::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
     }
 
-    pub fn write_i16_be(&mut self, n: i16) {
-        let mut buf = vec![0; 2];
-        buf.as_mut_slice().write_i16::<BigEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
     pub fn write_u32_be(&mut self, n: u32) {
         let mut buf = vec![0; 4];
         buf.as_mut_slice().write_u32::<BigEndian>(n).unwrap();
-        self.bufs.push(buf);
-    }
-
-    pub fn write_i32_be(&mut self, n: i32) {
-        let mut buf = vec![0; 4];
-        buf.as_mut_slice().write_i32::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
     }
 
@@ -155,15 +139,6 @@ mod tests {
     }
 
     #[test]
-    fn test_write_i8() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_i8(-1);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![255]); // -1 as u8 is 255
-    }
-
-    #[test]
     fn test_write_u16_be() {
         let mut writer = IsoBufWriter::new();
         writer.write_u16_be(0x0102);
@@ -173,30 +148,12 @@ mod tests {
     }
 
     #[test]
-    fn test_write_i16_be() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_i16_be(-0x0102);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![254, 254]); // -0x0102 in big-endian is [254, 254]
-    }
-
-    #[test]
     fn test_write_u32_be() {
         let mut writer = IsoBufWriter::new();
         writer.write_u32_be(0x01020304);
 
         assert_eq!(writer.bufs.len(), 1);
         assert_eq!(writer.bufs[0], vec![1, 2, 3, 4]); // 0x01020304 in big-endian is [1, 2, 3, 4]
-    }
-
-    #[test]
-    fn test_write_i32_be() {
-        let mut writer = IsoBufWriter::new();
-        writer.write_i32_be(-0x01020304);
-
-        assert_eq!(writer.bufs.len(), 1);
-        assert_eq!(writer.bufs[0], vec![254, 253, 252, 252]); // -0x01020304 in big-endian is [254, 253, 252, 252]
     }
 
     #[test]
