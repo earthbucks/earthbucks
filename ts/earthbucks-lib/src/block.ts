@@ -15,27 +15,34 @@ export default class Block {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<Block, string> {
-    try {
-      const header = Header.fromIsoBufReader(br)
-        .mapErr((err) => `Unable to parse header: ${err}`)
-        .unwrap();
-      const txCount = br
-        .readVarInt()
-        .mapErr((err) => `Unable to parse tx count: ${err}`)
-        .unwrap();
-
-      const txs: Tx[] = [];
-      for (let i = 0; i < txCount; i++) {
-        const tx = Tx.fromIsoBufReader(br)
-          .mapErr((err) => `Unable to parse tx ${i}: ${err}`)
-          .unwrap();
-        txs.push(tx);
-      }
-
-      return new Ok(new Block(header, txs));
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing block");
+    const headerRes = Header.fromIsoBufReader(br).mapErr(
+      (err) => `Unable to parse header: ${err}`,
+    );
+    if (headerRes.err) {
+      return headerRes;
     }
+    const header = headerRes.unwrap();
+    const txCountRes = br
+      .readVarInt()
+      .mapErr((err) => `Unable to parse tx count: ${err}`);
+    if (txCountRes.err) {
+      return txCountRes;
+    }
+    const txCount = txCountRes.unwrap();
+
+    const txs: Tx[] = [];
+    for (let i = 0; i < txCount; i++) {
+      const txRes = Tx.fromIsoBufReader(br).mapErr(
+        (err) => `Unable to parse tx ${i}: ${err}`,
+      );
+      if (txRes.err) {
+        return txRes;
+      }
+      const tx = txRes.unwrap();
+      txs.push(tx);
+    }
+
+    return new Ok(new Block(header, txs));
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
