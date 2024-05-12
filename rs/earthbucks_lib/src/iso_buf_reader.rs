@@ -23,7 +23,7 @@ impl IsoBufReader {
     pub fn read_iso_buf(&mut self, len: usize) -> Result<Vec<u8>, String> {
         let pos = self.buf.position() as usize;
         if pos + len > self.buf.get_ref().len() {
-            return Err("read_iso_buf: Not enough bytes left in the buffer to read".to_string());
+            return Err("read_iso_buf: not enough bytes left in the buffer to read".to_string());
         }
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
@@ -218,6 +218,7 @@ mod tests {
         read_u32_be: TestVectorReadErrors,
         read_u64_be: TestVectorReadErrors,
         read_var_int_buf: TestVectorReadErrors,
+        read_var_int: TestVectorReadErrors,
     }
 
     #[derive(Deserialize)]
@@ -338,6 +339,25 @@ mod tests {
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_var_int_buf();
+            // println!("expected error: {}", test_vector.error);
+            // println!("{:?}", result);
+            match result {
+                Ok(_) => panic!("Expected an error, but got Ok(_)"),
+                Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
+            }
+        }
+    }
+
+    #[test]
+    fn test_vectors_read_var_int() {
+        let data =
+            fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
+        let test_vectors: TestVectorIsoBufReader =
+            serde_json::from_str(&data).expect("Unable to parse JSON");
+        for test_vector in test_vectors.read_var_int.errors {
+            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let mut reader = IsoBufReader::new(buf);
+            let result = reader.read_var_int();
             // println!("expected error: {}", test_vector.error);
             // println!("{:?}", result);
             match result {
