@@ -32,34 +32,29 @@ impl ScriptChunk {
         }
     }
 
-    pub fn from_iso_str(&mut self, str: String) -> Result<(), Box<dyn Error>> {
+    pub fn from_iso_str(str: String) -> Result<ScriptChunk, Box<dyn Error>> {
+        let mut chunk = ScriptChunk::new(0, None);
         if str.starts_with("0x") {
             let buffer = hex::decode(str.strip_prefix("0x").unwrap())?;
             let len = buffer.len();
-            self.buffer = Some(buffer);
+            chunk.buffer = Some(buffer);
             if len <= 0xff {
-                self.opcode = Opcode::OP_PUSHDATA1;
+                chunk.opcode = Opcode::OP_PUSHDATA1;
             } else if len <= 0xffff {
-                self.opcode = Opcode::OP_PUSHDATA2;
+                chunk.opcode = Opcode::OP_PUSHDATA2;
             } else if len <= 0xffffffff {
-                self.opcode = Opcode::OP_PUSHDATA4;
+                chunk.opcode = Opcode::OP_PUSHDATA4;
             } else {
                 return Err("too much data".into());
             }
         } else {
             let opcode = OP.get(&str.as_str());
             match opcode {
-                Some(opcode) => self.opcode = *opcode,
+                Some(opcode) => chunk.opcode = *opcode,
                 None => return Err("invalid opcode".into()),
             }
-            self.buffer = None;
+            chunk.buffer = None;
         }
-        Ok(())
-    }
-
-    pub fn from_iso_str_new(str: String) -> Result<ScriptChunk, Box<dyn Error>> {
-        let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_iso_str(str)?;
         Ok(chunk)
     }
 
@@ -184,43 +179,35 @@ mod tests {
 
     #[test]
     fn test_from_iso_str_if() {
-        let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_iso_str("IF".to_string()).unwrap();
+        let chunk = ScriptChunk::from_iso_str("IF".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_IF);
         assert_eq!(chunk.buffer, None);
     }
 
     #[test]
     fn test_from_iso_str_pushdata1() {
-        let mut chunk = ScriptChunk::new(0, None);
-        chunk.from_iso_str("0x010203".to_string()).unwrap();
+        let chunk = ScriptChunk::from_iso_str("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
 
     #[test]
     fn test_from_iso_str_pushdata2() {
-        let mut chunk = ScriptChunk::new(0, None);
-        chunk
-            .from_iso_str("0x".to_string() + &"01".repeat(256))
-            .unwrap();
+        let chunk = ScriptChunk::from_iso_str("0x".to_string() + &"01".repeat(256)).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
         assert_eq!(chunk.buffer, Some(vec![1; 256]));
     }
 
     #[test]
     fn test_from_iso_str_pushdata4() {
-        let mut chunk = ScriptChunk::new(0, None);
-        chunk
-            .from_iso_str("0x".to_string() + &"01".repeat(70000))
-            .unwrap();
+        let chunk = ScriptChunk::from_iso_str("0x".to_string() + &"01".repeat(70000)).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
         assert_eq!(chunk.buffer, Some(vec![1; 70000]));
     }
 
     #[test]
     fn test_from_iso_str_new() {
-        let chunk = ScriptChunk::from_iso_str_new("0x010203".to_string()).unwrap();
+        let chunk = ScriptChunk::from_iso_str("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
