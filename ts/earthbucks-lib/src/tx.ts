@@ -41,23 +41,35 @@ export default class Tx {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<Tx, string> {
-    try {
-      const version = reader.readUInt8().unwrap();
-      const numInputs = reader.readVarIntNum().unwrap();
-      const inputs = [];
-      for (let i = 0; i < numInputs; i++) {
-        inputs.push(TxIn.fromIsoBufReader(reader));
-      }
-      const numOutputs = reader.readVarIntNum().unwrap();
-      const outputs = [];
-      for (let i = 0; i < numOutputs; i++) {
-        outputs.push(TxOut.fromIsoBufReader(reader));
-      }
-      const lockNum = reader.readUInt64BE().unwrap();
-      return new Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing tx");
+    const versionRes = reader.readUInt8();
+    if (versionRes.err) {
+      return versionRes;
     }
+    const version = versionRes.unwrap();
+    const numInputsRes = reader.readVarIntNum();
+    if (numInputsRes.err) {
+      return numInputsRes;
+    }
+    const numInputs = numInputsRes.unwrap();
+    const inputs = [];
+    for (let i = 0; i < numInputs; i++) {
+      inputs.push(TxIn.fromIsoBufReader(reader));
+    }
+    const numOutputsRes = reader.readVarIntNum();
+    if (numOutputsRes.err) {
+      return numOutputsRes;
+    }
+    const numOutputs = numOutputsRes.unwrap();
+    const outputs = [];
+    for (let i = 0; i < numOutputs; i++) {
+      outputs.push(TxOut.fromIsoBufReader(reader));
+    }
+    const lockNumRes = reader.readUInt64BE();
+    if (lockNumRes.err) {
+      return lockNumRes;
+    }
+    const lockNum = lockNumRes.unwrap();
+    return new Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
   }
 
   toIsoBuf(): Buffer {
@@ -80,14 +92,14 @@ export default class Tx {
   }
 
   static fromIsoHex(hex: string): Result<Tx, string> {
-    try {
-      const buf = IsoHex.decode(hex)
-        .mapErr((err) => `Could not decode hex: ${err}`)
-        .unwrap();
-      return Tx.fromIsoBuf(buf);
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing hex tx");
+    const bufRes = IsoHex.decode(hex).mapErr(
+      (err) => `Could not decode hex: ${err}`,
+    );
+    if (bufRes.err) {
+      return bufRes;
     }
+    const buf = bufRes.unwrap();
+    return Tx.fromIsoBuf(buf);
   }
 
   static fromCoinbase(
