@@ -184,7 +184,7 @@ async fn main() -> Result<()> {
                         builder_tx_output.value,
                         Script::from_iso_buf(&builder_tx_output.script).unwrap(),
                     );
-                    tx_out_bn_map.add( &tx_id, tx_out_num, tx_output, header.block_num);
+                    tx_out_bn_map.add(&tx_id, tx_out_num, tx_output, header.block_num);
                 }
 
                 // 5. Validate the block

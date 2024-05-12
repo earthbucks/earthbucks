@@ -37,19 +37,18 @@ impl VarInt {
         self.buf.clone()
     }
 
-    pub fn to_u64(&self) -> u64 {
+    pub fn to_u64(&self) -> Result<u64, String> {
         IsoBufReader::new(self.buf.clone()).read_var_int()
     }
 
-    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Self {
-        let buf = br.read_var_int_buf();
-        VarInt { buf }
+    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, String> {
+        let buf = br.read_var_int_buf()?;
+        Ok(VarInt { buf })
     }
 
     pub fn is_minimal(&self) -> bool {
-        let bn = self.to_u64();
-        let varint = VarInt::from_u64_new(bn);
-        self.buf == varint.to_iso_buf()
+        let res = self.to_u64();
+        res.is_ok()
     }
 }
 
@@ -62,14 +61,14 @@ mod tests {
         let mut varint = VarInt::new();
         varint.from_u64(1234567890);
 
-        assert_eq!(varint.to_u64(), 1234567890);
+        assert_eq!(varint.to_u64().unwrap(), 1234567890);
     }
 
     #[test]
     fn test_from_u64_static() {
         let varint = VarInt::from_u64_new(1234567890);
 
-        assert_eq!(varint.to_u64(), 1234567890);
+        assert_eq!(varint.to_u64().unwrap(), 1234567890);
     }
 
     #[test]
@@ -77,14 +76,14 @@ mod tests {
         let mut varint = VarInt::new();
         varint.from_u32(123456789);
 
-        assert_eq!(varint.to_u64(), 123456789);
+        assert_eq!(varint.to_u64().unwrap(), 123456789);
     }
 
     #[test]
     fn test_from_u32_static() {
         let varint = VarInt::from_u32_new(123456789);
 
-        assert_eq!(varint.to_u64(), 123456789);
+        assert_eq!(varint.to_u64().unwrap(), 123456789);
     }
 
     #[test]
@@ -100,7 +99,7 @@ mod tests {
     fn test_to_u64() {
         let mut varint = VarInt::new();
         varint.from_u64(1234567890);
-        let num = varint.to_u64();
+        let num = varint.to_u64().unwrap();
 
         // Add assertions here based on how VarInt is expected to represent the u64
         // For example, if VarInt has a method 'to_u64' that should return the original u64:

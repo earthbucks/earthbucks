@@ -2,6 +2,7 @@ use crate::blake3::blake3_hash;
 use crate::blake3::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
+use crate::iso_hex;
 use crate::script::Script;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
@@ -46,30 +47,28 @@ impl Tx {
         }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
         let mut reader = IsoBufReader::new(buf);
-        Self::from_buffer_reader(&mut reader)
+        Self::from_iso_buf_reader(&mut reader)
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
         self.to_buffer_writer().to_iso_buf()
     }
 
-    pub fn from_buffer_reader(
-        reader: &mut IsoBufReader,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
-        let version = reader.read_u8();
-        let input_count = reader.read_var_int() as usize;
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
+        let version = reader.read_u8()?;
+        let input_count = reader.read_var_int()? as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
-            inputs.push(TxIn::from_buffer_reader(reader)?);
+            inputs.push(TxIn::from_iso_buf_reader(reader)?);
         }
-        let output_count = reader.read_var_int() as usize;
+        let output_count = reader.read_var_int()? as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
-            outputs.push(TxOut::from_buffer_reader(reader)?);
+            outputs.push(TxOut::from_iso_buf_reader(reader)?);
         }
-        let lock_num = reader.read_u64_be();
+        let lock_num = reader.read_u64_be()?;
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
@@ -92,12 +91,16 @@ impl Tx {
         hex::encode(self.to_iso_buf())
     }
 
+    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
+        Self::from_iso_buf(iso_hex::decode(hex)?)
+    }
+
     pub fn to_iso_str(&self) -> String {
         hex::encode(self.to_iso_buf())
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        Self::from_iso_buf(hex::decode(hex)?)
+    pub fn from_iso_str(hex: &str) -> Result<Self, String> {
+        Self::from_iso_hex(hex)
     }
 
     pub fn from_coinbase(
@@ -379,7 +382,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_buffer_reader() -> Result<(), String> {
+    fn test_from_iso_buf_reader() -> Result<(), String> {
         let input_tx_id = vec![0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -398,7 +401,7 @@ mod tests {
 
         let buf = tx.to_iso_buf();
         let mut reader = IsoBufReader::new(buf);
-        let tx2 = Tx::from_buffer_reader(&mut reader).unwrap();
+        let tx2 = Tx::from_iso_buf_reader(&mut reader).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());

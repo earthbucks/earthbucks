@@ -14,16 +14,16 @@ impl Block {
         Self { header, txs }
     }
 
-    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Result<Self, Box<dyn std::error::Error>> {
-        let header = Header::from_buffer_reader(br)?;
-        let tx_count_varint = VarInt::from_buffer_reader(br);
+    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, String> {
+        let header = Header::from_iso_buf_reader(br)?;
+        let tx_count_varint = VarInt::from_iso_buf_reader(br)?;
         if !tx_count_varint.is_minimal() {
             return Err("non-minimally encoded varint".into());
         }
-        let tx_count = tx_count_varint.to_u64() as usize;
+        let tx_count = tx_count_varint.to_u64()? as usize;
         let mut txs = vec![];
         for _ in 0..tx_count {
-            let tx = Tx::from_buffer_reader(br).map_err(|_| "unable to parse transactions")?;
+            let tx = Tx::from_iso_buf_reader(br).map_err(|_| "unable to parse transactions")?;
             txs.push(tx);
         }
         Ok(Self { header, txs })
@@ -43,9 +43,9 @@ impl Block {
         self.to_buffer_writer().to_iso_buf()
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
         let mut br = IsoBufReader::new(buf);
-        Self::from_buffer_reader(&mut br)
+        Self::from_iso_buf_reader(&mut br)
     }
 }
 
@@ -96,7 +96,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_buffer_reader() {
+    fn test_from_iso_buf_reader() {
         let header = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -113,7 +113,7 @@ mod tests {
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_iso_buf();
         let mut br = IsoBufReader::new(buf);
-        let block2 = Block::from_buffer_reader(&mut br).unwrap();
+        let block2 = Block::from_iso_buf_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);
     }

@@ -38,7 +38,7 @@ impl MineMerkleProof {
     }
 
     pub fn to_merkle_proof(&self) -> MerkleProof {
-        MerkleProof::from_iso_buf(&self.merkle_proof)
+        MerkleProof::from_iso_buf(&self.merkle_proof).unwrap()
     }
 
     pub async fn get(

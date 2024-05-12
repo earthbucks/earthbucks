@@ -20,77 +20,112 @@ impl IsoBufReader {
         self.buf.get_ref().len() - self.buf.position() as usize
     }
 
-    pub fn read_iso_buf(&mut self, len: usize) -> Vec<u8> {
+    pub fn read_iso_buf(&mut self, len: usize) -> Result<Vec<u8>, String> {
         let pos = self.buf.position() as usize;
+        if pos + len > self.buf.get_ref().len() {
+            return Err("read_iso_but: Not enough bytes left in the buffer to read".to_string());
+        }
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
+        Ok(buf)
+    }
+
+    pub fn read_remainder(&mut self) -> Vec<u8> {
+        let pos = self.buf.position() as usize;
+        let buf = self.buf.get_ref()[pos..].to_vec();
+        self.buf.set_position(self.buf.get_ref().len() as u64);
         buf
     }
 
-    pub fn read_reverse(&mut self, len: usize) -> Vec<u8> {
-        let pos = self.buf.position() as usize;
-        let buf = self.buf.get_ref()[pos..pos + len].to_vec();
-        self.buf.set_position((pos + len) as u64);
-        buf
+    pub fn read_u8(&mut self) -> Result<u8, String> {
+        self.buf
+            .read_u8()
+            .map_err(|e| "Unable to read u8: ".to_string() + &e.to_string())
     }
 
-    pub fn read_u8(&mut self) -> u8 {
-        self.buf.read_u8().unwrap()
+    pub fn read_i8(&mut self) -> Result<i8, String> {
+        self.buf
+            .read_i8()
+            .map_err(|e| "Unable to read i8: ".to_string() + &e.to_string())
     }
 
-    pub fn read_i8(&mut self) -> i8 {
-        self.buf.read_i8().unwrap()
+    pub fn read_u16_be(&mut self) -> Result<u16, String> {
+        self.buf
+            .read_u16::<BigEndian>()
+            .map_err(|e| "Unable to read u16: ".to_string() + &e.to_string())
     }
 
-    pub fn read_u16_be(&mut self) -> u16 {
-        self.buf.read_u16::<BigEndian>().unwrap()
+    pub fn read_i16_be(&mut self) -> Result<i16, String> {
+        self.buf
+            .read_i16::<BigEndian>()
+            .map_err(|e| "Unable to read i16: ".to_string() + &e.to_string())
     }
 
-    pub fn read_i16_be(&mut self) -> i16 {
-        self.buf.read_i16::<BigEndian>().unwrap()
+    pub fn read_u32_be(&mut self) -> Result<u32, String> {
+        self.buf
+            .read_u32::<BigEndian>()
+            .map_err(|e| "Unable to read u32: ".to_string() + &e.to_string())
     }
 
-    pub fn read_u32_be(&mut self) -> u32 {
-        self.buf.read_u32::<BigEndian>().unwrap()
+    pub fn read_i32_be(&mut self) -> Result<i32, String> {
+        self.buf
+            .read_i32::<BigEndian>()
+            .map_err(|e| "Unable to read i32: ".to_string() + &e.to_string())
     }
 
-    pub fn read_i32_be(&mut self) -> i32 {
-        self.buf.read_i32::<BigEndian>().unwrap()
+    pub fn read_u64_be(&mut self) -> Result<u64, String> {
+        self.buf
+            .read_u64::<BigEndian>()
+            .map_err(|e| "Unable to read u64: ".to_string() + &e.to_string())
     }
 
-    pub fn read_u64_be(&mut self) -> u64 {
-        self.buf.read_u64::<BigEndian>().unwrap()
-    }
-
-    pub fn read_var_int_buf(&mut self) -> Vec<u8> {
-        let first = self.read_u8();
+    pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, String> {
+        let first = self
+            .read_u8()
+            .map_err(|e| "read_var_int_buf 1: ".to_string() + &e)?;
         match first {
             0xfd => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(2));
-                buf
+                buf.extend_from_slice(&self.read_iso_buf(2).map_err(|e| {
+                    "read_var_int_buf 2: could not read 2 bytes: ".to_string() + &e
+                })?);
+                if Cursor::new(&buf).read_u16::<BigEndian>().unwrap() < 0xfd {
+                    return Err("read_var_int_buf 2: Non-minimal varint encoding 1".to_string());
+                }
+                Ok(buf)
             }
             0xfe => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(4));
-                buf
+                buf.extend_from_slice(&self.read_iso_buf(4).map_err(|e| {
+                    "read_var_int_buf 3: could not read 4 bytes: ".to_string() + &e
+                })?);
+                if Cursor::new(&buf).read_u32::<BigEndian>().unwrap() < 0x10000 {
+                    return Err("read_var_int_buf 3: Non-minimal varint encoding 2".to_string());
+                }
+                Ok(buf)
             }
             0xff => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(8));
-                buf
+                buf.extend_from_slice(&self.read_iso_buf(8)?);
+                if Cursor::new(&buf).read_u64::<BigEndian>().unwrap() < 0x100000000 {
+                    return Err("read_var_int_buf 4: Non-minimal varint encoding 3".to_string());
+                }
+                Ok(buf)
             }
-            _ => vec![first],
+            _ => Ok(vec![first]),
         }
     }
 
-    pub fn read_var_int(&mut self) -> u64 {
-        let first = self.read_u8();
+    pub fn read_var_int(&mut self) -> Result<u64, String> {
+        let buf = self
+            .read_var_int_buf()
+            .map_err(|e| "read_var_int 1: ".to_string() + &e)?;
+        let first = buf[0];
         match first {
-            0xfd => self.read_u16_be() as u64,
-            0xfe => self.read_u32_be() as u64,
-            0xff => self.read_u64_be(),
-            _ => first as u64,
+            0xfd => Ok(Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() as u64),
+            0xfe => Ok(Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() as u64),
+            0xff => Ok(Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap()),
+            _ => Ok(first as u64),
         }
     }
 }
@@ -103,36 +138,29 @@ mod tests {
     #[test]
     fn test_read() {
         let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
-        assert_eq!(reader.read_iso_buf(3), vec![1, 2, 3]);
-        assert_eq!(reader.read_iso_buf(2), vec![4, 5]);
-    }
-
-    #[test]
-    fn test_read_reverse() {
-        let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
-        assert_eq!(reader.read_reverse(3), vec![1, 2, 3]);
-        assert_eq!(reader.read_reverse(2), vec![4, 5]);
+        assert_eq!(reader.read_iso_buf(3).unwrap(), vec![1, 2, 3]);
+        assert_eq!(reader.read_iso_buf(2).unwrap(), vec![4, 5]);
     }
 
     #[test]
     fn test_read_u8() {
         let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
-        assert_eq!(reader.read_u8(), 1);
-        assert_eq!(reader.read_u8(), 2);
+        assert_eq!(reader.read_u8().unwrap(), 1);
+        assert_eq!(reader.read_u8().unwrap(), 2);
     }
 
     #[test]
     fn test_read_i8() {
         let mut reader = IsoBufReader::new(vec![1, 2, 255, 4, 5]);
-        assert_eq!(reader.read_i8(), 1);
-        assert_eq!(reader.read_i8(), 2);
-        assert_eq!(reader.read_i8(), -1); // 255 is -1 in two's complement
+        assert_eq!(reader.read_i8().unwrap(), 1);
+        assert_eq!(reader.read_i8().unwrap(), 2);
+        assert_eq!(reader.read_i8().unwrap(), -1); // 255 is -1 in two's complement
     }
 
     #[test]
     fn test_read_u16_be() {
         let mut buffer_reader = IsoBufReader::new(vec![0x01, 0x23]);
-        assert_eq!(buffer_reader.read_u16_be(), 0x0123);
+        assert_eq!(buffer_reader.read_u16_be().unwrap(), 0x0123);
     }
 
     #[test]
@@ -142,8 +170,8 @@ mod tests {
         data.write_i16::<BigEndian>(-12345).unwrap();
 
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_i16_be(), 12345);
-        assert_eq!(reader.read_i16_be(), -12345);
+        assert_eq!(reader.read_i16_be().unwrap(), 12345);
+        assert_eq!(reader.read_i16_be().unwrap(), -12345);
     }
 
     #[test]
@@ -153,8 +181,8 @@ mod tests {
         data.write_u32::<BigEndian>(987654321).unwrap();
 
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_u32_be(), 1234567890);
-        assert_eq!(reader.read_u32_be(), 987654321);
+        assert_eq!(reader.read_u32_be().unwrap(), 1234567890);
+        assert_eq!(reader.read_u32_be().unwrap(), 987654321);
     }
 
     #[test]
@@ -164,8 +192,8 @@ mod tests {
         data.write_i32::<BigEndian>(-1234567890).unwrap();
 
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_i32_be(), 1234567890);
-        assert_eq!(reader.read_i32_be(), -1234567890);
+        assert_eq!(reader.read_i32_be().unwrap(), 1234567890);
+        assert_eq!(reader.read_i32_be().unwrap(), -1234567890);
     }
 
     #[test]
@@ -175,51 +203,51 @@ mod tests {
         data.write_u64::<BigEndian>(9876543210987654321).unwrap();
 
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_u64_be(), 12345678901234567890);
-        assert_eq!(reader.read_u64_be(), 9876543210987654321);
+        assert_eq!(reader.read_u64_be().unwrap(), 12345678901234567890);
+        assert_eq!(reader.read_u64_be().unwrap(), 9876543210987654321);
     }
 
     #[test]
     fn test_read_var_int_buf() {
         let data = vec![0xfd, 0x01, 0x00];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int_buf(), vec![0xfd, 0x01, 0x00]);
+        assert_eq!(reader.read_var_int_buf().unwrap(), vec![0xfd, 0x01, 0x00]);
 
         let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
         let mut reader = IsoBufReader::new(data);
         assert_eq!(
-            reader.read_var_int_buf(),
+            reader.read_var_int_buf().unwrap(),
             vec![0xfe, 0x01, 0x00, 0x00, 0x00]
         );
 
         let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
         let mut reader = IsoBufReader::new(data);
         assert_eq!(
-            reader.read_var_int_buf(),
+            reader.read_var_int_buf().unwrap(),
             vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         );
 
         let data = vec![0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int_buf(), vec![0x01]);
+        assert_eq!(reader.read_var_int_buf().unwrap(), vec![0x01]);
     }
 
     #[test]
     fn test_read_var_int() {
         let data = vec![0xfd, 0x00, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 1);
 
         let data = vec![0xfe, 0x00, 0x00, 0x00, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 1);
 
         let data = vec![0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 1);
 
         let data = vec![0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 1);
     }
 }

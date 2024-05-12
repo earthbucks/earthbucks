@@ -43,24 +43,25 @@ impl Script {
         buf
     }
 
-    pub fn self_from_iso_buf(&mut self, arr: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(arr: &[u8]) -> Result<Self, String> {
+        let mut script = Self::new(Vec::new());
         let mut reader = IsoBufReader::new(arr.to_vec());
 
         while !reader.eof() {
-            let mut chunk = ScriptChunk::new(reader.read_u8(), None);
+            let mut chunk = ScriptChunk::new(reader.read_u8()?, None);
 
             if chunk.opcode == OP["PUSHDATA1"]
                 || chunk.opcode == OP["PUSHDATA2"]
                 || chunk.opcode == OP["PUSHDATA4"]
             {
                 let len = match chunk.opcode {
-                    opcode if opcode == OP["PUSHDATA1"] => reader.read_u8() as u32,
-                    opcode if opcode == OP["PUSHDATA2"] => reader.read_u16_be() as u32,
-                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be(),
+                    opcode if opcode == OP["PUSHDATA1"] => reader.read_u8()? as u32,
+                    opcode if opcode == OP["PUSHDATA2"] => reader.read_u16_be()? as u32,
+                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be()?,
                     _ => unreachable!(),
                 };
 
-                chunk.buffer = Some(reader.read_iso_buf(len as usize).to_vec());
+                chunk.buffer = Some(reader.read_iso_buf(len as usize)?.to_vec());
 
                 let buffer_length = match &chunk.buffer {
                     Some(buffer) => buffer.len(),
@@ -72,15 +73,8 @@ impl Script {
                 }
             }
 
-            self.chunks.push(chunk);
+            script.chunks.push(chunk);
         }
-
-        Ok(())
-    }
-
-    pub fn from_iso_buf(arr: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut script = Self::new(Vec::new());
-        script.self_from_iso_buf(arr)?;
         Result::Ok(script)
     }
 

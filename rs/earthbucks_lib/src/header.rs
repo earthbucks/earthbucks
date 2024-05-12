@@ -40,21 +40,21 @@ impl Header {
         bw.to_iso_buf()
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Header, &'static str> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Header, String> {
         if buf.len() != Header::BLOCK_HEADER_SIZE {
-            return Err("Invalid block header size");
+            return Err("Invalid block header size".to_string());
         }
         let mut br = IsoBufReader::new(buf);
-        let version = br.read_u32_be();
-        let prev_block_id: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let timestamp = br.read_u64_be();
-        let block_num = br.read_u64_be();
-        let target: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let nonce: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let work_algo = br.read_u64_be();
-        let work_ser: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let work_par: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
+        let version = br.read_u32_be()?;
+        let prev_block_id: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let timestamp = br.read_u64_be()?;
+        let block_num = br.read_u64_be()?;
+        let target: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_algo = br.read_u64_be()?;
+        let work_ser: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -69,20 +69,20 @@ impl Header {
         })
     }
 
-    pub fn from_buffer_reader(br: &mut IsoBufReader) -> Result<Header, &'static str> {
+    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Header, String> {
         if br.remainder_len() < Header::BLOCK_HEADER_SIZE {
             panic!("Invalid block header size");
         }
-        let version = br.read_u32_be();
-        let prev_block_id: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let timestamp = br.read_u64_be();
-        let block_num = br.read_u64_be();
-        let target: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let nonce: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let work_algo = br.read_u64_be();
-        let work_ser: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
-        let work_par: [u8; 32] = br.read_iso_buf(32).try_into().unwrap();
+        let version = br.read_u32_be()?;
+        let prev_block_id: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let timestamp = br.read_u64_be()?;
+        let block_num = br.read_u64_be()?;
+        let target: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_algo = br.read_u64_be()?;
+        let work_ser: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -116,7 +116,7 @@ impl Header {
         Buffer::from(self.to_iso_buf()).to_iso_hex()
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Header, &'static str> {
+    pub fn from_iso_hex(hex: &str) -> Result<Header, String> {
         let buf = Buffer::from_iso_hex(hex).data;
         Header::from_iso_buf(buf)
     }
@@ -125,7 +125,7 @@ impl Header {
         self.to_iso_hex()
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<Header, &'static str> {
+    pub fn from_iso_str(hex: &str) -> Result<Header, String> {
         Header::from_iso_hex(hex)
     }
 

@@ -14,11 +14,11 @@ impl TxOut {
         Self { value, script }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
         let mut reader = IsoBufReader::new(buf);
-        let value = reader.read_u64_be();
-        let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read_iso_buf(script_len);
+        let value = reader.read_u64_be()?;
+        let script_len = reader.read_var_int()? as usize;
+        let script_arr = reader.read_iso_buf(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -26,12 +26,10 @@ impl TxOut {
         Ok(Self::new(value, script))
     }
 
-    pub fn from_buffer_reader(
-        reader: &mut IsoBufReader,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
-        let value = reader.read_u64_be();
-        let script_len = reader.read_var_int() as usize;
-        let script_arr = reader.read_iso_buf(script_len);
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
+        let value = reader.read_u64_be()?;
+        let script_len = reader.read_var_int()? as usize;
+        let script_arr = reader.read_iso_buf(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -90,7 +88,7 @@ mod tests {
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
         let result =
-            TxOut::from_buffer_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
+            TxOut::from_iso_buf_reader(&mut IsoBufReader::new(tx_output.to_iso_buf())).unwrap();
         assert_eq!(
             hex::encode(tx_output.to_iso_buf()),
             hex::encode(result.to_iso_buf())
