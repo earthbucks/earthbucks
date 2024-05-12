@@ -12,7 +12,7 @@ describe("TxOutput", () => {
       const txOutput = new TxOut(value, script);
 
       const reader = new IsoBufReader(txOutput.toIsoBuf());
-      const result = TxOut.fromIsoBufReader(reader);
+      const result = TxOut.fromIsoBufReader(reader).unwrap();
       expect(result).toBeInstanceOf(TxOut);
       expect(result.value).toEqual(value);
       expect(result.script.toIsoStr()).toEqual(script.toIsoStr());
@@ -26,7 +26,7 @@ describe("TxOutput", () => {
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       ).unwrap();
       const txOutput = new TxOut(value, script);
-      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf());
+      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf()).unwrap();
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
         result.toIsoBuf().toString("hex"),
       );
@@ -37,7 +37,7 @@ describe("TxOutput", () => {
       const value = BigInt(100);
       const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`).unwrap();
       const txOutput = new TxOut(value, script);
-      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf());
+      const result = TxOut.fromIsoBuf(txOutput.toIsoBuf()).unwrap();
       expect(txOutput.toIsoBuf().toString("hex")).toEqual(
         result.toIsoBuf().toString("hex"),
       );

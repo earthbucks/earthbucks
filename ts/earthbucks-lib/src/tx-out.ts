@@ -3,6 +3,7 @@ import IsoBufWriter from "./iso-buf-writer";
 import VarInt from "./var-int";
 import Script from "./script";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class TxOut {
   public value: bigint;
@@ -13,21 +14,33 @@ export default class TxOut {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: Buffer): TxOut {
+  static fromIsoBuf(buf: Buffer): Result<TxOut, string> {
     const reader = new IsoBufReader(buf);
-    const value = reader.readUInt64BE().unwrap();
-    const scriptLen = reader.readVarIntNum().unwrap();
-    const scriptArr = reader.readIsoBuf(scriptLen).unwrap();
-    const script = Script.fromIsoBuf(scriptArr).unwrap();
-    return new TxOut(value, script);
+    return TxOut.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): TxOut {
-    const value = reader.readUInt64BE().unwrap();
-    const scriptLen = reader.readVarIntNum().unwrap();
-    const scriptArr = reader.readIsoBuf(scriptLen).unwrap();
-    const script = Script.fromIsoBuf(scriptArr).unwrap();
-    return new TxOut(value, script);
+  static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, string> {
+    const valueRes = reader.readUInt64BE();
+    if (valueRes.err) {
+      return valueRes;
+    }
+    const value = valueRes.unwrap();
+    const scriptLenRes = reader.readVarIntNum();
+    if (scriptLenRes.err) {
+      return scriptLenRes;
+    }
+    const scriptLen = scriptLenRes.unwrap();
+    const scriptArrRes = reader.readIsoBuf(scriptLen);
+    if (scriptArrRes.err) {
+      return scriptArrRes;
+    }
+    const scriptArr = scriptArrRes.unwrap();
+    const scriptRes = Script.fromIsoBuf(scriptArr);
+    if (scriptRes.err) {
+      return scriptRes;
+    }
+    const script = scriptRes.unwrap();
+    return new Ok(new TxOut(value, script));
   }
 
   toIsoBuf(): Buffer {

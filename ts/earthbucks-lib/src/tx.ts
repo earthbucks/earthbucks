@@ -67,7 +67,12 @@ export default class Tx {
     const numOutputs = numOutputsRes.unwrap();
     const outputs = [];
     for (let i = 0; i < numOutputs; i++) {
-      outputs.push(TxOut.fromIsoBufReader(reader));
+      const txOutRes = TxOut.fromIsoBufReader(reader);
+      if (txOutRes.err) {
+        return txOutRes;
+      }
+      const txOut = txOutRes.unwrap();
+      outputs.push(txOut);
     }
     const lockNumRes = reader.readUInt64BE();
     if (lockNumRes.err) {
