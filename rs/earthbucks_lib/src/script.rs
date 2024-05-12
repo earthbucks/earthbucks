@@ -1,5 +1,5 @@
 use crate::iso_buf_reader::IsoBufReader;
-use crate::opcode::OP;
+use crate::opcode::{Opcode, OP};
 use crate::script_chunk::ScriptChunk;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -50,14 +50,14 @@ impl Script {
         while !reader.eof() {
             let mut chunk = ScriptChunk::new(reader.read_u8()?, None);
 
-            if chunk.opcode == OP["PUSHDATA1"]
-                || chunk.opcode == OP["PUSHDATA2"]
-                || chunk.opcode == OP["PUSHDATA4"]
+            if chunk.opcode == Opcode::OP_PUSHDATA1
+                || chunk.opcode == Opcode::OP_PUSHDATA2
+                || chunk.opcode == Opcode::OP_PUSHDATA4
             {
                 let len = match chunk.opcode {
-                    opcode if opcode == OP["PUSHDATA1"] => reader.read_u8()? as u32,
-                    opcode if opcode == OP["PUSHDATA2"] => reader.read_u16_be()? as u32,
-                    opcode if opcode == OP["PUSHDATA4"] => reader.read_u32_be()?,
+                    opcode if opcode == Opcode::OP_PUSHDATA1 => reader.read_u8()? as u32,
+                    opcode if opcode == Opcode::OP_PUSHDATA2 => reader.read_u16_be()? as u32,
+                    opcode if opcode == Opcode::OP_PUSHDATA4 => reader.read_u32_be()?,
                     _ => unreachable!(),
                 };
 
@@ -69,7 +69,7 @@ impl Script {
                 };
 
                 if buffer_length != len as usize {
-                    return Err(From::from("invalid buffer length"));
+                    return Err("invalid buffer length".to_string());
                 }
             }
 
@@ -80,26 +80,29 @@ impl Script {
 
     pub fn from_pkh_output(pkh: &[u8; 32]) -> Self {
         let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(OP["DUP"], None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
         script
             .chunks
-            .push(ScriptChunk::new(OP["DOUBLEBLAKE3"], None));
+            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
         script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
         script
             .chunks
-            .push(ScriptChunk::new(OP["EQUALVERIFY"], None));
-        script.chunks.push(ScriptChunk::new(OP["CHECKSIG"], None));
+            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script
     }
 
     pub fn is_pkh_output(&self) -> bool {
         self.chunks.len() == 5
-            && self.chunks[0].opcode == OP["DUP"]
-            && self.chunks[1].opcode == OP["DOUBLEBLAKE3"]
-            && self.chunks[2].opcode == OP["PUSHDATA1"]
+            && self.chunks[0].opcode == Opcode::OP_DUP
+            && self.chunks[1].opcode == Opcode::OP_DOUBLEBLAKE3
+            && self.chunks[2].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[2].buffer.is_some()
             && self.chunks[2].buffer.as_ref().unwrap().len() == 32
-            && self.chunks[3].opcode == OP["EQUALVERIFY"]
-            && self.chunks[4].opcode == OP["CHECKSIG"]
+            && self.chunks[3].opcode == Opcode::OP_EQUALVERIFY
+            && self.chunks[4].opcode == Opcode::OP_CHECKSIG
     }
 
     pub fn from_pkh_input(signature: &[u8], pub_key: &[u8]) -> Self {
@@ -113,9 +116,11 @@ impl Script {
 
     pub fn is_pkh_input(&self) -> bool {
         self.chunks.len() == 2
-            && self.chunks[0].opcode == OP["PUSHDATA1"]
+            && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[0].buffer.is_some()
             && self.chunks[0].buffer.as_ref().unwrap().len() == 65
-            && self.chunks[1].opcode == OP["PUSHDATA1"]
+            && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[1].buffer.is_some()
             && self.chunks[1].buffer.as_ref().unwrap().len() == 33
     }
 
