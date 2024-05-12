@@ -7,23 +7,23 @@
     "**/node_modules": true,
     "archive": true
   },
+  "files.associations": {
+    ".env": "dotenv",
+    ".env.*": "dotenv"
+  },
   "github.copilot.enable": {
     "*": "false",
+    "dotenv": "false",
     "markdown": "true",
     "javascript": "true",
     "typescript": "true",
     "toml": "true",
     "yaml": "true",
     "json": "true",
-    "dotenv": "false",
     "cpp": "true",
     "rust": "true"
   },
   "css.customData": [".vscode/tailwind.json"],
-  "files.associations": {
-    ".env": "dotenv",
-    ".env.*": "dotenv"
-  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
