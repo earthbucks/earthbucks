@@ -9,17 +9,17 @@ describe("PrivKey", () => {
 
   test("to/from string format", () => {
     expect(
-      PrivKey.isValidStringFmt(
+      PrivKey.isValidIsoStr(
         "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ",
       ),
     ).toBe(true);
     expect(
-      PrivKey.isValidStringFmt(
+      PrivKey.isValidIsoStr(
         "ebxprv78675b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ",
       ),
     ).toBe(false);
     expect(
-      PrivKey.isValidStringFmt(
+      PrivKey.isValidIsoStr(
         "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjx",
       ),
     ).toBe(false);
