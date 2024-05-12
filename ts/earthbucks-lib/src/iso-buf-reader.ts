@@ -158,9 +158,7 @@ export default class IsoBufReader {
         value = BigInt(buf.readUInt32BE(1));
         break;
       case 0xff:
-        const high = buf.readUInt32BE(1);
-        const low = buf.readUInt32BE(5);
-        value = BigInt(high) * BigInt(0x100000000) + BigInt(low);
+        value = buf.readBigUInt64BE(1);
         break;
       default:
         value = BigInt(first);
@@ -185,9 +183,7 @@ export default class IsoBufReader {
         value = buf.readUInt32BE(1);
         break;
       case 0xff:
-        const high = buf.readUInt32BE(1);
-        const low = buf.readUInt32BE(5);
-        const bigValue = BigInt(high) * BigInt(0x100000000) + BigInt(low);
+        const bigValue = buf.readBigUInt64BE(1);
         if (bigValue > BigInt(Number.MAX_SAFE_INTEGER)) {
           return new Err(
             "Number too large to retain precision - use readVarInt",
