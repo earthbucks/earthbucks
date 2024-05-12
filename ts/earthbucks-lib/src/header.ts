@@ -65,64 +65,90 @@ export default class Header {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<Header, string> {
-    try {
-      const version = br
-        .readUInt32BE()
-        .mapErr((err) => `Could not read version number: ${err}`)
-        .unwrap();
-      const previousBlockHash = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read previous block hash: ${err}`)
-        .unwrap();
-      const merkleRoot = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read merkle root: ${err}`)
-        .unwrap();
-      const timestamp = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read timestamp: ${err}`)
-        .unwrap();
-      const blockNum = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read block number: ${err}`)
-        .unwrap();
-      const target = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read target: ${err}`)
-        .unwrap();
-      const nonce = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read nonce: ${err}`)
-        .unwrap();
-      const workAlgo = br
-        .readUInt64BE()
-        .mapErr((err) => `Could not read work algorithm: ${err}`)
-        .unwrap();
-      const workSer = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read serial work: ${err}`)
-        .unwrap();
-      const workPar = br
-        .readIsoBuf(32)
-        .mapErr((err) => `Could not read parallel work: ${err}`)
-        .unwrap();
-      return new Ok(
-        new Header(
-          version,
-          previousBlockHash,
-          merkleRoot,
-          timestamp,
-          blockNum,
-          target,
-          nonce,
-          workAlgo,
-          workSer,
-          workPar,
-        ),
-      );
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing header");
+    const versionRes = br
+      .readUInt32BE()
+      .mapErr((err) => `Could not read version number: ${err}`);
+    if (versionRes.err) {
+      return versionRes;
     }
+    const version = versionRes.unwrap();
+    const previousBlockHashRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read previous block hash: ${err}`);
+    if (previousBlockHashRes.err) {
+      return previousBlockHashRes;
+    }
+    const previousBlockHash = previousBlockHashRes.unwrap();
+    const merkleRootRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read merkle root: ${err}`);
+    if (merkleRootRes.err) {
+      return merkleRootRes;
+    }
+    const merkleRoot = merkleRootRes.unwrap();
+    const timestampRes = br
+      .readUInt64BE()
+      .mapErr((err) => `Could not read timestamp: ${err}`);
+    if (timestampRes.err) {
+      return timestampRes;
+    }
+    const timestamp = timestampRes.unwrap();
+    const blockNumRes = br
+      .readUInt64BE()
+      .mapErr((err) => `Could not read block number: ${err}`);
+    if (blockNumRes.err) {
+      return blockNumRes;
+    }
+    const blockNum = blockNumRes.unwrap();
+    const targetRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read target: ${err}`);
+    if (targetRes.err) {
+      return targetRes;
+    }
+    const target = targetRes.unwrap();
+    const nonceRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read nonce: ${err}`);
+    if (nonceRes.err) {
+      return nonceRes;
+    }
+    const nonce = nonceRes.unwrap();
+    const workAlgoRes = br
+      .readUInt64BE()
+      .mapErr((err) => `Could not read work algorithm: ${err}`);
+    if (workAlgoRes.err) {
+      return workAlgoRes;
+    }
+    const workAlgo = workAlgoRes.unwrap();
+    const workSerRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read serial work: ${err}`);
+    if (workSerRes.err) {
+      return workSerRes;
+    }
+    const workSer = workSerRes.unwrap();
+    const workParRes = br
+      .readIsoBuf(32)
+      .mapErr((err) => `Could not read parallel work: ${err}`);
+    if (workParRes.err) {
+      return workParRes;
+    }
+    const workPar = workParRes.unwrap();
+    return new Ok(
+      new Header(
+        version,
+        previousBlockHash,
+        merkleRoot,
+        timestamp,
+        blockNum,
+        target,
+        nonce,
+        workAlgo,
+        workSer,
+        workPar,
+      ),
+    );
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
@@ -167,49 +193,45 @@ export default class Header {
     prevBlockHeader: Header,
     prevAdjustmentBlockHeader: Header | null,
   ): Result<Header, string> {
-    try {
-      let target = null;
-      const blockNum = prevBlockHeader.blockNum + 1n;
-      if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
-        if (
-          !prevAdjustmentBlockHeader ||
-          prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
-            blockNum
-        ) {
-          return new Err(
-            "must provide previous adjustment block header 2016 blocks before",
-          );
-        }
-        const timeDiff =
-          prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
-        const prevTarget = prevBlockHeader.target;
-        target = Header.adjustTarget(prevTarget, timeDiff);
-      } else {
-        target = prevBlockHeader.target;
+    let target = null;
+    const blockNum = prevBlockHeader.blockNum + 1n;
+    if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
+      if (
+        !prevAdjustmentBlockHeader ||
+        prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
+          blockNum
+      ) {
+        return new Err(
+          "must provide previous adjustment block header 2016 blocks before",
+        );
       }
-      const prevBlockId = prevBlockHeader.id();
-      const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-      const nonce = Buffer.alloc(32);
-      const workAlgo = prevBlockHeader.workAlgo;
-      const workSer = Buffer.alloc(32);
-      const workPar = Buffer.alloc(32);
-      return new Ok(
-        new Header(
-          1,
-          prevBlockId,
-          Buffer.alloc(32),
-          timestamp,
-          blockNum,
-          target,
-          nonce,
-          workAlgo,
-          workSer,
-          workPar,
-        ),
-      );
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error creating block header");
+      const timeDiff =
+        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
+      const prevTarget = prevBlockHeader.target;
+      target = Header.adjustTarget(prevTarget, timeDiff);
+    } else {
+      target = prevBlockHeader.target;
     }
+    const prevBlockId = prevBlockHeader.id();
+    const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
+    const nonce = Buffer.alloc(32);
+    const workAlgo = prevBlockHeader.workAlgo;
+    const workSer = Buffer.alloc(32);
+    const workPar = Buffer.alloc(32);
+    return new Ok(
+      new Header(
+        1,
+        prevBlockId,
+        Buffer.alloc(32),
+        timestamp,
+        blockNum,
+        target,
+        nonce,
+        workAlgo,
+        workSer,
+        workPar,
+      ),
+    );
   }
 
   static isValidVersion(version: number): boolean {
