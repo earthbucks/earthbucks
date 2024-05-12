@@ -46,7 +46,7 @@ impl TxIn {
         writer.write_iso_buf(self.input_tx_id.clone());
         writer.write_u32_be(self.input_tx_out_num);
         let script_buf = self.script.to_iso_buf();
-        writer.write_iso_buf(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64(script_buf.len() as u64).to_iso_buf());
         writer.write_iso_buf(script_buf);
         writer.write_u32_be(self.lock_rel);
         writer.to_iso_buf()

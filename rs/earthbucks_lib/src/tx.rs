@@ -75,11 +75,11 @@ impl Tx {
     pub fn to_buffer_writer(&self) -> IsoBufWriter {
         let mut writer = IsoBufWriter::new();
         writer.write_u8(self.version);
-        writer.write_iso_buf(VarInt::from_u64_new(self.inputs.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64(self.inputs.len() as u64).to_iso_buf());
         for input in &self.inputs {
             writer.write_iso_buf(input.to_iso_buf());
         }
-        writer.write_iso_buf(VarInt::from_u64_new(self.outputs.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64(self.outputs.len() as u64).to_iso_buf());
         for output in &self.outputs {
             writer.write_iso_buf(output.to_iso_buf());
         }

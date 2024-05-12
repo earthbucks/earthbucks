@@ -41,7 +41,7 @@ impl TxOut {
         let mut writer = IsoBufWriter::new();
         writer.write_u64_be(self.value);
         let script_buf = self.script.to_iso_buf();
-        writer.write_iso_buf(VarInt::from_u64_new(script_buf.len() as u64).to_iso_buf());
+        writer.write_iso_buf(VarInt::from_u64(script_buf.len() as u64).to_iso_buf());
         writer.write_iso_buf(script_buf);
         writer.to_iso_buf()
     }
