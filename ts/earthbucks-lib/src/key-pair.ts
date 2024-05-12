@@ -18,16 +18,15 @@ export default class KeyPair {
   }
 
   static fromPrivKeyBuffer(privKeyBuf: Buffer): Result<KeyPair, string> {
-    try {
-      let privKey = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf))
-        .mapErr((err) => "Error parsing private key: " + err)
-        .unwrap();
-
-      let pubKey = PubKey.fromPrivKey(privKey);
-      return new Ok(new KeyPair(privKey, pubKey));
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error creating key pair");
+    let privKeyRes = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf)).mapErr(
+      (err) => "Error parsing private key: " + err,
+    );
+    if (privKeyRes.err) {
+      return privKeyRes;
     }
+    let privKey = privKeyRes.unwrap();
+    let pubKey = PubKey.fromPrivKey(privKey);
+    return new Ok(new KeyPair(privKey, pubKey));
   }
 
   static fromRandom(): KeyPair {
