@@ -3,6 +3,7 @@ import IsoBufReader from "./iso-buf-reader";
 import Script from "./script";
 import VarInt from "./var-int";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class TxIn {
   public inputTxId: Buffer;
@@ -22,27 +23,43 @@ export default class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: Buffer): TxIn {
+  static fromIsoBuf(buf: Buffer): Result<TxIn, string> {
     const reader = new IsoBufReader(buf);
-    const inputTxHash = reader.readIsoBuf(32).unwrap();
-    const inputTxIndex = reader.readUInt32BE().unwrap();
-    const scriptLen = reader.readVarIntNum().unwrap();
-    const script = Script.fromIsoBuf(
-      reader.readIsoBuf(scriptLen).unwrap(),
-    ).unwrap();
-    const lockRel = reader.readUInt32BE().unwrap();
-    return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
+    return TxIn.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): TxIn {
-    const inputTxHash = reader.readIsoBuf(32).unwrap();
-    const inputTxIndex = reader.readUInt32BE().unwrap();
-    const scriptLen = reader.readVarIntNum().unwrap();
-    const script = Script.fromIsoBuf(
-      reader.readIsoBuf(scriptLen).unwrap(),
-    ).unwrap();
-    const lockRel = reader.readUInt32BE().unwrap();
-    return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
+  static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, string> {
+    const inputTxHashRes = reader.readIsoBuf(32);
+    if (inputTxHashRes.err) {
+      return inputTxHashRes;
+    }
+    const inputTxHash = inputTxHashRes.unwrap();
+    const inputTxIndexRes = reader.readUInt32BE();
+    if (inputTxIndexRes.err) {
+      return inputTxIndexRes;
+    }
+    const inputTxIndex = inputTxIndexRes.unwrap();
+    const scriptLenRes = reader.readVarIntNum();
+    if (scriptLenRes.err) {
+      return scriptLenRes;
+    }
+    const scriptLen = scriptLenRes.unwrap();
+    const scriptBufRes = reader.readIsoBuf(scriptLen);
+    if (scriptBufRes.err) {
+      return scriptBufRes;
+    }
+    const scriptBuf = scriptBufRes.unwrap();
+    const scriptRes = Script.fromIsoBuf(scriptBuf);
+    if (scriptRes.err) {
+      return scriptRes;
+    }
+    const script = scriptRes.unwrap();
+    const lockRelRes = reader.readUInt32BE();
+    if (lockRelRes.err) {
+      return lockRelRes;
+    }
+    const lockRel = lockRelRes.unwrap();
+    return new Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
   }
 
   toIsoBuf(): Buffer {

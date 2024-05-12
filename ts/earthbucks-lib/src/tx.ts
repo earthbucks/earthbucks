@@ -53,7 +53,12 @@ export default class Tx {
     const numInputs = numInputsRes.unwrap();
     const inputs = [];
     for (let i = 0; i < numInputs; i++) {
-      inputs.push(TxIn.fromIsoBufReader(reader));
+      const txInRes = TxIn.fromIsoBufReader(reader);
+      if (txInRes.err) {
+        return txInRes;
+      }
+      const txIn = txInRes.unwrap();
+      inputs.push(txIn);
     }
     const numOutputsRes = reader.readVarIntNum();
     if (numOutputsRes.err) {

@@ -29,7 +29,7 @@ describe("TxInput", () => {
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
 
       const reader = new IsoBufReader(txInput.toIsoBuf());
-      const result = TxIn.fromIsoBufReader(reader);
+      const result = TxIn.fromIsoBufReader(reader).unwrap();
       expect(result).toBeInstanceOf(TxIn);
       expect(Buffer.from(result.inputTxId).toString("hex")).toEqual(
         Buffer.from(inputTxHash).toString("hex"),
