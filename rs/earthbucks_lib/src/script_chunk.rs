@@ -1,5 +1,5 @@
 use crate::iso_buf_writer::IsoBufWriter;
-use crate::opcode::{OP, OPCODE_TO_NAME};
+use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
 use std::error::Error;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -38,11 +38,11 @@ impl ScriptChunk {
             let len = buffer.len();
             self.buffer = Some(buffer);
             if len <= 0xff {
-                self.opcode = *OP.get("PUSHDATA1").unwrap();
+                self.opcode = Opcode::OP_PUSHDATA1;
             } else if len <= 0xffff {
-                self.opcode = *OP.get("PUSHDATA2").unwrap();
+                self.opcode = Opcode::OP_PUSHDATA2;
             } else if len <= 0xffffffff {
-                self.opcode = *OP.get("PUSHDATA4").unwrap();
+                self.opcode = Opcode::OP_PUSHDATA4;
             } else {
                 return Err("too much data".into());
             }
@@ -69,17 +69,17 @@ impl ScriptChunk {
         match &self.buffer {
             Some(buffer) => {
                 let len = buffer.len();
-                if self.opcode == *OP.get("PUSHDATA1").unwrap() {
+                if self.opcode == Opcode::OP_PUSHDATA1 {
                     let mut writer = IsoBufWriter::new();
                     writer.write_u8(len as u8);
                     result.extend_from_slice(&writer.to_iso_buf());
                     result.extend_from_slice(buffer);
-                } else if self.opcode == *OP.get("PUSHDATA2").unwrap() {
+                } else if self.opcode == Opcode::OP_PUSHDATA2 {
                     let mut writer = IsoBufWriter::new();
                     writer.write_u16_be(len as u16);
                     result.extend_from_slice(&writer.to_iso_buf());
                     result.extend_from_slice(buffer);
-                } else if self.opcode == *OP.get("PUSHDATA4").unwrap() {
+                } else if self.opcode == Opcode::OP_PUSHDATA4 {
                     let mut writer = IsoBufWriter::new();
                     writer.write_u32_be(len as u32);
                     result.extend_from_slice(&writer.to_iso_buf());
@@ -94,21 +94,21 @@ impl ScriptChunk {
     pub fn from_iso_buf(arr: Vec<u8>) -> Result<ScriptChunk, String> {
         let mut chunk = ScriptChunk::new(0, None);
         let opcode = *arr.first().ok_or("Opcode not found".to_string())?;
-        if opcode == *OP.get("PUSHDATA1").unwrap() {
+        if opcode == Opcode::OP_PUSHDATA1 {
             let len = arr[1] as usize;
             if arr.len() != len + 2 {
                 return Err("Buffer length is other than expected".into());
             }
             chunk.opcode = opcode;
             chunk.buffer = Some(arr[2..2 + len].to_vec());
-        } else if opcode == *OP.get("PUSHDATA2").unwrap() {
+        } else if opcode == Opcode::OP_PUSHDATA2 {
             let len = u16::from_be_bytes([arr[1], arr[2]]) as usize;
             if arr.len() != len + 3 {
                 return Err("Buffer length is other than expected".into());
             }
             chunk.opcode = opcode;
             chunk.buffer = Some(arr[3..3 + len].to_vec());
-        } else if opcode == *OP.get("PUSHDATA4").unwrap() {
+        } else if opcode == Opcode::OP_PUSHDATA4 {
             let len = u32::from_be_bytes([arr[1], arr[2], arr[3], arr[4]]) as usize;
             if arr.len() != len + 5 {
                 return Err("Buffer length is other than expected".into());
@@ -125,11 +125,11 @@ impl ScriptChunk {
     pub fn from_data(data: Vec<u8>) -> ScriptChunk {
         let len = data.len();
         if len <= 0xff {
-            ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(data))
+            ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(data))
         } else if len <= 0xffff {
-            ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(data))
+            ScriptChunk::new(Opcode::OP_PUSHDATA2, Some(data))
         } else if len <= 0xffffffff {
-            ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(data))
+            ScriptChunk::new(Opcode::OP_PUSHDATA4, Some(data))
         } else {
             ScriptChunk::new(0, None)
         }
@@ -137,7 +137,7 @@ impl ScriptChunk {
 
     pub fn from_small_number(n: i8) -> ScriptChunk {
         if n == -1 || (1..=16).contains(&n) {
-            ScriptChunk::new(n as u8 + *OP.get("1").unwrap() - 1, None)
+            ScriptChunk::new(n as u8 + Opcode::OP_1 - 1, None)
         } else {
             ScriptChunk::new(0, None)
         }
@@ -160,25 +160,25 @@ mod tests {
 
     #[test]
     fn test_to_string_if() {
-        let chunk = ScriptChunk::new(*OP.get("IF").unwrap(), None);
+        let chunk = ScriptChunk::new(Opcode::OP_IF, None);
         assert_eq!(chunk.to_iso_str().unwrap(), "IF");
     }
 
     #[test]
     fn test_to_string_pushdata1() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(vec![1, 2, 3]));
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(vec![1, 2, 3]));
         assert_eq!(chunk.to_iso_str().unwrap(), "0x010203");
     }
 
     #[test]
     fn test_to_string_pushdata2() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(vec![4, 5, 6]));
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA2, Some(vec![4, 5, 6]));
         assert_eq!(chunk.to_iso_str().unwrap(), "0x040506");
     }
 
     #[test]
     fn test_to_string_pushdata4() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(vec![7, 8, 9]));
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA4, Some(vec![7, 8, 9]));
         assert_eq!(chunk.to_iso_str().unwrap(), "0x070809");
     }
 
@@ -186,7 +186,7 @@ mod tests {
     fn test_from_iso_str_if() {
         let mut chunk = ScriptChunk::new(0, None);
         chunk.from_iso_str("IF".to_string()).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("IF").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_IF);
         assert_eq!(chunk.buffer, None);
     }
 
@@ -194,7 +194,7 @@ mod tests {
     fn test_from_iso_str_pushdata1() {
         let mut chunk = ScriptChunk::new(0, None);
         chunk.from_iso_str("0x010203".to_string()).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
 
@@ -204,7 +204,7 @@ mod tests {
         chunk
             .from_iso_str("0x".to_string() + &"01".repeat(256))
             .unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
         assert_eq!(chunk.buffer, Some(vec![1; 256]));
     }
 
@@ -214,89 +214,86 @@ mod tests {
         chunk
             .from_iso_str("0x".to_string() + &"01".repeat(70000))
             .unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
         assert_eq!(chunk.buffer, Some(vec![1; 70000]));
     }
 
     #[test]
     fn test_from_iso_str_new() {
         let chunk = ScriptChunk::from_iso_str_new("0x010203".to_string()).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
 
     #[test]
     fn test_to_iso_buf_if() {
-        let chunk = ScriptChunk::new(*OP.get("IF").unwrap(), None);
-        assert_eq!(chunk.to_iso_buf(), vec![*OP.get("IF").unwrap()]);
+        let chunk = ScriptChunk::new(Opcode::OP_IF, None);
+        assert_eq!(chunk.to_iso_buf(), vec![Opcode::OP_IF]);
     }
 
     #[test]
     fn test_to_iso_buf_pushdata1() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA1").unwrap(), Some(vec![1, 2, 3]));
-        assert_eq!(
-            chunk.to_iso_buf(),
-            vec![*OP.get("PUSHDATA1").unwrap(), 3, 1, 2, 3]
-        );
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(vec![1, 2, 3]));
+        assert_eq!(chunk.to_iso_buf(), vec![Opcode::OP_PUSHDATA1, 3, 1, 2, 3]);
     }
 
     #[test]
     fn test_to_iso_buf_pushdata2() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA2").unwrap(), Some(vec![1; 256]));
-        let mut expected = vec![*OP.get("PUSHDATA2").unwrap(), 1, 0];
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA2, Some(vec![1; 256]));
+        let mut expected = vec![Opcode::OP_PUSHDATA2, 1, 0];
         expected.extend(vec![1; 256]);
         assert_eq!(chunk.to_iso_buf(), expected);
     }
 
     #[test]
     fn test_to_iso_buf_pushdata4() {
-        let chunk = ScriptChunk::new(*OP.get("PUSHDATA4").unwrap(), Some(vec![1; 65536]));
-        let mut expected = vec![*OP.get("PUSHDATA4").unwrap(), 0, 1, 0, 0];
+        let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA4, Some(vec![1; 65536]));
+        let mut expected = vec![Opcode::OP_PUSHDATA4, 0, 1, 0, 0];
         expected.extend(vec![1; 65536]);
         assert_eq!(chunk.to_iso_buf(), expected);
     }
 
     #[test]
     fn test_from_iso_buf_if() {
-        let arr = vec![*OP.get("IF").unwrap()];
+        let arr = vec![Opcode::OP_IF];
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("IF").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_IF);
         assert_eq!(chunk.buffer, None);
     }
 
     #[test]
     fn test_from_iso_buf_pushdata1() {
-        let mut arr = vec![*OP.get("PUSHDATA1").unwrap(), 2];
+        let mut arr = vec![Opcode::OP_PUSHDATA1, 2];
         arr.extend(vec![1, 2]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2]));
     }
 
     #[test]
     fn test_from_iso_buf_pushdata2() {
-        let mut arr = vec![*OP.get("PUSHDATA2").unwrap(), 0, 2];
+        let mut arr = vec![Opcode::OP_PUSHDATA2, 0, 2];
         arr.extend(vec![1, 2]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
         assert_eq!(chunk.buffer, Some(vec![1, 2]));
     }
 
     #[test]
     fn test_from_iso_buf_pushdata4() {
-        let mut arr = vec![*OP.get("PUSHDATA4").unwrap(), 0, 0, 0, 2];
+        let mut arr = vec![Opcode::OP_PUSHDATA4, 0, 0, 0, 2];
         arr.extend(vec![1, 2]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
         assert_eq!(chunk.buffer, Some(vec![1, 2]));
     }
 
     #[test]
     fn test_from_iso_buf_new_pushdata1() {
-        let mut arr = vec![*OP.get("PUSHDATA1").unwrap(), 2];
+        let mut arr = vec![Opcode::OP_PUSHDATA1, 2];
         arr.extend(vec![1, 2]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2]));
     }
 
@@ -304,7 +301,7 @@ mod tests {
     fn test_from_data() {
         let data = vec![1, 2, 3];
         let chunk = ScriptChunk::from_data(data.clone());
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA1").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(data));
     }
 
@@ -312,7 +309,7 @@ mod tests {
     fn test_from_data_pushdata2() {
         let data = vec![1; 256];
         let chunk = ScriptChunk::from_data(data.clone());
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA2").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
         assert_eq!(chunk.buffer, Some(data));
     }
 
@@ -320,13 +317,13 @@ mod tests {
     fn test_from_data_pushdata4() {
         let data = vec![1; 65536];
         let chunk = ScriptChunk::from_data(data.clone());
-        assert_eq!(chunk.opcode, *OP.get("PUSHDATA4").unwrap());
+        assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
         assert_eq!(chunk.buffer, Some(data));
     }
 
     #[test]
     fn test_from_iso_buf_pushdata1_error() {
-        let arr = vec![*OP.get("PUSHDATA1").unwrap(), 2];
+        let arr = vec![Opcode::OP_PUSHDATA1, 2];
         let result = ScriptChunk::from_iso_buf(arr);
         assert!(
             result.is_err(),
@@ -340,7 +337,7 @@ mod tests {
 
     #[test]
     fn test_from_iso_buf_pushdata2_error() {
-        let arr = vec![*OP.get("PUSHDATA2").unwrap(), 0, 2];
+        let arr = vec![Opcode::OP_PUSHDATA2, 0, 2];
         let result = ScriptChunk::from_iso_buf(arr);
         assert!(
             result.is_err(),
@@ -354,7 +351,7 @@ mod tests {
 
     #[test]
     fn test_from_iso_buf_pushdata4_error() {
-        let arr = vec![*OP.get("PUSHDATA4").unwrap(), 0, 0, 0, 2];
+        let arr = vec![Opcode::OP_PUSHDATA2, 0, 0, 0, 2];
         let result = ScriptChunk::from_iso_buf(arr);
         assert!(
             result.is_err(),
