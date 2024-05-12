@@ -94,21 +94,21 @@ describe("BufferReader", () => {
   test("readVarIntNum", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int_buf 2: Non-minimal varint encoding 1",
+      "read_var_int_buf 2: non-minimal varint encoding 1",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int_buf 3: Non-minimal varint encoding 2",
+      "read_var_int_buf 3: non-minimal varint encoding 2",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int_buf 4: Non-minimal varint encoding 3",
+      "read_var_int_buf 4: non-minimal varint encoding 3",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -118,21 +118,21 @@ describe("BufferReader", () => {
   test("readVarIntBuf", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 2: Non-minimal varint encoding 1",
+      "read_var_int_buf 2: non-minimal varint encoding 1",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 3: Non-minimal varint encoding 2",
+      "read_var_int_buf 3: non-minimal varint encoding 2",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 4: Non-minimal varint encoding 3",
+      "read_var_int_buf 4: non-minimal varint encoding 3",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -142,21 +142,21 @@ describe("BufferReader", () => {
   test("readVarIntBigInt", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int_buf 2: Non-minimal varint encoding 1",
+      "read_var_int_buf 2: non-minimal varint encoding 1",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int_buf 3: Non-minimal varint encoding 2",
+      "read_var_int_buf 3: non-minimal varint encoding 2",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int_buf 4: Non-minimal varint encoding 3",
+      "read_var_int_buf 4: non-minimal varint encoding 3",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));

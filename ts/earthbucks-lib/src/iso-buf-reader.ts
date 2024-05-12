@@ -88,7 +88,7 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(0) < 0xfd) {
-        return new Err("read_var_int_buf 2: Non-minimal varint encoding 1");
+        return new Err("read_var_int_buf 2: non-minimal varint encoding 1");
       }
       return new Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xfe) {
@@ -100,7 +100,7 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(0) < 0x10000) {
-        return new Err("read_var_int_buf 3: Non-minimal varint encoding 2");
+        return new Err("read_var_int_buf 3: non-minimal varint encoding 2");
       }
       return new Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xff) {
@@ -113,7 +113,7 @@ export default class IsoBufReader {
       const buf = res.unwrap();
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
-        return new Err("read_var_int_buf 4: Non-minimal varint encoding 3");
+        return new Err("read_var_int_buf 4: non-minimal varint encoding 3");
       }
       return new Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else {

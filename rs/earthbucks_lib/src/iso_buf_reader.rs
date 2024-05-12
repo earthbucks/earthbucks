@@ -69,28 +69,30 @@ impl IsoBufReader {
             0xfd => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read_iso_buf(2).map_err(|e| {
-                    "read_var_int_buf 2: could not read 2 bytes: ".to_string() + &e
+                    "read_var_int_buf 2: unable to read 2 bytes: ".to_string() + &e
                 })?);
-                if Cursor::new(&buf).read_u16::<BigEndian>().unwrap() < 0xfd {
-                    return Err("read_var_int_buf 2: Non-minimal varint encoding 1".to_string());
+                if Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() < 0xfd {
+                    return Err("read_var_int_buf 3: non-minimal varint encoding".to_string());
                 }
                 Ok(buf)
             }
             0xfe => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read_iso_buf(4).map_err(|e| {
-                    "read_var_int_buf 3: could not read 4 bytes: ".to_string() + &e
+                    "read_var_int_buf 4: unable to read 4 bytes: ".to_string() + &e
                 })?);
-                if Cursor::new(&buf).read_u32::<BigEndian>().unwrap() < 0x10000 {
-                    return Err("read_var_int_buf 3: Non-minimal varint encoding 2".to_string());
+                if Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() < 0x10000 {
+                    return Err("read_var_int_buf 5: non-minimal varint encoding".to_string());
                 }
                 Ok(buf)
             }
             0xff => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(8)?);
-                if Cursor::new(&buf).read_u64::<BigEndian>().unwrap() < 0x100000000 {
-                    return Err("read_var_int_buf 4: Non-minimal varint encoding 3".to_string());
+                buf.extend_from_slice(&self.read_iso_buf(8).map_err(|e| {
+                    "read_var_int_buf 6: unable to read 8 bytes: ".to_string() + &e
+                })?);
+                if Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap() < 0x100000000 {
+                    return Err("read_var_int_buf 7: non-minimal varint encoding".to_string());
                 }
                 Ok(buf)
             }
@@ -101,7 +103,7 @@ impl IsoBufReader {
     pub fn read_var_int(&mut self) -> Result<u64, String> {
         let buf = self
             .read_var_int_buf()
-            .map_err(|e| "read_var_int 1: ".to_string() + &e)?;
+            .map_err(|e| "read_var_int 1: unable to read varint buffer: ".to_string() + &e)?;
         let first = buf[0];
         match first {
             0xfd => Ok(Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() as u64),
@@ -189,22 +191,24 @@ mod tests {
 
     #[test]
     fn test_read_var_int() {
-        let data = vec![0xfd, 0x00, 0x01];
+        let data = vec![0xfd, 0x10, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int().unwrap(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 0x1000 + 1);
 
-        let data = vec![0xfe, 0x00, 0x00, 0x00, 0x01];
+        let data = vec![0xfe, 0x10, 0x00, 0x00, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int().unwrap(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 0x10000000 + 1);
 
-        let data = vec![0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01];
+        let data = vec![0xff, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01];
         let mut reader = IsoBufReader::new(data);
-        assert_eq!(reader.read_var_int().unwrap(), 1);
+        assert_eq!(reader.read_var_int().unwrap(), 0x1000000000000000 + 1);
 
         let data = vec![0x01];
         let mut reader = IsoBufReader::new(data);
         assert_eq!(reader.read_var_int().unwrap(), 1);
     }
+
+    // standard test vectors
 
     #[derive(Deserialize)]
     struct TestVectorIsoBufReader {
@@ -213,6 +217,7 @@ mod tests {
         read_u16_be: TestVectorReadErrors,
         read_u32_be: TestVectorReadErrors,
         read_u64_be: TestVectorReadErrors,
+        read_var_int_buf: TestVectorReadErrors,
     }
 
     #[derive(Deserialize)]
@@ -228,38 +233,26 @@ mod tests {
     }
 
     #[derive(Deserialize)]
+    struct TestVectorReadErrors {
+        errors: Vec<TestVectorReadError>,
+    }
+
+    #[derive(Deserialize)]
     struct TestVectorReadError {
         hex: String,
         error: String,
     }
 
-    #[derive(Deserialize)]
-    struct TestVectorReadErrors {
-        errors: Vec<TestVectorReadError>,
-    }
-
     #[test]
     fn test_vectors_read_iso_buf() {
-        // Read the JSON file
         let data =
             fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
-
-        // Parse the JSON data into your structs
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        // Iterate over the test vectors
         for test_vector in test_vectors.read_iso_buf.errors {
-            // Convert the hex string to bytes
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
-
-            // Create a new IsoBufReader with the bytes
             let mut reader = IsoBufReader::new(buf);
-
-            // Call the read_iso_buf function and check the result
             let result = reader.read_iso_buf(test_vector.len);
-
-            // Check that the result is an error with the expected message
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
@@ -269,26 +262,14 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u8() {
-        // Read the JSON file
         let data =
             fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
-
-        // Parse the JSON data into your structs
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        // Iterate over the test vectors
         for test_vector in test_vectors.read_u8.errors {
-            // Convert the hex string to bytes
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
-
-            // Create a new IsoBufReader with the bytes
             let mut reader = IsoBufReader::new(buf);
-
-            // Call the read_iso_buf function and check the result
             let result = reader.read_u8();
-
-            // Check that the result is an error with the expected message
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
@@ -298,26 +279,14 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u16_be() {
-        // Read the JSON file
         let data =
             fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
-
-        // Parse the JSON data into your structs
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        // Iterate over the test vectors
         for test_vector in test_vectors.read_u16_be.errors {
-            // Convert the hex string to bytes
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
-
-            // Create a new IsoBufReader with the bytes
             let mut reader = IsoBufReader::new(buf);
-
-            // Call the read_iso_buf function and check the result
             let result = reader.read_u16_be();
-
-            // Check that the result is an error with the expected message
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
@@ -327,26 +296,14 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u32_be() {
-        // Read the JSON file
         let data =
             fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
-
-        // Parse the JSON data into your structs
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        // Iterate over the test vectors
         for test_vector in test_vectors.read_u32_be.errors {
-            // Convert the hex string to bytes
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
-
-            // Create a new IsoBufReader with the bytes
             let mut reader = IsoBufReader::new(buf);
-
-            // Call the read_iso_buf function and check the result
             let result = reader.read_u32_be();
-
-            // Check that the result is an error with the expected message
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
@@ -356,26 +313,33 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u64_be() {
-        // Read the JSON file
         let data =
             fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
-
-        // Parse the JSON data into your structs
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-
-        // Iterate over the test vectors
         for test_vector in test_vectors.read_u64_be.errors {
-            // Convert the hex string to bytes
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
-
-            // Create a new IsoBufReader with the bytes
             let mut reader = IsoBufReader::new(buf);
-
-            // Call the read_iso_buf function and check the result
             let result = reader.read_u64_be();
+            match result {
+                Ok(_) => panic!("Expected an error, but got Ok(_)"),
+                Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
+            }
+        }
+    }
 
-            // Check that the result is an error with the expected message
+    #[test]
+    fn test_vectors_read_var_int_buf() {
+        let data =
+            fs::read_to_string("../../json/iso-buf-reader.json").expect("Unable to read file");
+        let test_vectors: TestVectorIsoBufReader =
+            serde_json::from_str(&data).expect("Unable to parse JSON");
+        for test_vector in test_vectors.read_var_int_buf.errors {
+            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let mut reader = IsoBufReader::new(buf);
+            let result = reader.read_var_int_buf();
+            // println!("expected error: {}", test_vector.error);
+            // println!("{:?}", result);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
