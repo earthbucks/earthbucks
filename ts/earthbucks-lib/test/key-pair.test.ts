@@ -12,9 +12,9 @@ describe("KeyPair", () => {
     expect(keypair.pubKey.toIsoBuf()).toBeDefined();
   });
 
-  describe("standard test vectors: key-pair.json", () => {
+  describe("standard test vectors: key_pair.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../../../json/key-pair.json"),
+      path.resolve(__dirname, "../../../json/key_pair.json"),
       "utf-8",
     );
 

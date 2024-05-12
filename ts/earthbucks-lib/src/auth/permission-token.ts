@@ -30,7 +30,7 @@ export default class PermissionToken {
         .mapErr((err) => `Unable to read rand value: ${err}`)
         .unwrap();
       const timestamp = reader
-        .readUInt64BE()
+        .readU64BE()
         .mapErr((err) => `Unable to read timestamp: ${err}`)
         .unwrap();
       return new Ok(new PermissionToken(randValue, timestamp));

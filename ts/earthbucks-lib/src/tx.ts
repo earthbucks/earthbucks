@@ -41,7 +41,7 @@ export default class Tx {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<Tx, string> {
-    const versionRes = reader.readUInt8();
+    const versionRes = reader.readU8();
     if (versionRes.err) {
       return versionRes;
     }
@@ -74,7 +74,7 @@ export default class Tx {
       const txOut = txOutRes.unwrap();
       outputs.push(txOut);
     }
-    const lockNumRes = reader.readUInt64BE();
+    const lockNumRes = reader.readU64BE();
     if (lockNumRes.err) {
       return lockNumRes;
     }

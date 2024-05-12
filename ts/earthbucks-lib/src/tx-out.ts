@@ -20,7 +20,7 @@ export default class TxOut {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, string> {
-    const valueRes = reader.readUInt64BE();
+    const valueRes = reader.readU64BE();
     if (valueRes.err) {
       return valueRes;
     }

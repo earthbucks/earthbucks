@@ -62,7 +62,7 @@ export default class Script {
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
       const opcodeRes = reader
-        .readUInt8()
+        .readU8()
         .mapErr((err) => `Unable to read opcode: ${err}`);
       if (opcodeRes.err) {
         return opcodeRes;
@@ -72,7 +72,7 @@ export default class Script {
         let len = chunk.opcode;
         if (len === Opcode.OP_PUSHDATA1) {
           const lenRes = reader
-            .readUInt8()
+            .readU8()
             .mapErr((err) => `Unable to read pushdata 1: ${err}`);
           if (lenRes.err) {
             return lenRes;
@@ -80,7 +80,7 @@ export default class Script {
           len = lenRes.unwrap();
         } else if (len === Opcode.OP_PUSHDATA2) {
           const lenRes = reader
-            .readUInt16BE()
+            .readU16BE()
             .mapErr((err) => `Unable to read pushdata 2: ${err}`);
           if (lenRes.err) {
             return lenRes;
@@ -88,7 +88,7 @@ export default class Script {
           len = lenRes.unwrap();
         } else if (len === Opcode.OP_PUSHDATA4) {
           const lenRes = reader
-            .readUInt32BE()
+            .readU32BE()
             .mapErr((err) => `Unable to read pushdata 4: ${err}`);
           if (lenRes.err) {
             return lenRes;

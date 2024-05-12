@@ -34,7 +34,7 @@ export default class TxIn {
       return inputTxHashRes;
     }
     const inputTxHash = inputTxHashRes.unwrap();
-    const inputTxIndexRes = reader.readUInt32BE();
+    const inputTxIndexRes = reader.readU32BE();
     if (inputTxIndexRes.err) {
       return inputTxIndexRes;
     }
@@ -54,7 +54,7 @@ export default class TxIn {
       return scriptRes;
     }
     const script = scriptRes.unwrap();
-    const lockRelRes = reader.readUInt32BE();
+    const lockRelRes = reader.readU32BE();
     if (lockRelRes.err) {
       return lockRelRes;
     }

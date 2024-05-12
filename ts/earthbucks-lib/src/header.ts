@@ -66,7 +66,7 @@ export default class Header {
 
   static fromIsoBufReader(br: IsoBufReader): Result<Header, string> {
     const versionRes = br
-      .readUInt32BE()
+      .readU32BE()
       .mapErr((err) => `Could not read version number: ${err}`);
     if (versionRes.err) {
       return versionRes;
@@ -87,14 +87,14 @@ export default class Header {
     }
     const merkleRoot = merkleRootRes.unwrap();
     const timestampRes = br
-      .readUInt64BE()
+      .readU64BE()
       .mapErr((err) => `Could not read timestamp: ${err}`);
     if (timestampRes.err) {
       return timestampRes;
     }
     const timestamp = timestampRes.unwrap();
     const blockNumRes = br
-      .readUInt64BE()
+      .readU64BE()
       .mapErr((err) => `Could not read block number: ${err}`);
     if (blockNumRes.err) {
       return blockNumRes;
@@ -115,7 +115,7 @@ export default class Header {
     }
     const nonce = nonceRes.unwrap();
     const workAlgoRes = br
-      .readUInt64BE()
+      .readU64BE()
       .mapErr((err) => `Could not read work algorithm: ${err}`);
     if (workAlgoRes.err) {
       return workAlgoRes;

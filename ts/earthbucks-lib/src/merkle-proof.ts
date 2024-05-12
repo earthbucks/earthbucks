@@ -88,7 +88,7 @@ export default class MerkleProof {
     const proofLength = br.readVarIntNum().unwrap();
     for (let i = 0; i < proofLength; i++) {
       const sibling = br.readIsoBuf(32).unwrap();
-      const isLeft = br.readUInt8().unwrap() === 1;
+      const isLeft = br.readU8().unwrap() === 1;
       proof.push([sibling, isLeft]);
     }
     return new MerkleProof(root, proof);
