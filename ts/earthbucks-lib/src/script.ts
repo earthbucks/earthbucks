@@ -13,45 +13,42 @@ export default class Script {
   }
 
   static fromIsoStr(str: string): Result<Script, string> {
-    try {
-      const script = new Script();
-      if (str === "") {
-        return new Ok(script);
-      }
-
-      if (/ {2,}/.test(str)) {
-        return new Err(
-          "String should not contain two or more consecutive spaces",
-        );
-      }
-
-      script.chunks = str
-        .split(" ")
-        .map(ScriptChunk.fromIsoStr)
-        .map((res) =>
-          res.mapErr((err) => `Unable to parse script chunk: ${err}`).unwrap(),
-        );
+    const script = new Script();
+    if (str === "") {
       return new Ok(script);
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing script");
     }
+
+    if (/ {2,}/.test(str)) {
+      return new Err(
+        "String should not contain two or more consecutive spaces",
+      );
+    }
+
+    const chunksRes = str
+      .split(" ")
+      .map(ScriptChunk.fromIsoStr)
+      .map((res) =>
+        res.mapErr((err) => `Unable to parse script chunk: ${err}`),
+      );
+    if (chunksRes.some((res) => res.err)) {
+      return new Err(
+        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
+      );
+    }
+    script.chunks = chunksRes.map((res) => res.unwrap());
+    return new Ok(script);
   }
 
   toIsoStr(): Result<string, string> {
-    try {
-      return new Ok(
-        this.chunks
-          .map((chunk) =>
-            chunk
-              .toIsoStr()
-              .mapErr((err) => `Unable to stringify chunk: ${err}`)
-              .unwrap(),
-          )
-          .join(" "),
+    const chunksRes = this.chunks.map((chunk) =>
+      chunk.toIsoStr().mapErr((err) => `Unable to stringify chunk: ${err}`),
+    );
+    if (chunksRes.some((res) => res.err)) {
+      return new Err(
+        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
       );
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error serializing script");
     }
+    return new Ok(chunksRes.map((res) => res.unwrap()).join(" "));
   }
 
   toIsoBuf(): Buffer {
@@ -60,44 +57,59 @@ export default class Script {
   }
 
   static fromIsoBuf(arr: Buffer): Result<Script, string> {
-    try {
-      let script = new Script();
-      const reader = new IsoBufReader(arr);
-      while (!reader.eof()) {
-        const chunk = new ScriptChunk();
-        chunk.opcode = reader
-          .readUInt8()
-          .mapErr((err) => `Unable to read opcode: ${err}`)
-          .unwrap();
-        if (chunk.opcode <= Opcode.OP_PUSHDATA4) {
-          let len = chunk.opcode;
-          if (len === Opcode.OP_PUSHDATA1) {
-            len = reader
-              .readUInt8()
-              .mapErr((err) => `Unable to read pushdata 1: ${err}`)
-              .unwrap();
-          } else if (len === Opcode.OP_PUSHDATA2) {
-            len = reader
-              .readUInt16BE()
-              .mapErr((err) => `Unable to read pushdata 2: ${err}`)
-              .unwrap();
-          } else if (len === Opcode.OP_PUSHDATA4) {
-            len = reader
-              .readUInt32BE()
-              .mapErr((err) => `Unable to read pushdata 4: ${err}`)
-              .unwrap();
-          }
-          chunk.buf = Buffer.from(reader.readIsoBuf(len).unwrap());
-          if (chunk.buf.length !== len) {
-            return new Err("invalid buffer length");
-          }
-        }
-        script.chunks.push(chunk);
+    let script = new Script();
+    const reader = new IsoBufReader(arr);
+    while (!reader.eof()) {
+      const chunk = new ScriptChunk();
+      const opcodeRes = reader
+        .readUInt8()
+        .mapErr((err) => `Unable to read opcode: ${err}`);
+      if (opcodeRes.err) {
+        return opcodeRes;
       }
-      return new Ok(script);
-    } catch (err) {
-      return new Err(err?.toString() || "Unknown error parsing script");
+      chunk.opcode = opcodeRes.unwrap();
+      if (chunk.opcode <= Opcode.OP_PUSHDATA4) {
+        let len = chunk.opcode;
+        if (len === Opcode.OP_PUSHDATA1) {
+          const lenRes = reader
+            .readUInt8()
+            .mapErr((err) => `Unable to read pushdata 1: ${err}`);
+          if (lenRes.err) {
+            return lenRes;
+          }
+          len = lenRes.unwrap();
+        } else if (len === Opcode.OP_PUSHDATA2) {
+          const lenRes = reader
+            .readUInt16BE()
+            .mapErr((err) => `Unable to read pushdata 2: ${err}`);
+          if (lenRes.err) {
+            return lenRes;
+          }
+          len = lenRes.unwrap();
+        } else if (len === Opcode.OP_PUSHDATA4) {
+          const lenRes = reader
+            .readUInt32BE()
+            .mapErr((err) => `Unable to read pushdata 4: ${err}`);
+          if (lenRes.err) {
+            return lenRes;
+          }
+          len = lenRes.unwrap();
+        }
+        const chunkBufRes = reader
+          .readIsoBuf(len)
+          .mapErr((err) => `Unable to read chunk buffer: ${err}`);
+        if (chunkBufRes.err) {
+          return chunkBufRes;
+        }
+        const chunkBuf = chunkBufRes.unwrap();
+        chunk.buf = Buffer.from(chunkBuf);
+        if (chunk.buf.length !== len) {
+          return new Err("invalid buffer length");
+        }
+      }
+      script.chunks.push(chunk);
     }
+    return new Ok(script);
   }
 
   static fromPkhOutput(pkh: Buffer): Script {

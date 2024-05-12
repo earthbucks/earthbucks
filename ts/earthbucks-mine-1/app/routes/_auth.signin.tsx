@@ -61,7 +61,7 @@ export default function Signin() {
   };
 
   const validatePrivateKey = (keyStr: string) => {
-    let isValidStrFmt = PrivKey.isValidStringFmt(keyStr);
+    let isValidStrFmt = PrivKey.isValidIsoStr(keyStr);
     if (!isValidStrFmt) {
       return false;
     }
