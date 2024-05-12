@@ -1,0 +1,107 @@
+{
+  "read_iso_buf": {
+    "errors": [
+      {
+        "hex": "",
+        "len": 1,
+        "error": "read_iso_buf: Not enough bytes left in the buffer to read"
+      },
+      {
+        "hex": "00",
+        "len": 2,
+        "error": "read_iso_buf: Not enough bytes left in the buffer to read"
+      },
+      {
+        "hex": "0000",
+        "len": 3,
+        "error": "read_iso_buf: Not enough bytes left in the buffer to read"
+      },
+      {
+        "hex": "000000",
+        "len": 4,
+        "error": "read_iso_buf: Not enough bytes left in the buffer to read"
+      },
+      {
+        "hex": "00000000",
+        "len": 5,
+        "error": "read_iso_buf: Not enough bytes left in the buffer to read"
+      }
+    ]
+  },
+  "read_u8": {
+    "errors": [
+      {
+        "hex": "",
+        "error": "read_u8: unable to read 1 byte: "
+      }
+    ]
+  },
+  "read_u16_be": {
+    "errors": [
+      {
+        "hex": "",
+        "error": "read_u16_be: unable to read 2 bytes: "
+      },
+      {
+        "hex": "00",
+        "error": "read_u16_be: unable to read 2 bytes: "
+      }
+    ]
+  },
+  "read_u32_be": {
+    "errors": [
+      {
+        "hex": "",
+        "error": "read_u32_be: unable to read 4 bytes: "
+      },
+      {
+        "hex": "00",
+        "error": "read_u32_be: unable to read 4 bytes: "
+      },
+      {
+        "hex": "0000",
+        "error": "read_u32_be: unable to read 4 bytes: "
+      },
+      {
+        "hex": "000000",
+        "error": "read_u32_be: unable to read 4 bytes: "
+      }
+    ]
+  },
+  "read_u64_be": {
+    "errors": [
+      {
+        "hex": "",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "00",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "0000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "000000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "00000000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "0000000000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "000000000000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      },
+      {
+        "hex": "00000000000000",
+        "error": "read_u64_be: unable to read 8 bytes: "
+      }
+    ]
+  }
+}

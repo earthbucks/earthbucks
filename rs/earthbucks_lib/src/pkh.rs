@@ -99,17 +99,6 @@ mod tests {
         assert_eq!(pkh.to_iso_buf(), &expected_pkh);
     }
 
-    #[derive(Deserialize)]
-    struct PkhData {
-        pkh: Vec<PkhPair>,
-    }
-
-    #[derive(Deserialize)]
-    struct PkhPair {
-        pub_key: String,
-        pkh: String,
-    }
-
     #[test]
     fn test_pkh_string_fmt() {
         assert!(Pkh::is_valid_string_fmt(
@@ -128,6 +117,17 @@ mod tests {
             pkh.to_iso_str(),
             "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4"
         );
+    }
+
+    #[derive(Deserialize)]
+    struct PkhData {
+        pkh: Vec<PkhPair>,
+    }
+
+    #[derive(Deserialize)]
+    struct PkhPair {
+        pub_key: String,
+        pkh: String,
     }
 
     #[test]
