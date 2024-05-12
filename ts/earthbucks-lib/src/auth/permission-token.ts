@@ -26,7 +26,7 @@ export default class PermissionToken {
       }
       const reader = new IsoBufReader(buf);
       const randValue = reader
-        .readBuffer(32)
+        .readIsoBuf(32)
         .mapErr((err) => `Unable to read rand value: ${err}`)
         .unwrap();
       const timestamp = reader

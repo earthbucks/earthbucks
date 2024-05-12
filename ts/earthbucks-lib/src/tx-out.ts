@@ -17,7 +17,7 @@ export default class TxOut {
     const reader = new IsoBufReader(buf);
     const value = reader.readUInt64BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
-    const scriptArr = reader.readBuffer(scriptLen).unwrap();
+    const scriptArr = reader.readIsoBuf(scriptLen).unwrap();
     const script = Script.fromIsoBuf(scriptArr).unwrap();
     return new TxOut(value, script);
   }
@@ -25,7 +25,7 @@ export default class TxOut {
   static fromIsoBufReader(reader: IsoBufReader): TxOut {
     const value = reader.readUInt64BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
-    const scriptArr = reader.readBuffer(scriptLen).unwrap();
+    const scriptArr = reader.readIsoBuf(scriptLen).unwrap();
     const script = Script.fromIsoBuf(scriptArr).unwrap();
     return new TxOut(value, script);
   }

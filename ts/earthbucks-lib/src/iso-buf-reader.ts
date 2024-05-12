@@ -14,7 +14,7 @@ export default class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  readBuffer(len: number): Result<Buffer, string> {
+  readIsoBuf(len: number): Result<Buffer, string> {
     if (this.pos + len > this.buf.length) {
       return new Err("readBuffer: Not enough bytes left in the buffer to read");
     }
@@ -26,7 +26,7 @@ export default class IsoBufReader {
   }
 
   readRemainder(): Result<Buffer, string> {
-    return this.readBuffer(this.buf.length - this.pos);
+    return this.readIsoBuf(this.buf.length - this.pos);
   }
 
   readUInt8(): Result<number, string> {
@@ -97,54 +97,48 @@ export default class IsoBufReader {
         "readUInt64BEBigInt: Not enough bytes left in the buffer to read",
       );
     }
-    const high = this.buf.readUInt32BE(this.pos);
-    const low = this.buf.readUInt32BE(this.pos + 4);
-    const bn = BigInt(high) * BigInt(0x100000000) + BigInt(low);
+    const bn = this.buf.readBigUInt64BE(this.pos);
     this.pos += 8;
     return new Ok(bn);
   }
 
   readVarIntBuf(): Result<Buffer, string> {
-    if (this.eof()) {
-      return new Err(
-        "readVarIntBuf: Not enough bytes left in the buffer to read",
-      );
-    }
-    const first = this.buf.readUInt8(this.pos);
-    if (first === 0xfd) {
-      const res = this.readBuffer(1 + 2);
-      if (res.err) {
-        return res;
+    try {
+      const first = this.readUInt8()
+        .mapErr(
+          (err) => `read_var_int_buf 1: could not read first byte: ${err}`,
+        )
+        .unwrap();
+      if (first === 0xfd) {
+        const buf = this.readIsoBuf(2)
+          .mapErr((err) => `read_var_int_buf 2: could not read 2 bytes: ${err}`)
+          .unwrap();
+        if (buf.readUInt16BE(0) < 0xfd) {
+          return new Err("read_var_int_buf 2: Non-minimal varint encoding 1");
+        }
+        return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      } else if (first === 0xfe) {
+        const buf = this.readIsoBuf(4)
+          .mapErr((err) => `read_var_int_buf 3: could not read 4 bytes: ${err}`)
+          .unwrap();
+        if (buf.readUInt32BE(0) < 0x10000) {
+          return new Err("read_var_int_buf 3: Non-minimal varint encoding 2");
+        }
+        return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      } else if (first === 0xff) {
+        const buf = this.readIsoBuf(8)
+          .mapErr((err) => `read_var_int_buf 4: could not read 8 bytes: ${err}`)
+          .unwrap();
+        const bn = buf.readBigUInt64BE(0);
+        if (bn < 0x100000000) {
+          return new Err("read_var_int_buf 4: Non-minimal varint encoding 3");
+        }
+        return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      } else {
+        return new Ok(Buffer.from([first]));
       }
-      const buf = res.unwrap();
-      if (buf.readUInt16BE(1) < 0xfd) {
-        return new Err("Non-minimal varint encoding 1");
-      }
-      return new Ok(buf);
-    } else if (first === 0xfe) {
-      const res = this.readBuffer(1 + 4);
-      if (res.err) {
-        return res;
-      }
-      const buf = res.unwrap();
-      if (buf.readUInt32BE(1) < 0x10000) {
-        return new Err("Non-minimal varint encoding 2");
-      }
-      return new Ok(buf);
-    } else if (first === 0xff) {
-      const res = this.readBuffer(1 + 8);
-      if (res.err) {
-        return res;
-      }
-      const buf = res.unwrap();
-      const high = buf.readUInt32BE(1);
-      const low = buf.readUInt32BE(5);
-      if (high === 0 && low < 0x100000000) {
-        return new Err("Non-minimal varint encoding 3");
-      }
-      return new Ok(buf);
-    } else {
-      return this.readBuffer(1);
+    } catch (err) {
+      return new Err(err?.toString() || "read_var_int_buf: Unknown error");
     }
   }
 

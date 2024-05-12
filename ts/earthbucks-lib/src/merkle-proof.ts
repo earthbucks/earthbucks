@@ -83,11 +83,11 @@ export default class MerkleProof {
 
   static fromIsoBuf(buf: Buffer): MerkleProof {
     const br = new IsoBufReader(buf);
-    const root = br.readBuffer(32).unwrap();
+    const root = br.readIsoBuf(32).unwrap();
     const proof: Array<[Buffer, boolean]> = [];
     const proofLength = br.readVarIntNum().unwrap();
     for (let i = 0; i < proofLength; i++) {
-      const sibling = br.readBuffer(32).unwrap();
+      const sibling = br.readIsoBuf(32).unwrap();
       const isLeft = br.readUInt8().unwrap() === 1;
       proof.push([sibling, isLeft]);
     }

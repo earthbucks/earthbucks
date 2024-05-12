@@ -87,7 +87,7 @@ export default class Script {
               .mapErr((err) => `Unable to read pushdata 4: ${err}`)
               .unwrap();
           }
-          chunk.buf = Buffer.from(reader.readBuffer(len).unwrap());
+          chunk.buf = Buffer.from(reader.readIsoBuf(len).unwrap());
           if (chunk.buf.length !== len) {
             return new Err("invalid buffer length");
           }

@@ -24,22 +24,22 @@ export default class TxIn {
 
   static fromIsoBuf(buf: Buffer): TxIn {
     const reader = new IsoBufReader(buf);
-    const inputTxHash = reader.readBuffer(32).unwrap();
+    const inputTxHash = reader.readIsoBuf(32).unwrap();
     const inputTxIndex = reader.readUInt32BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
     const script = Script.fromIsoBuf(
-      reader.readBuffer(scriptLen).unwrap(),
+      reader.readIsoBuf(scriptLen).unwrap(),
     ).unwrap();
     const lockRel = reader.readUInt32BE().unwrap();
     return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
   }
 
   static fromIsoBufReader(reader: IsoBufReader): TxIn {
-    const inputTxHash = reader.readBuffer(32).unwrap();
+    const inputTxHash = reader.readIsoBuf(32).unwrap();
     const inputTxIndex = reader.readUInt32BE().unwrap();
     const scriptLen = reader.readVarIntNum().unwrap();
     const script = Script.fromIsoBuf(
-      reader.readBuffer(scriptLen).unwrap(),
+      reader.readIsoBuf(scriptLen).unwrap(),
     ).unwrap();
     const lockRel = reader.readUInt32BE().unwrap();
     return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
