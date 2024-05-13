@@ -64,54 +64,11 @@ export default class Script {
   static fromIsoBufReader(reader: IsoBufReader): Result<Script, string> {
     let script = new Script();
     while (!reader.eof()) {
-      const chunk = new ScriptChunk();
-      const opcodeRes = reader
-        .readU8()
-        .mapErr((err) => `Unable to read opcode: ${err}`);
-      if (opcodeRes.err) {
-        return opcodeRes;
+      const chunkRes = ScriptChunk.fromIsoBufReader(reader);
+      if (chunkRes.err) {
+        return chunkRes.mapErr((err) => `Unable to read script chunk: ${err}`);
       }
-      chunk.opcode = opcodeRes.unwrap();
-      if (chunk.opcode <= Opcode.OP_PUSHDATA4) {
-        let len = chunk.opcode;
-        if (len === Opcode.OP_PUSHDATA1) {
-          const lenRes = reader
-            .readU8()
-            .mapErr((err) => `Unable to read pushdata 1: ${err}`);
-          if (lenRes.err) {
-            return lenRes;
-          }
-          len = lenRes.unwrap();
-        } else if (len === Opcode.OP_PUSHDATA2) {
-          const lenRes = reader
-            .readU16BE()
-            .mapErr((err) => `Unable to read pushdata 2: ${err}`);
-          if (lenRes.err) {
-            return lenRes;
-          }
-          len = lenRes.unwrap();
-        } else if (len === Opcode.OP_PUSHDATA4) {
-          const lenRes = reader
-            .readU32BE()
-            .mapErr((err) => `Unable to read pushdata 4: ${err}`);
-          if (lenRes.err) {
-            return lenRes;
-          }
-          len = lenRes.unwrap();
-        }
-        const chunkBufRes = reader
-          .read(len)
-          .mapErr((err) => `Unable to read chunk buffer: ${err}`);
-        if (chunkBufRes.err) {
-          return chunkBufRes;
-        }
-        const chunkBuf = chunkBufRes.unwrap();
-        chunk.buf = Buffer.from(chunkBuf);
-        if (chunk.buf.length !== len) {
-          return new Err("invalid buffer length");
-        }
-      }
-      script.chunks.push(chunk);
+      script.chunks.push(chunkRes.unwrap());
     }
     return new Ok(script);
   }
