@@ -88,36 +88,8 @@ impl ScriptChunk {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<ScriptChunk, String> {
-        let mut chunk = ScriptChunk::new(0, None);
-        let opcode = *buf
-            .first()
-            .ok_or("from_iso_buf 1: Opcode not found".to_string())?;
-        if opcode == Opcode::OP_PUSHDATA1 {
-            let len = buf[1] as usize;
-            if buf.len() != len + 2 {
-                return Err("from_iso_buf 2: buffer length is other than expected".into());
-            }
-            chunk.opcode = opcode;
-            chunk.buffer = Some(buf[2..2 + len].to_vec());
-        } else if opcode == Opcode::OP_PUSHDATA2 {
-            let len = u16::from_be_bytes([buf[1], buf[2]]) as usize;
-            if buf.len() != len + 3 {
-                return Err("from_iso_buf 3: buffer length is other than expected".into());
-            }
-            chunk.opcode = opcode;
-            chunk.buffer = Some(buf[3..3 + len].to_vec());
-        } else if opcode == Opcode::OP_PUSHDATA4 {
-            let len = u32::from_be_bytes([buf[1], buf[2], buf[3], buf[4]]) as usize;
-            if buf.len() != len + 5 {
-                return Err("from_iso_buf 4: buffer length is other than expected".into());
-            }
-            chunk.opcode = opcode;
-            chunk.buffer = Some(buf[5..5 + len].to_vec());
-        } else {
-            chunk.opcode = opcode;
-            chunk.buffer = None;
-        }
-        Ok(chunk)
+        let mut reader = IsoBufReader::new(buf);
+        ScriptChunk::from_iso_buf_reader(&mut reader)
     }
 
     pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<ScriptChunk, String> {
@@ -133,21 +105,30 @@ impl ScriptChunk {
             chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
                 "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string() + &e
             })?);
+            if len == 1 && (1..=16).contains(&chunk.buffer.as_ref().unwrap()[0]) {
+                return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata".to_string());
+            }
         } else if opcode == Opcode::OP_PUSHDATA2 {
             let len = reader.read_u16_be().map_err(|e| {
-                "script_chunk::from_iso_buf_reader 4: unable to read 2 byte length: ".to_string()
+                "script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ".to_string()
                     + &e
             })? as usize;
+            if len <= 0xff {
+                return Err("script_chunk::from_iso_buf_reader 6: non-minimal pushdata".to_string());
+            }
             chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 5: unable to read buffer: ".to_string() + &e
+                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string() + &e
             })?);
         } else if opcode == Opcode::OP_PUSHDATA4 {
             let len = reader.read_u32_be().map_err(|e| {
-                "script_chunk::from_iso_buf_reader 6: unable to read 4 byte length: ".to_string()
+                "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ".to_string()
                     + &e
             })? as usize;
+            if len <= 0xffff {
+                return Err("script_chunk::from_iso_buf_reader 9: non-minimal pushdata".to_string());
+            }
             chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string() + &e
+                "script_chunk::from_iso_buf_reader 10: unable to read buffer: ".to_string() + &e
             })?);
         }
         Ok(chunk)
@@ -297,20 +278,20 @@ mod tests {
 
     #[test]
     fn test_from_iso_buf_pushdata2() {
-        let mut arr = vec![Opcode::OP_PUSHDATA2, 0, 2];
-        arr.extend(vec![1, 2]);
+        let mut arr = vec![Opcode::OP_PUSHDATA2, 0x01, 0x00];
+        arr.extend(vec![0; 256]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
-        assert_eq!(chunk.buffer, Some(vec![1, 2]));
+        assert_eq!(chunk.buffer, Some(vec![0; 256]));
     }
 
     #[test]
     fn test_from_iso_buf_pushdata4() {
-        let mut arr = vec![Opcode::OP_PUSHDATA4, 0, 0, 0, 2];
-        arr.extend(vec![1, 2]);
+        let mut arr = vec![Opcode::OP_PUSHDATA4, 0, 0x01, 0, 0];
+        arr.extend(vec![0; 0x010000]);
         let chunk = ScriptChunk::from_iso_buf(arr).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
-        assert_eq!(chunk.buffer, Some(vec![1, 2]));
+        assert_eq!(chunk.buffer, Some(vec![0; 0x010000]));
     }
 
     #[test]
@@ -357,7 +338,7 @@ mod tests {
         match result {
             Err(e) => assert_eq!(
                 e.to_string(),
-                "from_iso_buf 2: buffer length is other than expected"
+                "script_chunk::from_iso_buf_reader 3: unable to read buffer: read_iso_buf: not enough bytes left in the buffer to read"
             ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA1 case"),
         }
@@ -374,7 +355,7 @@ mod tests {
         match result {
             Err(e) => assert_eq!(
                 e.to_string(),
-                "from_iso_buf 3: buffer length is other than expected"
+                "script_chunk::from_iso_buf_reader 6: non-minimal pushdata"
             ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA2 case"),
         }
@@ -391,7 +372,7 @@ mod tests {
         match result {
             Err(e) => assert_eq!(
                 e.to_string(),
-                "from_iso_buf 4: buffer length is other than expected"
+                "script_chunk::from_iso_buf_reader 9: non-minimal pushdata"
             ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA4 case"),
         }
