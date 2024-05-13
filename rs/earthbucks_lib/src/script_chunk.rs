@@ -1,3 +1,4 @@
+use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
 use std::error::Error;
@@ -115,6 +116,39 @@ impl ScriptChunk {
         } else {
             chunk.opcode = opcode;
             chunk.buffer = None;
+        }
+        Ok(chunk)
+    }
+
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<ScriptChunk, String> {
+        let opcode = reader.read_u8().map_err(|e| {
+            "script_chunk::from_iso_buf_reader 1: unable to read opcode: ".to_string() + &e
+        })?;
+        let mut chunk = ScriptChunk::new(opcode, None);
+        if opcode == Opcode::OP_PUSHDATA1 {
+            let len = reader.read_u8().map_err(|e| {
+                "script_chunk::from_iso_buf_reader 2: unable to read 1 byte length: ".to_string()
+                    + &e
+            })? as usize;
+            chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
+                "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string() + &e
+            })?);
+        } else if opcode == Opcode::OP_PUSHDATA2 {
+            let len = reader.read_u16_be().map_err(|e| {
+                "script_chunk::from_iso_buf_reader 4: unable to read 2 byte length: ".to_string()
+                    + &e
+            })? as usize;
+            chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
+                "script_chunk::from_iso_buf_reader 5: unable to read buffer: ".to_string() + &e
+            })?);
+        } else if opcode == Opcode::OP_PUSHDATA4 {
+            let len = reader.read_u32_be().map_err(|e| {
+                "script_chunk::from_iso_buf_reader 6: unable to read 4 byte length: ".to_string()
+                    + &e
+            })? as usize;
+            chunk.buffer = Some(reader.read_iso_buf(len).map_err(|e| {
+                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string() + &e
+            })?);
         }
         Ok(chunk)
     }
