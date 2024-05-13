@@ -52,31 +52,7 @@ impl Script {
         let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
-            let mut chunk = ScriptChunk::new(reader.read_u8()?, None);
-
-            if chunk.opcode == Opcode::OP_PUSHDATA1
-                || chunk.opcode == Opcode::OP_PUSHDATA2
-                || chunk.opcode == Opcode::OP_PUSHDATA4
-            {
-                let len = match chunk.opcode {
-                    opcode if opcode == Opcode::OP_PUSHDATA1 => reader.read_u8()? as u32,
-                    opcode if opcode == Opcode::OP_PUSHDATA2 => reader.read_u16_be()? as u32,
-                    opcode if opcode == Opcode::OP_PUSHDATA4 => reader.read_u32_be()?,
-                    _ => unreachable!(),
-                };
-
-                chunk.buffer = Some(reader.read(len as usize)?.to_vec());
-
-                let buffer_length = match &chunk.buffer {
-                    Some(buffer) => buffer.len(),
-                    None => 0, // or handle this case differently if you prefer
-                };
-
-                if buffer_length != len as usize {
-                    return Err("invalid buffer length".to_string());
-                }
-            }
-
+            let chunk = ScriptChunk::from_iso_buf_reader(reader)?;
             script.chunks.push(chunk);
         }
         Result::Ok(script)
