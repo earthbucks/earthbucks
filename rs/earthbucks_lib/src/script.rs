@@ -44,8 +44,12 @@ impl Script {
     }
 
     pub fn from_iso_buf(arr: &[u8]) -> Result<Self, String> {
-        let mut script = Self::new(Vec::new());
         let mut reader = IsoBufReader::new(arr.to_vec());
+        Self::from_iso_buf_reader(&mut reader)
+    }
+
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
+        let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
             let mut chunk = ScriptChunk::new(reader.read_u8()?, None);
