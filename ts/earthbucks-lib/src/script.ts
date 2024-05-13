@@ -12,6 +12,18 @@ export default class Script {
     this.chunks = chunks;
   }
 
+  toIsoStr(): Result<string, string> {
+    const chunksRes = this.chunks.map((chunk) =>
+      chunk.toIsoStr().mapErr((err) => `Unable to stringify chunk: ${err}`),
+    );
+    if (chunksRes.some((res) => res.err)) {
+      return new Err(
+        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
+      );
+    }
+    return new Ok(chunksRes.map((res) => res.unwrap()).join(" "));
+  }
+
   static fromIsoStr(str: string): Result<Script, string> {
     const script = new Script();
     if (str === "") {
@@ -39,26 +51,18 @@ export default class Script {
     return new Ok(script);
   }
 
-  toIsoStr(): Result<string, string> {
-    const chunksRes = this.chunks.map((chunk) =>
-      chunk.toIsoStr().mapErr((err) => `Unable to stringify chunk: ${err}`),
-    );
-    if (chunksRes.some((res) => res.err)) {
-      return new Err(
-        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
-      );
-    }
-    return new Ok(chunksRes.map((res) => res.unwrap()).join(" "));
-  }
-
   toIsoBuf(): Buffer {
     const bufArray = this.chunks.map((chunk) => chunk.toIsoBuf());
     return Buffer.concat(bufArray);
   }
 
   static fromIsoBuf(arr: Buffer): Result<Script, string> {
-    let script = new Script();
     const reader = new IsoBufReader(arr);
+    return Script.fromIsoBufReader(reader);
+  }
+
+  static fromIsoBufReader(reader: IsoBufReader): Result<Script, string> {
+    let script = new Script();
     while (!reader.eof()) {
       const chunk = new ScriptChunk();
       const opcodeRes = reader
