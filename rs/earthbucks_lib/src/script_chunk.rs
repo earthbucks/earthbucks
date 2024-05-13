@@ -86,30 +86,32 @@ impl ScriptChunk {
         result
     }
 
-    pub fn from_iso_buf(arr: Vec<u8>) -> Result<ScriptChunk, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<ScriptChunk, String> {
         let mut chunk = ScriptChunk::new(0, None);
-        let opcode = *arr.first().ok_or("Opcode not found".to_string())?;
+        let opcode = *buf
+            .first()
+            .ok_or("from_iso_buf 1: Opcode not found".to_string())?;
         if opcode == Opcode::OP_PUSHDATA1 {
-            let len = arr[1] as usize;
-            if arr.len() != len + 2 {
-                return Err("Buffer length is other than expected".into());
+            let len = buf[1] as usize;
+            if buf.len() != len + 2 {
+                return Err("from_iso_buf 2: buffer length is other than expected".into());
             }
             chunk.opcode = opcode;
-            chunk.buffer = Some(arr[2..2 + len].to_vec());
+            chunk.buffer = Some(buf[2..2 + len].to_vec());
         } else if opcode == Opcode::OP_PUSHDATA2 {
-            let len = u16::from_be_bytes([arr[1], arr[2]]) as usize;
-            if arr.len() != len + 3 {
-                return Err("Buffer length is other than expected".into());
+            let len = u16::from_be_bytes([buf[1], buf[2]]) as usize;
+            if buf.len() != len + 3 {
+                return Err("from_iso_buf 3: buffer length is other than expected".into());
             }
             chunk.opcode = opcode;
-            chunk.buffer = Some(arr[3..3 + len].to_vec());
+            chunk.buffer = Some(buf[3..3 + len].to_vec());
         } else if opcode == Opcode::OP_PUSHDATA4 {
-            let len = u32::from_be_bytes([arr[1], arr[2], arr[3], arr[4]]) as usize;
-            if arr.len() != len + 5 {
-                return Err("Buffer length is other than expected".into());
+            let len = u32::from_be_bytes([buf[1], buf[2], buf[3], buf[4]]) as usize;
+            if buf.len() != len + 5 {
+                return Err("from_iso_buf 4: buffer length is other than expected".into());
             }
             chunk.opcode = opcode;
-            chunk.buffer = Some(arr[5..5 + len].to_vec());
+            chunk.buffer = Some(buf[5..5 + len].to_vec());
         } else {
             chunk.opcode = opcode;
             chunk.buffer = None;
@@ -317,7 +319,10 @@ mod tests {
             "Expected an error for insufficient buffer length in PUSHDATA1 case"
         );
         match result {
-            Err(e) => assert_eq!(e.to_string(), "Buffer length is other than expected"),
+            Err(e) => assert_eq!(
+                e.to_string(),
+                "from_iso_buf 2: buffer length is other than expected"
+            ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA1 case"),
         }
     }
@@ -331,21 +336,27 @@ mod tests {
             "Expected an error for insufficient buffer length in PUSHDATA2 case"
         );
         match result {
-            Err(e) => assert_eq!(e.to_string(), "Buffer length is other than expected"),
+            Err(e) => assert_eq!(
+                e.to_string(),
+                "from_iso_buf 3: buffer length is other than expected"
+            ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA2 case"),
         }
     }
 
     #[test]
     fn test_from_iso_buf_pushdata4_error() {
-        let arr = vec![Opcode::OP_PUSHDATA2, 0, 0, 0, 2];
+        let arr = vec![Opcode::OP_PUSHDATA4, 0, 0, 0, 2];
         let result = ScriptChunk::from_iso_buf(arr);
         assert!(
             result.is_err(),
             "Expected an error for insufficient buffer length in PUSHDATA4 case"
         );
         match result {
-            Err(e) => assert_eq!(e.to_string(), "Buffer length is other than expected"),
+            Err(e) => assert_eq!(
+                e.to_string(),
+                "from_iso_buf 4: buffer length is other than expected"
+            ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA4 case"),
         }
     }
