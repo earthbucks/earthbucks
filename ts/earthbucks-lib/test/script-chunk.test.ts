@@ -167,7 +167,9 @@ describe("ScriptChunk", () => {
       const arr = Buffer.from([OP.PUSHDATA1, 200, ...buffer]);
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual("Buffer length is other than expected");
+      expect(res.val).toEqual(
+        "script_chunk::from_iso_buf_reader 3: unable to read buffer: read: not enough bytes left in the buffer to read",
+      );
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -179,7 +181,9 @@ describe("ScriptChunk", () => {
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual("Buffer length is other than expected");
+      expect(res.val).toEqual(
+        "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
+      );
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -191,7 +195,9 @@ describe("ScriptChunk", () => {
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual("Buffer length is other than expected");
+      expect(res.val).toEqual(
+        "script_chunk::from_iso_buf_reader 9: non-minimal pushdata",
+      );
     });
   });
 

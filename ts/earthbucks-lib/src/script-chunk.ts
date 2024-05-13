@@ -84,34 +84,8 @@ export default class ScriptChunk {
   }
 
   static fromIsoBuf(buf: Buffer): Result<ScriptChunk, string> {
-    const scriptChunk = new ScriptChunk();
-    const opcode = buf[0];
-    if (opcode === OP.PUSHDATA1) {
-      const len = buf[1];
-      if (buf.byteLength < len + 2) {
-        return new Err("Buffer length is other than expected");
-      }
-      scriptChunk.opcode = opcode;
-      scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 2, len);
-    } else if (opcode === OP.PUSHDATA2) {
-      const len = buf.readUInt16BE(1);
-      if (buf.byteLength < len + 3) {
-        return new Err("Buffer length is other than expected");
-      }
-      scriptChunk.opcode = opcode;
-      scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 3, len);
-    } else if (opcode === OP.PUSHDATA4) {
-      const len = buf.readUInt32BE(1);
-      if (buf.byteLength < len + 5) {
-        return new Err("Buffer length is other than expected");
-      }
-      scriptChunk.opcode = opcode;
-      scriptChunk.buf = Buffer.from(buf.buffer, buf.byteOffset + 5, len);
-    } else {
-      scriptChunk.opcode = opcode;
-      scriptChunk.buf = undefined;
-    }
-    return new Ok(scriptChunk);
+    const reader = new IsoBufReader(buf);
+    return ScriptChunk.fromIsoBufReader(reader);
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<ScriptChunk, string> {
