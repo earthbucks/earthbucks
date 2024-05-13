@@ -155,7 +155,9 @@ impl ScriptChunk {
 
     pub fn from_data(data: Vec<u8>) -> ScriptChunk {
         let len = data.len();
-        if len <= 0xff {
+        if len == 1 && (1..=16).contains(&data[0]) {
+            ScriptChunk::new(data[0] + Opcode::OP_1 - 1, None)
+        } else if len <= 0xff {
             ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(data))
         } else if len <= 0xffff {
             ScriptChunk::new(Opcode::OP_PUSHDATA2, Some(data))

@@ -133,7 +133,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.if_stack.pop();
                 }
                 Opcode::OP_0 => {
-                    self.stack.push(vec![0]);
+                    self.stack.push(vec![]);
                 }
                 Opcode::OP_PUSHDATA1 | Opcode::OP_PUSHDATA2 | Opcode::OP_PUSHDATA4 => {
                     if let Some(buffer) = &chunk.buffer {
@@ -565,7 +565,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let buf1 = self.stack.pop().unwrap();
                     let buf2 = self.stack.pop().unwrap();
                     let equal = buf1 == buf2;
-                    self.stack.push(if equal { vec![1] } else { vec![0] });
+                    self.stack.push(if equal { vec![1] } else { vec![] });
                 }
                 Opcode::OP_EQUALVERIFY => {
                     if self.stack.len() < 2 {
@@ -757,7 +757,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let bool1 = ScriptInterpreter::cast_to_bool(&buf1);
                     let bool2 = ScriptInterpreter::cast_to_bool(&buf2);
                     self.stack
-                        .push(if bool1 && bool2 { vec![1] } else { vec![0] });
+                        .push(if bool1 && bool2 { vec![1] } else { vec![] });
                 }
                 Opcode::OP_BOOLOR => {
                     if self.stack.len() < 2 {
@@ -769,7 +769,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let bool1 = ScriptInterpreter::cast_to_bool(&buf1);
                     let bool2 = ScriptInterpreter::cast_to_bool(&buf2);
                     self.stack
-                        .push(if bool1 || bool2 { vec![1] } else { vec![0] });
+                        .push(if bool1 || bool2 { vec![1] } else { vec![] });
                 }
                 Opcode::OP_NUMEQUAL => {
                     if self.stack.len() < 2 {
@@ -781,7 +781,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num1.num == script_num2.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_NUMEQUALVERIFY => {
@@ -806,7 +806,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num1.num != script_num2.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_LESSTHAN => {
@@ -819,7 +819,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num2.num < script_num1.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_GREATERTHAN => {
@@ -832,7 +832,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num2.num > script_num1.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_LESSTHANOREQUAL => {
@@ -845,7 +845,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num2.num <= script_num1.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_GREATERTHANOREQUAL => {
@@ -858,7 +858,7 @@ impl<'a> ScriptInterpreter<'a> {
                     self.stack.push(if script_num2.num >= script_num1.num {
                         vec![1]
                     } else {
-                        vec![0]
+                        vec![]
                     });
                 }
                 Opcode::OP_MIN => {
@@ -899,11 +899,8 @@ impl<'a> ScriptInterpreter<'a> {
                     let min = script_min.num;
                     let max = script_max.num;
                     let x = script_x.num;
-                    self.stack.push(if x >= min && x < max {
-                        vec![1]
-                    } else {
-                        vec![0]
-                    });
+                    self.stack
+                        .push(if x >= min && x < max { vec![1] } else { vec![] });
                 }
                 Opcode::OP_BLAKE3 => {
                     if self.stack.is_empty() {
@@ -1114,7 +1111,7 @@ mod tests {
                 ScriptInterpreter::from_script_tx(script, tx, 0, &mut hash_cache);
             script_interpreter.eval_script();
             assert_eq!(script_interpreter.return_success, Some(false));
-            assert_eq!(hex::encode(script_interpreter.return_value.unwrap()), "00");
+            assert_eq!(hex::encode(script_interpreter.return_value.unwrap()), "");
         }
 
         #[test]

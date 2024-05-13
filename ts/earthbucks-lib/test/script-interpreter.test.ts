@@ -9,7 +9,6 @@ import path from "path";
 import KeyPair from "../src/key-pair";
 import Pkh from "../src/pkh";
 import TxSignature from "../src/tx-signature";
-import PubKey from "../src/pub-key";
 import PrivKey from "../src/priv-key";
 import { Buffer } from "buffer";
 
@@ -40,7 +39,7 @@ describe("ScriptInterpreter", () => {
       expect(
         scriptInterpreter.returnValue &&
           Buffer.from(scriptInterpreter.returnValue).toString("hex"),
-      ).toEqual("00");
+      ).toEqual("");
     });
 
     test("pushdata1", () => {

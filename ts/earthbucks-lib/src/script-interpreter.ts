@@ -171,9 +171,9 @@ export default class ScriptInterpreter {
             this.ifStack.pop();
           }
           break;
-        case OP["0"]:
+        case Opcode.OP_0:
           {
-            this.stack.push(Buffer.from([0]));
+            this.stack.push(Buffer.from([]));
           }
           break;
         case Opcode.OP_PUSHDATA1:
@@ -665,7 +665,7 @@ export default class ScriptInterpreter {
             let buf1 = this.stack.pop() as Buffer;
             let buf2 = this.stack.pop() as Buffer;
             let equal = Buffer.compare(buf1, buf2) === 0;
-            this.stack.push(Buffer.from([equal ? 1 : 0]));
+            this.stack.push(equal ? Buffer.from([1]) : Buffer.from([]));
           }
           break;
         case Opcode.OP_EQUALVERIFY:
@@ -1021,7 +1021,7 @@ export default class ScriptInterpreter {
             let within =
               scriptNumX.num >= scriptNumMin.num &&
               scriptNumX.num < scriptNumMax.num;
-            this.stack.push(Buffer.from([within ? 1 : 0]));
+            this.stack.push(within ? Buffer.from([1]) : Buffer.from([]));
           }
           break;
         case Opcode.OP_BLAKE3:

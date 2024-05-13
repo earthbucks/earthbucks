@@ -23,6 +23,9 @@ impl ScriptNum {
     }
 
     pub fn from_iso_buf(buffer: &[u8]) -> Self {
+        if buffer.is_empty() {
+            return ScriptNum { num: Zero::zero() };
+        }
         let is_negative = buffer[0] & 0x80 != 0;
         let num = if is_negative {
             let inverted_buffer: Vec<u8> = buffer.iter().map(|b| !b).collect();
@@ -35,19 +38,23 @@ impl ScriptNum {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        if self.num >= Zero::zero() {
-            let (_, mut bytes) = self.num.to_bytes_be();
-            // If the most significant bit is set, prepend an extra zero byte
-            if bytes[0] & 0x80 != 0 {
-                bytes.insert(0, 0);
+        match self.num.cmp(&Zero::zero()) {
+            std::cmp::Ordering::Equal => vec![],
+            std::cmp::Ordering::Greater => {
+                let (_, mut bytes) = self.num.to_bytes_be();
+                // If the most significant bit is set, prepend an extra zero byte
+                if bytes[0] & 0x80 != 0 {
+                    bytes.insert(0, 0);
+                }
+                bytes
             }
-            bytes
-        } else {
-            let bit_length = self.num.bits();
-            let byte_length = (bit_length + 7) / 8;
-            (BigInt::from(2).pow((byte_length * 8) as u32) + &self.num)
-                .to_bytes_be()
-                .1
+            std::cmp::Ordering::Less => {
+                let bit_length = self.num.bits();
+                let byte_length = (bit_length + 7) / 8;
+                (BigInt::from(2).pow((byte_length * 8) as u32) + &self.num)
+                    .to_bytes_be()
+                    .1
+            }
         }
     }
 

@@ -17,6 +17,10 @@ export default class ScriptNum {
 
   static fromIsoBuf(buffer: Buffer): ScriptNum {
     const scriptNum = new ScriptNum();
+    if (buffer.length === 0) {
+      scriptNum.num = 0n;
+      return scriptNum;
+    }
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
@@ -35,7 +39,9 @@ export default class ScriptNum {
 
   toIsoBuf(): Buffer {
     const num = this.num;
-    if (num >= 0n) {
+    if (num === 0n) {
+      return Buffer.alloc(0);
+    } else if (num > 0n) {
       let hex = num.toString(16);
       if (hex.length % 2 !== 0) {
         hex = "0" + hex; // Pad with zero to make length even
