@@ -43,7 +43,7 @@ securities in the cryptocurrency industry. Not only would it be a bad idea to
 create an illegal security today, but I personally find those projects
 distasteful. I am not a lawyer, so take my opinion on securities with a grain of
 salt, but in the US, the defining conditions for a security are given by the
-Howie test, which says:
+Howey test, which says:
 
 1. There is an investment of money
 2. There is an expectation of profits from the investment
