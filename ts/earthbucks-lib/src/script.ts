@@ -96,7 +96,7 @@ export default class Script {
           len = lenRes.unwrap();
         }
         const chunkBufRes = reader
-          .readIsoBuf(len)
+          .read(len)
           .mapErr((err) => `Unable to read chunk buffer: ${err}`);
         if (chunkBufRes.err) {
           return chunkBufRes;

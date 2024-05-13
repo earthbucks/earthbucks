@@ -26,13 +26,13 @@ describe("BufferReader", () => {
 
   test("read returns correct subarray", () => {
     const len = 4;
-    const result = bufferReader.readIsoBuf(len).unwrap();
+    const result = bufferReader.read(len).unwrap();
     expect(result).toEqual(testBuffer.subarray(0, len));
   });
 
   test("read updates position", () => {
     const len = 4;
-    bufferReader.readIsoBuf(len);
+    bufferReader.read(len);
     expect(bufferReader["pos"]).toBe(len);
   });
 
@@ -206,7 +206,7 @@ describe("BufferReader", () => {
       testVector.read_iso_buf.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readIsoBuf(test.len).val).toMatch(
+        expect(bufferReader.read(test.len).val).toMatch(
           new RegExp("^" + test.error),
         );
       });

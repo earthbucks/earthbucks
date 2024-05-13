@@ -73,14 +73,14 @@ export default class Header {
     }
     const version = versionRes.unwrap();
     const previousBlockHashRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read previous block hash: ${err}`);
     if (previousBlockHashRes.err) {
       return previousBlockHashRes;
     }
     const previousBlockHash = previousBlockHashRes.unwrap();
     const merkleRootRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read merkle root: ${err}`);
     if (merkleRootRes.err) {
       return merkleRootRes;
@@ -101,14 +101,14 @@ export default class Header {
     }
     const blockNum = blockNumRes.unwrap();
     const targetRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read target: ${err}`);
     if (targetRes.err) {
       return targetRes;
     }
     const target = targetRes.unwrap();
     const nonceRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read nonce: ${err}`);
     if (nonceRes.err) {
       return nonceRes;
@@ -122,14 +122,14 @@ export default class Header {
     }
     const workAlgo = workAlgoRes.unwrap();
     const workSerRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read serial work: ${err}`);
     if (workSerRes.err) {
       return workSerRes;
     }
     const workSer = workSerRes.unwrap();
     const workParRes = br
-      .readIsoBuf(32)
+      .read(32)
       .mapErr((err) => `Could not read parallel work: ${err}`);
     if (workParRes.err) {
       return workParRes;

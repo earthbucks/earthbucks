@@ -18,7 +18,7 @@ impl TxOut {
         let mut reader = IsoBufReader::new(buf);
         let value = reader.read_u64_be()?;
         let script_len = reader.read_var_int()? as usize;
-        let script_arr = reader.read_iso_buf(script_len)?;
+        let script_arr = reader.read(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -29,7 +29,7 @@ impl TxOut {
     pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
         let value = reader.read_u64_be()?;
         let script_len = reader.read_var_int()? as usize;
-        let script_arr = reader.read_iso_buf(script_len)?;
+        let script_arr = reader.read(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),

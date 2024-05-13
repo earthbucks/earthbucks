@@ -61,7 +61,7 @@ impl Script {
                     _ => unreachable!(),
                 };
 
-                chunk.buffer = Some(reader.read_iso_buf(len as usize)?.to_vec());
+                chunk.buffer = Some(reader.read(len as usize)?.to_vec());
 
                 let buffer_length = match &chunk.buffer {
                     Some(buffer) => buffer.len(),

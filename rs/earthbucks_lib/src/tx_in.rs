@@ -24,19 +24,19 @@ impl TxIn {
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
         let mut reader = IsoBufReader::new(buf);
-        let input_tx_id = reader.read_iso_buf(32)?;
+        let input_tx_id = reader.read(32)?;
         let input_tx_index = reader.read_u32_be()?;
         let size = reader.read_u8()? as usize;
-        let script = Script::from_iso_buf(reader.read_iso_buf(size)?.as_slice())?;
+        let script = Script::from_iso_buf(reader.read(size)?.as_slice())?;
         let lock_rel = reader.read_u32_be()?;
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
     pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
-        let input_tx_id = reader.read_iso_buf(32)?;
+        let input_tx_id = reader.read(32)?;
         let input_tx_index = reader.read_u32_be()?;
         let size = reader.read_var_int()? as usize;
-        let script = Script::from_iso_buf(reader.read_iso_buf(size)?.as_slice())?;
+        let script = Script::from_iso_buf(reader.read(size)?.as_slice())?;
         let lock_rel = reader.read_u32_be()?;
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }

@@ -46,15 +46,15 @@ impl Header {
         }
         let mut br = IsoBufReader::new(buf);
         let version = br.read_u32_be()?;
-        let prev_block_id: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
         let timestamp = br.read_u64_be()?;
         let block_num = br.read_u64_be()?;
-        let target: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
         let work_algo = br.read_u64_be()?;
-        let work_ser: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_ser: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read(32)?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -74,15 +74,15 @@ impl Header {
             panic!("Invalid block header size");
         }
         let version = br.read_u32_be()?;
-        let prev_block_id: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
         let timestamp = br.read_u64_be()?;
         let block_num = br.read_u64_be()?;
-        let target: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
         let work_algo = br.read_u64_be()?;
-        let work_ser: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read_iso_buf(32)?.try_into().unwrap();
+        let work_ser: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read(32)?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,

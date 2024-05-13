@@ -14,11 +14,9 @@ export default class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  readIsoBuf(len: number): Result<Buffer, string> {
+  read(len: number): Result<Buffer, string> {
     if (this.pos + len > this.buf.length) {
-      return new Err(
-        "read_iso_buf: not enough bytes left in the buffer to read",
-      );
+      return new Err("read: not enough bytes left in the buffer to read");
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = Buffer.alloc(len);
@@ -28,7 +26,7 @@ export default class IsoBufReader {
   }
 
   readRemainder(): Result<Buffer, string> {
-    return this.readIsoBuf(this.buf.length - this.pos);
+    return this.read(this.buf.length - this.pos);
   }
 
   readU8(): Result<number, string> {
@@ -84,7 +82,7 @@ export default class IsoBufReader {
     }
     const first = res.unwrap();
     if (first === 0xfd) {
-      const res = this.readIsoBuf(2).mapErr(
+      const res = this.read(2).mapErr(
         (err) => `read_var_int_buf 2: unable to read 2 bytes: ${err}`,
       );
       if (res.err) {
@@ -96,7 +94,7 @@ export default class IsoBufReader {
       }
       return new Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xfe) {
-      const res = this.readIsoBuf(4).mapErr(
+      const res = this.read(4).mapErr(
         (err) => `read_var_int_buf 4: unable to read 4 bytes: ${err}`,
       );
       if (res.err) {
@@ -108,7 +106,7 @@ export default class IsoBufReader {
       }
       return new Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xff) {
-      const res = this.readIsoBuf(8).mapErr(
+      const res = this.read(8).mapErr(
         (err) => `read_var_int_buf 6: unable to read 8 bytes: ${err}`,
       );
       if (res.err) {

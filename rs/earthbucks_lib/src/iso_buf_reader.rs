@@ -20,10 +20,10 @@ impl IsoBufReader {
         self.buf.get_ref().len() - self.buf.position() as usize
     }
 
-    pub fn read_iso_buf(&mut self, len: usize) -> Result<Vec<u8>, String> {
+    pub fn read(&mut self, len: usize) -> Result<Vec<u8>, String> {
         let pos = self.buf.position() as usize;
         if pos + len > self.buf.get_ref().len() {
-            return Err("read_iso_buf: not enough bytes left in the buffer to read".to_string());
+            return Err("read: not enough bytes left in the buffer to read".to_string());
         }
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
@@ -68,7 +68,7 @@ impl IsoBufReader {
         match first {
             0xfd => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(2).map_err(|e| {
+                buf.extend_from_slice(&self.read(2).map_err(|e| {
                     "read_var_int_buf 2: unable to read 2 bytes: ".to_string() + &e
                 })?);
                 if Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() < 0xfd {
@@ -78,7 +78,7 @@ impl IsoBufReader {
             }
             0xfe => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(4).map_err(|e| {
+                buf.extend_from_slice(&self.read(4).map_err(|e| {
                     "read_var_int_buf 4: unable to read 4 bytes: ".to_string() + &e
                 })?);
                 if Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() < 0x10000 {
@@ -88,7 +88,7 @@ impl IsoBufReader {
             }
             0xff => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read_iso_buf(8).map_err(|e| {
+                buf.extend_from_slice(&self.read(8).map_err(|e| {
                     "read_var_int_buf 6: unable to read 8 bytes: ".to_string() + &e
                 })?);
                 if Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap() < 0x100000000 {
@@ -125,8 +125,8 @@ mod tests {
     #[test]
     fn test_read() {
         let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
-        assert_eq!(reader.read_iso_buf(3).unwrap(), vec![1, 2, 3]);
-        assert_eq!(reader.read_iso_buf(2).unwrap(), vec![4, 5]);
+        assert_eq!(reader.read(3).unwrap(), vec![1, 2, 3]);
+        assert_eq!(reader.read(2).unwrap(), vec![4, 5]);
     }
 
     #[test]
@@ -253,7 +253,7 @@ mod tests {
         for test_vector in test_vectors.read_iso_buf.errors {
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
-            let result = reader.read_iso_buf(test_vector.len);
+            let result = reader.read(test_vector.len);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),

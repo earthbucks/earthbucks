@@ -29,7 +29,7 @@ export default class TxIn {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, string> {
-    const inputTxHashRes = reader.readIsoBuf(32);
+    const inputTxHashRes = reader.read(32);
     if (inputTxHashRes.err) {
       return inputTxHashRes;
     }
@@ -44,7 +44,7 @@ export default class TxIn {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptBufRes = reader.readIsoBuf(scriptLen);
+    const scriptBufRes = reader.read(scriptLen);
     if (scriptBufRes.err) {
       return scriptBufRes;
     }

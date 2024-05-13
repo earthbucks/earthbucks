@@ -30,7 +30,7 @@ export default class TxOut {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptArrRes = reader.readIsoBuf(scriptLen);
+    const scriptArrRes = reader.read(scriptLen);
     if (scriptArrRes.err) {
       return scriptArrRes;
     }
