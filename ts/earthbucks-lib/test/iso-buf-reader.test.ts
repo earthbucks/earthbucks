@@ -167,7 +167,7 @@ describe("BufferReader", () => {
 
   describe("test vectors", () => {
     interface TestVectorIsoBufReader {
-      read_iso_buf: TestVectorReadIsoBuf;
+      read: TestVectorReadIsoBuf;
       read_u8: TestVectorReadErrors;
       read_u16_be: TestVectorReadErrors;
       read_u32_be: TestVectorReadErrors;
@@ -202,8 +202,8 @@ describe("BufferReader", () => {
     const jsonString = fs.readFileSync(filePath, "utf-8");
     const testVector: TestVectorIsoBufReader = JSON.parse(jsonString);
 
-    test("test vectors: read_iso_buf", () => {
-      testVector.read_iso_buf.errors.forEach((test) => {
+    test("test vectors: read", () => {
+      testVector.read.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(bufferReader.read(test.len).val).toMatch(

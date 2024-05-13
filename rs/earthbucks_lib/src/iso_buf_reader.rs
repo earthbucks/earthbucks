@@ -212,7 +212,7 @@ mod tests {
 
     #[derive(Deserialize)]
     struct TestVectorIsoBufReader {
-        read_iso_buf: TestVectorReadIsoBuf,
+        read: TestVectorReadIsoBuf,
         read_u8: TestVectorReadErrors,
         read_u16_be: TestVectorReadErrors,
         read_u32_be: TestVectorReadErrors,
@@ -245,12 +245,12 @@ mod tests {
     }
 
     #[test]
-    fn test_vectors_read_iso_buf() {
+    fn test_vectors_read() {
         let data =
             fs::read_to_string("../../json/iso_buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
-        for test_vector in test_vectors.read_iso_buf.errors {
+        for test_vector in test_vectors.read.errors {
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read(test_vector.len);
