@@ -127,9 +127,7 @@ export default class Script {
 
   static fromPkhInputPlaceholder(): Script {
     const sig = Buffer.alloc(65);
-    sig.fill(0);
     const pubKey = Buffer.alloc(33);
-    pubKey.fill(0);
     return new Script([
       ScriptChunk.fromData(sig),
       ScriptChunk.fromData(pubKey),
@@ -274,8 +272,12 @@ export default class Script {
     return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }
 
-  isStandardInput(): boolean {
+  isCoinbaseInput(): boolean {
     return this.isPushOnly();
+  }
+
+  isStandardInput(): boolean {
+    return this.isPushOnly() && (this.isPkhInput() || this.isExpiredInput());
   }
 
   isStandardOutput(): boolean {
