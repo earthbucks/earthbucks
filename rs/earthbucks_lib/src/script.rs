@@ -52,7 +52,8 @@ impl Script {
         let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
-            let chunk = ScriptChunk::from_iso_buf_reader(reader)?;
+            let chunk = ScriptChunk::from_iso_buf_reader(reader)
+                .map_err(|e| "script::from_iso_buf_reader: ".to_string() + &e)?;
             script.chunks.push(chunk);
         }
         Result::Ok(script)

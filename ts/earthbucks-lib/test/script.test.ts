@@ -1,6 +1,8 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import Script from "../src/script";
 import { Buffer } from "buffer";
+import fs from "fs";
+import path from "path";
 
 describe("Script", () => {
   test("constructor", () => {
@@ -84,6 +86,65 @@ describe("Script", () => {
     test("fromAddressInputPlacholder", () => {
       const script = Script.fromPkhInputPlaceholder();
       expect(script.isPkhInput()).toBe(true);
+    });
+  });
+
+  describe("test vectors", () => {
+    // #[derive(Deserialize)]
+    // struct TestVectorScript {
+    //     from_iso_buf: TestVectorErrors,
+    // }
+
+    // #[derive(Deserialize)]
+    // struct TestVectorErrors {
+    //     errors: Vec<TestVectorError>,
+    // }
+
+    // #[derive(Deserialize)]
+    // struct TestVectorError {
+    //     hex: String,
+    //     error: String,
+    // }
+
+    // #[test]
+    // fn test_vectors_from_iso_buf() {
+    //     let file = std::fs::File::open("../../json/script.json").unwrap();
+    //     let test_vectors: TestVectorScript = serde_json::from_reader(file).unwrap();
+
+    //     for test_vector in test_vectors.from_iso_buf.errors {
+    //         let arr = hex::decode(test_vector.hex).unwrap();
+    //         let result = Script::from_iso_buf(&arr);
+    //         match result {
+    //             Ok(_) => panic!("Expected an error, but got Ok(_)"),
+    //             Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
+    //         }
+    //     }
+    // }
+
+    interface TestVectorScript {
+      from_iso_buf: TestVectorErrors;
+    }
+
+    interface TestVectorErrors {
+      errors: TestVectorError[];
+    }
+
+    interface TestVectorError {
+      hex: string;
+      error: string;
+    }
+
+    const filePath = path.resolve(__dirname, "../../../json/script.json");
+    const jsonString = fs.readFileSync(filePath, "utf-8");
+    const testVectors: TestVectorScript = JSON.parse(jsonString);
+
+    test("test vectors: iso buf reader", () => {
+      for (const testVector of testVectors.from_iso_buf.errors) {
+        const arr = Buffer.from(testVector.hex, "hex");
+        const result = Script.fromIsoBuf(arr);
+        expect(result.err).toBeTruthy();
+        expect(result.val).toMatch(new RegExp("^" + testVector.error));
+      }
     });
   });
 });

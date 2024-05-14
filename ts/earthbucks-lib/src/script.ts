@@ -66,7 +66,7 @@ export default class Script {
     while (!reader.eof()) {
       const chunkRes = ScriptChunk.fromIsoBufReader(reader);
       if (chunkRes.err) {
-        return chunkRes.mapErr((err) => `Unable to read script chunk: ${err}`);
+        return chunkRes.mapErr((err) => `script::from_iso_buf_reader: ${err}`);
       }
       script.chunks.push(chunkRes.unwrap());
     }
