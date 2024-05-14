@@ -115,7 +115,7 @@ export default class ScriptChunk {
         );
       }
       const buffer = bufferRes.unwrap();
-      if (len === 1 && buffer[0] >= 1 && buffer[0] <= 16) {
+      if (len == 0 || (len === 1 && buffer[0] >= 1 && buffer[0] <= 16)) {
         return new Err(
           "script_chunk::from_iso_buf_reader 4: non-minimal pushdata",
         );
@@ -173,12 +173,16 @@ export default class ScriptChunk {
 
   static fromData(data: Buffer): ScriptChunk {
     const len = data.length;
-    if (len <= 0xff) {
-      return new ScriptChunk(OP.PUSHDATA1, data);
+    if (len === 0) {
+      return new ScriptChunk(Opcode.OP_0);
+    } else if (len === 1 && data[0] >= 1 && data[0] <= 16) {
+      return new ScriptChunk(data[0] + Opcode.OP_1 - 1);
+    } else if (len <= 0xff) {
+      return new ScriptChunk(Opcode.OP_PUSHDATA1, data);
     } else if (len <= 0xffff) {
-      return new ScriptChunk(OP.PUSHDATA2, data);
+      return new ScriptChunk(Opcode.OP_PUSHDATA2, data);
     } else if (len <= 0xffffffff) {
-      return new ScriptChunk(OP.PUSHDATA4, data);
+      return new ScriptChunk(Opcode.OP_PUSHDATA4, data);
     } else {
       return new ScriptChunk(0);
     }
@@ -186,7 +190,7 @@ export default class ScriptChunk {
 
   static fromSmallNumber(n: number): ScriptChunk {
     if (n === -1 || (n >= 1 && n <= 16)) {
-      return new ScriptChunk(n + OP["1"] - 1);
+      return new ScriptChunk(n + Opcode.OP_1 - 1);
     } else {
       return new ScriptChunk(0);
     }

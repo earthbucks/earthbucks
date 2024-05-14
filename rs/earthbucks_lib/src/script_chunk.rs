@@ -109,7 +109,7 @@ impl ScriptChunk {
             chunk.buffer = Some(reader.read(len).map_err(|e| {
                 "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string() + &e
             })?);
-            if len == 1 && (1..=16).contains(&chunk.buffer.as_ref().unwrap()[0]) {
+            if len == 0 || (len == 1 && (1..=16).contains(&chunk.buffer.as_ref().unwrap()[0])) {
                 return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata".to_string());
             }
         } else if opcode == Opcode::OP_PUSHDATA2 {
@@ -140,11 +140,13 @@ impl ScriptChunk {
 
     pub fn from_data(data: Vec<u8>) -> ScriptChunk {
         // Note that we enforce minimal encoding of data, not only must you use
-        // the smallest PUSHDATA, but if your data is 1..16, then you must use
-        // OP_1..OP_16 for that data. e.g. 0x01 is actually OP_1, so
+        // the smallest PUSHDATA, but if your data is 0..16, then you must use
+        // OP_0..OP_16 for that data. e.g. 0x01 is actually OP_1, so
         // OP_PUSHDATA1 0x01 0x01 is actually invalid and should be just OP_1.
         let len = data.len();
-        if len == 1 && (1..=16).contains(&data[0]) {
+        if len == 0 {
+            ScriptChunk::new(Opcode::OP_0, None)
+        } else if len == 1 && 1 <= data[0] && data[0] <= 16 {
             ScriptChunk::new(data[0] + Opcode::OP_1 - 1, None)
         } else if len <= 0xff {
             ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(data))
