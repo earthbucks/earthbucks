@@ -2,6 +2,7 @@ use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::{Opcode, OP};
 use crate::script_chunk::ScriptChunk;
 use crate::script_num::ScriptNum;
+use crate::tx_signature::TxSignature;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Script {
@@ -123,17 +124,16 @@ impl Script {
         self.chunks.len() == 2
             && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[0].buffer.is_some()
-            && self.chunks[0].buffer.as_ref().unwrap().len() == 65
+            && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
             && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[1].buffer.is_some()
             && self.chunks[1].buffer.as_ref().unwrap().len() == 33
     }
 
     pub fn from_pkh_input_placeholder() -> Self {
-        // 65 bytes for the signature and 33 bytes for the public key, all zeroes
-        let signature = vec![0; 65];
+        let sig_buf = vec![0; TxSignature::SIZE];
         let pub_key = vec![0; 33];
-        Self::from_pkh_input(&signature, &pub_key)
+        Self::from_pkh_input(&sig_buf, &pub_key)
     }
 
     pub fn from_pkh1yx_output(pkh: &[u8; 32]) -> Self {
@@ -302,7 +302,7 @@ impl Script {
         self.chunks.len() == 1 && self.chunks[0].opcode == Opcode::OP_0
     }
 
-    pub fn from_unexpired_pkh_input(sig_buf: &[u8; 64], pub_key_buf: &[u8; 33]) -> Self {
+    pub fn from_unexpired_pkh_input(sig_buf: &[u8; TxSignature::SIZE], pub_key_buf: &[u8; 33]) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::from_data(sig_buf.to_vec()));
         script
@@ -316,7 +316,7 @@ impl Script {
         self.chunks.len() == 3
             && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[0].buffer.is_some()
-            && self.chunks[0].buffer.as_ref().unwrap().len() == 64
+            && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
             && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[1].buffer.is_some()
             && self.chunks[1].buffer.as_ref().unwrap().len() == 33

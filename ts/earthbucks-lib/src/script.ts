@@ -4,6 +4,7 @@ import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
 import ScriptNum from "./script-num";
+import TxSignature from "./tx-signature";
 
 export default class Script {
   chunks: ScriptChunk[] = [];
@@ -119,14 +120,14 @@ export default class Script {
     return (
       this.chunks.length === 2 &&
       this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[0].buf?.length === 65 &&
+      this.chunks[0].buf?.length === TxSignature.SIZE &&
       this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === 33
     );
   }
 
   static fromPkhInputPlaceholder(): Script {
-    const sig = Buffer.alloc(65);
+    const sig = Buffer.alloc(TxSignature.SIZE);
     const pubKey = Buffer.alloc(33);
     return new Script([
       ScriptChunk.fromData(sig),
@@ -272,7 +273,7 @@ export default class Script {
     return (
       this.chunks.length === 3 &&
       this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[0].buf?.length === 64 &&
+      this.chunks[0].buf?.length === TxSignature.SIZE &&
       this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === 33 &&
       this.chunks[2].opcode === Opcode.OP_1

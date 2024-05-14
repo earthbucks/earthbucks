@@ -5,6 +5,7 @@ export default class TxSignature {
   static readonly SIGHASH_NONE = 0x00000002;
   static readonly SIGHASH_SINGLE = 0x00000003;
   static readonly SIGHASH_ANYONECANPAY = 0x00000080;
+  static readonly SIZE = 65;
 
   hashType: number;
   sigBuf: Buffer;
