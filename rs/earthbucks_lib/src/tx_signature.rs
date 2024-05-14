@@ -8,7 +8,7 @@ impl TxSignature {
     pub const SIGHASH_NONE: u8 = 0x00000002;
     pub const SIGHASH_SINGLE: u8 = 0x00000003;
     pub const SIGHASH_ANYONECANPAY: u8 = 0x00000080;
-    pub const SIZE: usize = 65;
+    pub const SIZE: usize = 65; // hashtype (1) plus r (32) plus s (32)
 
     pub fn new(hash_type: u8, sig_buf: Vec<u8>) -> Self {
         Self { hash_type, sig_buf }

@@ -6,6 +6,8 @@ import { blake3Hash } from "./blake3";
 import { Result, Ok, Err } from "./ts-results/result";
 
 export default class PubKey {
+  static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
+
   buf: Buffer;
 
   constructor(buf: Buffer) {
@@ -17,7 +19,7 @@ export default class PubKey {
   }
 
   static fromIsoBuf(buf: Buffer): Result<PubKey, string> {
-    if (buf.length !== 33) {
+    if (buf.length !== PubKey.SIZE) {
       return new Err("Invalid public key length");
     }
     return new Ok(new PubKey(buf));

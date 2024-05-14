@@ -5,6 +5,7 @@ import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
 import ScriptNum from "./script-num";
 import TxSignature from "./tx-signature";
+import PubKey from "./pub-key";
 
 export default class Script {
   chunks: ScriptChunk[] = [];
@@ -122,13 +123,13 @@ export default class Script {
       this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
       this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[1].buf?.length === 33
+      this.chunks[1].buf?.length === PubKey.SIZE
     );
   }
 
   static fromPkhInputPlaceholder(): Script {
     const sig = Buffer.alloc(TxSignature.SIZE);
-    const pubKey = Buffer.alloc(33);
+    const pubKey = Buffer.alloc(PubKey.SIZE);
     return new Script([
       ScriptChunk.fromData(sig),
       ScriptChunk.fromData(pubKey),
@@ -275,7 +276,7 @@ export default class Script {
       this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
       this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[1].buf?.length === 33 &&
+      this.chunks[1].buf?.length === PubKey.SIZE &&
       this.chunks[2].opcode === Opcode.OP_1
     );
   }

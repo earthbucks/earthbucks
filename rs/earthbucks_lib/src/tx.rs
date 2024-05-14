@@ -3,6 +3,7 @@ use crate::blake3::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::iso_hex;
+use crate::pub_key::PubKey;
 use crate::script::Script;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
@@ -304,7 +305,7 @@ impl Tx {
     pub fn verify_no_cache(
         &mut self,
         input_index: usize,
-        public_key: [u8; 33],
+        public_key: [u8; PubKey::SIZE],
         signature: TxSignature,
         script: Vec<u8>,
         amount: u64,
@@ -326,7 +327,7 @@ impl Tx {
     pub fn verify_with_cache(
         &mut self,
         input_index: usize,
-        public_key: [u8; 33],
+        public_key: [u8; PubKey::SIZE],
         signature: TxSignature,
         script: Vec<u8>,
         amount: u64,

@@ -5,6 +5,7 @@ import ScriptNum from "./script-num";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
+import PubKey from "./pub-key";
 
 export default class ScriptInterpreter {
   public script: Script;
@@ -1052,12 +1053,12 @@ export default class ScriptInterpreter {
               break loop;
             }
             let pubKeyBuf = this.stack.pop() as Buffer;
-            if (pubKeyBuf.length !== 33) {
+            if (pubKeyBuf.length !== PubKey.SIZE) {
               this.errStr = "invalid public key length";
               break loop;
             }
             let sigBuf = this.stack.pop() as Buffer;
-            if (sigBuf.length !== 65) {
+            if (sigBuf.length !== TxSignature.SIZE) {
               this.errStr = "invalid signature length";
               break loop;
             }
@@ -1100,7 +1101,7 @@ export default class ScriptInterpreter {
             let pubKeys: Buffer[] = [];
             for (let i = 0; i < nKeys; i++) {
               let pubKeyBuf = this.stack.pop() as Buffer;
-              if (pubKeyBuf.length !== 33) {
+              if (pubKeyBuf.length !== PubKey.SIZE) {
                 this.errStr = "invalid public key length";
                 break loop;
               }
@@ -1118,7 +1119,7 @@ export default class ScriptInterpreter {
             let sigs: Buffer[] = [];
             for (let i = 0; i < nSigs; i++) {
               let sigBuf = this.stack.pop() as Buffer;
-              if (sigBuf.length !== 65) {
+              if (sigBuf.length !== TxSignature.SIZE) {
                 this.errStr = "invalid signature length";
                 break loop;
               }

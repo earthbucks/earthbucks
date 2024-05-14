@@ -1,5 +1,6 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::opcode::{Opcode, OP};
+use crate::pub_key::PubKey;
 use crate::script::Script;
 use crate::script_num::ScriptNum;
 use crate::tx::{HashCache, Tx};
@@ -926,12 +927,12 @@ impl<'a> ScriptInterpreter<'a> {
                         break;
                     }
                     let pub_key_buf = self.stack.pop().unwrap();
-                    if pub_key_buf.len() != 33 {
+                    if pub_key_buf.len() != PubKey::SIZE {
                         self.err_str = "invalid public key length".to_string();
                         break;
                     }
                     let sig_buf = self.stack.pop().unwrap();
-                    if sig_buf.len() != 65 {
+                    if sig_buf.len() != TxSignature::SIZE {
                         self.err_str = "invalid signature length".to_string();
                         break;
                     }
@@ -939,9 +940,13 @@ impl<'a> ScriptInterpreter<'a> {
 
                     let exec_script_buf = self.script.to_iso_buf();
 
-                    let pub_key_arr: [u8; 33] =
+                    let pub_key_arr: [u8; PubKey::SIZE] =
                         pub_key_buf.try_into().unwrap_or_else(|v: Vec<u8>| {
-                            panic!("Expected a Vec of length {} but it was {}", 33, v.len())
+                            panic!(
+                                "Expected a Vec of length {} but it was {}",
+                                PubKey::SIZE,
+                                v.len()
+                            )
                         });
 
                     let success = self.tx.verify_with_cache(
@@ -953,7 +958,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.hash_cache,
                     );
 
-                    self.stack.push(vec![if success { 1 } else { 0 }]);
+                    self.stack.push(if success { vec![1] } else { vec![] });
                     if opcode == OP["CHECKSIGVERIFY"] && !success {
                         self.err_str = "CHECKSIGVERIFY failed".to_string();
                         break;
@@ -976,7 +981,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let mut pub_keys: Vec<Vec<u8>> = Vec::new();
                     for _ in 0..n_keys.to_usize().unwrap() {
                         let pub_key_buf = self.stack.pop().unwrap();
-                        if pub_key_buf.len() != 33 {
+                        if pub_key_buf.len() != PubKey::SIZE {
                             self.err_str = "invalid public key length".to_string();
                             break;
                         }
@@ -994,7 +999,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let mut sigs: Vec<Vec<u8>> = Vec::new();
                     for _ in 0..n_sigs.to_usize().unwrap() {
                         let sig_buf = self.stack.pop().unwrap();
-                        if sig_buf.len() != 65 {
+                        if sig_buf.len() != TxSignature::SIZE {
                             self.err_str = "invalid signature length".to_string();
                             break;
                         }
@@ -1007,7 +1012,7 @@ impl<'a> ScriptInterpreter<'a> {
                         for j in 0..pub_keys.len() {
                             let success = self.tx.verify_with_cache(
                                 self.n_in,
-                                pub_keys[j][..33].try_into().unwrap(),
+                                pub_keys[j][..PubKey::SIZE].try_into().unwrap(),
                                 TxSignature::from_iso_buf(&sig.clone()),
                                 exec_script_buf.clone(),
                                 self.value,
@@ -1022,7 +1027,7 @@ impl<'a> ScriptInterpreter<'a> {
                     }
                     let success = matched_sigs == n_sigs.to_usize().unwrap();
 
-                    self.stack.push(vec![if success { 1 } else { 0 }]);
+                    self.stack.push(if success { vec![1] } else { vec![] });
                     if opcode == OP["CHECKMULTISIGVERIFY"] && !success {
                         self.err_str = "CHECKMULTISIGVERIFY failed".to_string();
                         break;

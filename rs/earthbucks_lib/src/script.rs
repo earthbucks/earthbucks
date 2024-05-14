@@ -1,5 +1,6 @@
 use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::{Opcode, OP};
+use crate::pub_key::PubKey;
 use crate::script_chunk::ScriptChunk;
 use crate::script_num::ScriptNum;
 use crate::tx_signature::TxSignature;
@@ -127,12 +128,12 @@ impl Script {
             && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
             && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[1].buffer.is_some()
-            && self.chunks[1].buffer.as_ref().unwrap().len() == 33
+            && self.chunks[1].buffer.as_ref().unwrap().len() == PubKey::SIZE
     }
 
     pub fn from_pkh_input_placeholder() -> Self {
         let sig_buf = vec![0; TxSignature::SIZE];
-        let pub_key = vec![0; 33];
+        let pub_key = vec![0; PubKey::SIZE];
         Self::from_pkh_input(&sig_buf, &pub_key)
     }
 
@@ -302,7 +303,10 @@ impl Script {
         self.chunks.len() == 1 && self.chunks[0].opcode == Opcode::OP_0
     }
 
-    pub fn from_unexpired_pkh_input(sig_buf: &[u8; TxSignature::SIZE], pub_key_buf: &[u8; 33]) -> Self {
+    pub fn from_unexpired_pkh_input(
+        sig_buf: &[u8; TxSignature::SIZE],
+        pub_key_buf: &[u8; PubKey::SIZE],
+    ) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::from_data(sig_buf.to_vec()));
         script
@@ -319,7 +323,7 @@ impl Script {
             && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
             && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[1].buffer.is_some()
-            && self.chunks[1].buffer.as_ref().unwrap().len() == 33
+            && self.chunks[1].buffer.as_ref().unwrap().len() == PubKey::SIZE
             && self.chunks[2].opcode == Opcode::OP_1
     }
 

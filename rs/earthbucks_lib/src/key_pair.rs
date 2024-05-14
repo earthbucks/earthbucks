@@ -1,4 +1,3 @@
-use crate::buffer::Buffer;
 use crate::priv_key::PrivKey;
 use crate::pub_key::PubKey;
 
@@ -36,51 +35,6 @@ impl KeyPair {
     pub fn from_random() -> Self {
         let priv_key = PrivKey::from_random();
         KeyPair::from_priv_key(&priv_key).unwrap()
-    }
-
-    pub fn to_buffer(&self) -> Vec<u8> {
-        let mut buffer = Vec::new();
-        buffer.extend_from_slice(&self.priv_key.buf);
-        buffer.extend_from_slice(&self.pub_key.buf);
-        buffer
-    }
-
-    pub fn from_buffer(buffer: &[u8; 65]) -> Self {
-        let priv_key_buf: [u8; 32] = buffer[0..32].try_into().unwrap();
-        let pub_key_buf: [u8; 33] = buffer[32..65].try_into().unwrap();
-        let priv_key = PrivKey::new(priv_key_buf);
-        let pub_key = PubKey::new(pub_key_buf);
-        KeyPair { priv_key, pub_key }
-    }
-
-    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
-        if vec.len() != 65 {
-            return Err("Invalid buffer length".to_string());
-        }
-        let mut buffer = [0u8; 65];
-        buffer.copy_from_slice(&vec);
-        Ok(KeyPair::from_buffer(&buffer))
-    }
-
-    pub fn to_iso_hex(&self) -> String {
-        hex::encode(self.to_buffer())
-    }
-
-    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
-        let buffer = Buffer::from_iso_hex(hex).data;
-        if buffer.len() != 65 {
-            return Err("Invalid buffer length".to_string());
-        }
-        let buffer: [u8; 65] = buffer.try_into().unwrap();
-        Ok(KeyPair::from_buffer(&buffer))
-    }
-
-    pub fn to_iso_str(&self) -> String {
-        self.to_iso_hex()
-    }
-
-    pub fn from_iso_str(s: &str) -> Result<Self, String> {
-        KeyPair::from_iso_hex(s)
     }
 
     pub fn is_valid(&self) -> bool {

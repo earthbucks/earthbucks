@@ -3,6 +3,7 @@ import PkhKeyMap from "./pkh-key-map";
 import TxOutMap from "./tx-out-map";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
+import PubKey from "./pub-key";
 
 export default class TxSigner {
   public tx: Tx;
@@ -36,7 +37,7 @@ export default class TxSigner {
       return false;
     }
     const pubKey = key.pubKey.toIsoBuf();
-    if (pubKey.length !== 33) {
+    if (pubKey.length !== PubKey.SIZE) {
       return false;
     }
     inputScript.chunks[1].buf = Buffer.from(pubKey);

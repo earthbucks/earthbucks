@@ -6,24 +6,26 @@ use secp256k1::PublicKey;
 
 #[derive(Debug, Clone)]
 pub struct PubKey {
-    pub buf: [u8; 33],
+    pub buf: [u8; PubKey::SIZE],
 }
 
 impl PubKey {
-    pub fn new(pub_key: [u8; 33]) -> Self {
+    pub const SIZE: usize = 33;
+
+    pub fn new(pub_key: [u8; PubKey::SIZE]) -> Self {
         PubKey { buf: pub_key }
     }
 
     pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
-        if vec.len() != 33 {
+        if vec.len() != PubKey::SIZE {
             return Err("Invalid buffer length".to_string());
         }
-        let mut pub_key = [0u8; 33];
+        let mut pub_key = [0u8; PubKey::SIZE];
         pub_key.copy_from_slice(&vec);
         Ok(PubKey::new(pub_key))
     }
 
-    pub fn to_buffer(&self) -> &[u8; 33] {
+    pub fn to_buffer(&self) -> &[u8; PubKey::SIZE] {
         &self.buf
     }
 

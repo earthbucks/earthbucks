@@ -1,4 +1,5 @@
 use crate::pkh_key_map::PkhKeyMap;
+use crate::pub_key::PubKey;
 use crate::tx::Tx;
 use crate::tx_out_map::TxOutMap;
 use crate::tx_signature::TxSignature;
@@ -43,7 +44,7 @@ impl TxSigner {
             None => return false,
         };
         let pub_key = &key.pub_key.buf.to_vec();
-        if pub_key.len() != 33 {
+        if pub_key.len() != PubKey::SIZE {
             return false;
         }
         input_script.chunks[1].buffer = Some(pub_key.clone());
@@ -58,7 +59,7 @@ impl TxSigner {
             TxSignature::SIGHASH_ALL,
         );
         let sig_buf = sig.to_iso_buf();
-        if sig_buf.len() != 65 {
+        if sig_buf.len() != TxSignature::SIZE {
             return false;
         }
         input_script.chunks[0].buffer = Some(sig_buf);
@@ -124,9 +125,9 @@ mod tests {
             .unwrap();
         let exec_script = tx_output.script.clone();
         let sig_buf = tx_input.script.chunks[0].buffer.clone().unwrap();
-        assert_eq!(sig_buf.len(), 65);
+        assert_eq!(sig_buf.len(), TxSignature::SIZE);
         let pub_key_buf = tx_input.script.chunks[1].buffer.clone().unwrap();
-        assert_eq!(pub_key_buf.len(), 33);
+        assert_eq!(pub_key_buf.len(), PubKey::SIZE);
 
         let stack = vec![sig_buf, pub_key_buf];
 
@@ -183,9 +184,9 @@ mod tests {
             .unwrap();
         let exec_script_1 = tx_output_1.script.clone();
         let sig_buf_1 = tx_input_1.script.chunks[0].buffer.clone().unwrap();
-        assert_eq!(sig_buf_1.len(), 65);
+        assert_eq!(sig_buf_1.len(), TxSignature::SIZE);
         let pub_key_buf_1 = tx_input_1.script.chunks[1].buffer.clone().unwrap();
-        assert_eq!(pub_key_buf_1.len(), 33);
+        assert_eq!(pub_key_buf_1.len(), PubKey::SIZE);
 
         let stack_1 = vec![sig_buf_1, pub_key_buf_1];
 
@@ -208,9 +209,9 @@ mod tests {
             .unwrap();
         let exec_script_2 = tx_output_2.script.clone();
         let sig_buf_2 = tx_input_2.script.chunks[0].buffer.clone().unwrap();
-        assert_eq!(sig_buf_2.len(), 65);
+        assert_eq!(sig_buf_2.len(), TxSignature::SIZE);
         let pub_key_buf_2 = tx_input_2.script.chunks[1].buffer.clone().unwrap();
-        assert_eq!(pub_key_buf_2.len(), 33);
+        assert_eq!(pub_key_buf_2.len(), PubKey::SIZE);
 
         let stack_2 = vec![sig_buf_2, pub_key_buf_2];
         let mut hash_cache = HashCache::new();
