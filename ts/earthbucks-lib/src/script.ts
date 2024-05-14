@@ -73,6 +73,19 @@ export default class Script {
     return new Ok(script);
   }
 
+  static fromMultiSigOutput(m: number, pubKeys: Buffer[]): Script {
+    return new Script([
+      ScriptChunk.fromSmallNumber(m),
+      ...pubKeys.map(ScriptChunk.fromData),
+      ScriptChunk.fromSmallNumber(pubKeys.length),
+      new ScriptChunk(Opcode.OP_CHECKMULTISIG),
+    ]);
+  }
+
+  static fromMultiSigInput(sigBufs: Buffer[]): Script {
+    return new Script(sigBufs.map(ScriptChunk.fromData));
+  }
+
   static fromPkhOutput(pkh: Buffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_DUP),
@@ -121,19 +134,6 @@ export default class Script {
       ScriptChunk.fromData(sig),
       ScriptChunk.fromData(pubKey),
     ]);
-  }
-
-  static fromMultiSigOutput(m: number, pubKeys: Buffer[]): Script {
-    return new Script([
-      ScriptChunk.fromSmallNumber(m),
-      ...pubKeys.map(ScriptChunk.fromData),
-      ScriptChunk.fromSmallNumber(pubKeys.length),
-      new ScriptChunk(Opcode.OP_CHECKMULTISIG),
-    ]);
-  }
-
-  static fromMultiSigInput(sigBufs: Buffer[]): Script {
-    return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
   // PKH1YX = PubKey Hash with 1 Year Expiry
@@ -271,7 +271,7 @@ export default class Script {
   }
 
   isPushOnly(): boolean {
-    return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_PUSHDATA4);
+    return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }
 
   isStandardInput(): boolean {

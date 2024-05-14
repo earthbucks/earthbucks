@@ -90,37 +90,6 @@ describe("Script", () => {
   });
 
   describe("test vectors", () => {
-    // #[derive(Deserialize)]
-    // struct TestVectorScript {
-    //     from_iso_buf: TestVectorErrors,
-    // }
-
-    // #[derive(Deserialize)]
-    // struct TestVectorErrors {
-    //     errors: Vec<TestVectorError>,
-    // }
-
-    // #[derive(Deserialize)]
-    // struct TestVectorError {
-    //     hex: String,
-    //     error: String,
-    // }
-
-    // #[test]
-    // fn test_vectors_from_iso_buf() {
-    //     let file = std::fs::File::open("../../json/script.json").unwrap();
-    //     let test_vectors: TestVectorScript = serde_json::from_reader(file).unwrap();
-
-    //     for test_vector in test_vectors.from_iso_buf.errors {
-    //         let arr = hex::decode(test_vector.hex).unwrap();
-    //         let result = Script::from_iso_buf(&arr);
-    //         match result {
-    //             Ok(_) => panic!("Expected an error, but got Ok(_)"),
-    //             Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
-    //         }
-    //     }
-    // }
-
     interface TestVectorScript {
       from_iso_buf: TestVectorErrors;
     }
