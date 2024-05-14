@@ -1,0 +1,97 @@
+{
+  "from_iso_buf":
+  {
+    "errors": [
+      {
+        "hex": "4c",
+        "error": "script_chunk::from_iso_buf_reader 2: unable to read 1 byte length: ",
+        "description": "OP_PUSHDATA1 with no size"
+      },
+      {
+        "hex": "4c01",
+        "error": "script_chunk::from_iso_buf_reader 3: unable to read buffer: ",
+        "description": "OP_PUSHDATA1 with no data"
+      },
+      {
+        "hex": "4c0200",
+        "error": "script_chunk::from_iso_buf_reader 3: unable to read buffer: ",
+        "description": "OP_PUSHDATA1 with not enough data"
+      },
+      {
+        "hex": "4c00",
+        "error": "script_chunk::from_iso_buf_reader 4: non-minimal pushdata",
+        "description": "OP_PUSHDATA1 with non-minimally encoded data (could be OP_0)"
+      },
+      {
+        "hex": "4c0101",
+        "error": "script_chunk::from_iso_buf_reader 4: non-minimal pushdata",
+        "description": "OP_PUSHDATA1 with non-minimally encoded data (could be OP_1)"
+      },
+      {
+        "hex": "4c0102",
+        "error": "script_chunk::from_iso_buf_reader 4: non-minimal pushdata",
+        "description": "OP_PUSHDATA1 with non-minimally encoded data (could be OP_2)"
+      },
+      {
+        "hex": "4d",
+        "error": "script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ",
+        "description": "OP_PUSHDATA2 with no size"
+      },
+      {
+        "hex": "4d00",
+        "error": "script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ",
+        "description": "OP_PUSHDATA2 with insuffucient size"
+      },
+      {
+        "hex": "4d0100",
+        "error": "script_chunk::from_iso_buf_reader 7: unable to read buffer: ",
+        "description": "OP_PUSHDATA2 with no data"
+      },
+      {
+        "hex": "4d010000",
+        "error": "script_chunk::from_iso_buf_reader 7: unable to read buffer: ",
+        "description": "OP_PUSHDATA2 with insufficient data"
+      },
+      {
+        "hex": "4d0000",
+        "error": "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
+        "description": "OP_PUSHDATA2 with non-minimally encoded data (could be OP_0)"
+      },
+      {
+        "hex": "4d000101",
+        "error": "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
+        "description": "OP_PUSHDATA2 with non-minimally encoded data (could be OP_1)"
+      },
+      {
+        "hex": "4d000117",
+        "error": "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
+        "description": "OP_PUSHDATA2 with non-minimally encoded data (could be OP_PUSHDATA1)"
+      },
+      {
+        "hex": "4e",
+        "error": "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ",
+        "description": "OP_PUSHDATA4 with no size"
+      },
+      {
+        "hex": "4e00",
+        "error": "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ",
+        "description": "OP_PUSHDATA4 with insufficient size"
+      },
+      {
+        "hex": "4e0000",
+        "error": "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ",
+        "description": "OP_PUSHDATA4 with insufficient size"
+      },
+      {
+        "hex": "4e000000",
+        "error": "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ",
+        "description": "OP_PUSHDATA4 with insufficient size"
+      },
+      {
+        "hex": "4e00000000",
+        "error": "script_chunk::from_iso_buf_reader 9: non-minimal pushdata",
+        "description": "OP_PUSHDATA4 with non-minimally encoded data (could be OP_0)"
+      }
+    ]
+  }
+}
