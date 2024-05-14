@@ -1,6 +1,7 @@
 use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::{Opcode, OP};
 use crate::script_chunk::ScriptChunk;
+use crate::script_num::ScriptNum;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Script {
@@ -135,6 +136,193 @@ impl Script {
         Self::from_pkh_input(&signature, &pub_key)
     }
 
+    pub fn from_pkh1yx_output(pkh: &[u8; 32]) -> Self {
+        let lock_rel: u32 = 52416;
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
+        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
+        script.chunks.push(ScriptChunk::from_data(
+            ScriptNum::from_u32(lock_rel).to_iso_buf(),
+        ));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
+        script
+    }
+
+    pub fn is_pkh1yx_output(&self) -> bool {
+        let lock_rel: u32 = 52416;
+        self.chunks.len() == 12
+            && self.chunks[0].opcode == Opcode::OP_IF
+            && self.chunks[1].opcode == Opcode::OP_DUP
+            && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
+            && self.chunks[3].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[3].buffer.is_some()
+            && self.chunks[3].buffer.as_ref().unwrap().len() == 32
+            && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
+            && self.chunks[5].opcode == Opcode::OP_CHECKSIG
+            && self.chunks[6].opcode == Opcode::OP_ELSE
+            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[7].buffer.is_some()
+            && self.chunks[7].buffer.as_ref().unwrap().len() == 2
+            && u16::from_be_bytes([
+                self.chunks[7].buffer.as_ref().unwrap()[0],
+                self.chunks[7].buffer.as_ref().unwrap()[1],
+            ]) == lock_rel as u16
+            && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
+            && self.chunks[9].opcode == Opcode::OP_DROP
+            && self.chunks[10].opcode == Opcode::OP_1
+            && self.chunks[11].opcode == Opcode::OP_ENDIF
+    }
+
+    pub fn from_pkh2wx_output(pkh: &[u8; 32]) -> Self {
+        let lock_rel: u32 = 2016;
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
+        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
+        script.chunks.push(ScriptChunk::from_data(
+            ScriptNum::from_u32(lock_rel).to_iso_buf(),
+        ));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
+        script
+    }
+
+    pub fn is_pkh2wx_output(&self) -> bool {
+        let lock_rel: u32 = 2016;
+        self.chunks.len() == 12
+            && self.chunks[0].opcode == Opcode::OP_IF
+            && self.chunks[1].opcode == Opcode::OP_DUP
+            && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
+            && self.chunks[3].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[3].buffer.is_some()
+            && self.chunks[3].buffer.as_ref().unwrap().len() == 32
+            && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
+            && self.chunks[5].opcode == Opcode::OP_CHECKSIG
+            && self.chunks[6].opcode == Opcode::OP_ELSE
+            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[7].buffer.is_some()
+            && self.chunks[7].buffer.as_ref().unwrap().len() == 2
+            && u16::from_be_bytes([
+                self.chunks[7].buffer.as_ref().unwrap()[0],
+                self.chunks[7].buffer.as_ref().unwrap()[1],
+            ]) == lock_rel as u16
+            && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
+            && self.chunks[9].opcode == Opcode::OP_DROP
+            && self.chunks[10].opcode == Opcode::OP_1
+            && self.chunks[11].opcode == Opcode::OP_ENDIF
+    }
+
+    pub fn from_pkh1hx_output(pkh: &[u8; 32]) -> Self {
+        let lock_rel: u32 = 6;
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
+        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
+        script
+            .chunks
+            .push(ScriptChunk::from_small_number(lock_rel as i8));
+        script
+            .chunks
+            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
+        script
+    }
+
+    pub fn is_pkh1hx_output(&self) -> bool {
+        let lock_rel: u32 = 6;
+        self.chunks.len() == 12
+            && self.chunks[0].opcode == Opcode::OP_IF
+            && self.chunks[1].opcode == Opcode::OP_DUP
+            && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
+            && self.chunks[3].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[3].buffer.is_some()
+            && self.chunks[3].buffer.as_ref().unwrap().len() == 32
+            && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
+            && self.chunks[5].opcode == Opcode::OP_CHECKSIG
+            && self.chunks[6].opcode == Opcode::OP_ELSE
+            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[7].buffer.is_some()
+            && self.chunks[7].buffer.as_ref().unwrap().len() == 1
+            && self.chunks[7].buffer.as_ref().unwrap()[0] == lock_rel as u8
+            && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
+            && self.chunks[9].opcode == Opcode::OP_DROP
+            && self.chunks[10].opcode == Opcode::OP_1
+            && self.chunks[11].opcode == Opcode::OP_ENDIF
+    }
+
+    pub fn from_expired_input() -> Self {
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::new(Opcode::OP_0, None));
+        script
+    }
+
+    pub fn is_expired_input(&self) -> bool {
+        self.chunks.len() == 1 && self.chunks[0].opcode == Opcode::OP_0
+    }
+
+    pub fn from_unexpired_pkh_input(sig_buf: &[u8; 64], pub_key_buf: &[u8; 33]) -> Self {
+        let mut script = Self::new(Vec::new());
+        script.chunks.push(ScriptChunk::from_data(sig_buf.to_vec()));
+        script
+            .chunks
+            .push(ScriptChunk::from_data(pub_key_buf.to_vec()));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
+        script
+    }
+
+    pub fn is_unexpired_pkh_input(&self) -> bool {
+        self.chunks.len() == 3
+            && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[0].buffer.is_some()
+            && self.chunks[0].buffer.as_ref().unwrap().len() == 64
+            && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[1].buffer.is_some()
+            && self.chunks[1].buffer.as_ref().unwrap().len() == 33
+            && self.chunks[2].opcode == Opcode::OP_1
+    }
+
     pub fn is_push_only(&self) -> bool {
         for chunk in &self.chunks {
             if chunk.opcode > Opcode::OP_16 {
@@ -142,6 +330,19 @@ impl Script {
             }
         }
         true
+    }
+
+    pub fn is_coinbase_input(&self) -> bool {
+        // TODO: Add more checks
+        self.is_push_only()
+    }
+
+    pub fn is_standard_input(&self) -> bool {
+        self.is_push_only() && (self.is_unexpired_pkh_input() || self.is_expired_input())
+    }
+
+    pub fn is_standard_output(&self) -> bool {
+        self.is_pkh1yx_output() || self.is_pkh2wx_output() || self.is_pkh1hx_output()
     }
 }
 

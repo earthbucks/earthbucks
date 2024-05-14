@@ -22,6 +22,18 @@ impl ScriptNum {
         }
     }
 
+    pub fn from_u32(num: u32) -> Self {
+        ScriptNum {
+            num: BigInt::from(num),
+        }
+    }
+
+    pub fn from_u64(num: u64) -> Self {
+        ScriptNum {
+            num: BigInt::from(num),
+        }
+    }
+
     pub fn from_iso_buf(buffer: &[u8]) -> Self {
         if buffer.is_empty() {
             return ScriptNum { num: Zero::zero() };

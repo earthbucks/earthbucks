@@ -165,7 +165,7 @@ export default class Script {
       this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
       this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
       this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
+      this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
       this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[8].opcode === Opcode.OP_DROP &&
@@ -205,7 +205,7 @@ export default class Script {
       this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
       this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
       this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_PUSHDATA2 &&
+      this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
       this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[9].opcode === Opcode.OP_DROP &&
@@ -268,21 +268,35 @@ export default class Script {
     ]);
   }
 
+  isUnexpiredPkhInput(): boolean {
+    return (
+      this.chunks.length === 3 &&
+      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0].buf?.length === 64 &&
+      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1].buf?.length === 33 &&
+      this.chunks[2].opcode === Opcode.OP_1
+    );
+  }
+
   isPushOnly(): boolean {
     return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }
 
   isCoinbaseInput(): boolean {
+    // TODO: Add more checks
     return this.isPushOnly();
   }
 
   isStandardInput(): boolean {
-    return this.isPushOnly() && (this.isPkhInput() || this.isExpiredInput());
+    return (
+      this.isPushOnly() && (this.isUnexpiredPkhInput() || this.isExpiredInput())
+    );
   }
 
   isStandardOutput(): boolean {
     return (
-      this.isPkh2wxOutput() || this.isPkh1yxOutput() || this.isPkh1hxOutput()
+      this.isPkh1yxOutput() || this.isPkh2wxOutput() || this.isPkh1hxOutput()
     );
   }
 }
