@@ -33,10 +33,10 @@ impl ScriptChunk {
         }
     }
 
-    pub fn from_iso_str(str: String) -> Result<ScriptChunk, Box<dyn Error>> {
+    pub fn from_iso_str(str: String) -> Result<ScriptChunk, String> {
         let mut chunk = ScriptChunk::new(0, None);
         if str.starts_with("0x") {
-            let buffer = hex::decode(str.strip_prefix("0x").unwrap())?;
+            let buffer = hex::decode(str.strip_prefix("0x").unwrap()).map_err(|e| e.to_string())?;
             let len = buffer.len();
             chunk.buffer = Some(buffer);
             if len <= 0xff {

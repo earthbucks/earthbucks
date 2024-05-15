@@ -19,7 +19,8 @@ impl Script {
         Self::new(Vec::new())
     }
 
-    pub fn self_from_iso_str(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_iso_str(s: &str) -> Result<Self, String> {
+        // use from_iso_str
         if s.is_empty() {
             return Ok(Self::new(Vec::new()));
         }
@@ -28,12 +29,6 @@ impl Script {
             .map(|s| ScriptChunk::from_iso_str(s.to_string()))
             .collect();
         Ok(Self::new(chunks?))
-    }
-
-    pub fn from_iso_str(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        // use from_iso_str
-        let script = Self::new(Vec::new());
-        script.self_from_iso_str(s)
     }
 
     pub fn to_iso_str(&self) -> Result<String, Box<dyn std::error::Error>> {
