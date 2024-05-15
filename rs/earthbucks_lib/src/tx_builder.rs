@@ -39,16 +39,16 @@ impl TxBuilder {
         let mut input_amount = 0;
         for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
             let tx_out = &tx_out_bn.tx_out;
-            // let old_block_num = tx_out_bn.block_num;
-            if !tx_out.script.is_pkh_output() {
-                continue;
-            }
             let tx_id_hash = TxOutBnMap::name_to_tx_id_hash(tx_out_id);
             let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
-            let input_script = Script::from_pkh_input_placeholder();
+            let input_script: Script = if tx_out.script.is_pkh_output() {
+                Script::from_pkh_input_placeholder()
+            } else {
+                continue;
+            };
             let tx_input = TxIn::new(tx_id_hash, output_index, input_script, 0);
-            input_amount += tx_out.value;
             self.tx.inputs.push(tx_input);
+            input_amount += tx_out.value;
             if input_amount >= total_spend_amount {
                 change_amount = input_amount - total_spend_amount;
                 break;
