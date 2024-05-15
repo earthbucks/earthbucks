@@ -40,8 +40,8 @@ impl TxBuilder {
         for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
             let prev_block_num = tx_out_bn.block_num;
             let tx_out = &tx_out_bn.tx_out;
-            let tx_id_hash = TxOutBnMap::name_to_tx_id_hash(tx_out_id);
-            let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
+            let tx_id = TxOutBnMap::name_to_tx_id(tx_out_id);
+            let tx_out_num = TxOutBnMap::name_to_tx_out_num(tx_out_id);
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
             } else if tx_out.script.is_pkhx3m_output() {
@@ -61,7 +61,7 @@ impl TxBuilder {
             } else {
                 return Err("unsupported script type".to_string());
             };
-            let tx_input = TxIn::new(tx_id_hash, output_index, input_script, 0);
+            let tx_input = TxIn::new(tx_id, tx_out_num, input_script, 0);
             self.tx.inputs.push(tx_input);
             input_amount += tx_out.value;
             if input_amount >= total_spend_amount {
