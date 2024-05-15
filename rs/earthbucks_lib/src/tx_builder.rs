@@ -9,7 +9,7 @@ pub struct TxBuilder {
     tx: Tx,
     change_script: Script,
     input_amount: u64,
-    lock_num: u64,
+    lock_abs: u64,
     working_block_num: u64,
 }
 
@@ -17,7 +17,7 @@ impl TxBuilder {
     pub fn new(
         input_tx_out_bn_map: &TxOutBnMap,
         change_script: Script,
-        lock_num: u64,
+        lock_abs: u64,
         working_block_num: u64,
     ) -> Self {
         Self {
@@ -25,7 +25,7 @@ impl TxBuilder {
             input_tx_out_bn_map: input_tx_out_bn_map.clone(),
             change_script,
             input_amount: 0,
-            lock_num,
+            lock_abs,
             working_block_num,
         }
     }
@@ -39,7 +39,7 @@ impl TxBuilder {
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
     pub fn build(&mut self) -> Result<Tx, String> {
-        self.tx.lock_abs = self.lock_num;
+        self.tx.lock_abs = self.lock_abs;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
