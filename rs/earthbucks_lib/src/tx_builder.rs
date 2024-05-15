@@ -24,9 +24,8 @@ impl TxBuilder {
         }
     }
 
-    pub fn add_output(&mut self, value: u64, script: Script) {
-        let tx_output = TxOut::new(value, script);
-        self.tx.outputs.push(tx_output);
+    pub fn add_output(&mut self, tx_out: TxOut) {
+        self.tx.outputs.push(tx_out);
     }
 
     // "tx fees", also called "change fees", are zero on earthbucks. this
@@ -56,7 +55,8 @@ impl TxBuilder {
         }
         self.input_amount = input_amount;
         if change_amount > 0 {
-            self.add_output(change_amount, self.change_script.clone());
+            let tx_out = TxOut::new(change_amount, self.change_script.clone());
+            self.add_output(tx_out);
         }
         self.tx.clone()
     }
@@ -87,7 +87,8 @@ mod tests {
     #[test]
     fn test_build_valid_tx_when_input_is_enough_to_cover_output() {
         let mut tx_builder = setup();
-        tx_builder.add_output(50, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(50, Script::from_iso_str("").unwrap());
+        tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();
 
@@ -99,7 +100,8 @@ mod tests {
     #[test]
     fn test_build_invalid_tx_when_input_is_insufficient_to_cover_output() {
         let mut tx_builder = setup();
-        tx_builder.add_output(10000, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(10000, Script::from_iso_str("").unwrap());
+        tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();
 
