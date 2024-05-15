@@ -936,7 +936,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid signature length".to_string();
                         break;
                     }
-                    let signature = TxSignature::from_iso_buf(&sig_buf.try_into().unwrap());
+                    let signature = TxSignature::from_iso_buf(sig_buf);
 
                     let exec_script_buf = self.script.to_iso_buf();
 
@@ -952,7 +952,7 @@ impl<'a> ScriptInterpreter<'a> {
                     let success = self.tx.verify_with_cache(
                         self.n_in,
                         pub_key_arr,
-                        signature,
+                        signature.unwrap(),
                         exec_script_buf,
                         self.value,
                         self.hash_cache,
@@ -1013,7 +1013,7 @@ impl<'a> ScriptInterpreter<'a> {
                             let success = self.tx.verify_with_cache(
                                 self.n_in,
                                 pub_keys[j][..PubKey::SIZE].try_into().unwrap(),
-                                TxSignature::from_iso_buf(&sig.clone().try_into().unwrap()),
+                                TxSignature::from_iso_buf(sig.clone()).unwrap(),
                                 exec_script_buf.clone(),
                                 self.value,
                                 self.hash_cache,

@@ -21,9 +21,12 @@ impl TxSignature {
         result.try_into().unwrap()
     }
 
-    pub fn from_iso_buf(data: &[u8; TxSignature::SIZE]) -> Self {
+    pub fn from_iso_buf(data: Vec<u8>) -> Result<Self, String> {
+        if data.len() != TxSignature::SIZE {
+            return Err("Invalid buffer length".to_string());
+        }
         let hash_type = data[0];
         let sig_buf: [u8; 64] = data[1..65].try_into().unwrap();
-        Self { hash_type, sig_buf }
+        Ok(Self { hash_type, sig_buf })
     }
 }
