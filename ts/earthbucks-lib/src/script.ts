@@ -136,47 +136,6 @@ export default class Script {
     ]);
   }
 
-  // PKH1YX = PubKey Hash with 1 Year Expiry
-  // 52416 blocks = 2016 blocks / 2 * 52
-  static fromPkh1yxOutput(pkh: Buffer): Script {
-    const lockRel = 52416; // 2016 blocks / 2 * 52
-    return new Script([
-      new ScriptChunk(Opcode.OP_IF),
-      new ScriptChunk(Opcode.OP_DUP),
-      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
-      new ScriptChunk(Opcode.OP_EQUALVERIFY),
-      new ScriptChunk(Opcode.OP_CHECKSIG),
-      new ScriptChunk(Opcode.OP_ELSE),
-      ScriptChunk.fromData(ScriptNum.fromNumber(lockRel).toIsoBuf()),
-      new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
-      new ScriptChunk(Opcode.OP_DROP),
-      new ScriptChunk(Opcode.OP_1),
-      new ScriptChunk(Opcode.OP_ENDIF),
-    ]);
-  }
-
-  isPkh1yxOutput(): boolean {
-    const lockRel = 52416;
-    return (
-      this.chunks.length === 12 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
-      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[8].opcode === Opcode.OP_DROP &&
-      this.chunks[10].opcode === Opcode.OP_1 &&
-      this.chunks[11].opcode === Opcode.OP_ENDIF
-    );
-  }
-
   // PKH3MX = PubKey Hash with 3 Month Expiry
   // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
   static fromPkh3mxOutput(pkh: Buffer): Script {
@@ -199,47 +158,6 @@ export default class Script {
 
   isPkh3mxOutput(): boolean {
     const lockRel = 13104;
-    return (
-      this.chunks.length === 12 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[7].buf?.readUInt16BE(0) === lockRel &&
-      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[9].opcode === Opcode.OP_DROP &&
-      this.chunks[10].opcode === Opcode.OP_1 &&
-      this.chunks[11].opcode === Opcode.OP_ENDIF
-    );
-  }
-
-  // PKH2WX = PubKey Hash with 2 Week Expiry
-  // 2016 blocks = two week block adjustment interval for 10 min blocks
-  static fromPkh2wxOutput(pkh: Buffer): Script {
-    const lockRel = 2016;
-    return new Script([
-      new ScriptChunk(Opcode.OP_IF),
-      new ScriptChunk(Opcode.OP_DUP),
-      new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
-      new ScriptChunk(Opcode.OP_EQUALVERIFY),
-      new ScriptChunk(Opcode.OP_CHECKSIG),
-      new ScriptChunk(Opcode.OP_ELSE),
-      ScriptChunk.fromData(ScriptNum.fromNumber(lockRel).toIsoBuf()),
-      new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
-      new ScriptChunk(Opcode.OP_DROP),
-      new ScriptChunk(Opcode.OP_1),
-      new ScriptChunk(Opcode.OP_ENDIF),
-    ]);
-  }
-
-  isPkh2wxOutput(): boolean {
-    const lockRel = 2016;
     return (
       this.chunks.length === 12 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
@@ -341,8 +259,6 @@ export default class Script {
   }
 
   isStandardOutput(): boolean {
-    return (
-      this.isPkh3mxOutput() || this.isPkh1hxOutput()
-    );
+    return this.isPkh3mxOutput() || this.isPkh1hxOutput();
   }
 }

@@ -137,61 +137,6 @@ impl Script {
         Self::from_pkh_input(&sig_buf, &pub_key)
     }
 
-    // PKH1YX = PubKey Hash with 1 Year Expiry
-    // 52416 blocks = 2016 blocks / 2 * 52
-    pub fn from_pkh1yx_output(pkh: &[u8; 32]) -> Self {
-        let lock_rel: u32 = 52416;
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
-        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(lock_rel).to_iso_buf(),
-        ));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
-        script
-    }
-
-    pub fn is_pkh1yx_output(&self) -> bool {
-        let lock_rel: u32 = 52416;
-        self.chunks.len() == 12
-            && self.chunks[0].opcode == Opcode::OP_IF
-            && self.chunks[1].opcode == Opcode::OP_DUP
-            && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
-            && self.chunks[3].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[3].buffer.is_some()
-            && self.chunks[3].buffer.as_ref().unwrap().len() == 32
-            && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
-            && self.chunks[5].opcode == Opcode::OP_CHECKSIG
-            && self.chunks[6].opcode == Opcode::OP_ELSE
-            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[7].buffer.is_some()
-            && self.chunks[7].buffer.as_ref().unwrap().len() == 2
-            && u16::from_be_bytes([
-                self.chunks[7].buffer.as_ref().unwrap()[0],
-                self.chunks[7].buffer.as_ref().unwrap()[1],
-            ]) == lock_rel as u16
-            && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
-            && self.chunks[9].opcode == Opcode::OP_DROP
-            && self.chunks[10].opcode == Opcode::OP_1
-            && self.chunks[11].opcode == Opcode::OP_ENDIF
-    }
-
     // PKH3MX = PubKey Hash with 3 Month Expiry
     // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
     pub fn from_pkh3mx_output(pkh: &[u8; 32]) -> Self {
@@ -224,61 +169,6 @@ impl Script {
 
     pub fn is_pkh3mx_output(&self) -> bool {
         let lock_rel: u32 = 13104;
-        self.chunks.len() == 12
-            && self.chunks[0].opcode == Opcode::OP_IF
-            && self.chunks[1].opcode == Opcode::OP_DUP
-            && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
-            && self.chunks[3].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[3].buffer.is_some()
-            && self.chunks[3].buffer.as_ref().unwrap().len() == 32
-            && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
-            && self.chunks[5].opcode == Opcode::OP_CHECKSIG
-            && self.chunks[6].opcode == Opcode::OP_ELSE
-            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[7].buffer.is_some()
-            && self.chunks[7].buffer.as_ref().unwrap().len() == 2
-            && u16::from_be_bytes([
-                self.chunks[7].buffer.as_ref().unwrap()[0],
-                self.chunks[7].buffer.as_ref().unwrap()[1],
-            ]) == lock_rel as u16
-            && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
-            && self.chunks[9].opcode == Opcode::OP_DROP
-            && self.chunks[10].opcode == Opcode::OP_1
-            && self.chunks[11].opcode == Opcode::OP_ENDIF
-    }
-
-    // PKH2WX = PubKey Hash with 2 Week Expiry
-    // 2016 blocks = two week block adjustment interval for 10 min blocks
-    pub fn from_pkh2wx_output(pkh: &[u8; 32]) -> Self {
-        let lock_rel: u32 = 2016;
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
-        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(lock_rel).to_iso_buf(),
-        ));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
-        script
-    }
-
-    pub fn is_pkh2wx_output(&self) -> bool {
-        let lock_rel: u32 = 2016;
         self.chunks.len() == 12
             && self.chunks[0].opcode == Opcode::OP_IF
             && self.chunks[1].opcode == Opcode::OP_DUP
