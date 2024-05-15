@@ -29,15 +29,11 @@ impl TxBuilder {
         self.tx.outputs.push(tx_output);
     }
 
+    // "tx fees", also called "change fees", are zero on earthbucks. this
+    // simplifies the logic of building a tx. input must be exactly equal to
+    // output to be valid. remainder goes to change, which is owned by the user.
+    // transaction fees are paid by making a separate transaction to a mine.
     pub fn build(&mut self) -> Tx {
-        // assume zero fees and send 100% of remainder to change. we need to
-        // compute the total spend amount, and then loop through every txOut,
-        // and add the txOut to the inputs, until we have enough to cover the
-        // total spend amount. then we add the change output. note that this
-        // function can produce txs with insufficient inputs, and
-        // therefore invalid txs. you must input enough to cover the
-        // total spend amount or the output will be invalid. note also that this
-        // tx is not signed.
         self.tx.lock_abs = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
