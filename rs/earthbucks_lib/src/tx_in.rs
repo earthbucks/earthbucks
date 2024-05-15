@@ -158,7 +158,7 @@ mod tests {
         let null_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_iso_str("").unwrap(),
+            script: Script::from_empty(),
             lock_rel: 0,
         };
         assert!(null_tx_input.is_null());
@@ -177,7 +177,7 @@ mod tests {
         let final_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_iso_str("").unwrap(),
+            script: Script::from_empty(),
             lock_rel: 0,
         };
         assert!(final_tx_input.is_minimal_lock());
@@ -196,7 +196,7 @@ mod tests {
         let coinbase_tx_input = TxIn {
             input_tx_id: [0; 32].to_vec(),
             input_tx_out_num: 0xffffffff,
-            script: Script::from_iso_str("").unwrap(),
+            script: Script::from_empty(),
             lock_rel: 0,
         };
         assert!(coinbase_tx_input.is_coinbase());

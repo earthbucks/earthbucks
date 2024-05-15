@@ -520,13 +520,8 @@ mod tests {
     #[test]
     fn test_hash_prevouts() {
         let version = 1;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -543,13 +538,8 @@ mod tests {
     #[test]
     fn test_hash_lock_rel() {
         let version = 1;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -566,13 +556,8 @@ mod tests {
     #[test]
     fn test_hash_outputs() {
         let version = 1;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
 
         let tx = Tx::new(version, inputs, outputs, 0);
 
@@ -589,17 +574,12 @@ mod tests {
     #[test]
     fn test_sighash() {
         let version = 1;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
-        let script = Script::from_iso_str("").unwrap();
+        let script = Script::from_empty();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let preimage = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
@@ -613,17 +593,12 @@ mod tests {
     #[test]
     fn test_sighash_with_cache() {
         let version = 1;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
 
         let mut tx = Tx::new(version, inputs, outputs, 0);
 
-        let script = Script::from_iso_str("").unwrap();
+        let script = Script::from_empty();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let hash_cache = &mut HashCache::new();
@@ -645,17 +620,12 @@ mod tests {
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
@@ -698,17 +668,12 @@ mod tests {
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let inputs = vec![TxIn::new(
-            vec![0; 32],
-            0,
-            Script::from_iso_str("").unwrap(),
-            0,
-        )];
+        let inputs = vec![TxIn::new(vec![0; 32], 0, Script::from_empty(), 0)];
         assert_eq!(
             hex::encode(inputs[0].to_iso_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
-        let outputs = vec![TxOut::new(100, Script::from_iso_str("").unwrap())];
+        let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
         assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");

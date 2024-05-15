@@ -179,10 +179,10 @@ mod tests {
             tx_out_map.add(&[0; 32], i, output);
         }
 
-        let change_script = Script::from_iso_str("").unwrap();
+        let change_script = Script::from_empty();
         let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
 
-        let tx_out = TxOut::new(50, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();
@@ -232,10 +232,10 @@ mod tests {
             tx_out_map.add(&[0; 32], i, output);
         }
 
-        let change_script = Script::from_iso_str("").unwrap();
+        let change_script = Script::from_empty();
         let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 1);
 
-        let tx_out = TxOut::new(50, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();
@@ -281,10 +281,10 @@ mod tests {
             tx_out_map.add(&[0; 32], i, output);
         }
 
-        let change_script = Script::from_iso_str("").unwrap();
+        let change_script = Script::from_empty();
         let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
 
-        let tx_out = TxOut::new(100, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
         tx_builder.add_output(tx_out.clone());
 

@@ -15,6 +15,10 @@ impl Script {
         Self { chunks }
     }
 
+    pub fn from_empty() -> Self {
+        Self::new(Vec::new())
+    }
+
     pub fn self_from_iso_str(&self, s: &str) -> Result<Self, Box<dyn std::error::Error>> {
         if s.is_empty() {
             return Ok(Self::new(Vec::new()));
@@ -399,7 +403,7 @@ mod tests {
 
     #[test]
     fn test_is_pkh_output() {
-        let mut script = Script::from_iso_str("").unwrap();
+        let mut script = Script::from_empty();
         script.chunks = vec![
             ScriptChunk::new(OP["DUP"], None),
             ScriptChunk::new(OP["DOUBLEBLAKE3"], None),

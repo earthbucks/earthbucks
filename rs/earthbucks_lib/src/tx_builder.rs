@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn test_build_valid_tx_when_input_is_enough_to_cover_output() {
         let mut tx_builder = setup();
-        let tx_out = TxOut::new(50, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();
@@ -100,7 +100,7 @@ mod tests {
     #[test]
     fn test_build_invalid_tx_when_input_is_insufficient_to_cover_output() {
         let mut tx_builder = setup();
-        let tx_out = TxOut::new(10000, Script::from_iso_str("").unwrap());
+        let tx_out = TxOut::new(10000, Script::from_empty());
         tx_builder.add_output(tx_out);
 
         let tx = tx_builder.build();

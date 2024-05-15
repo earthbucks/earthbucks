@@ -1203,7 +1203,7 @@ mod tests {
                 vec![TxIn::new(
                     output_tx_id.clone(),
                     output_tx_index,
-                    Script::from_iso_str("").unwrap(),
+                    Script::from_empty(),
                     0xffffffff,
                 )],
                 vec![TxOut::new(output_amount, output_script.clone())],
@@ -1278,7 +1278,7 @@ mod tests {
                 vec![TxIn::new(
                     output_tx_id.clone(),
                     output_tx_index,
-                    Script::from_iso_str("").unwrap(),
+                    Script::from_empty(),
                     0xffffffff,
                 )],
                 vec![TxOut::new(output_amount, output_script.clone())],
@@ -1356,13 +1356,8 @@ mod tests {
                 let script = Script::from_iso_str(&test_script.script).unwrap();
                 let tx = Tx::new(
                     1,
-                    vec![TxIn::new(
-                        vec![],
-                        0,
-                        Script::from_iso_str("").unwrap(),
-                        0xffffffff,
-                    )],
-                    vec![TxOut::new(0, Script::from_iso_str("").unwrap())],
+                    vec![TxIn::new(vec![], 0, Script::from_empty(), 0xffffffff)],
+                    vec![TxOut::new(0, Script::from_empty())],
                     0,
                 );
                 let mut hash_cache = HashCache::new();

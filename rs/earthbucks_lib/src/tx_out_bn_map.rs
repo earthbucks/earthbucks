@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn add() {
         let mut tx_out_map = TxOutBnMap::new();
-        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
+        let tx_output = TxOut::new(100, Script::from_empty());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         let block_num: u64 = 0;
@@ -91,7 +91,7 @@ mod tests {
     #[test]
     fn remove() {
         let mut tx_out_map = TxOutBnMap::new();
-        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
+        let tx_output = TxOut::new(100, Script::from_empty());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         let block_num = 0;
@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn get() {
         let mut tx_out_map = TxOutBnMap::new();
-        let tx_output = TxOut::new(100, Script::from_iso_str("").unwrap());
+        let tx_output = TxOut::new(100, Script::from_empty());
         let tx_id_hash = [1, 2, 3, 4];
         let output_index = 0;
         let block_num = 0;
@@ -119,8 +119,8 @@ mod tests {
     #[test]
     fn test_values() {
         let mut tx_out_map = TxOutBnMap::new();
-        let tx_out1 = TxOut::new(100, Script::from_iso_str("").unwrap());
-        let tx_out2 = TxOut::new(200, Script::from_iso_str("").unwrap());
+        let tx_out1 = TxOut::new(100, Script::from_empty());
+        let tx_out2 = TxOut::new(200, Script::from_empty());
         let tx_id_hash1 = [1, 2, 3, 4];
         let tx_id_hash2 = [5, 6, 7, 8];
         let output_index = 0;
