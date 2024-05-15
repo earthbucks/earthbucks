@@ -407,7 +407,7 @@ impl Script {
     }
 
     pub fn is_standard_output(&self) -> bool {
-        self.is_pkh3mx_output() || self.is_pkh2wx_output() || self.is_pkh1hx_output()
+        self.is_pkh3mx_output() || self.is_pkh1hx_output()
     }
 }
 

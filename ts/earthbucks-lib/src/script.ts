@@ -342,7 +342,7 @@ export default class Script {
 
   isStandardOutput(): boolean {
     return (
-      this.isPkh3mxOutput() || this.isPkh2wxOutput() || this.isPkh1hxOutput()
+      this.isPkh3mxOutput() || this.isPkh1hxOutput()
     );
   }
 }
