@@ -31,7 +31,7 @@ impl Script {
         Ok(Self::new(chunks?))
     }
 
-    pub fn to_iso_str(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_iso_str(&self) -> Result<String, String> {
         let chunks: Result<Vec<String>, _> =
             self.chunks.iter().map(|chunk| chunk.to_iso_str()).collect();
         Ok(chunks?.join(" "))

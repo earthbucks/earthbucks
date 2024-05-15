@@ -1,7 +1,6 @@
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
-use std::error::Error;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {
@@ -17,7 +16,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn to_iso_str(&self) -> Result<String, Box<dyn Error>> {
+    pub fn to_iso_str(&self) -> Result<String, String> {
         match &self.buffer {
             Some(buffer) => {
                 let hex: Vec<String> = buffer.iter().map(|b| format!("{:02x}", b)).collect();
