@@ -6,7 +6,7 @@ use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_out_map::TxOutMap;
 
 pub struct TxBuilder {
-    tx_out_map: TxOutMap, // TODO: This should be a vector of TxOutMap
+    input_tx_out_map: TxOutMap, // TODO: This should be a vector of TxOutMap
     tx: Tx,
     change_script: Script,
     input_amount: u64,
@@ -14,10 +14,10 @@ pub struct TxBuilder {
 }
 
 impl TxBuilder {
-    pub fn new(tx_out_map: &TxOutMap, change_script: Script, lock_num: u64) -> Self {
+    pub fn new(input_tx_out_map: &TxOutMap, change_script: Script, lock_num: u64) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
-            tx_out_map: tx_out_map.clone(),
+            input_tx_out_map: input_tx_out_map.clone(),
             change_script,
             input_amount: 0,
             lock_num,
@@ -43,7 +43,7 @@ impl TxBuilder {
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = 0;
-        for (tx_out_id, tx_out) in self.tx_out_map.map.iter() {
+        for (tx_out_id, tx_out) in self.input_tx_out_map.map.iter() {
             if !tx_out.script.is_pkh_output() {
                 continue;
             }

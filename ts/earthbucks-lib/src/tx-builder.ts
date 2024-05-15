@@ -6,14 +6,14 @@ import Script from "./script";
 import { Buffer } from "buffer";
 
 export default class TxBuilder {
-  public txOutMap: TxOutMap;
+  public inputTxOutMap: TxOutMap;
   public tx: Tx;
   public changeScript: Script;
   public inputAmount: bigint;
 
-  constructor(txOutMap: TxOutMap, changeScript: Script) {
+  constructor(inputTxOutMap: TxOutMap, changeScript: Script) {
     this.tx = new Tx(1, [], [], BigInt(0));
-    this.txOutMap = txOutMap;
+    this.inputTxOutMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = BigInt(0);
   }
@@ -39,7 +39,7 @@ export default class TxBuilder {
     );
     let changeAmount = BigInt(0);
     let inputAmount = BigInt(0);
-    for (const [txOutId, txOut] of this.txOutMap.map) {
+    for (const [txOutId, txOut] of this.inputTxOutMap.map) {
       const isAddressOutput = txOut.script.isPkhOutput();
       if (!isAddressOutput) {
         continue;
