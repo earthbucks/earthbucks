@@ -177,12 +177,12 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build(0).unwrap();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -228,12 +228,12 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 1);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 1, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build(0).unwrap();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -275,13 +275,13 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
 
         let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
         tx_builder.add_output(tx_out.clone());
 
-        let tx = tx_builder.build(0).unwrap();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 2);
         assert_eq!(tx.outputs.len(), 2);

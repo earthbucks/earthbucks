@@ -10,16 +10,23 @@ pub struct TxBuilder {
     change_script: Script,
     input_amount: u64,
     lock_num: u64,
+    working_block_num: u64,
 }
 
 impl TxBuilder {
-    pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_num: u64) -> Self {
+    pub fn new(
+        input_tx_out_bn_map: &TxOutBnMap,
+        change_script: Script,
+        lock_num: u64,
+        working_block_num: u64,
+    ) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
             input_tx_out_bn_map: input_tx_out_bn_map.clone(),
             change_script,
             input_amount: 0,
             lock_num,
+            working_block_num,
         }
     }
 
@@ -31,7 +38,7 @@ impl TxBuilder {
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
-    pub fn build(&mut self, working_block_num: u64) -> Result<Tx, String> {
+    pub fn build(&mut self) -> Result<Tx, String> {
         self.tx.lock_abs = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
@@ -45,14 +52,16 @@ impl TxBuilder {
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
             } else if tx_out.script.is_pkhx_3m_output() {
-                let expired = working_block_num > prev_block_num + Script::PKHX3M_LOCK_REL as u64;
+                let expired =
+                    self.working_block_num > prev_block_num + Script::PKHX3M_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {
                     Script::from_unexpired_pkhx_input_placeholder()
                 }
             } else if tx_out.script.is_pkhx_1h_output() {
-                let expired = working_block_num > prev_block_num + Script::PKHX1H_LOCK_REL as u64;
+                let expired =
+                    self.working_block_num > prev_block_num + Script::PKHX1H_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {
@@ -98,7 +107,7 @@ mod tests {
             tx_out_bn_map.add(&[0; 32], i, tx_out, block_num);
         }
 
-        TxBuilder::new(&tx_out_bn_map, change_script.unwrap(), 0)
+        TxBuilder::new(&tx_out_bn_map, change_script.unwrap(), 0, 0)
     }
 
     #[test]
@@ -107,7 +116,7 @@ mod tests {
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build(0).unwrap();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -120,7 +129,7 @@ mod tests {
         let tx_out = TxOut::new(10000, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build(0).unwrap();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 5);
         assert_eq!(tx.outputs.len(), 1);
