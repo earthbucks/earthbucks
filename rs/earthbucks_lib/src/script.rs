@@ -277,6 +277,15 @@ impl Script {
             && self.chunks[2].opcode == Opcode::OP_1
     }
 
+    pub fn from_unexpired_pkh_input_placeholder() -> Self {
+        let sig_buf = vec![0; TxSignature::SIZE];
+        let pub_key_buf = vec![0; PubKey::SIZE];
+        Self::from_unexpired_pkh_input(
+            &sig_buf.try_into().unwrap(),
+            &pub_key_buf.try_into().unwrap(),
+        )
+    }
+
     pub fn is_push_only(&self) -> bool {
         for chunk in &self.chunks {
             if chunk.opcode > Opcode::OP_16 {

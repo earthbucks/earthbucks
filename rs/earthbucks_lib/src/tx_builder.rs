@@ -43,6 +43,8 @@ impl TxBuilder {
             let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
+            } else if tx_out.script.is_pkh3mx_output() {
+                Script::from_unexpired_pkh_input_placeholder()
             } else {
                 return Err("unsupported script type".to_string());
             };
