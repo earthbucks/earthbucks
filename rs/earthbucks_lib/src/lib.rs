@@ -28,7 +28,6 @@ pub mod tx_in;
 pub mod tx_out;
 pub mod tx_out_bn;
 pub mod tx_out_bn_map;
-pub mod tx_out_map;
 pub mod tx_signature;
 pub mod tx_signer;
 pub mod tx_verifier;
