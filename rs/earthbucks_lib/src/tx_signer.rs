@@ -1,20 +1,20 @@
 use crate::pkh_key_map::PkhKeyMap;
 use crate::pub_key::PubKey;
 use crate::tx::Tx;
-use crate::tx_out_map::TxOutMap;
+use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_signature::TxSignature;
 
 pub struct TxSigner {
     pub tx: Tx,
     pub pkh_key_map: PkhKeyMap,
-    pub tx_out_map: TxOutMap,
+    pub tx_out_bn_map: TxOutBnMap,
 }
 
 impl TxSigner {
-    pub fn new(tx: Tx, tx_out_map: &TxOutMap, pkh_key_map: &PkhKeyMap) -> Self {
+    pub fn new(tx: Tx, tx_out_bn_map: &TxOutBnMap, pkh_key_map: &PkhKeyMap) -> Self {
         Self {
             tx,
-            tx_out_map: tx_out_map.clone(),
+            tx_out_bn_map: tx_out_bn_map.clone(),
             pkh_key_map: pkh_key_map.clone(),
         }
     }
@@ -24,8 +24,8 @@ impl TxSigner {
         let tx_input = &mut tx_clone.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
-        let tx_out = match self.tx_out_map.get(tx_out_hash, output_index) {
-            Some(tx_out) => tx_out,
+        let tx_out = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
+            Some(tx_out_bn) => tx_out_bn.tx_out.clone(),
             None => return false,
         };
         if !tx_out.script.is_pkh_output() {
@@ -89,10 +89,11 @@ mod tests {
     use crate::tx::HashCache;
     use crate::tx_builder::TxBuilder;
     use crate::tx_out::TxOut;
+    use crate::tx_out_bn_map::TxOutBnMap;
 
     #[test]
     fn should_sign_a_tx() {
-        let mut tx_out_map = TxOutMap::new();
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -102,10 +103,11 @@ mod tests {
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
-            tx_out_map.add(vec![0; 32].as_slice(), i, output);
+            let block_num = 0;
+            tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_empty(), 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
@@ -115,16 +117,16 @@ mod tests {
         assert_eq!(tx.outputs.len(), 2);
         assert_eq!(tx.outputs[0].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
         assert!(signed);
 
         let tx_input = &signed_tx.inputs[0];
-        let tx_output = tx_out_map
+        let tx_out_bn = tx_out_bn_map
             .get(&tx_input.input_tx_id.clone(), tx_input.input_tx_out_num)
             .unwrap();
-        let exec_script = tx_output.script.clone();
+        let exec_script = tx_out_bn.tx_out.script.clone();
         let sig_buf = tx_input.script.chunks[0].buffer.clone().unwrap();
         assert_eq!(sig_buf.len(), TxSignature::SIZE);
         let pub_key_buf = tx_input.script.chunks[1].buffer.clone().unwrap();
@@ -148,7 +150,7 @@ mod tests {
 
     #[test]
     fn should_sign_two_inputs() {
-        let mut tx_out_map = TxOutMap::new();
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
 
         // generate 5 keys, 5 outputs, and add them to the txOutMap
@@ -158,10 +160,11 @@ mod tests {
             pkh_key_map.add(key.clone(), &pkh.buf.clone());
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
-            tx_out_map.add(vec![0; 32].as_slice(), i, output);
+            let block_num = 0;
+            tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_map, Script::from_empty(), 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
         let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
         tx_builder.add_output(tx_out.clone());
@@ -173,7 +176,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 100);
         assert_eq!(tx.outputs[1].value, 100);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
         let signed1 = tx_signer.sign(0);
         let signed2 = tx_signer.sign(1);
         let signed_tx = tx_signer.tx;
@@ -181,10 +184,11 @@ mod tests {
         assert!(signed2);
 
         let tx_input_1 = &signed_tx.inputs[0];
-        let tx_output_1 = tx_out_map
+        let tx_out_bn_1 = tx_out_bn_map
             .get(&tx_input_1.input_tx_id.clone(), tx_input_1.input_tx_out_num)
             .unwrap();
-        let exec_script_1 = tx_output_1.script.clone();
+        let tx_out_1 = tx_out_bn_1.tx_out.clone();
+        let exec_script_1 = tx_out_1.script.clone();
         let sig_buf_1 = tx_input_1.script.chunks[0].buffer.clone().unwrap();
         assert_eq!(sig_buf_1.len(), TxSignature::SIZE);
         let pub_key_buf_1 = tx_input_1.script.chunks[1].buffer.clone().unwrap();
@@ -206,10 +210,11 @@ mod tests {
         assert!(result_1);
 
         let tx_input_2 = &signed_tx.inputs[1];
-        let tx_output_2 = tx_out_map
+        let tx_out_bn_2 = tx_out_bn_map
             .get(&tx_input_2.input_tx_id.clone(), tx_input_2.input_tx_out_num)
             .unwrap();
-        let exec_script_2 = tx_output_2.script.clone();
+        let tx_out_2 = tx_out_bn_2.tx_out.clone();
+        let exec_script_2 = tx_out_2.script.clone();
         let sig_buf_2 = tx_input_2.script.chunks[0].buffer.clone().unwrap();
         assert_eq!(sig_buf_2.len(), TxSignature::SIZE);
         let pub_key_buf_2 = tx_input_2.script.chunks[1].buffer.clone().unwrap();

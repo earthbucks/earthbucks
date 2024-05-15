@@ -157,7 +157,6 @@ mod tests {
     use crate::tx_builder::TxBuilder;
     use crate::tx_out::TxOut;
     use crate::tx_out_bn_map::TxOutBnMap;
-    use crate::tx_out_map::TxOutMap;
     use crate::tx_signer::TxSigner;
 
     use super::*;
@@ -165,7 +164,6 @@ mod tests {
     #[test]
     fn should_sign_and_verify_a_tx() {
         let mut tx_out_bn_map = TxOutBnMap::new();
-        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -176,11 +174,10 @@ mod tests {
             let output = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
-            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -192,7 +189,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 50);
         assert_eq!(tx.outputs[1].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
         assert!(signed);
@@ -218,7 +215,6 @@ mod tests {
     #[test]
     fn should_sign_and_not_verify_a_tx_with_wrong_lock_num() {
         let mut tx_out_bn_map = TxOutBnMap::new();
-        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -229,11 +225,10 @@ mod tests {
             let output = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
-            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 1);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 1);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -245,7 +240,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 50);
         assert_eq!(tx.outputs[1].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
         let signed = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
         assert!(signed);
@@ -267,7 +262,6 @@ mod tests {
     #[test]
     fn should_sign_and_verify_a_tx_with_two_inputs() {
         let mut tx_out_bn_map = TxOutBnMap::new();
-        let mut tx_out_map = TxOutMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
@@ -278,11 +272,10 @@ mod tests {
             let output = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
-            tx_out_map.add(&[0; 32], i, output);
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_map, change_script, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
@@ -295,7 +288,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 100);
         assert_eq!(tx.outputs[1].value, 100);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
         let signed1 = tx_signer.sign(0);
         assert!(signed1);
         let signed2 = tx_signer.sign(1);

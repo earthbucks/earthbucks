@@ -3,10 +3,9 @@ use crate::tx::Tx;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
 use crate::tx_out_bn_map::TxOutBnMap;
-use crate::tx_out_map::TxOutMap;
 
 pub struct TxBuilder {
-    input_tx_out_map: TxOutMap, // TODO: This should be a vector of TxOutMap
+    input_tx_out_bn_map: TxOutBnMap, // TODO: This should be a vector of TxOutMap
     tx: Tx,
     change_script: Script,
     input_amount: u64,
@@ -14,10 +13,10 @@ pub struct TxBuilder {
 }
 
 impl TxBuilder {
-    pub fn new(input_tx_out_map: &TxOutMap, change_script: Script, lock_num: u64) -> Self {
+    pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_num: u64) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
-            input_tx_out_map: input_tx_out_map.clone(),
+            input_tx_out_bn_map: input_tx_out_bn_map.clone(),
             change_script,
             input_amount: 0,
             lock_num,
@@ -38,7 +37,9 @@ impl TxBuilder {
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = 0;
-        for (tx_out_id, tx_out) in self.input_tx_out_map.map.iter() {
+        for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
+            let tx_out = &tx_out_bn.tx_out;
+            // let old_block_num = tx_out_bn.block_num;
             if !tx_out.script.is_pkh_output() {
                 continue;
             }
@@ -70,18 +71,19 @@ mod tests {
     use crate::script::Script;
 
     fn setup() -> TxBuilder {
-        let mut tx_out_map = TxOutMap::new();
+        let mut tx_out_bn_map = TxOutBnMap::new();
         let change_script = Script::from_iso_str("");
 
         for i in 0..5 {
             let key = KeyPair::from_random();
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
             let script = Script::from_pkh_output(pkh.to_iso_buf());
-            let output = TxOut::new(100, script);
-            tx_out_map.add(&[0; 32], i, output);
+            let tx_out = TxOut::new(100, script);
+            let block_num = 0;
+            tx_out_bn_map.add(&[0; 32], i, tx_out, block_num);
         }
 
-        TxBuilder::new(&tx_out_map, change_script.unwrap(), 0)
+        TxBuilder::new(&tx_out_bn_map, change_script.unwrap(), 0)
     }
 
     #[test]
