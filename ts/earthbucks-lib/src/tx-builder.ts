@@ -20,7 +20,6 @@ export default class TxBuilder {
 
   addOutput(value: bigint, script: Script): void {
     const txOutput = new TxOut(value, script);
-    this.txOutMap.add(txOutput, this.tx.id(), this.tx.outputs.length);
     this.tx.outputs.push(txOutput);
   }
 

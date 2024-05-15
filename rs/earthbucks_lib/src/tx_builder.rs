@@ -26,11 +26,6 @@ impl TxBuilder {
 
     pub fn add_output(&mut self, value: u64, script: Script) {
         let tx_output = TxOut::new(value, script);
-        self.tx_out_map.add(
-            &self.tx.id(),
-            self.tx.outputs.len() as u32,
-            tx_output.clone(),
-        );
         self.tx.outputs.push(tx_output);
     }
 
