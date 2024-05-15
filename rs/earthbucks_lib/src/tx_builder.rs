@@ -31,7 +31,7 @@ impl TxBuilder {
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
-    pub fn build(&mut self) -> Tx {
+    pub fn build(&mut self) -> Result<Tx, String> {
         self.tx.lock_abs = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
@@ -44,7 +44,7 @@ impl TxBuilder {
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
             } else {
-                continue;
+                return Err("unsupported script type".to_string());
             };
             let tx_input = TxIn::new(tx_id_hash, output_index, input_script, 0);
             self.tx.inputs.push(tx_input);
@@ -59,7 +59,7 @@ impl TxBuilder {
             let tx_out = TxOut::new(change_amount, self.change_script.clone());
             self.add_output(tx_out);
         }
-        self.tx.clone()
+        Ok(self.tx.clone())
     }
 }
 
@@ -92,7 +92,7 @@ mod tests {
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -105,7 +105,7 @@ mod tests {
         let tx_out = TxOut::new(10000, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build();
+        let tx = tx_builder.build().unwrap();
 
         assert_eq!(tx.inputs.len(), 5);
         assert_eq!(tx.outputs.len(), 1);
