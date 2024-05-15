@@ -936,7 +936,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid signature length".to_string();
                         break;
                     }
-                    let signature = TxSignature::from_iso_buf(&sig_buf);
+                    let signature = TxSignature::from_iso_buf(&sig_buf.try_into().unwrap());
 
                     let exec_script_buf = self.script.to_iso_buf();
 
@@ -1013,7 +1013,7 @@ impl<'a> ScriptInterpreter<'a> {
                             let success = self.tx.verify_with_cache(
                                 self.n_in,
                                 pub_keys[j][..PubKey::SIZE].try_into().unwrap(),
-                                TxSignature::from_iso_buf(&sig.clone()),
+                                TxSignature::from_iso_buf(&sig.clone().try_into().unwrap()),
                                 exec_script_buf.clone(),
                                 self.value,
                                 self.hash_cache,
@@ -1218,7 +1218,7 @@ mod tests {
                 TxSignature::SIGHASH_ALL,
             );
 
-            let stack = vec![sig.to_iso_buf(), output_pub_key.to_vec()];
+            let stack = vec![sig.to_iso_buf().to_vec(), output_pub_key.to_vec()];
             let mut hash_cache = HashCache::new();
 
             let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
@@ -1297,6 +1297,7 @@ mod tests {
                         TxSignature::SIGHASH_ALL,
                     )
                     .to_iso_buf()
+                    .to_vec()
                 })
                 .collect();
 

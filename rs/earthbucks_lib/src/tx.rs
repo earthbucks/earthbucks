@@ -275,7 +275,7 @@ impl Tx {
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
         let sig = secp.sign_ecdsa(&message, &key);
         let sig = sig.serialize_compact();
-        TxSignature::new(hash_type, sig.to_vec())
+        TxSignature::new(hash_type, sig)
     }
 
     pub fn sign_with_cache(
@@ -299,7 +299,7 @@ impl Tx {
         let key = secp256k1::SecretKey::from_slice(&private_key).expect("32 bytes");
         let sig = secp.sign_ecdsa(&message, &key);
         let sig = sig.serialize_compact();
-        TxSignature::new(hash_type, sig.to_vec())
+        TxSignature::new(hash_type, sig)
     }
 
     pub fn verify_no_cache(

@@ -1,6 +1,6 @@
 pub struct TxSignature {
     pub hash_type: u8,
-    pub sig_buf: Vec<u8>,
+    pub sig_buf: [u8; 64],
 }
 
 impl TxSignature {
@@ -10,20 +10,20 @@ impl TxSignature {
     pub const SIGHASH_ANYONECANPAY: u8 = 0x00000080;
     pub const SIZE: usize = 65; // hashtype (1) plus r (32) plus s (32)
 
-    pub fn new(hash_type: u8, sig_buf: Vec<u8>) -> Self {
+    pub fn new(hash_type: u8, sig_buf: [u8; 64]) -> Self {
         Self { hash_type, sig_buf }
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_iso_buf(&self) -> [u8; TxSignature::SIZE] {
         let mut result = Vec::new();
         result.push(self.hash_type);
         result.extend(&self.sig_buf);
-        result
+        result.try_into().unwrap()
     }
 
-    pub fn from_iso_buf(data: &[u8]) -> Self {
+    pub fn from_iso_buf(data: &[u8; TxSignature::SIZE]) -> Self {
         let hash_type = data[0];
-        let sig_buf = data[1..].to_vec();
+        let sig_buf: [u8; 64] = data[1..65].try_into().unwrap();
         Self { hash_type, sig_buf }
     }
 }

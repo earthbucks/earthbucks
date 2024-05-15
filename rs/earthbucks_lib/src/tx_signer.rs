@@ -62,7 +62,7 @@ impl TxSigner {
         if sig_buf.len() != TxSignature::SIZE {
             return false;
         }
-        input_script.chunks[0].buffer = Some(sig_buf);
+        input_script.chunks[0].buffer = Some(sig_buf.to_vec());
         tx_input.script = input_script.clone();
         self.tx = tx_clone;
         true
