@@ -111,7 +111,7 @@ mod tests {
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build().unwrap();
+        let tx = tx_builder.build(0).unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -169,7 +169,7 @@ mod tests {
         tx_builder.add_output(tx_out.clone());
         tx_builder.add_output(tx_out.clone());
 
-        let tx = tx_builder.build().unwrap();
+        let tx = tx_builder.build(0).unwrap();
 
         assert_eq!(tx.inputs.len(), 2);
         assert_eq!(tx.outputs.len(), 2);

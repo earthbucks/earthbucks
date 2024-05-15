@@ -31,20 +31,35 @@ impl TxBuilder {
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
-    pub fn build(&mut self) -> Result<Tx, String> {
+    pub fn build(&mut self, working_block_num: u64) -> Result<Tx, String> {
         self.tx.lock_abs = self.lock_num;
         self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = 0;
         for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
+            let prev_block_num = tx_out_bn.block_num;
             let tx_out = &tx_out_bn.tx_out;
             let tx_id_hash = TxOutBnMap::name_to_tx_id_hash(tx_out_id);
             let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
             } else if tx_out.script.is_pkh3mx_output() {
-                Script::from_unexpired_pkh_input_placeholder()
+                let lock_rel = 13104;
+                let expired = working_block_num > prev_block_num + lock_rel;
+                if expired {
+                    Script::from_expired_input()
+                } else {
+                    Script::from_unexpired_pkh_input_placeholder()
+                }
+            } else if tx_out.script.is_pkh1hx_output() {
+                let lock_rel = 6;
+                let expired = working_block_num > prev_block_num + lock_rel;
+                if expired {
+                    Script::from_expired_input()
+                } else {
+                    Script::from_unexpired_pkh_input_placeholder()
+                }
             } else {
                 return Err("unsupported script type".to_string());
             };
@@ -94,7 +109,7 @@ mod tests {
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build().unwrap();
+        let tx = tx_builder.build(0).unwrap();
 
         assert_eq!(tx.inputs.len(), 1);
         assert_eq!(tx.outputs.len(), 2);
@@ -107,7 +122,7 @@ mod tests {
         let tx_out = TxOut::new(10000, Script::from_empty());
         tx_builder.add_output(tx_out);
 
-        let tx = tx_builder.build().unwrap();
+        let tx = tx_builder.build(0).unwrap();
 
         assert_eq!(tx.inputs.len(), 5);
         assert_eq!(tx.outputs.len(), 1);
