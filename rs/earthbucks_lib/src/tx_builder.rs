@@ -45,16 +45,14 @@ impl TxBuilder {
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
             } else if tx_out.script.is_pkhx3m_output() {
-                let lock_rel = 13104;
-                let expired = working_block_num > prev_block_num + lock_rel;
+                let expired = working_block_num > prev_block_num + Script::PKHX3M_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {
                     Script::from_unexpired_pkhx_input_placeholder()
                 }
             } else if tx_out.script.is_pkhx1h_output() {
-                let lock_rel = 6;
-                let expired = working_block_num > prev_block_num + lock_rel;
+                let expired = working_block_num > prev_block_num + Script::PKHX1H_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {

@@ -138,8 +138,9 @@ impl Script {
 
     // PKHX3M = PubKey Hash with 3 Month Expiry
     // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
+    pub const PKHX3M_LOCK_REL: u32 = 13104;
+
     pub fn from_pkhx3m_output(pkh: &[u8; 32]) -> Self {
-        let lock_rel: u32 = 13104;
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
@@ -155,7 +156,7 @@ impl Script {
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
         script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(lock_rel).to_iso_buf(),
+            ScriptNum::from_u32(Script::PKHX3M_LOCK_REL).to_iso_buf(),
         ));
         script
             .chunks
@@ -193,8 +194,9 @@ impl Script {
 
     // PKHX1H = PubKey Hash with 1 Hour Expiry
     // 6 blocks = 1 hour for 10 min blocks
+    pub const PKHX1H_LOCK_REL: u32 = 6;
+
     pub fn from_pkhx1h_output(pkh: &[u8; 32]) -> Self {
-        let lock_rel: u32 = 6;
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
@@ -209,9 +211,9 @@ impl Script {
             .chunks
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script
-            .chunks
-            .push(ScriptChunk::from_small_number(lock_rel as i8));
+        script.chunks.push(ScriptChunk::from_small_number(
+            Script::PKHX1H_LOCK_REL as i8,
+        ));
         script
             .chunks
             .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
