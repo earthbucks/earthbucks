@@ -44,21 +44,21 @@ impl TxBuilder {
             let output_index = TxOutBnMap::name_to_output_index(tx_out_id);
             let input_script: Script = if tx_out.script.is_pkh_output() {
                 Script::from_pkh_input_placeholder()
-            } else if tx_out.script.is_pkh3mx_output() {
+            } else if tx_out.script.is_pkhx3m_output() {
                 let lock_rel = 13104;
                 let expired = working_block_num > prev_block_num + lock_rel;
                 if expired {
-                    Script::from_expired_input()
+                    Script::from_expired_pkhx_input()
                 } else {
-                    Script::from_unexpired_pkh_input_placeholder()
+                    Script::from_unexpired_pkhx_input_placeholder()
                 }
-            } else if tx_out.script.is_pkh1hx_output() {
+            } else if tx_out.script.is_pkhx1h_output() {
                 let lock_rel = 6;
                 let expired = working_block_num > prev_block_num + lock_rel;
                 if expired {
-                    Script::from_expired_input()
+                    Script::from_expired_pkhx_input()
                 } else {
-                    Script::from_unexpired_pkh_input_placeholder()
+                    Script::from_unexpired_pkhx_input_placeholder()
                 }
             } else {
                 return Err("unsupported script type".to_string());

@@ -136,9 +136,9 @@ impl Script {
         Self::from_pkh_input(&sig_buf, &pub_key)
     }
 
-    // PKH3MX = PubKey Hash with 3 Month Expiry
+    // PKHX3M = PubKey Hash with 3 Month Expiry
     // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
-    pub fn from_pkh3mx_output(pkh: &[u8; 32]) -> Self {
+    pub fn from_pkhx3m_output(pkh: &[u8; 32]) -> Self {
         let lock_rel: u32 = 13104;
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
@@ -166,7 +166,7 @@ impl Script {
         script
     }
 
-    pub fn is_pkh3mx_output(&self) -> bool {
+    pub fn is_pkhx3m_output(&self) -> bool {
         let lock_rel: u32 = 13104;
         self.chunks.len() == 12
             && self.chunks[0].opcode == Opcode::OP_IF
@@ -191,9 +191,9 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
-    // PKH1HX = PubKey Hash with 1 Hour Expiry
+    // PKHX1H = PubKey Hash with 1 Hour Expiry
     // 6 blocks = 1 hour for 10 min blocks
-    pub fn from_pkh1hx_output(pkh: &[u8; 32]) -> Self {
+    pub fn from_pkhx1h_output(pkh: &[u8; 32]) -> Self {
         let lock_rel: u32 = 6;
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
@@ -221,7 +221,7 @@ impl Script {
         script
     }
 
-    pub fn is_pkh1hx_output(&self) -> bool {
+    pub fn is_pkhx1h_output(&self) -> bool {
         let lock_rel: u32 = 6;
         self.chunks.len() == 12
             && self.chunks[0].opcode == Opcode::OP_IF
@@ -243,17 +243,17 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
-    pub fn from_expired_input() -> Self {
+    pub fn from_expired_pkhx_input() -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_0, None));
         script
     }
 
-    pub fn is_expired_input(&self) -> bool {
+    pub fn is_expired_pkhx_input(&self) -> bool {
         self.chunks.len() == 1 && self.chunks[0].opcode == Opcode::OP_0
     }
 
-    pub fn from_unexpired_pkh_input(
+    pub fn from_unexpired_pkhx_input(
         sig_buf: &[u8; TxSignature::SIZE],
         pub_key_buf: &[u8; PubKey::SIZE],
     ) -> Self {
@@ -266,7 +266,7 @@ impl Script {
         script
     }
 
-    pub fn is_unexpired_pkh_input(&self) -> bool {
+    pub fn is_unexpired_pkhx_input(&self) -> bool {
         self.chunks.len() == 3
             && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
             && self.chunks[0].buffer.is_some()
@@ -277,10 +277,10 @@ impl Script {
             && self.chunks[2].opcode == Opcode::OP_1
     }
 
-    pub fn from_unexpired_pkh_input_placeholder() -> Self {
+    pub fn from_unexpired_pkhx_input_placeholder() -> Self {
         let sig_buf = vec![0; TxSignature::SIZE];
         let pub_key_buf = vec![0; PubKey::SIZE];
-        Self::from_unexpired_pkh_input(
+        Self::from_unexpired_pkhx_input(
             &sig_buf.try_into().unwrap(),
             &pub_key_buf.try_into().unwrap(),
         )
@@ -301,11 +301,11 @@ impl Script {
     }
 
     pub fn is_standard_input(&self) -> bool {
-        self.is_push_only() && (self.is_unexpired_pkh_input() || self.is_expired_input())
+        self.is_push_only() && (self.is_unexpired_pkhx_input() || self.is_expired_pkhx_input())
     }
 
     pub fn is_standard_output(&self) -> bool {
-        self.is_pkh3mx_output() || self.is_pkh1hx_output()
+        self.is_pkhx3m_output() || self.is_pkhx1h_output()
     }
 }
 
