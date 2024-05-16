@@ -43,7 +43,7 @@ Yours.org would go on to get traction with a small but dedicated user base. We
 raised two rounds of funding, including a $1.5 million raise that was led by
 Bitmain. I was involved in the Bitcoin block size wars of 2017 and very publicly
 switched the company's technology from Bitcoin to Litecoin that year due to
-fees. After the launch of Bitcoin Cash, I again switch the underlying
+fees. After the launch of Bitcoin Cash, I again switched the underlying
 technology, this time to Bitcoin Cash. Yours.org was the first app to use
 Bitcoin Cash in 2017.
 
