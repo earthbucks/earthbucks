@@ -211,9 +211,7 @@ impl Script {
             .chunks
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script.chunks.push(ScriptChunk::from_small_number(
-            Script::PKHX_1H_LOCK_REL as i8,
-        ));
+        script.chunks.push(ScriptChunk::new(Opcode::OP_6, None));
         script
             .chunks
             .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
@@ -224,7 +222,6 @@ impl Script {
     }
 
     pub fn is_pkhx_1h_output(&self) -> bool {
-        let lock_rel: u32 = 6;
         self.chunks.len() == 12
             && self.chunks[0].opcode == Opcode::OP_IF
             && self.chunks[1].opcode == Opcode::OP_DUP
@@ -235,10 +232,7 @@ impl Script {
             && self.chunks[4].opcode == Opcode::OP_EQUALVERIFY
             && self.chunks[5].opcode == Opcode::OP_CHECKSIG
             && self.chunks[6].opcode == Opcode::OP_ELSE
-            && self.chunks[7].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[7].buffer.is_some()
-            && self.chunks[7].buffer.as_ref().unwrap().len() == 1
-            && self.chunks[7].buffer.as_ref().unwrap()[0] == lock_rel as u8
+            && self.chunks[7].opcode == Opcode::OP_6 // lock_rel
             && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[9].opcode == Opcode::OP_DROP
             && self.chunks[10].opcode == Opcode::OP_1

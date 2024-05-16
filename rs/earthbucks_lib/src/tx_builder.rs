@@ -49,28 +49,37 @@ impl TxBuilder {
             let tx_out = &tx_out_bn.tx_out;
             let tx_id = TxOutBnMap::name_to_tx_id(tx_out_id);
             let tx_out_num = TxOutBnMap::name_to_tx_out_num(tx_out_id);
-            let input_script: Script = if tx_out.script.is_pkh_output() {
-                Script::from_pkh_input_placeholder()
+
+            let input_script: Script;
+            let lock_rel: u32;
+            if tx_out.script.is_pkh_output() {
+                input_script = Script::from_pkh_input_placeholder();
+                lock_rel = 0;
             } else if tx_out.script.is_pkhx_3m_output() {
                 let expired =
                     self.working_block_num > prev_block_num + Script::PKHX_3M_LOCK_REL as u64;
                 if expired {
-                    Script::from_expired_pkhx_input()
+                    input_script = Script::from_expired_pkhx_input();
+                    lock_rel = Script::PKHX_3M_LOCK_REL;
                 } else {
-                    Script::from_unexpired_pkhx_input_placeholder()
+                    input_script = Script::from_unexpired_pkhx_input_placeholder();
+                    lock_rel = 0;
                 }
             } else if tx_out.script.is_pkhx_1h_output() {
                 let expired =
                     self.working_block_num > prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
                 if expired {
-                    Script::from_expired_pkhx_input()
+                    input_script = Script::from_expired_pkhx_input();
+                    lock_rel = Script::PKHX_1H_LOCK_REL;
                 } else {
-                    Script::from_unexpired_pkhx_input_placeholder()
+                    input_script = Script::from_unexpired_pkhx_input_placeholder();
+                    lock_rel = 0;
                 }
             } else {
                 return Err("unsupported script type".to_string());
             };
-            let tx_input = TxIn::new(tx_id, tx_out_num, input_script, 0);
+
+            let tx_input = TxIn::new(tx_id, tx_out_num, input_script, lock_rel);
             self.tx.inputs.push(tx_input);
             input_amount += tx_out.value;
             if input_amount >= total_spend_amount {

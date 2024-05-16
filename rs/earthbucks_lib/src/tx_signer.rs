@@ -1,4 +1,5 @@
 use crate::pkh_key_map::PkhKeyMap;
+use crate::script::Script;
 use crate::tx::Tx;
 use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_signature::TxSignature;
@@ -7,14 +8,21 @@ pub struct TxSigner {
     pub tx: Tx,
     pub pkh_key_map: PkhKeyMap,
     pub tx_out_bn_map: TxOutBnMap,
+    pub working_block_num: u64,
 }
 
 impl TxSigner {
-    pub fn new(tx: Tx, tx_out_bn_map: &TxOutBnMap, pkh_key_map: &PkhKeyMap) -> Self {
+    pub fn new(
+        tx: Tx,
+        tx_out_bn_map: &TxOutBnMap,
+        pkh_key_map: &PkhKeyMap,
+        working_block_num: u64,
+    ) -> Self {
         Self {
             tx,
             tx_out_bn_map: tx_out_bn_map.clone(),
             pkh_key_map: pkh_key_map.clone(),
+            working_block_num,
         }
     }
 
@@ -24,10 +32,12 @@ impl TxSigner {
         let tx_input = &mut self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
-        let tx_out = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
-            Some(tx_out_bn) => tx_out_bn.tx_out.clone(),
+        let tx_out_bn = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
+            Some(tx_out_bn) => tx_out_bn.clone(),
             None => return Err("tx_out not found".to_string()),
         };
+        let tx_out = tx_out_bn.tx_out;
+        let prev_block_num = tx_out_bn.block_num;
 
         if tx_out.script.is_pkh_output() {
             let pkh_buf = tx_out.script.chunks[2]
@@ -36,7 +46,45 @@ impl TxSigner {
                 .expect("pkh not found");
             let input_script = &mut tx_input.script;
             if !input_script.is_pkh_input() {
-                return Err("wrong input placeholder".to_string());
+                return Err("expected pkh input placeholder".to_string());
+            }
+            let key_pair = match self.pkh_key_map.get(&pkh_buf) {
+                Some(key) => key,
+                None => return Err("key not found".to_string()),
+            };
+            let pub_key_buf = &key_pair.pub_key.buf.to_vec();
+            let output_script_buf = tx_out.script.to_iso_buf();
+            let output_amount = tx_out.value;
+            let priv_key_buf = key_pair.priv_key.buf;
+            let sig = tx_clone.sign_no_cache(
+                n_in,
+                priv_key_buf,
+                output_script_buf.to_vec(),
+                output_amount,
+                TxSignature::SIGHASH_ALL,
+            );
+            let sig_buf = sig.to_iso_buf();
+
+            input_script.chunks[0].buffer = Some(sig_buf.to_vec());
+            input_script.chunks[1].buffer = Some(pub_key_buf.clone());
+        } else if tx_out.script.is_pkhx_1h_output() {
+            // return Err("not implemented".to_string());
+            let pkh_buf = tx_out.script.chunks[3]
+                .buffer
+                .clone()
+                .expect("pkh not found");
+            let expired = self.working_block_num > prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
+            let input_script = &mut tx_input.script;
+            if expired {
+                if input_script.is_expired_pkhx_input() {
+                    // no need to sign expired pkhx
+                    return Ok(self.tx.clone());
+                } else {
+                    return Err("expected expired pkhx input".to_string());
+                }
+            }
+            if !input_script.is_unexpired_pkhx_input() {
+                return Err("expected unexpired pkhx input placeholder".to_string());
             }
             let key_pair = match self.pkh_key_map.get(&pkh_buf) {
                 Some(key) => key,
@@ -113,7 +161,7 @@ mod tests {
         assert_eq!(tx.outputs.len(), 2);
         assert_eq!(tx.outputs[0].value, 50);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map, 0);
         let tx_res = tx_signer.sign_input(0);
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
@@ -172,7 +220,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 100);
         assert_eq!(tx.outputs[1].value, 100);
 
-        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
+        let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map, 0);
         let tx_res1 = tx_signer.sign_input(0);
         let tx_res2 = tx_signer.sign_input(1);
         let signed_tx = tx_signer.tx;
