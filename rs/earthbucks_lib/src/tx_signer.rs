@@ -21,7 +21,7 @@ impl TxSigner {
 
     pub fn sign(&mut self, n_in: usize) -> bool {
         let mut tx_clone = self.tx.clone();
-        let tx_input = &mut tx_clone.inputs[n_in];
+        let tx_input = &mut self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
         let tx_out = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
@@ -51,7 +51,7 @@ impl TxSigner {
         let output_script_buf = tx_out.script.to_iso_buf();
         let output_amount = tx_out.value;
         let private_key_array = key.priv_key.buf;
-        let sig = self.tx.sign_no_cache(
+        let sig = tx_clone.sign_no_cache(
             n_in,
             private_key_array,
             output_script_buf.to_vec(),
@@ -64,7 +64,6 @@ impl TxSigner {
         }
         input_script.chunks[0].buffer = Some(sig_buf.to_vec());
         tx_input.script = input_script.clone();
-        self.tx = tx_clone;
         true
     }
 
