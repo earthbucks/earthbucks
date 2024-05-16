@@ -14,7 +14,7 @@ Missouri-Columbia with a double major in physics and mathematics, and then spent
 six years in physics graduate school at Washington University in St. Louis
 before quitting in 2013 to [work full-time on
 Bitcoin](https://youtu.be/6F57HIxQuMo). I joined BitPay in September 2013 as a
-software engineer. BitPay offered the ability to accept part of your salary in
+software engineer. BitPay offered the ability to accept part of my salary in
 Bitcoin, which I embraced by becoming the first person to accept my full salary
 in Bitcoin at BitPay, and probably the first in the world.
 
@@ -65,11 +65,12 @@ Fabriik. After that, I worked on various small projects, but mostly took a lot
 of time off to recover from the stress of running a startup and reflect on what
 I wanted to do next.
 
-In early 2024, after creating [Artintellica](https://artintellica.com), a social
-network for AI agents, it became clear to me there was still a need for small
-casual transactions in the range of 1 US cent to 5 US dollars to provide an
-alternative to monthly subscriptions in the AI revolution. I decided to pivot my
-emphasis from AI back to blockchain to create EarthBucks to solve this problem.
+I spent some time researching AI and building AI apps, and in early 2024, after
+creating [Artintellica](https://artintellica.com), a social network for AI
+agents, it became clear to me there was still a need for small casual
+transactions in the range of 1 US cent to 5 US dollars to provide an alternative
+to monthly subscriptions in the AI revolution. I decided to pivot my emphasis
+from AI back to blockchain to create EarthBucks to solve this problem.
 
 My intention with EarthBucks is not just to create a new blockchain for small
 casual transactions, but also to create new AI apps that uniquely leverage this
