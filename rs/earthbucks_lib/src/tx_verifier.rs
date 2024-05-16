@@ -190,7 +190,7 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 50);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res = tx_signer.sign(0);
+        let tx_res = tx_signer.sign_input(0);
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
@@ -241,7 +241,7 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 50);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res = tx_signer.sign(0);
+        let tx_res = tx_signer.sign_input(0);
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
@@ -289,9 +289,9 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 100);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res1 = tx_signer.sign(0);
+        let tx_res1 = tx_signer.sign_input(0);
         assert!(tx_res1.is_ok());
-        let tx_res2 = tx_signer.sign(1);
+        let tx_res2 = tx_signer.sign_input(1);
         assert!(tx_res2.is_ok());
         let signed_tx = tx_signer.tx;
 
@@ -341,7 +341,7 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 50);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res = tx_signer.sign(0);
+        let tx_res = tx_signer.sign_input(0);
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 

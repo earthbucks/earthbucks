@@ -1,5 +1,4 @@
 use crate::pkh_key_map::PkhKeyMap;
-use crate::pub_key::PubKey;
 use crate::tx::Tx;
 use crate::tx_out_bn_map::TxOutBnMap;
 use crate::tx_signature::TxSignature;
@@ -19,7 +18,7 @@ impl TxSigner {
         }
     }
 
-    pub fn sign(&mut self, n_in: usize) -> Result<Tx, String> {
+    pub fn sign_input(&mut self, n_in: usize) -> Result<Tx, String> {
         let mut tx_clone = self.tx.clone();
 
         let tx_input = &mut self.tx.inputs[n_in];
@@ -30,48 +29,48 @@ impl TxSigner {
             None => return Err("tx_out not found".to_string()),
         };
 
-        if !tx_out.script.is_pkh_output() {
+        if tx_out.script.is_pkh_output() {
+            let pkh = match &tx_out.script.chunks[2].buffer {
+                Some(pkh) => pkh,
+                None => return Err("pkh not found".to_string()),
+            };
+            let input_script = &mut tx_input.script;
+            if !input_script.is_pkh_input() {
+                return Err("wrong input placeholder".to_string());
+            }
+            let key = match self.pkh_key_map.get(pkh) {
+                Some(key) => key,
+                None => return Err("key not found".to_string()),
+            };
+            let pub_key = &key.pub_key.buf.to_vec();
+            let output_script_buf = tx_out.script.to_iso_buf();
+            let output_amount = tx_out.value;
+            let private_key_array = key.priv_key.buf;
+            let sig = tx_clone.sign_no_cache(
+                n_in,
+                private_key_array,
+                output_script_buf.to_vec(),
+                output_amount,
+                TxSignature::SIGHASH_ALL,
+            );
+            let sig_buf = sig.to_iso_buf();
+            if sig_buf.len() != TxSignature::SIZE {
+                return Err("sig size is invalid".to_string());
+            }
+
+            input_script.chunks[1].buffer = Some(pub_key.clone());
+            input_script.chunks[0].buffer = Some(sig_buf.to_vec());
+        } else {
             return Err("unsupported script type".to_string());
         }
-        let pkh = match &tx_out.script.chunks[2].buffer {
-            Some(pkh) => pkh,
-            None => return Err("pkh not found".to_string()),
-        };
-        let input_script = &mut tx_input.script;
-        if !input_script.is_pkh_input() {
-            return Err("unsupported script type".to_string());
-        }
-        let key = match self.pkh_key_map.get(pkh) {
-            Some(key) => key,
-            None => return Err("key not found".to_string()),
-        };
-        let pub_key = &key.pub_key.buf.to_vec();
-        if pub_key.len() != PubKey::SIZE {
-            return Err("pub_key size is invalid".to_string());
-        }
-        input_script.chunks[1].buffer = Some(pub_key.clone());
-        let output_script_buf = tx_out.script.to_iso_buf();
-        let output_amount = tx_out.value;
-        let private_key_array = key.priv_key.buf;
-        let sig = tx_clone.sign_no_cache(
-            n_in,
-            private_key_array,
-            output_script_buf.to_vec(),
-            output_amount,
-            TxSignature::SIGHASH_ALL,
-        );
-        let sig_buf = sig.to_iso_buf();
-        if sig_buf.len() != TxSignature::SIZE {
-            return Err("sig size is invalid".to_string());
-        }
-        input_script.chunks[0].buffer = Some(sig_buf.to_vec());
 
         Ok(self.tx.clone())
     }
 
-    pub fn sign_all(&mut self) -> Result<Tx, String> {
+    pub fn sign(&mut self) -> Result<Tx, String> {
         for i in 0..self.tx.inputs.len() {
-            self.sign(i).map_err(|e| "sign_all: ".to_string() + &e)?;
+            self.sign_input(i)
+                .map_err(|e| "sign_all: ".to_string() + &e)?;
         }
         Ok(self.tx.clone())
     }
@@ -83,6 +82,7 @@ mod tests {
     use crate::key_pair::KeyPair;
     use crate::pkh::Pkh;
     use crate::pkh_key_map::PkhKeyMap;
+    use crate::pub_key::PubKey;
     use crate::script::Script;
     use crate::script_interpreter::ScriptInterpreter;
     use crate::tx::HashCache;
@@ -117,7 +117,7 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 50);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res = tx_signer.sign(0);
+        let tx_res = tx_signer.sign_input(0);
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
@@ -176,8 +176,8 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 100);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let tx_res1 = tx_signer.sign(0);
-        let tx_res2 = tx_signer.sign(1);
+        let tx_res1 = tx_signer.sign_input(0);
+        let tx_res2 = tx_signer.sign_input(1);
         let signed_tx = tx_signer.tx;
         assert!(tx_res1.is_ok());
         assert!(tx_res2.is_ok());
