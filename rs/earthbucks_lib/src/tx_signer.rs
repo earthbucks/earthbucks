@@ -30,15 +30,15 @@ impl TxSigner {
         };
 
         if tx_out.script.is_pkh_output() {
-            let pkh = match &tx_out.script.chunks[2].buffer {
-                Some(pkh) => pkh,
-                None => return Err("pkh not found".to_string()),
-            };
+            let pkh = tx_out.script.chunks[2]
+                .buffer
+                .clone()
+                .expect("pkh not found");
             let input_script = &mut tx_input.script;
             if !input_script.is_pkh_input() {
                 return Err("wrong input placeholder".to_string());
             }
-            let key = match self.pkh_key_map.get(pkh) {
+            let key = match self.pkh_key_map.get(&pkh) {
                 Some(key) => key,
                 None => return Err("key not found".to_string()),
             };
@@ -54,12 +54,9 @@ impl TxSigner {
                 TxSignature::SIGHASH_ALL,
             );
             let sig_buf = sig.to_iso_buf();
-            if sig_buf.len() != TxSignature::SIZE {
-                return Err("sig size is invalid".to_string());
-            }
 
-            input_script.chunks[1].buffer = Some(pub_key.clone());
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
+            input_script.chunks[1].buffer = Some(pub_key.clone());
         } else {
             return Err("unsupported script type".to_string());
         }
