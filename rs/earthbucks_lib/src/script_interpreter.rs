@@ -1179,7 +1179,7 @@ mod tests {
         }
 
         #[test]
-        fn checksig() {
+        fn test_checksig() {
             let output_priv_key_hex =
                 "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
             let output_priv_key_buf = PrivKey::from_iso_hex(output_priv_key_hex).unwrap().buf;
@@ -1235,7 +1235,7 @@ mod tests {
         }
 
         #[test]
-        fn checkmultisig() {
+        fn test_checkmultisig() {
             // Define private keys
             let priv_keys_hex = [
                 "eee66a051d43a62b00da7185bbf2a13b42f601a0b987a8f1815b4213c9343451",

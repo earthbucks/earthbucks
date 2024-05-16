@@ -53,7 +53,7 @@ impl TxBuilder {
                 Script::from_pkh_input_placeholder()
             } else if tx_out.script.is_pkhx_3m_output() {
                 let expired =
-                    self.working_block_num > prev_block_num + Script::PKHX3M_LOCK_REL as u64;
+                    self.working_block_num > prev_block_num + Script::PKHX_3M_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {
@@ -61,7 +61,7 @@ impl TxBuilder {
                 }
             } else if tx_out.script.is_pkhx_1h_output() {
                 let expired =
-                    self.working_block_num > prev_block_num + Script::PKHX1H_LOCK_REL as u64;
+                    self.working_block_num > prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
                 if expired {
                     Script::from_expired_pkhx_input()
                 } else {

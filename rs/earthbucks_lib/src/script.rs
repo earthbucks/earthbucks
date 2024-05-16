@@ -1,5 +1,5 @@
 use crate::iso_buf_reader::IsoBufReader;
-use crate::opcode::{Opcode, OP};
+use crate::opcode::Opcode;
 use crate::pub_key::PubKey;
 use crate::script_chunk::ScriptChunk;
 use crate::script_num::ScriptNum;
@@ -72,7 +72,7 @@ impl Script {
             .push(ScriptChunk::from_small_number(pub_keys.len() as i8));
         script
             .chunks
-            .push(ScriptChunk::new(OP["CHECKMULTISIG"], None));
+            .push(ScriptChunk::new(Opcode::OP_CHECKMULTISIG, None));
         script
     }
 
@@ -138,7 +138,7 @@ impl Script {
 
     // PKHX 3M = PubKey Hash with 3 Month Expiry
     // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
-    pub const PKHX3M_LOCK_REL: u32 = 13104;
+    pub const PKHX_3M_LOCK_REL: u32 = 13104;
 
     pub fn from_pkhx_3m_output(pkh: &[u8; 32]) -> Self {
         let mut script = Self::new(Vec::new());
@@ -156,7 +156,7 @@ impl Script {
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
         script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(Script::PKHX3M_LOCK_REL).to_iso_buf(),
+            ScriptNum::from_u32(Script::PKHX_3M_LOCK_REL).to_iso_buf(),
         ));
         script
             .chunks
@@ -194,7 +194,7 @@ impl Script {
 
     // PKHX 1H = PubKey Hash with 1 Hour Expiry
     // 6 blocks = 1 hour for 10 min blocks
-    pub const PKHX1H_LOCK_REL: u32 = 6;
+    pub const PKHX_1H_LOCK_REL: u32 = 6;
 
     pub fn from_pkhx_1h_output(pkh: &[u8; 32]) -> Self {
         let mut script = Self::new(Vec::new());
@@ -212,7 +212,7 @@ impl Script {
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
         script.chunks.push(ScriptChunk::from_small_number(
-            Script::PKHX1H_LOCK_REL as i8,
+            Script::PKHX_1H_LOCK_REL as i8,
         ));
         script
             .chunks
@@ -411,17 +411,17 @@ mod tests {
     fn test_is_pkh_output() {
         let mut script = Script::from_empty();
         script.chunks = vec![
-            ScriptChunk::new(OP["DUP"], None),
-            ScriptChunk::new(OP["DOUBLEBLAKE3"], None),
-            ScriptChunk::new(OP["PUSHDATA1"], Some(vec![0; 32])),
-            ScriptChunk::new(OP["EQUALVERIFY"], None),
-            ScriptChunk::new(OP["CHECKSIG"], None),
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(vec![0; 32])),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
         ];
 
         assert!(script.is_pkh_output());
 
         // Change a chunk to make the script invalid
-        script.chunks[0].opcode = OP["BLAKE3"];
+        script.chunks[0].opcode = Opcode::OP_BLAKE3;
         assert!(!script.is_pkh_output());
     }
 
