@@ -1,5 +1,5 @@
 +++
-title = "About Ryan X. Charles LLC"
+title = "About"
 author = "Ryan X. Charles"
 date = "2024-05-16"
 +++
