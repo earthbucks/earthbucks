@@ -16,6 +16,20 @@ impl ScriptChunk {
         }
     }
 
+    pub fn get_data(&self) -> Result<Vec<u8>, String> {
+        if self.opcode == Opcode::OP_1NEGATE {
+            return Ok(vec![0x80]);
+        } else if self.opcode == Opcode::OP_0 {
+            return Ok(vec![]);
+        } else if Opcode::OP_1 <= self.opcode && self.opcode <= Opcode::OP_16 {
+            return Ok(vec![self.opcode - Opcode::OP_1 + 1]);
+        }
+        match &self.buffer {
+            Some(buffer) => Ok(buffer.clone()),
+            None => Err("no data".into()),
+        }
+    }
+
     pub fn to_iso_str(&self) -> Result<String, String> {
         match &self.buffer {
             Some(buffer) => {

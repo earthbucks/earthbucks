@@ -34,7 +34,7 @@ impl<'a> TxVerifier<'a> {
                 let stack: Vec<Vec<u8>> = input_script
                     .chunks
                     .iter()
-                    .map(|chunk| chunk.buffer.clone().unwrap())
+                    .map(|chunk| chunk.get_data().unwrap())
                     .collect();
                 let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
                     output_script.clone(),
@@ -312,7 +312,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn should_sign_and_verify_unexpired_pkhx_1h() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
