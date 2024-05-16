@@ -19,33 +19,35 @@ impl TxSigner {
         }
     }
 
-    pub fn sign(&mut self, n_in: usize) -> bool {
+    pub fn sign(&mut self, n_in: usize) -> Result<Tx, String> {
         let mut tx_clone = self.tx.clone();
+
         let tx_input = &mut self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
         let tx_out = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
             Some(tx_out_bn) => tx_out_bn.tx_out.clone(),
-            None => return false,
+            None => return Err("tx_out not found".to_string()),
         };
+
         if !tx_out.script.is_pkh_output() {
-            return false;
+            return Err("unsupported script type".to_string());
         }
         let pkh = match &tx_out.script.chunks[2].buffer {
             Some(pkh) => pkh,
-            None => return false,
+            None => return Err("pkh not found".to_string()),
         };
         let input_script = &mut tx_input.script;
         if !input_script.is_pkh_input() {
-            return false;
+            return Err("unsupported script type".to_string());
         }
         let key = match self.pkh_key_map.get(pkh) {
             Some(key) => key,
-            None => return false,
+            None => return Err("key not found".to_string()),
         };
         let pub_key = &key.pub_key.buf.to_vec();
         if pub_key.len() != PubKey::SIZE {
-            return false;
+            return Err("pub_key size is invalid".to_string());
         }
         input_script.chunks[1].buffer = Some(pub_key.clone());
         let output_script_buf = tx_out.script.to_iso_buf();
@@ -60,20 +62,18 @@ impl TxSigner {
         );
         let sig_buf = sig.to_iso_buf();
         if sig_buf.len() != TxSignature::SIZE {
-            return false;
+            return Err("sig size is invalid".to_string());
         }
         input_script.chunks[0].buffer = Some(sig_buf.to_vec());
-        tx_input.script = input_script.clone();
-        true
+
+        Ok(self.tx.clone())
     }
 
-    pub fn sign_all(&mut self) -> bool {
+    pub fn sign_all(&mut self) -> Result<Tx, String> {
         for i in 0..self.tx.inputs.len() {
-            if !self.sign(i) {
-                return false;
-            }
+            self.sign(i).map_err(|e| "sign_all: ".to_string() + &e)?;
         }
-        true
+        Ok(self.tx.clone())
     }
 }
 
@@ -117,9 +117,9 @@ mod tests {
         assert_eq!(tx.outputs[0].value, 50);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let signed = tx_signer.sign(0);
+        let tx_res = tx_signer.sign(0);
         let signed_tx = tx_signer.tx;
-        assert!(signed);
+        assert!(tx_res.is_ok());
 
         let tx_input = &signed_tx.inputs[0];
         let tx_out_bn = tx_out_bn_map
@@ -176,11 +176,11 @@ mod tests {
         assert_eq!(tx.outputs[1].value, 100);
 
         let mut tx_signer = TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map);
-        let signed1 = tx_signer.sign(0);
-        let signed2 = tx_signer.sign(1);
+        let tx_res1 = tx_signer.sign(0);
+        let tx_res2 = tx_signer.sign(1);
         let signed_tx = tx_signer.tx;
-        assert!(signed1);
-        assert!(signed2);
+        assert!(tx_res1.is_ok());
+        assert!(tx_res2.is_ok());
 
         let tx_input_1 = &signed_tx.inputs[0];
         let tx_out_bn_1 = tx_out_bn_map
