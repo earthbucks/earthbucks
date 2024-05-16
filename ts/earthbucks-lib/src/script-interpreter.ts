@@ -1160,7 +1160,7 @@ export default class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+            let scriptNum = ScriptNum.fromIsoBuf(this.stack[this.stack.length - 1]);
             if (scriptNum.num < 0n) {
               this.errStr = "negative lockabs";
               break loop;
@@ -1177,7 +1177,7 @@ export default class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            let scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+            let scriptNum = ScriptNum.fromIsoBuf(this.stack[this.stack.length - 1]);
             if (scriptNum.num < 0n) {
               this.errStr = "negative lockrel";
               break loop;

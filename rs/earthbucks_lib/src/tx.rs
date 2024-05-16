@@ -30,7 +30,7 @@ impl HashCache {
 }
 
 // add clone support
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Tx {
     pub version: u8,
     pub inputs: Vec<TxIn>,

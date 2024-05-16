@@ -4,7 +4,7 @@ use crate::script::Script;
 use crate::var_int::VarInt;
 
 // add clone support
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TxIn {
     pub input_tx_id: Vec<u8>,
     pub input_tx_out_num: u32,

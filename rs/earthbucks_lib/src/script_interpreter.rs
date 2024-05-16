@@ -1038,7 +1038,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_iso_buf(self.stack.last().unwrap());
                     if script_num.num < 0.into() {
                         self.err_str = "negative lockabs".to_string();
                         break;
@@ -1053,7 +1053,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_iso_buf(self.stack.last().unwrap());
                     if script_num.num < 0.into() {
                         self.err_str = "negative lockrel".to_string();
                         break;
