@@ -96,6 +96,41 @@ export default class TxSigner {
 
       inputScript.chunks[0].buf = Buffer.from(sigBuf);
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
+    } else if (txOut.script.isPkhx1hOutput()) {
+      const pkh_buf = txOut.script.chunks[3].buf as Buffer;
+      let expired =
+        this.workingBlockNum > prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+      let inputScript = txInput.script;
+      if (expired) {
+        if (inputScript.isExpiredPkhxInput()) {
+          // no need to sign expired pkhx
+          return Ok(this.tx);
+        } else {
+          return new Err("expected expired pkhx input");
+        }
+      }
+      if (!inputScript.isUnexpiredPkhxInput()) {
+        return new Err("expected unexpired pkhx input placeholder");
+      }
+      const keyPair = this.pkhKeyMap.get(pkh_buf);
+      if (!keyPair) {
+        return new Err("key not found");
+      }
+      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
+
+      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputAmount = txOut.value;
+      const sig = this.tx.signNoCache(
+        nIn,
+        keyPair.privKey.toIsoBuf(),
+        outputScriptBuf,
+        outputAmount,
+        TxSignature.SIGHASH_ALL,
+      );
+      const sigBuf = sig.toIsoBuf();
+
+      inputScript.chunks[0].buf = Buffer.from(sigBuf);
+      inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else {
       return new Err("unsupported script type");
     }
