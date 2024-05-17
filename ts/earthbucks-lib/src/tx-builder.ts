@@ -27,9 +27,8 @@ export default class TxBuilder {
     this.workingBlockNum = workingBlockNum;
   }
 
-  addOutput(value: bigint, script: Script): void {
-    const txOutput = new TxOut(value, script);
-    this.tx.outputs.push(txOutput);
+  addOutput(txOut: TxOut): void {
+    this.tx.outputs.push(txOut);
   }
 
   build(): Tx {
@@ -63,7 +62,8 @@ export default class TxBuilder {
     }
     this.inputAmount = inputAmount;
     if (changeAmount > BigInt(0)) {
-      this.addOutput(changeAmount, this.changeScript);
+      const txOut = new TxOut(changeAmount, this.changeScript);
+      this.addOutput(txOut);
     }
     return this.tx;
   }

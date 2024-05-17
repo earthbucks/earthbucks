@@ -35,7 +35,7 @@ describe("TxBuilder", () => {
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(BigInt(50), script);
-    txBuilder.addOutput(BigInt(50), Script.fromIsoStr("").unwrap());
+    txBuilder.addOutput(output);
 
     const tx = txBuilder.build();
 
@@ -45,7 +45,8 @@ describe("TxBuilder", () => {
   });
 
   test("should build an invalid tx when input is insufficient to cover the output", () => {
-    txBuilder.addOutput(BigInt(10000), Script.fromIsoStr("").unwrap());
+    const txOut = new TxOut(BigInt(10000), Script.fromIsoStr("").unwrap());
+    txBuilder.addOutput(txOut);
 
     const tx = txBuilder.build();
 

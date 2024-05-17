@@ -37,7 +37,8 @@ describe("TxVerifier", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
-    txBuilder.addOutput(BigInt(50), Script.fromIsoStr("").unwrap());
+    const txOut = new TxOut(BigInt(50), Script.fromIsoStr("").unwrap());
+    txBuilder.addOutput(txOut);
 
     const tx = txBuilder.build();
 
@@ -67,8 +68,9 @@ describe("TxVerifier", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
-    txBuilder.addOutput(BigInt(100), Script.fromIsoStr("").unwrap());
-    txBuilder.addOutput(BigInt(100), Script.fromIsoStr("").unwrap());
+    const txOut = new TxOut(BigInt(100), Script.fromIsoStr("").unwrap());
+    txBuilder.addOutput(txOut);
+    txBuilder.addOutput(txOut);
 
     const tx = txBuilder.build();
 
