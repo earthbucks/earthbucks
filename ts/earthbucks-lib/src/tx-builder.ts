@@ -6,7 +6,7 @@ import Script from "./script";
 import { Buffer } from "buffer";
 
 export default class TxBuilder {
-  public inputTxOutMap: TxOutBnMap;
+  public inputTxOutBnMap: TxOutBnMap;
   public tx: Tx;
   public changeScript: Script;
   public inputAmount: bigint;
@@ -20,7 +20,7 @@ export default class TxBuilder {
     workingBlockNum: bigint,
   ) {
     this.tx = new Tx(1, [], [], BigInt(0));
-    this.inputTxOutMap = inputTxOutMap;
+    this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = BigInt(0);
     this.lockAbs = lockAbs;
@@ -36,6 +36,7 @@ export default class TxBuilder {
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
+    this.tx.lockAbs = this.lockAbs;
     this.tx.inputs = [];
     const totalSpendAmount = this.tx.outputs.reduce(
       (acc, output) => acc + output.value,
@@ -43,15 +44,20 @@ export default class TxBuilder {
     );
     let changeAmount = BigInt(0);
     let inputAmount = BigInt(0);
-    for (const [txOutId, txOutBn] of this.inputTxOutMap.map) {
-      const isAddressOutput = txOutBn.txOut.script.isPkhOutput();
-      if (!isAddressOutput) {
-        continue;
+    for (const [txOutId, txOutBn] of this.inputTxOutBnMap.map) {
+      const prevBlockNum = txOutBn.blockNum;
+      const txId = TxOutBnMap.nameToTxIdHash(txOutId);
+      const txOutNum = TxOutBnMap.nameToOutputIndex(txOutId);
+
+      let inputScript: Script;
+      // let lockRel: number;
+      if (txOutBn.txOut.script.isPkhOutput()) {
+        inputScript = Script.fromPkhInputPlaceholder();
+      } else {
+        throw new Error("unsupported script type");
       }
-      const txIdHash = TxOutBnMap.nameToTxIdHash(txOutId);
-      const outputIndex = TxOutBnMap.nameToOutputIndex(txOutId);
-      const inputScript = Script.fromPkhInputPlaceholder();
-      const txInput = new TxIn(txIdHash, outputIndex, inputScript, 0xffffffff);
+
+      const txInput = new TxIn(txId, txOutNum, inputScript, 0xffffffff);
       const outputAmount = txOutBn.txOut.value;
       inputAmount += outputAmount;
       this.tx.inputs.push(txInput);
