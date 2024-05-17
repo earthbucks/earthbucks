@@ -51,14 +51,15 @@ export default class TxBuilder {
       const txOutNum = TxOutBnMap.nameToOutputIndex(txOutId);
 
       let inputScript: Script;
-      // let lockRel: number;
+      let lockRel: number;
       if (txOutBn.txOut.script.isPkhOutput()) {
         inputScript = Script.fromPkhInputPlaceholder();
+        lockRel = 0;
       } else {
         return new Err("unsupported script type");
       }
 
-      const txInput = new TxIn(txId, txOutNum, inputScript, 0xffffffff);
+      const txInput = new TxIn(txId, txOutNum, inputScript, lockRel);
       const outputAmount = txOutBn.txOut.value;
       inputAmount += outputAmount;
       this.tx.inputs.push(txInput);
