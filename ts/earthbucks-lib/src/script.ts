@@ -26,6 +26,10 @@ export default class Script {
     return new Ok(chunksRes.map((res) => res.unwrap()).join(" "));
   }
 
+  static fromEmpty(): Script {
+    return new Script();
+  }
+
   static fromIsoStr(str: string): Result<Script, string> {
     const script = new Script();
     if (str === "") {

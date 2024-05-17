@@ -14,7 +14,7 @@ describe("TxOutBnMap", () => {
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
-    txOut = new TxOut(BigInt(100), Script.fromIsoStr("").unwrap());
+    txOut = new TxOut(BigInt(100), Script.fromEmpty());
     txOutBn = new TxOutBn(txOut, 0n);
     txIdHash = Buffer.from([1, 2, 3, 4]);
     outputIndex = 0;

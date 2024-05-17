@@ -32,7 +32,7 @@ describe("TxSigner", () => {
       txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
     }
 
-    const changeScript = Script.fromIsoStr("").unwrap();
+    const changeScript = Script.fromEmpty();
     txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
   });
 

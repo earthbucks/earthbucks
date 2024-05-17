@@ -219,16 +219,14 @@ describe("Tx", () => {
     test("sighash", () => {
       const version = 1;
       const inputs: TxIn[] = [
-        new TxIn(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
+        new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
       ];
-      const outputs: TxOut[] = [
-        new TxOut(BigInt(100), Script.fromIsoStr("").unwrap()),
-      ];
+      const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
       const lockAbs = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const script = Script.fromIsoStr("").unwrap();
+      const script = Script.fromEmpty();
       const scriptU8Vec = script.toIsoBuf();
       const result = tx.sighashNoCache(
         0,
@@ -247,16 +245,14 @@ describe("Tx", () => {
     test("sighash with cache", () => {
       const version = 1;
       const inputs: TxIn[] = [
-        new TxIn(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
+        new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
       ];
-      const outputs: TxOut[] = [
-        new TxOut(BigInt(100), Script.fromIsoStr("").unwrap()),
-      ];
+      const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
       const lockAbs = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const script = Script.fromIsoStr("").unwrap();
+      const script = Script.fromEmpty();
       const scriptU8Vec = script.toIsoBuf();
       const hashCache = new HashCache();
       const result = tx.sighashWithCache(
@@ -286,11 +282,9 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
+          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
-        const outputs: TxOut[] = [
-          new TxOut(BigInt(100), Script.fromIsoStr("").unwrap()),
-        ];
+        const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
         const tx = new Tx(1, inputs, outputs, BigInt(0));
 
         // Act
@@ -321,15 +315,13 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
+          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
           "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
-        const outputs: TxOut[] = [
-          new TxOut(BigInt(100), Script.fromIsoStr("").unwrap()),
-        ];
+        const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
         expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
@@ -377,15 +369,13 @@ describe("Tx", () => {
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromIsoStr("").unwrap(), 0),
+          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
           "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
-        const outputs: TxOut[] = [
-          new TxOut(BigInt(100), Script.fromIsoStr("").unwrap()),
-        ];
+        const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
         expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
           "000000000000006400",
         );

@@ -31,7 +31,7 @@ describe("TxVerifier", () => {
       txOutMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
     }
 
-    const changeScript = Script.fromIsoStr("").unwrap();
+    const changeScript = Script.fromEmpty();
     txBuilder = new TxBuilder(txOutMap, changeScript, 0n, 0n);
   });
 
@@ -39,7 +39,7 @@ describe("TxVerifier", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
-    const txOut = new TxOut(BigInt(50), Script.fromIsoStr("").unwrap());
+    const txOut = new TxOut(BigInt(50), Script.fromEmpty());
     txBuilder.addOutput(txOut);
 
     const tx = txBuilder.build().unwrap();
@@ -70,7 +70,7 @@ describe("TxVerifier", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
-    const txOut = new TxOut(BigInt(100), Script.fromIsoStr("").unwrap());
+    const txOut = new TxOut(BigInt(100), Script.fromEmpty());
     txBuilder.addOutput(txOut);
     txBuilder.addOutput(txOut);
 
