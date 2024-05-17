@@ -1,6 +1,6 @@
 import Tx from "./tx";
 import PkhKeyMap from "./pkh-key-map";
-import TxOutMap from "./tx-out-map";
+import TxOutBnMap from "./tx-out-bn-map";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
 import PubKey from "./pub-key";
@@ -8,9 +8,9 @@ import PubKey from "./pub-key";
 export default class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
-  public txOutMap: TxOutMap;
+  public txOutMap: TxOutBnMap;
 
-  constructor(tx: Tx, txOutMap: TxOutMap, pkhKeyMap: PkhKeyMap) {
+  constructor(tx: Tx, txOutMap: TxOutBnMap, pkhKeyMap: PkhKeyMap) {
     this.tx = tx;
     this.txOutMap = txOutMap;
     this.pkhKeyMap = pkhKeyMap;
@@ -20,14 +20,14 @@ export default class TxSigner {
     const txInput = this.tx.inputs[nIn];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
-    const txOut = this.txOutMap.get(txOutHash, outputIndex);
-    if (!txOut) {
+    const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
+    if (!txOutBn) {
       return false;
     }
-    if (!txOut.script.isPkhOutput()) {
+    if (!txOutBn.txOut.script.isPkhOutput()) {
       return false;
     }
-    const pkh = txOut.script.chunks[2].buf as Buffer;
+    const pkh = txOutBn.txOut.script.chunks[2].buf as Buffer;
     const inputScript = txInput.script;
     if (!inputScript.isPkhInput()) {
       return false;
@@ -41,8 +41,8 @@ export default class TxSigner {
       return false;
     }
     inputScript.chunks[1].buf = Buffer.from(pubKey);
-    const outputScriptBuf = txOut.script.toIsoBuf();
-    const outputAmount = txOut.value;
+    const outputScriptBuf = txOutBn.txOut.script.toIsoBuf();
+    const outputAmount = txOutBn.txOut.value;
     const sig = this.tx.signNoCache(
       nIn,
       key.privKey.toIsoBuf(),

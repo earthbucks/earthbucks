@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "@jest/globals";
 import TxBuilder from "../src/tx-builder";
-import TxOutMap from "../src/tx-out-map";
+import TxOutBnMap from "../src/tx-out-bn-map";
 import TxOut from "../src/tx-out";
 import Script from "../src/script";
 import KeyPair from "../src/key-pair";
@@ -9,15 +9,16 @@ import PkhKeyMap from "../src/pkh-key-map";
 import TxSigner from "../src/tx-signer";
 import TxVerifier from "../src/tx-verifier";
 import { Buffer } from "buffer";
+import TxOutBn from "../src/tx-out-bn";
 
 describe("TxVerifier", () => {
   let txBuilder: TxBuilder;
   let txSigner: TxSigner;
-  let txOutMap: TxOutMap;
+  let txOutMap: TxOutBnMap;
   let pkhKeyMap: PkhKeyMap;
 
   beforeEach(() => {
-    txOutMap = new TxOutMap();
+    txOutMap = new TxOutBnMap();
     pkhKeyMap = new PkhKeyMap();
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
@@ -25,8 +26,9 @@ describe("TxVerifier", () => {
       const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
-      const output = new TxOut(BigInt(100), script);
-      txOutMap.add(output, Buffer.from("00".repeat(32), "hex"), i);
+      const txOut = new TxOut(BigInt(100), script);
+      const txOutBn = new TxOutBn(txOut, 0n);
+      txOutMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
     }
 
     const changeScript = Script.fromIsoStr("").unwrap();

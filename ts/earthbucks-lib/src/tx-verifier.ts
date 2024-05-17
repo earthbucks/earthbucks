@@ -1,16 +1,16 @@
 import Tx, { HashCache } from "./tx";
-import TxOutMap from "./tx-out-map";
+import TxOutBnMap from "./tx-out-bn-map";
 import ScriptInterpreter from "./script-interpreter";
 import { Buffer } from "buffer";
 
 export default class TxVerifier {
   public tx: Tx;
-  public txOutMap: TxOutMap;
+  public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
 
-  constructor(tx: Tx, txOutMap: TxOutMap) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap) {
     this.tx = tx;
-    this.txOutMap = txOutMap;
+    this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
   }
 
@@ -18,11 +18,11 @@ export default class TxVerifier {
     const txInput = this.tx.inputs[nIn];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
-    const txOut = this.txOutMap.get(txOutHash, outputIndex);
-    if (!txOut) {
+    const txOutBn = this.txOutBnMap.get(txOutHash, outputIndex);
+    if (!txOutBn) {
       return false;
     }
-    const outputScript = txOut.script;
+    const outputScript = txOutBn.txOut.script;
     const inputScript = txInput.script;
     if (!inputScript.isPushOnly()) {
       return false;
@@ -35,7 +35,7 @@ export default class TxVerifier {
       this.tx,
       nIn,
       stack,
-      txOut.value,
+      txOutBn.txOut.value,
       this.hashCache,
     );
     const result = scriptInterpreter.evalScript();
@@ -58,11 +58,11 @@ export default class TxVerifier {
       totalOutputValue += output.value;
     }
     for (const input of this.tx.inputs) {
-      const txOut = this.txOutMap.get(input.inputTxId, input.inputTxNOut);
-      if (!txOut) {
+      const txOutBn = this.txOutBnMap.get(input.inputTxId, input.inputTxNOut);
+      if (!txOutBn) {
         return false;
       }
-      totalInputValue += txOut.value;
+      totalInputValue += txOutBn.txOut.value;
     }
     return totalOutputValue === totalInputValue;
   }
