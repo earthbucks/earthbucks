@@ -92,10 +92,10 @@ impl TxSigner {
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
             let output_script_buf = tx_out.script.to_iso_buf();
             let output_amount = tx_out.value;
-            let private_key_array = key_pair.priv_key.buf;
+            let priv_key_buf = key_pair.priv_key.buf;
             let sig = tx_clone.sign_no_cache(
                 n_in,
-                private_key_array,
+                priv_key_buf,
                 output_script_buf.to_vec(),
                 output_amount,
                 TxSignature::SIGHASH_ALL,
