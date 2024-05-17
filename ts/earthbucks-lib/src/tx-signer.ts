@@ -10,11 +10,18 @@ export default class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
   public txOutMap: TxOutBnMap;
+  public workingBlockNum: bigint;
 
-  constructor(tx: Tx, txOutMap: TxOutBnMap, pkhKeyMap: PkhKeyMap) {
+  constructor(
+    tx: Tx,
+    txOutMap: TxOutBnMap,
+    pkhKeyMap: PkhKeyMap,
+    workingBlockNum: bigint,
+  ) {
     this.tx = tx;
     this.txOutMap = txOutMap;
     this.pkhKeyMap = pkhKeyMap;
+    this.workingBlockNum = workingBlockNum;
   }
 
   sign(nIn: number): Result<Tx, string> {
@@ -25,9 +32,10 @@ export default class TxSigner {
     if (!txOutBn) {
       return new Err("tx_out not found");
     }
+    const txOut = txOutBn.txOut;
 
-    if (txOutBn.txOut.script.isPkhOutput()) {
-      const pkh_buf = txOutBn.txOut.script.chunks[2].buf as Buffer;
+    if (txOut.script.isPkhOutput()) {
+      const pkh_buf = txOut.script.chunks[2].buf as Buffer;
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
         return new Err("expected pkh input placeholder");
@@ -38,8 +46,8 @@ export default class TxSigner {
       }
       const pubKey = key.pubKey.toIsoBuf();
       inputScript.chunks[1].buf = Buffer.from(pubKey);
-      const outputScriptBuf = txOutBn.txOut.script.toIsoBuf();
-      const outputAmount = txOutBn.txOut.value;
+      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
         key.privKey.toIsoBuf(),
@@ -49,6 +57,9 @@ export default class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
       inputScript.chunks[0].buf = Buffer.from(sigBuf);
+    } else if (txOut.script.isPkhx90dOutput()) {
+      return new Err("unsupported script type");
+      // const pkh_buf = txOut.script.chunks[3].buf as Buffer;
     } else {
       return new Err("unsupported script type");
     }

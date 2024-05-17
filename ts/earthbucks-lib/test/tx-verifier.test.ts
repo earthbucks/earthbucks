@@ -48,7 +48,7 @@ describe("TxVerifier", () => {
     expect(tx.outputs.length).toBe(2);
     expect(tx.outputs[0].value).toBe(BigInt(50));
 
-    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap);
+    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap, 0n);
     const signed = txSigner.sign(0);
     expect(signed.ok).toBe(true);
 
@@ -81,7 +81,7 @@ describe("TxVerifier", () => {
     expect(tx.outputs[0].value).toBe(BigInt(100));
     expect(tx.outputs[1].value).toBe(BigInt(100));
 
-    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap);
+    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap, 0n);
     const signed1 = txSigner.sign(0);
     expect(signed1.ok).toBe(true);
     const signed2 = txSigner.sign(1);
