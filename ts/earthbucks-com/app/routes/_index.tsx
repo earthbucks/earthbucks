@@ -51,7 +51,7 @@ export default function Index() {
             target="_blank"
             className="underline"
           >
-            X (Twitter)
+            X
           </a>{" "}
           &middot;{" "}
           <a
