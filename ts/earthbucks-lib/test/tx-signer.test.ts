@@ -43,7 +43,7 @@ describe("TxSigner", () => {
     const output = new TxOut(BigInt(50), script);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
@@ -85,7 +85,7 @@ describe("TxSigner", () => {
     txBuilder.addOutput(output);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(2);
     expect(tx.outputs.length).toBe(2);

@@ -39,7 +39,7 @@ describe("TxBuilder", () => {
     const output = new TxOut(BigInt(50), script);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
@@ -50,7 +50,7 @@ describe("TxBuilder", () => {
     const txOut = new TxOut(BigInt(10000), Script.fromIsoStr("").unwrap());
     txBuilder.addOutput(txOut);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(5);
     expect(tx.outputs.length).toBe(1);

@@ -4,6 +4,7 @@ import TxOut from "./tx-out";
 import TxOutBnMap from "./tx-out-bn-map";
 import Script from "./script";
 import { Buffer } from "buffer";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;
@@ -31,7 +32,7 @@ export default class TxBuilder {
     this.tx.outputs.push(txOut);
   }
 
-  build(): Tx {
+  build(): Result<Tx, string> {
     // "tx fees", also called "change fees", are zero on earthbucks. this
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
@@ -54,7 +55,7 @@ export default class TxBuilder {
       if (txOutBn.txOut.script.isPkhOutput()) {
         inputScript = Script.fromPkhInputPlaceholder();
       } else {
-        throw new Error("unsupported script type");
+        return new Err("unsupported script type");
       }
 
       const txInput = new TxIn(txId, txOutNum, inputScript, 0xffffffff);
@@ -71,6 +72,6 @@ export default class TxBuilder {
       const txOut = new TxOut(changeAmount, this.changeScript);
       this.addOutput(txOut);
     }
-    return this.tx;
+    return new Ok(this.tx);
   }
 }

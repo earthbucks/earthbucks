@@ -42,7 +42,7 @@ describe("TxVerifier", () => {
     const txOut = new TxOut(BigInt(50), Script.fromIsoStr("").unwrap());
     txBuilder.addOutput(txOut);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
@@ -74,7 +74,7 @@ describe("TxVerifier", () => {
     txBuilder.addOutput(txOut);
     txBuilder.addOutput(txOut);
 
-    const tx = txBuilder.build();
+    const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(2);
     expect(tx.outputs.length).toBe(2);
