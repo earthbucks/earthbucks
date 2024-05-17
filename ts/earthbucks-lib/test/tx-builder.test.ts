@@ -27,7 +27,7 @@ describe("TxBuilder", () => {
     }
 
     const changeScript = Script.fromIsoStr("").unwrap();
-    txBuilder = new TxBuilder(txOutMap, changeScript);
+    txBuilder = new TxBuilder(txOutMap, changeScript, 0n, 0n);
   });
 
   test("should build a valid tx when input is enough to cover the output", () => {

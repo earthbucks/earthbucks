@@ -10,12 +10,21 @@ export default class TxBuilder {
   public tx: Tx;
   public changeScript: Script;
   public inputAmount: bigint;
+  public lockAbs: bigint;
+  public workingBlockNum: bigint;
 
-  constructor(inputTxOutMap: TxOutMap, changeScript: Script) {
+  constructor(
+    inputTxOutMap: TxOutMap,
+    changeScript: Script,
+    lockAbs: bigint,
+    workingBlockNum: bigint,
+  ) {
     this.tx = new Tx(1, [], [], BigInt(0));
     this.inputTxOutMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = BigInt(0);
+    this.lockAbs = lockAbs;
+    this.workingBlockNum = workingBlockNum;
   }
 
   addOutput(value: bigint, script: Script): void {

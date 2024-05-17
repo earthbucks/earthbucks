@@ -30,7 +30,7 @@ describe("TxVerifier", () => {
     }
 
     const changeScript = Script.fromIsoStr("").unwrap();
-    txBuilder = new TxBuilder(txOutMap, changeScript);
+    txBuilder = new TxBuilder(txOutMap, changeScript, 0n, 0n);
   });
 
   test("should sign and verify a tx", () => {
