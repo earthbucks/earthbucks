@@ -116,6 +116,7 @@ impl<'a> TxVerifier<'a> {
     }
 
     pub fn verify_is_not_coinbase(&self) -> bool {
+        // TODO: Allow coinbases to have multiple inputs
         if self.tx.inputs.len() == 1 && self.tx.inputs[0].is_coinbase() {
             return false;
         }

@@ -56,7 +56,7 @@ describe("TxVerifier", () => {
     const verifiedInput = txVerifier.verifyInputScript(0);
     expect(verifiedInput).toBe(true);
 
-    const verifiedScripts = txVerifier.verifyScripts();
+    const verifiedScripts = txVerifier.verifyInputs();
     expect(verifiedScripts).toBe(true);
 
     const verifiedOutputValues = txVerifier.verifyOutputValues();
@@ -93,7 +93,7 @@ describe("TxVerifier", () => {
     const verifiedInput2 = txVerifier.verifyInputScript(1);
     expect(verifiedInput2).toBe(true);
 
-    const verifiedScripts = txVerifier.verifyScripts();
+    const verifiedScripts = txVerifier.verifyInputs();
     expect(verifiedScripts).toBe(true);
 
     const verifiedOutputValues = txVerifier.verifyOutputValues();

@@ -57,11 +57,29 @@ export default class TxVerifier {
     return this.blockNum >= prevBlockNum + BigInt(lockRel);
   }
 
-  verifyScripts(): boolean {
+  verifyInputs(): boolean {
     for (let i = 0; i < this.tx.inputs.length; i++) {
       if (!this.verifyInputScript(i)) {
         return false;
       }
+      if (!this.verifyInputLockRel(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  verifyNoDoubleSpend(): boolean {
+    const spentOutputs = new Set();
+    for (const input of this.tx.inputs) {
+      const txOut = this.txOutBnMap.get(input.inputTxId, input.inputTxNOut);
+      if (!txOut) {
+        return false;
+      }
+      if (spentOutputs.has(txOut)) {
+        return false;
+      }
+      spentOutputs.add(txOut);
     }
     return true;
   }
@@ -82,7 +100,37 @@ export default class TxVerifier {
     return totalOutputValue === totalInputValue;
   }
 
+  verifyIsNotCoinbase(): boolean {
+    // TODO: Allow coinbases to have multiple inputs
+    if (this.tx.inputs.length === 1 && this.tx.inputs[0].isCoinbase()) {
+      return false;
+    }
+    return true;
+  }
+
+  verifyLockAbs(): boolean {
+    if (this.tx.lockAbs > this.blockNum) {
+      return false;
+    }
+    return true;
+  }
+
   verify(): boolean {
-    return this.verifyScripts() && this.verifyOutputValues();
+    if (!this.verifyLockAbs()) {
+      return false;
+    }
+    if (!this.verifyIsNotCoinbase()) {
+      return false;
+    }
+    if (!this.verifyNoDoubleSpend()) {
+      return false;
+    }
+    if (!this.verifyInputs()) {
+      return false;
+    }
+    if (!this.verifyOutputValues()) {
+      return false;
+    }
+    return true;
   }
 }
