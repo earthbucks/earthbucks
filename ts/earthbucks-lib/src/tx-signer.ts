@@ -25,32 +25,34 @@ export default class TxSigner {
     if (!txOutBn) {
       return new Err("tx_out not found");
     }
-    if (!txOutBn.txOut.script.isPkhOutput()) {
+
+    if (txOutBn.txOut.script.isPkhOutput()) {
+      const pkh_buf = txOutBn.txOut.script.chunks[2].buf as Buffer;
+      const inputScript = txInput.script;
+      if (!inputScript.isPkhInput()) {
+        return new Err("expected pkh input placeholder");
+      }
+      const key = this.pkhKeyMap.get(pkh_buf);
+      if (!key) {
+        return new Err("key not found");
+      }
+      const pubKey = key.pubKey.toIsoBuf();
+      inputScript.chunks[1].buf = Buffer.from(pubKey);
+      const outputScriptBuf = txOutBn.txOut.script.toIsoBuf();
+      const outputAmount = txOutBn.txOut.value;
+      const sig = this.tx.signNoCache(
+        nIn,
+        key.privKey.toIsoBuf(),
+        outputScriptBuf,
+        outputAmount,
+        TxSignature.SIGHASH_ALL,
+      );
+      const sigBuf = sig.toIsoBuf();
+      inputScript.chunks[0].buf = Buffer.from(sigBuf);
+    } else {
       return new Err("unsupported script type");
     }
-    const pkh_buf = txOutBn.txOut.script.chunks[2].buf as Buffer;
-    const inputScript = txInput.script;
-    if (!inputScript.isPkhInput()) {
-      return new Err("expected pkh input placeholder");
-    }
-    const key = this.pkhKeyMap.get(pkh_buf);
-    if (!key) {
-      return new Err("key not found");
-    }
-    const pubKey = key.pubKey.toIsoBuf();
-    inputScript.chunks[1].buf = Buffer.from(pubKey);
-    const outputScriptBuf = txOutBn.txOut.script.toIsoBuf();
-    const outputAmount = txOutBn.txOut.value;
-    const sig = this.tx.signNoCache(
-      nIn,
-      key.privKey.toIsoBuf(),
-      outputScriptBuf,
-      outputAmount,
-      TxSignature.SIGHASH_ALL,
-    );
-    const sigBuf = sig.toIsoBuf();
-    inputScript.chunks[0].buf = Buffer.from(sigBuf);
-    txInput.script = inputScript;
+
     return new Ok(this.tx);
   }
 
