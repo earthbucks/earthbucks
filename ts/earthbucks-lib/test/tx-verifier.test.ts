@@ -52,7 +52,7 @@ describe("TxVerifier", () => {
     const signed = txSigner.sign(0);
     expect(signed.ok).toBe(true);
 
-    const txVerifier = new TxVerifier(tx, txOutMap);
+    const txVerifier = new TxVerifier(tx, txOutMap, 0n);
     const verifiedInput = txVerifier.verifyInputScript(0);
     expect(verifiedInput).toBe(true);
 
@@ -87,7 +87,7 @@ describe("TxVerifier", () => {
     const signed2 = txSigner.sign(1);
     expect(signed2.ok).toBe(true);
 
-    const txVerifier = new TxVerifier(tx, txOutMap);
+    const txVerifier = new TxVerifier(tx, txOutMap, 0n);
     const verifiedInput1 = txVerifier.verifyInputScript(0);
     expect(verifiedInput1).toBe(true);
     const verifiedInput2 = txVerifier.verifyInputScript(1);

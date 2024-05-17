@@ -7,11 +7,13 @@ export default class TxVerifier {
   public tx: Tx;
   public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
+  public workingBlockNum: bigint;
 
-  constructor(tx: Tx, txOutBnMap: TxOutBnMap) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap, workingBlockNum: bigint) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
+    this.workingBlockNum = workingBlockNum;
   }
 
   verifyInputScript(nIn: number): boolean {
