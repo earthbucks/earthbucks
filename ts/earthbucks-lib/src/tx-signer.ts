@@ -4,6 +4,7 @@ import TxOutBnMap from "./tx-out-bn-map";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
 import PubKey from "./pub-key";
+import { Result, Ok, Err } from "./ts-results/result";
 
 export default class TxSigner {
   public tx: Tx;
@@ -16,30 +17,27 @@ export default class TxSigner {
     this.pkhKeyMap = pkhKeyMap;
   }
 
-  sign(nIn: number): boolean {
+  sign(nIn: number): Result<Tx, string> {
     const txInput = this.tx.inputs[nIn];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
     if (!txOutBn) {
-      return false;
+      return new Err("tx_out not found");
     }
     if (!txOutBn.txOut.script.isPkhOutput()) {
-      return false;
+      return new Err("unsupported script type");
     }
-    const pkh = txOutBn.txOut.script.chunks[2].buf as Buffer;
+    const pkh_buf = txOutBn.txOut.script.chunks[2].buf as Buffer;
     const inputScript = txInput.script;
     if (!inputScript.isPkhInput()) {
-      return false;
+      return new Err("expected pkh input placeholder");
     }
-    const key = this.pkhKeyMap.get(pkh);
+    const key = this.pkhKeyMap.get(pkh_buf);
     if (!key) {
-      return false;
+      return new Err("key not found");
     }
     const pubKey = key.pubKey.toIsoBuf();
-    if (pubKey.length !== PubKey.SIZE) {
-      return false;
-    }
     inputScript.chunks[1].buf = Buffer.from(pubKey);
     const outputScriptBuf = txOutBn.txOut.script.toIsoBuf();
     const outputAmount = txOutBn.txOut.value;
@@ -51,20 +49,18 @@ export default class TxSigner {
       TxSignature.SIGHASH_ALL,
     );
     const sigBuf = sig.toIsoBuf();
-    if (sigBuf.length !== 65) {
-      return false;
-    }
     inputScript.chunks[0].buf = Buffer.from(sigBuf);
     txInput.script = inputScript;
-    return true;
+    return new Ok(this.tx);
   }
 
-  signAll(): boolean {
+  signAll(): Result<Tx, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      if (!this.sign(i)) {
-        return false;
+      let res = this.sign(i);
+      if (res.err) {
+        return new Err("sign_all: " + res.err);
       }
     }
-    return true;
+    return new Ok(this.tx);
   }
 }

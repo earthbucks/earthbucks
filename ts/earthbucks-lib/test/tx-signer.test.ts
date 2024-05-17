@@ -51,7 +51,7 @@ describe("TxSigner", () => {
 
     txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap);
     const signed = txSigner.sign(0);
-    expect(signed).toBe(true);
+    expect(signed.ok).toBe(true);
 
     const txInput = tx.inputs[0];
     const txOutBn = txOutBnMap.get(txInput.inputTxId, txInput.inputTxNOut);
@@ -94,9 +94,9 @@ describe("TxSigner", () => {
 
     txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap);
     const signed1 = txSigner.sign(0);
-    expect(signed1).toBe(true);
+    expect(signed1.ok).toBe(true);
     const signed2 = txSigner.sign(1);
-    expect(signed2).toBe(true);
+    expect(signed2.ok).toBe(true);
 
     const txInput1 = tx.inputs[0];
     const txOutput1 = txOutBnMap.get(txInput1.inputTxId, txInput1.inputTxNOut);
