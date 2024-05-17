@@ -136,11 +136,11 @@ impl Script {
         Self::from_pkh_input(&sig_buf, &pub_key)
     }
 
-    // PKHX 3M = PubKey Hash with 3 Month Expiry
-    // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
-    pub const PKHX_3M_LOCK_REL: u32 = 13104;
+    // PKHX 90D = PubKey Hash with Expiry: 90 Days
+    // 13104 blocks = 2016 blocks / 14 * 90
+    pub const PKHX_90D_LOCK_REL: u32 = 12960;
 
-    pub fn from_pkhx_3m_output(pkh: &[u8; 32]) -> Self {
+    pub fn from_pkhx_90d_output(pkh: &[u8; 32]) -> Self {
         let mut script = Self::new(Vec::new());
         script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
@@ -156,7 +156,7 @@ impl Script {
             .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
         script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
         script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(Script::PKHX_3M_LOCK_REL).to_iso_buf(),
+            ScriptNum::from_u32(Script::PKHX_90D_LOCK_REL).to_iso_buf(),
         ));
         script
             .chunks
@@ -167,8 +167,7 @@ impl Script {
         script
     }
 
-    pub fn is_pkhx_3m_output(&self) -> bool {
-        let lock_rel: u32 = 13104;
+    pub fn is_pkhx_90d_output(&self) -> bool {
         self.chunks.len() == 12
             && self.chunks[0].opcode == Opcode::OP_IF
             && self.chunks[1].opcode == Opcode::OP_DUP
@@ -185,14 +184,14 @@ impl Script {
             && u16::from_be_bytes([
                 self.chunks[7].buffer.as_ref().unwrap()[0],
                 self.chunks[7].buffer.as_ref().unwrap()[1],
-            ]) == lock_rel as u16
+            ]) == Script::PKHX_90D_LOCK_REL as u16
             && self.chunks[8].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[9].opcode == Opcode::OP_DROP
             && self.chunks[10].opcode == Opcode::OP_1
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
-    // PKHX 1H = PubKey Hash with 1 Hour Expiry
+    // PKHX 1H = PubKey Hash Expiry: 1 Hour
     // 6 blocks = 1 hour for 10 min blocks
     pub const PKHX_1H_LOCK_REL: u32 = 6;
 
@@ -301,7 +300,7 @@ impl Script {
     }
 
     pub fn is_standard_output(&self) -> bool {
-        self.is_pkhx_3m_output() || self.is_pkhx_1h_output()
+        self.is_pkhx_90d_output() || self.is_pkhx_1h_output()
     }
 }
 

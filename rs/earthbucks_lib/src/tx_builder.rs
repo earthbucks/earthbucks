@@ -55,12 +55,12 @@ impl TxBuilder {
             if tx_out.script.is_pkh_output() {
                 input_script = Script::from_pkh_input_placeholder();
                 lock_rel = 0;
-            } else if tx_out.script.is_pkhx_3m_output() {
+            } else if tx_out.script.is_pkhx_90d_output() {
                 let expired =
-                    self.working_block_num > prev_block_num + Script::PKHX_3M_LOCK_REL as u64;
+                    self.working_block_num > prev_block_num + Script::PKHX_90D_LOCK_REL as u64;
                 if expired {
                     input_script = Script::from_expired_pkhx_input();
-                    lock_rel = Script::PKHX_3M_LOCK_REL;
+                    lock_rel = Script::PKHX_90D_LOCK_REL;
                 } else {
                     input_script = Script::from_unexpired_pkhx_input_placeholder();
                     lock_rel = 0;

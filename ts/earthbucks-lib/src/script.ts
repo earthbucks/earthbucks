@@ -136,11 +136,11 @@ export default class Script {
     ]);
   }
 
-  // PKHX 3M = PubKey Hash with 3 Month Expiry
-  // 13104 blocks = 2016 blocks / 2 * 52 / 12 * 3
-  static readonly PKHX_3M_LOCK_REL: number = 13104;
+  // PKHX 90D = PubKey Hash with Expiry: 90 Days
+  // 13104 blocks = 2016 blocks / 14 * 90
+  static readonly PKHX_90D_LOCK_REL: number = 12960;
 
-  static fromPkh3mxOutput(pkh: Buffer): Script {
+  static fromPkhx90dOutput(pkh: Buffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
@@ -150,7 +150,7 @@ export default class Script {
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHX_3M_LOCK_REL).toIsoBuf(),
+        ScriptNum.fromNumber(Script.PKHX_90D_LOCK_REL).toIsoBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),
@@ -159,7 +159,7 @@ export default class Script {
     ]);
   }
 
-  isPkhx3mOutput(): boolean {
+  isPkhx90dOutput(): boolean {
     return (
       this.chunks.length === 12 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
@@ -172,7 +172,7 @@ export default class Script {
       this.chunks[6].opcode === Opcode.OP_ELSE &&
       this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[7].buf?.length === 2 &&
-      this.chunks[7].buf?.readUInt16BE(0) === Script.PKHX_3M_LOCK_REL &&
+      this.chunks[7].buf?.readUInt16BE(0) === Script.PKHX_90D_LOCK_REL &&
       this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[9].opcode === Opcode.OP_DROP &&
       this.chunks[10].opcode === Opcode.OP_1 &&
@@ -180,7 +180,7 @@ export default class Script {
     );
   }
 
-  // PKH1HX = PubKey Hash with 1 Hour Expiry
+  // PKHX 1H = PubKey Hash Expiry: 1 Hour
   // 6 blocks = 1 hour for 10 min blocks
   static readonly PKHX_1H_LOCK_REL: number = 6;
 
@@ -270,6 +270,6 @@ export default class Script {
   }
 
   isStandardOutput(): boolean {
-    return this.isPkhx3mOutput() || this.isPkhx1hOutput();
+    return this.isPkhx90dOutput() || this.isPkhx1hOutput();
   }
 }

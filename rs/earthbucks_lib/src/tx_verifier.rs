@@ -418,7 +418,7 @@ mod tests {
     }
 
     #[test]
-    fn should_sign_and_verify_unexpired_pkhx_3m() {
+    fn should_sign_and_verify_unexpired_pkhx_90d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
@@ -426,7 +426,7 @@ mod tests {
             let key = KeyPair::from_random();
             let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
             pkh_key_map.add(key, &pkh.buf);
-            let script = Script::from_pkhx_3m_output(&pkh.buf);
+            let script = Script::from_pkhx_90d_output(&pkh.buf);
             let output = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
@@ -469,16 +469,16 @@ mod tests {
     }
 
     #[test]
-    fn should_sign_and_verify_expired_pkhx_3m() {
+    fn should_sign_and_verify_expired_pkhx_90d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHX_3M_LOCK_REL as u64 + 1;
+        let working_block_num: u64 = Script::PKHX_90D_LOCK_REL as u64 + 1;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
             let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
             pkh_key_map.add(key, &pkh.buf);
-            let script = Script::from_pkhx_3m_output(&pkh.buf);
+            let script = Script::from_pkhx_90d_output(&pkh.buf);
             let output = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
