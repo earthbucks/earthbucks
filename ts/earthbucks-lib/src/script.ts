@@ -247,6 +247,12 @@ export default class Script {
     );
   }
 
+  fromUnexpredPkhxInputPlaceholder(): Script {
+    const sig = Buffer.alloc(TxSignature.SIZE);
+    const pubKey = Buffer.alloc(PubKey.SIZE);
+    return Script.fromUnexpiredPkhxInput(sig, pubKey);
+  }
+
   isPushOnly(): boolean {
     return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }
