@@ -9,7 +9,7 @@ export default class MerkleTxs {
 
   constructor(txs: Tx[]) {
     if (txs.length === 0) {
-      throw new Error("Cannot create Merkle tree from empty array");
+      throw Error("Cannot create Merkle tree from empty array");
     }
     this.txs = txs;
     const hashedDatas = txs.map((tx) => tx.id());

@@ -16,13 +16,13 @@ export default class IsoBufReader {
 
   read(len: number): Result<Buffer, string> {
     if (this.pos + len > this.buf.length) {
-      return new Err("read: not enough bytes left in the buffer to read");
+      return Err("read: not enough bytes left in the buffer to read");
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = Buffer.alloc(len);
     newBuf.set(buf);
     this.pos += len;
-    return new Ok(newBuf);
+    return Ok(newBuf);
   }
 
   readRemainder(): Result<Buffer, string> {
@@ -34,10 +34,10 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt8(this.pos);
     } catch (err) {
-      return new Err("read_u8: unable to read 1 byte: " + err);
+      return Err("read_u8: unable to read 1 byte: " + err);
     }
     this.pos += 1;
-    return new Ok(val);
+    return Ok(val);
   }
 
   readU16BE(): Result<number, string> {
@@ -45,10 +45,10 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt16BE(this.pos);
     } catch (err) {
-      return new Err("read_u16_be: unable to read 2 bytes: " + err);
+      return Err("read_u16_be: unable to read 2 bytes: " + err);
     }
     this.pos += 2;
-    return new Ok(val);
+    return Ok(val);
   }
 
   readU32BE(): Result<number, string> {
@@ -56,10 +56,10 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt32BE(this.pos);
     } catch (err) {
-      return new Err("read_u32_be: unable to read 4 bytes: " + err);
+      return Err("read_u32_be: unable to read 4 bytes: " + err);
     }
     this.pos += 4;
-    return new Ok(val);
+    return Ok(val);
   }
 
   readU64BE(): Result<bigint, string> {
@@ -67,10 +67,10 @@ export default class IsoBufReader {
     try {
       val = this.buf.readBigUInt64BE(this.pos);
     } catch (err) {
-      return new Err("read_u64_be: unable to read 8 bytes: " + err);
+      return Err("read_u64_be: unable to read 8 bytes: " + err);
     }
     this.pos += 8;
-    return new Ok(val);
+    return Ok(val);
   }
 
   readVarIntBuf(): Result<Buffer, string> {
@@ -90,9 +90,9 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(0) < 0xfd) {
-        return new Err("read_var_int_buf 3: non-minimal varint encoding");
+        return Err("read_var_int_buf 3: non-minimal varint encoding");
       }
-      return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xfe) {
       const res = this.read(4).mapErr(
         (err) => `read_var_int_buf 4: unable to read 4 bytes: ${err}`,
@@ -102,9 +102,9 @@ export default class IsoBufReader {
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(0) < 0x10000) {
-        return new Err("read_var_int_buf 5: non-minimal varint encoding");
+        return Err("read_var_int_buf 5: non-minimal varint encoding");
       }
-      return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xff) {
       const res = this.read(8).mapErr(
         (err) => `read_var_int_buf 6: unable to read 8 bytes: ${err}`,
@@ -115,11 +115,11 @@ export default class IsoBufReader {
       const buf = res.unwrap();
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
-        return new Err("read_var_int_buf 7: non-minimal varint encoding");
+        return Err("read_var_int_buf 7: non-minimal varint encoding");
       }
-      return new Ok(Buffer.concat([Buffer.from([first]), buf]));
+      return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else {
-      return new Ok(Buffer.from([first]));
+      return Ok(Buffer.from([first]));
     }
   }
 
@@ -147,7 +147,7 @@ export default class IsoBufReader {
         value = BigInt(first);
         break;
     }
-    return new Ok(value);
+    return Ok(value);
   }
 
   readVarIntNum(): Result<number, string> {
@@ -156,8 +156,8 @@ export default class IsoBufReader {
       return value;
     }
     if (value.unwrap() > BigInt(Number.MAX_SAFE_INTEGER)) {
-      return new Err("Number too large to retain precision - use readVarInt");
+      return Err("Number too large to retain precision - use readVarInt");
     }
-    return new Ok(Number(value.unwrap()));
+    return Ok(Number(value.unwrap()));
   }
 }

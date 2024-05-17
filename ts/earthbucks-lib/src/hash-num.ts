@@ -10,22 +10,22 @@ export default class HashNum {
 
   static fromIsoBuf(target: Buffer): Result<HashNum, string> {
     if (target.length !== 32) {
-      return new Err("Invalid target length");
+      return Err("Invalid target length");
     }
     const hex = target.toString("hex");
     const num = BigInt("0x" + hex);
-    return new Ok(new HashNum(num));
+    return Ok(new HashNum(num));
   }
 
   toIsoBuf(): Result<Buffer, string> {
     let hex = this.num.toString(16);
     // ensure length is 64 characters
     if (hex.length > 64) {
-      return new Err("Target number is too large");
+      return Err("Target number is too large");
     }
     while (hex.length < 64) {
       hex = "0" + hex;
     }
-    return new Ok(Buffer.from(hex, "hex"));
+    return Ok(Buffer.from(hex, "hex"));
   }
 }

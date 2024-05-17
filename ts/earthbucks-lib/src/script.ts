@@ -19,11 +19,11 @@ export default class Script {
       chunk.toIsoStr().mapErr((err) => `Unable to stringify chunk: ${err}`),
     );
     if (chunksRes.some((res) => res.err)) {
-      return new Err(
+      return Err(
         chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
       );
     }
-    return new Ok(chunksRes.map((res) => res.unwrap()).join(" "));
+    return Ok(chunksRes.map((res) => res.unwrap()).join(" "));
   }
 
   static fromEmpty(): Script {
@@ -33,13 +33,11 @@ export default class Script {
   static fromIsoStr(str: string): Result<Script, string> {
     const script = new Script();
     if (str === "") {
-      return new Ok(script);
+      return Ok(script);
     }
 
     if (/ {2,}/.test(str)) {
-      return new Err(
-        "String should not contain two or more consecutive spaces",
-      );
+      return Err("String should not contain two or more consecutive spaces");
     }
 
     const chunksRes = str
@@ -49,12 +47,12 @@ export default class Script {
         res.mapErr((err) => `Unable to parse script chunk: ${err}`),
       );
     if (chunksRes.some((res) => res.err)) {
-      return new Err(
+      return Err(
         chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
       );
     }
     script.chunks = chunksRes.map((res) => res.unwrap());
-    return new Ok(script);
+    return Ok(script);
   }
 
   toIsoBuf(): Buffer {
@@ -76,7 +74,7 @@ export default class Script {
       }
       script.chunks.push(chunkRes.unwrap());
     }
-    return new Ok(script);
+    return Ok(script);
   }
 
   static fromMultiSigOutput(m: number, pubKeys: Buffer[]): Script {

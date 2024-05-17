@@ -24,9 +24,9 @@ export default class Pkh {
 
   static fromIsoBuf(buf: Buffer): Result<Pkh, string> {
     if (buf.length !== 32) {
-      return new Err("Invalid public key hash length");
+      return Err("Invalid public key hash length");
     }
-    return new Ok(new Pkh(buf));
+    return Ok(new Pkh(buf));
   }
 
   toIsoStr(): string {
@@ -37,7 +37,7 @@ export default class Pkh {
 
   static fromIsoStr(pkhStr: string): Result<Pkh, string> {
     if (!pkhStr.startsWith("ebxpkh")) {
-      return new Err("Invalid pkh format");
+      return Err("Invalid pkh format");
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = IsoHex.decode(checkHex).unwrap();
@@ -45,7 +45,7 @@ export default class Pkh {
     const hashBuf = blake3Hash(buf);
     const checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {
-      return new Err("Invalid pkh checksum");
+      return Err("Invalid pkh checksum");
     }
     return Pkh.fromIsoBuf(buf);
   }

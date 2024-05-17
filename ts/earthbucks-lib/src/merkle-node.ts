@@ -29,15 +29,15 @@ export default class MerkleNode {
 
   static fromIsoBufs(hashedDatas: Buffer[]): Result<MerkleNode, string> {
     if (hashedDatas.length === 0) {
-      return new Err("Cannot create MerkleNode from empty array");
+      return Err("Cannot create MerkleNode from empty array");
     }
     if (hashedDatas.length === 1) {
-      return new Ok(new MerkleNode(null, null, hashedDatas[0]));
+      return Ok(new MerkleNode(null, null, hashedDatas[0]));
     }
     if (hashedDatas.length === 2) {
       const left = new MerkleNode(null, null, hashedDatas[0]);
       const right = new MerkleNode(null, null, hashedDatas[1]);
-      return new Ok(
+      return Ok(
         new MerkleNode(
           left,
           right,
@@ -56,7 +56,7 @@ export default class MerkleNode {
       hashedDatas.slice(hashedDatas.length / 2),
     ).unwrap();
 
-    return new Ok(
+    return Ok(
       new MerkleNode(
         left,
         right,

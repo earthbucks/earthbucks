@@ -40,7 +40,7 @@ export default class TxOut {
       return scriptRes;
     }
     const script = scriptRes.unwrap();
-    return new Ok(new TxOut(value, script));
+    return Ok(new TxOut(value, script));
   }
 
   toIsoBuf(): Buffer {

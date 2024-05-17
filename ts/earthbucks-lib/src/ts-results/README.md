@@ -62,7 +62,7 @@ function readFile(path: string): string {
     return readFileSync(path);
   } else {
     // Callers of readFile have no way of knowing the function can fail
-    throw new Error("invalid path");
+    throw Error("invalid path");
   }
 }
 
@@ -78,9 +78,9 @@ import { Ok, Err, Result } from "ts-results";
 
 function readFile(path: string): Result<string, "invalid path"> {
   if (existsSync(path)) {
-    return new Ok(readFileSync(path)); // new is optional here
+    return Ok(readFileSync(path)); // new is optional here
   } else {
-    return new Err("invalid path"); // new is optional here
+    return Err("invalid path"); // new is optional here
   }
 }
 
@@ -150,7 +150,7 @@ import { Result, Err, Ok } from "ts-results";
 
 ```typescript
 let okResult: Result<number, Error> = Ok(10);
-let errorResult: Result<number, Error> = Err(new Error("bad number!"));
+let errorResult: Result<number, Error> = Err(Error("bad number!"));
 ```
 
 #### Type Safety
@@ -188,8 +188,8 @@ let stack = error.stack;
 #### Unwrap
 
 ```typescript
-let goodResult = new Ok(1);
-let badResult = new Err(new Error("something went wrong"));
+let goodResult = Ok(1);
+let badResult = Err(Error("something went wrong"));
 
 goodResult.unwrap(); // 1
 badResult.unwrap(); // throws Error("something went wrong")
@@ -199,7 +199,7 @@ badResult.unwrap(); // throws Error("something went wrong")
 
 ```typescript
 let goodResult = Ok(1);
-let badResult = Err(new Error("something went wrong"));
+let badResult = Err(Error("something went wrong"));
 
 goodResult.expect("goodResult should be a number"); // 1
 badResult.expect("badResult should be a number"); // throws Error("badResult should be a number - Error: something went wrong")
@@ -209,28 +209,28 @@ badResult.expect("badResult should be a number"); // throws Error("badResult sho
 
 ```typescript
 let goodResult = Ok(1);
-let badResult = Err(new Error("something went wrong"));
+let badResult = Err(Error("something went wrong"));
 
 goodResult.expect("goodResult should not be a number"); // throws Error("goodResult should not be a number")
-badResult.expect("badResult should not be a number"); // new Error('something went wrong')
+badResult.expect("badResult should not be a number"); // Error('something went wrong')
 ```
 
 #### Map and MapErr
 
 ```typescript
 let goodResult = Ok(1);
-let badResult = Err(new Error("something went wrong"));
+let badResult = Err(Error("something went wrong"));
 
 goodResult.map((num) => num + 1).unwrap(); // 2
 badResult.map((num) => num + 1).unwrap(); // throws Error("something went wrong")
 
 goodResult
   .map((num) => num + 1)
-  .mapErr((err) => new Error("mapped"))
+  .mapErr((err) => Error("mapped"))
   .unwrap(); // 2
 badResult
   .map((num) => num + 1)
-  .mapErr((err) => new Error("mapped"))
+  .mapErr((err) => Error("mapped"))
   .unwrap(); // throws Error("mapped")
 ```
 
@@ -238,23 +238,23 @@ badResult
 
 ```typescript
 let goodResult = Ok(1);
-let badResult = Err(new Error("something went wrong"));
+let badResult = Err(Error("something went wrong"));
 
-goodResult.andThen((num) => new Ok(num + 1)).unwrap(); // 2
-badResult.andThen((num) => new Err(new Error("2nd error"))).unwrap(); // throws Error('something went wrong')
-goodResult.andThen((num) => new Err(new Error("2nd error"))).unwrap(); // throws Error('2nd error')
+goodResult.andThen((num) => Ok(num + 1)).unwrap(); // 2
+badResult.andThen((num) => Err(Error("2nd error"))).unwrap(); // throws Error('something went wrong')
+goodResult.andThen((num) => Err(Error("2nd error"))).unwrap(); // throws Error('2nd error')
 
 goodResult
-  .andThen((num) => new Ok(num + 1))
-  .mapErr((err) => new Error("mapped"))
+  .andThen((num) => Ok(num + 1))
+  .mapErr((err) => Error("mapped"))
   .unwrap(); // 2
 badResult
-  .andThen((num) => new Err(new Error("2nd error")))
-  .mapErr((err) => new Error("mapped"))
+  .andThen((num) => Err(Error("2nd error")))
+  .mapErr((err) => Error("mapped"))
   .unwrap(); // throws Error('mapped')
 goodResult
-  .andThen((num) => new Err(new Error("2nd error")))
-  .mapErr((err) => new Error("mapped"))
+  .andThen((num) => Err(Error("2nd error")))
+  .mapErr((err) => Error("mapped"))
   .unwrap(); // thros Error('mapped')
 ```
 
@@ -266,7 +266,7 @@ Deprecated in favor of unwrapOr
 
 ```typescript
 let goodResult = Ok(1);
-let badResult = Err(new Error("something went wrong"));
+let badResult = Err(Error("something went wrong"));
 
 goodResult.unwrapOr(5); // 1
 badResult.unwrapOr(5); // 5
@@ -279,7 +279,7 @@ function checkIsValid(isValid: boolean): Result<void, Error> {
   if (isValid) {
     return Ok.EMPTY;
   } else {
-    return new Err(new Error("Not valid"));
+    return Err(Error("Not valid"));
   }
 }
 ```
@@ -381,10 +381,7 @@ import { of, Observable } from "rxjs";
 import { Ok, Err, Result } from "ts-results";
 import { elseMap } from "ts-results/rxjs-operators";
 
-const obs$: Observable<Result<number, Error>> = of(
-  Ok(5),
-  Err(new Error("uh oh")),
-);
+const obs$: Observable<Result<number, Error>> = of(Ok(5), Err(Error("uh oh")));
 
 const doubled = obs$.pipe(
   elseMap((err) => {
@@ -430,14 +427,11 @@ import { of, Observable } from "rxjs";
 import { Ok, Err, Result } from "ts-results";
 import { resultMergeMap } from "ts-results/rxjs-operators";
 
-const obs$: Observable<Result<number, Error>> = of(
-  new Ok(5),
-  new Err(new Error("uh oh")),
-);
+const obs$: Observable<Result<number, Error>> = of(Ok(5), Err(Error("uh oh")));
 
 const obs2$: Observable<Result<string, CustomError>> = of(
-  new Ok("hi"),
-  new Err(new CustomError("custom error")),
+  Ok("hi"),
+  Err(new CustomError("custom error")),
 );
 
 const test$ = obs$.pipe(
@@ -472,10 +466,7 @@ import { of, Observable } from "rxjs";
 import { Ok, Err, Result } from "ts-results";
 import { filterResultOk } from "ts-results/rxjs-operators";
 
-const obs$: Observable<Result<number, Error>> = of(
-  new Ok(5),
-  new Err(new Error("uh oh")),
-);
+const obs$: Observable<Result<number, Error>> = of(Ok(5), Err(Error("uh oh")));
 
 const test$ = obs$.pipe(filterResultOk()); // Has type Observable<number>
 
@@ -496,10 +487,7 @@ import { of, Observable } from "rxjs";
 import { Ok, Err, Result } from "ts-results";
 import { filterResultOk } from "ts-results/rxjs-operators";
 
-const obs$: Observable<Result<number, Error>> = of(
-  new Ok(5),
-  new Err(new Error("uh oh")),
-);
+const obs$: Observable<Result<number, Error>> = of(Ok(5), Err(Error("uh oh")));
 
 const test$ = obs$.pipe(filterResultOk()); // Has type Observable<number>
 

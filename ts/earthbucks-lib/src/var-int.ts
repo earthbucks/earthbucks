@@ -43,10 +43,10 @@ export default class VarInt {
   static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
     const res = br.readVarIntBuf();
     if (res.err) {
-      return new Err(res.val);
+      return Err(res.val);
     }
     const buf = res.unwrap();
-    return new Ok(new VarInt(buf));
+    return Ok(new VarInt(buf));
   }
 
   isMinimal() {

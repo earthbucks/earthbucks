@@ -31,7 +31,7 @@ export default class TxSigner {
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
     if (!txOutBn) {
-      return new Err("tx_out not found");
+      return Err("tx_out not found");
     }
     const txOut = txOutBn.txOut;
     const prevBlockNum = txOutBn.blockNum;
@@ -40,11 +40,11 @@ export default class TxSigner {
       const pkh_buf = txOut.script.chunks[2].buf as Buffer;
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
-        return new Err("expected pkh input placeholder");
+        return Err("expected pkh input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return new Err("key not found");
+        return Err("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -69,17 +69,17 @@ export default class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return new Ok(this.tx);
+          return Ok(this.tx);
         } else {
-          return new Err("expected expired pkhx input");
+          return Err("expected expired pkhx input");
         }
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        return new Err("expected unexpired pkhx input placeholder");
+        return Err("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return new Err("key not found");
+        return Err("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -104,17 +104,17 @@ export default class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return new Ok(this.tx);
+          return Ok(this.tx);
         } else {
-          return new Err("expected expired pkhx input");
+          return Err("expected expired pkhx input");
         }
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        return new Err("expected unexpired pkhx input placeholder");
+        return Err("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return new Err("key not found");
+        return Err("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -132,19 +132,19 @@ export default class TxSigner {
       inputScript.chunks[0].buf = Buffer.from(sigBuf);
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else {
-      return new Err("unsupported script type");
+      return Err("unsupported script type");
     }
 
-    return new Ok(this.tx);
+    return Ok(this.tx);
   }
 
   signAll(): Result<Tx, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
       const res = this.sign(i);
       if (res.err) {
-        return new Err("sign_all: " + res.err);
+        return Err("sign_all: " + res.err);
       }
     }
-    return new Ok(this.tx);
+    return Ok(this.tx);
   }
 }

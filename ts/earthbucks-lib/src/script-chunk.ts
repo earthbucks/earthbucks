@@ -15,28 +15,28 @@ export default class ScriptChunk {
 
   getData(): Result<Buffer, string> {
     if (this.opcode === Opcode.OP_1NEGATE) {
-      return new Ok(Buffer.from([0x80]));
+      return Ok(Buffer.from([0x80]));
     } else if (this.opcode === Opcode.OP_0) {
-      return new Ok(Buffer.from([]));
+      return Ok(Buffer.from([]));
     } else if (this.opcode >= Opcode.OP_1 && this.opcode <= Opcode.OP_16) {
-      return new Ok(Buffer.from([this.opcode - Opcode.OP_1 + 1]));
+      return Ok(Buffer.from([this.opcode - Opcode.OP_1 + 1]));
     }
     if (this.buf) {
-      return new Ok(this.buf);
+      return Ok(this.buf);
     } else {
-      return new Err("no data");
+      return Err("no data");
     }
   }
 
   toIsoStr(): Result<string, string> {
     if (this.buf) {
-      return new Ok(`0x${this.buf.toString("hex")}`);
+      return Ok(`0x${this.buf.toString("hex")}`);
     } else {
       const name = OPCODE_TO_NAME[this.opcode];
       if (name !== undefined) {
-        return new Ok(name);
+        return Ok(name);
       } else {
-        return new Err("invalid opcode");
+        return Err("invalid opcode");
       }
     }
   }
@@ -56,7 +56,7 @@ export default class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        return new Err("too much data");
+        return Err("too much data");
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -66,12 +66,12 @@ export default class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        return new Err("invalid opcode");
+        return Err("invalid opcode");
       }
 
       scriptChunk.buf = undefined;
     }
-    return new Ok(scriptChunk);
+    return Ok(scriptChunk);
   }
 
   toIsoBuf(): Buffer {
@@ -131,9 +131,7 @@ export default class ScriptChunk {
       }
       const buffer = bufferRes.unwrap();
       if (len == 0 || (len === 1 && buffer[0] >= 1 && buffer[0] <= 16)) {
-        return new Err(
-          "script_chunk::from_iso_buf_reader 4: non-minimal pushdata",
-        );
+        return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata");
       }
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA2) {
@@ -146,9 +144,7 @@ export default class ScriptChunk {
       }
       const len = lenRes.unwrap();
       if (len <= 0xff) {
-        return new Err(
-          "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
-        );
+        return Err("script_chunk::from_iso_buf_reader 6: non-minimal pushdata");
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
@@ -169,9 +165,7 @@ export default class ScriptChunk {
       }
       const len = lenRes.unwrap();
       if (len <= 0xffff) {
-        return new Err(
-          "script_chunk::from_iso_buf_reader 9: non-minimal pushdata",
-        );
+        return Err("script_chunk::from_iso_buf_reader 9: non-minimal pushdata");
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
@@ -183,7 +177,7 @@ export default class ScriptChunk {
       const buffer = bufferRes.unwrap();
       chunk.buf = buffer;
     }
-    return new Ok(chunk);
+    return Ok(chunk);
   }
 
   static fromData(data: Buffer): ScriptChunk {

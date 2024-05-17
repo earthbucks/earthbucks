@@ -65,7 +65,7 @@ export default class BlockBuilder {
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;
     header.merkleRoot = root;
-    return new Ok(new BlockBuilder(header, txs, merkleTxs));
+    return Ok(new BlockBuilder(header, txs, merkleTxs));
   }
 
   toBlock(): Block {

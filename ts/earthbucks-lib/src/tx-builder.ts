@@ -79,7 +79,7 @@ export default class TxBuilder {
           lockRel = 0;
         }
       } else {
-        return new Err("unsupported script type");
+        return Err("unsupported script type");
       }
 
       const txInput = new TxIn(txId, txOutNum, inputScript, lockRel);
@@ -96,6 +96,6 @@ export default class TxBuilder {
       const txOut = new TxOut(changeAmount, this.changeScript);
       this.addOutput(txOut);
     }
-    return new Ok(this.tx);
+    return Ok(this.tx);
   }
 }

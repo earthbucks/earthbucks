@@ -59,7 +59,7 @@ export default class TxIn {
       return lockRelRes;
     }
     const lockRel = lockRelRes.unwrap();
-    return new Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
+    return Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
   }
 
   toIsoBuf(): Buffer {

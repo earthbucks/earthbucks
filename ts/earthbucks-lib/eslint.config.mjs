@@ -8,11 +8,9 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   //pluginReactConfig,
-  // disable @typescript-eslint/no-unused-vars
   {
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
-      "new-cap": ["error", { newIsCap: true, capIsNew: false }],
     },
   },
 ];

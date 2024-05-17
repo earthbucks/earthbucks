@@ -1016,8 +1016,12 @@ export default class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNumMax = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
-            const scriptNumMin = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
+            const scriptNumMax = ScriptNum.fromIsoBuf(
+              this.stack.pop() as Buffer,
+            );
+            const scriptNumMin = ScriptNum.fromIsoBuf(
+              this.stack.pop() as Buffer,
+            );
             const scriptNumX = ScriptNum.fromIsoBuf(this.stack.pop() as Buffer);
             const within =
               scriptNumX.num >= scriptNumMin.num &&

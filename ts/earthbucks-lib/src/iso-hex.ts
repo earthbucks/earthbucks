@@ -11,10 +11,10 @@ export function encode(buffer: Buffer): string {
 
 export function decode(hex: string): Result<Buffer, string> {
   if (!isValid(hex)) {
-    return new Err("Invalid hex string");
+    return Err("Invalid hex string");
   }
   const buffer = Buffer.from(hex, "hex");
-  return new Ok(buffer);
+  return Ok(buffer);
 }
 
 const IsoHex = { encode, decode, isValid };

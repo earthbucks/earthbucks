@@ -34,12 +34,12 @@ export default class PrivKey {
 
   static fromIsoBuf(buf: Buffer): Result<PrivKey, string> {
     if (buf.length !== 32) {
-      return new Err("Invalid private key length");
+      return Err("Invalid private key length");
     }
     if (!secp256k1.privateKeyVerify(buf)) {
-      return new Err("Invalid private key");
+      return Err("Invalid private key");
     }
-    return new Ok(new PrivKey(buf));
+    return Ok(new PrivKey(buf));
   }
 
   toIsoHex(): string {
@@ -64,7 +64,7 @@ export default class PrivKey {
 
   static fromIsoStr(str: string): Result<PrivKey, string> {
     if (!str.startsWith("ebxprv")) {
-      return new Err("Invalid private key format");
+      return Err("Invalid private key format");
     }
     const hexStr = str.slice(6, 14);
     const checkBufRes = IsoHex.decode(hexStr);
@@ -76,12 +76,12 @@ export default class PrivKey {
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return new Err("Invalid base58 encoding");
+      return Err("Invalid base58 encoding");
     }
     const hashBuf = blake3Hash(decoded);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
-      return new Err("Checksum mismatch");
+      return Err("Checksum mismatch");
     }
     return PrivKey.fromIsoBuf(decoded);
   }

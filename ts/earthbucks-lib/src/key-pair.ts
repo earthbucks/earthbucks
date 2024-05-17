@@ -26,7 +26,7 @@ export default class KeyPair {
     }
     const privKey = privKeyRes.unwrap();
     const pubKey = PubKey.fromPrivKey(privKey);
-    return new Ok(new KeyPair(privKey, pubKey));
+    return Ok(new KeyPair(privKey, pubKey));
   }
 
   static fromRandom(): KeyPair {

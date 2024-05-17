@@ -69,11 +69,11 @@ class NoneImpl implements BaseOption<never> {
   }
 
   expect(msg: string): never {
-    throw new Error(`${msg}`);
+    throw Error(`${msg}`);
   }
 
   unwrap(): never {
-    throw new Error(`Tried to unwrap None`);
+    throw Error(`Tried to unwrap None`);
   }
 
   map<T2>(_mapper: unknown): None {
@@ -85,7 +85,7 @@ class NoneImpl implements BaseOption<never> {
   }
 
   toResult<E>(error: E): Err<E> {
-    return new Err(error);
+    return Err(error);
   }
 
   toString(): string {
@@ -154,7 +154,7 @@ class SomeImpl<T> implements BaseOption<T> {
   }
 
   toResult<E>(error: E): Ok<T> {
-    return new Ok(this.val);
+    return Ok(this.val);
   }
 
   /**

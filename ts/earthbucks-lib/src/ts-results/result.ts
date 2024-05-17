@@ -120,7 +120,7 @@ export class ErrImpl<E> implements BaseResult<never, E> {
     this.err = true;
     this.val = val;
 
-    const stackLines = new Error().stack!.split("\n").slice(2);
+    const stackLines = Error().stack!.split("\n").slice(2);
     if (
       stackLines &&
       stackLines.length > 0 &&
@@ -145,17 +145,15 @@ export class ErrImpl<E> implements BaseResult<never, E> {
   }
 
   expect(msg: string): never {
-    throw new Error(`${msg} - Error: ${toString(this.val)}\n${this._stack}`);
+    throw Error(`${msg} - Error: ${toString(this.val)}\n${this._stack}`);
   }
 
   expectErr(_msg: string): never {
-    throw new Error(`Error: ${toString(this.val)}\n${this._stack}`);
+    throw Error(`Error: ${toString(this.val)}\n${this._stack}`);
   }
 
   unwrap(): never {
-    throw new Error(
-      `Tried to unwrap Error: ${toString(this.val)}\n${this._stack}`,
-    );
+    throw Error(`Tried to unwrap Error: ${toString(this.val)}\n${this._stack}`);
   }
 
   map(_mapper: unknown): Err<E> {
@@ -167,7 +165,7 @@ export class ErrImpl<E> implements BaseResult<never, E> {
   }
 
   mapErr<E2>(mapper: (err: E) => E2): Err<E2> {
-    return new Err(mapper(this.val));
+    return Err(mapper(this.val));
   }
 
   toOption(): Option<never> {
@@ -183,8 +181,13 @@ export class ErrImpl<E> implements BaseResult<never, E> {
   }
 }
 
-// This allows Err to be callable - possible because of the es5 compilation target
-export const Err = ErrImpl as typeof ErrImpl & (<E>(err: E) => Err<E>);
+// <del>This allows Err to be callable - possible because of the es5 compilation target</del>
+// ...deleted because we're not compiling to es5
+// export const Err = ErrImpl // as typeof ErrImpl & (<E>(err: E) => Err<E>);
+// export type Err<E> = ErrImpl<E>;
+export function Err<E>(val: E): ErrImpl<E> {
+  return new ErrImpl(val);
+}
 export type Err<E> = ErrImpl<E>;
 
 /**
@@ -239,7 +242,7 @@ export class OkImpl<T> implements BaseResult<T, never> {
   }
 
   expectErr(msg: string): never {
-    throw new Error(msg);
+    throw Error(msg);
   }
 
   unwrap(): T {
@@ -247,7 +250,7 @@ export class OkImpl<T> implements BaseResult<T, never> {
   }
 
   map<T2>(mapper: (val: T) => T2): Ok<T2> {
-    return new Ok(mapper(this.val));
+    return Ok(mapper(this.val));
   }
 
   andThen<T2>(mapper: (val: T) => Ok<T2>): Ok<T2>;
@@ -283,8 +286,13 @@ export class OkImpl<T> implements BaseResult<T, never> {
   }
 }
 
-// This allows Ok to be callable - possible because of the es5 compilation target
-export const Ok = OkImpl as typeof OkImpl & (<T>(val: T) => Ok<T>);
+// <del>This allows Ok to be callable - possible because of the es5 compilation target</del>
+// ...deleted because we're not compiling to es5
+// export const Ok = OkImpl // as typeof OkImpl & (<T>(val: T) => Ok<T>);
+// export type Ok<T> = OkImpl<T>;
+export function Ok<T>(val: T): OkImpl<T> {
+  return new OkImpl(val);
+}
 export type Ok<T> = OkImpl<T>;
 
 export type Result<T, E> = Ok<T> | Err<E>;
@@ -321,7 +329,7 @@ export namespace Result {
       }
     }
 
-    return new Ok(okResult as ResultOkTypes<T>);
+    return Ok(okResult as ResultOkTypes<T>);
   }
 
   /**
@@ -343,7 +351,7 @@ export namespace Result {
     }
 
     // it must be a Err
-    return new Err(errResult as ResultErrTypes<T>);
+    return Err(errResult as ResultErrTypes<T>);
   }
 
   /**
@@ -352,9 +360,9 @@ export namespace Result {
    */
   export function wrap<T, E = unknown>(op: () => T): Result<T, E> {
     try {
-      return new Ok(op());
+      return Ok(op());
     } catch (e) {
-      return new Err<E>(e as E);
+      return Err<E>(e as E);
     }
   }
 
@@ -367,10 +375,10 @@ export namespace Result {
   ): Promise<Result<T, E>> {
     try {
       return op()
-        .then((val) => new Ok(val))
-        .catch((e) => new Err(e));
+        .then((val) => Ok(val))
+        .catch((e) => Err(e));
     } catch (e) {
-      return Promise.resolve(new Err(e as E));
+      return Promise.resolve(Err(e as E));
     }
   }
 

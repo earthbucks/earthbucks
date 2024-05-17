@@ -135,7 +135,7 @@ export default class Header {
       return workParRes;
     }
     const workPar = workParRes.unwrap();
-    return new Ok(
+    return Ok(
       new Header(
         version,
         previousBlockHash,
@@ -201,7 +201,7 @@ export default class Header {
         prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
           blockNum
       ) {
-        return new Err(
+        return Err(
           "must provide previous adjustment block header 2016 blocks before",
         );
       }
@@ -218,7 +218,7 @@ export default class Header {
     const workAlgo = prevBlockHeader.workAlgo;
     const workSer = Buffer.alloc(32);
     const workPar = Buffer.alloc(32);
-    return new Ok(
+    return Ok(
       new Header(
         1,
         prevBlockId,

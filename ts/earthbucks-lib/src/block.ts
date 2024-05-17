@@ -42,7 +42,7 @@ export default class Block {
       txs.push(tx);
     }
 
-    return new Ok(new Block(header, txs));
+    return Ok(new Block(header, txs));
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {

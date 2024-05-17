@@ -79,7 +79,7 @@ export default class Tx {
       return lockNumRes;
     }
     const lockNum = lockNumRes.unwrap();
-    return new Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
+    return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
   }
 
   toIsoBuf(): Buffer {
