@@ -53,16 +53,15 @@ impl<'a> TxVerifier<'a> {
 
     pub fn verify_input_lock_rel(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
-        let tx_out_hash = &tx_input.input_tx_id;
-        let output_index = tx_input.input_tx_out_num;
-        let tx_out = self.tx_out_bn_map.get(tx_out_hash, output_index);
+        let tx_id = &tx_input.input_tx_id;
+        let tx_out_num = tx_input.input_tx_out_num;
+        let tx_out = self.tx_out_bn_map.get(tx_id, tx_out_num);
         match tx_out {
             None => false,
             Some(tx_out_bn) => {
                 let lock_rel: u64 = tx_input.lock_rel as u64;
                 let prev_block_num = tx_out_bn.block_num;
-                let cur_block_num = self.block_num;
-                cur_block_num >= prev_block_num + lock_rel
+                self.block_num >= prev_block_num + lock_rel
             }
         }
     }
@@ -368,7 +367,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhx_1h() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHX_1H_LOCK_REL as u64 + 1;
+        let working_block_num: u64 = Script::PKHX_1H_LOCK_REL as u64;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -474,7 +473,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhx_90d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHX_90D_LOCK_REL as u64 + 1;
+        let working_block_num: u64 = Script::PKHX_90D_LOCK_REL as u64;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();

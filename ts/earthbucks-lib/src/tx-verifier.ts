@@ -7,13 +7,13 @@ export default class TxVerifier {
   public tx: Tx;
   public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
-  public workingBlockNum: bigint;
+  public blockNum: bigint;
 
-  constructor(tx: Tx, txOutBnMap: TxOutBnMap, workingBlockNum: bigint) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: bigint) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
-    this.workingBlockNum = workingBlockNum;
+    this.blockNum = blockNum;
   }
 
   verifyInputScript(nIn: number): boolean {
@@ -42,6 +42,19 @@ export default class TxVerifier {
     );
     const result = scriptInterpreter.evalScript();
     return result;
+  }
+
+  verifyInputLockRel(nIn: number): boolean {
+    const txInput = this.tx.inputs[nIn];
+    const txId = txInput.inputTxId;
+    const txOutNum = txInput.inputTxNOut;
+    const txOutBn = this.txOutBnMap.get(txId, txOutNum);
+    if (!txOutBn) {
+      return false;
+    }
+    const lockRel = Number(txInput.lockRel);
+    const prevBlockNum = txOutBn.blockNum;
+    return this.blockNum >= prevBlockNum + BigInt(lockRel);
   }
 
   verifyScripts(): boolean {

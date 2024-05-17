@@ -64,7 +64,7 @@ export default class TxSigner {
     } else if (txOut.script.isPkhx90dOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
       let expired =
-        this.workingBlockNum > prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+        this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
       let inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
@@ -99,7 +99,7 @@ export default class TxSigner {
     } else if (txOut.script.isPkhx1hOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
       let expired =
-        this.workingBlockNum > prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+        this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
       let inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {

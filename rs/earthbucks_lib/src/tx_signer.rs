@@ -72,7 +72,8 @@ impl TxSigner {
                 .buffer
                 .clone()
                 .expect("pkh not found");
-            let expired = self.working_block_num > prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
+            let expired =
+                self.working_block_num >= prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
             let input_script = &mut tx_input.script;
             if expired {
                 if input_script.is_expired_pkhx_input() {
@@ -110,7 +111,7 @@ impl TxSigner {
                 .clone()
                 .expect("pkh not found");
             let expired =
-                self.working_block_num > prev_block_num + Script::PKHX_90D_LOCK_REL as u64;
+                self.working_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL as u64;
             let input_script = &mut tx_input.script;
             if expired {
                 if input_script.is_expired_pkhx_input() {
