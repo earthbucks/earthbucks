@@ -188,7 +188,7 @@ export default class Script {
   // 6 blocks = 1 hour for 10 min blocks
   static readonly PKHX_1H_LOCK_REL: number = 6;
 
-  static fromPkh1hxOutput(pkh: Buffer): Script {
+  static fromPkhx1hOutput(pkh: Buffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),

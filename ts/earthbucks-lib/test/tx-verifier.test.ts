@@ -14,92 +14,314 @@ import TxOutBn from "../src/tx-out-bn";
 describe("TxVerifier", () => {
   let txBuilder: TxBuilder;
   let txSigner: TxSigner;
-  let txOutMap: TxOutBnMap;
+  let txOutBnMap: TxOutBnMap;
   let pkhKeyMap: PkhKeyMap;
 
-  beforeEach(() => {
-    txOutMap = new TxOutBnMap();
-    pkhKeyMap = new PkhKeyMap();
-    // generate 5 keys, 5 outputs, and add them to the txOutMap
-    for (let i = 0; i < 5; i++) {
-      const key = KeyPair.fromRandom();
-      const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
-      pkhKeyMap.add(key, pkh.buf);
-      const script = Script.fromPkhOutput(pkh.buf);
-      const txOut = new TxOut(BigInt(100), script);
-      const txOutBn = new TxOutBn(txOut, 0n);
-      txOutMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
-    }
+  describe("pkh", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhOutput(pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      }
 
-    const changeScript = Script.fromEmpty();
-    txBuilder = new TxBuilder(txOutMap, changeScript, 0n, 0n);
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+    });
+
+    test("should sign and verify a tx", () => {
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
+
+      const tx = txBuilder.build().unwrap();
+
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+
+      const txVerifier = new TxVerifier(tx, txOutBnMap, 0n);
+      const verifiedInput = txVerifier.verifyInputScript(0);
+      expect(verifiedInput).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
+
+    test("should sign and verify a tx with two inputs", () => {
+      const txOut = new TxOut(BigInt(100), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
+      txBuilder.addOutput(txOut);
+
+      const tx = txBuilder.build().unwrap();
+
+      expect(tx.inputs.length).toBe(2);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(100));
+      expect(tx.outputs[1].value).toBe(BigInt(100));
+
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
+      const signed1 = txSigner.sign(0);
+      expect(signed1.ok).toBe(true);
+      const signed2 = txSigner.sign(1);
+      expect(signed2.ok).toBe(true);
+
+      const txVerifier = new TxVerifier(tx, txOutBnMap, 0n);
+      const verifiedInput1 = txVerifier.verifyInputScript(0);
+      expect(verifiedInput1).toBe(true);
+      const verifiedInput2 = txVerifier.verifyInputScript(1);
+      expect(verifiedInput2).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
   });
 
-  test("should sign and verify a tx", () => {
-    const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
-    const script = Script.fromPkhOutput(pkh.buf);
-    const txOut = new TxOut(BigInt(50), Script.fromEmpty());
-    txBuilder.addOutput(txOut);
+  describe("pkhx 1h unexpired", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhx1hOutput(pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      }
 
-    const tx = txBuilder.build().unwrap();
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+    });
 
-    expect(tx.inputs.length).toBe(1);
-    expect(tx.outputs.length).toBe(2);
-    expect(tx.outputs[0].value).toBe(BigInt(50));
+    test("should sign and verify unexpired pkhx 1h", () => {
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
 
-    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap, 0n);
-    const signed = txSigner.sign(0);
-    expect(signed.ok).toBe(true);
+      const tx = txBuilder.build().unwrap();
 
-    const txVerifier = new TxVerifier(tx, txOutMap, 0n);
-    const verifiedInput = txVerifier.verifyInputScript(0);
-    expect(verifiedInput).toBe(true);
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+      expect(tx.outputs[1].value).toBe(BigInt(50));
 
-    const verifiedScripts = txVerifier.verifyInputs();
-    expect(verifiedScripts).toBe(true);
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
 
-    const verifiedOutputValues = txVerifier.verifyOutputValues();
-    expect(verifiedOutputValues).toBe(true);
+      const txVerifier = new TxVerifier(tx, txOutBnMap, 0n);
+      const verifiedInputScript = txVerifier.verifyInputScript(0);
+      expect(verifiedInputScript).toBe(true);
 
-    const verified = txVerifier.verify();
-    expect(verified).toBe(true);
+      const verifiedInputLockRel = txVerifier.verifyInputLockRel(0);
+      expect(verifiedInputLockRel).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
   });
 
-  test("should sign and verify a tx with two inputs", () => {
-    const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
-    const script = Script.fromPkhOutput(pkh.buf);
-    const txOut = new TxOut(BigInt(100), Script.fromEmpty());
-    txBuilder.addOutput(txOut);
-    txBuilder.addOutput(txOut);
+  describe("pkhx 1h expired", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhx1hOutput(pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      }
 
-    const tx = txBuilder.build().unwrap();
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 6n);
+    });
 
-    expect(tx.inputs.length).toBe(2);
-    expect(tx.outputs.length).toBe(2);
-    expect(tx.outputs[0].value).toBe(BigInt(100));
-    expect(tx.outputs[1].value).toBe(BigInt(100));
+    test("should sign and verify expired pkhx 1h", () => {
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
 
-    txSigner = new TxSigner(tx, txOutMap, pkhKeyMap, 0n);
-    const signed1 = txSigner.sign(0);
-    expect(signed1.ok).toBe(true);
-    const signed2 = txSigner.sign(1);
-    expect(signed2.ok).toBe(true);
+      const tx = txBuilder.build().unwrap();
 
-    const txVerifier = new TxVerifier(tx, txOutMap, 0n);
-    const verifiedInput1 = txVerifier.verifyInputScript(0);
-    expect(verifiedInput1).toBe(true);
-    const verifiedInput2 = txVerifier.verifyInputScript(1);
-    expect(verifiedInput2).toBe(true);
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+      expect(tx.outputs[1].value).toBe(BigInt(50));
 
-    const verifiedScripts = txVerifier.verifyInputs();
-    expect(verifiedScripts).toBe(true);
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 6n);
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+      expect(tx.inputs[0].script.isExpiredPkhxInput()).toBe(true);
 
-    const verifiedOutputValues = txVerifier.verifyOutputValues();
-    expect(verifiedOutputValues).toBe(true);
+      const txVerifier = new TxVerifier(tx, txOutBnMap, 6n);
+      const verifiedInputScript = txVerifier.verifyInputScript(0);
+      expect(verifiedInputScript).toBe(true);
 
-    const verified = txVerifier.verify();
-    expect(verified).toBe(true);
+      const verifiedInputLockRel = txVerifier.verifyInputLockRel(0);
+      expect(verifiedInputLockRel).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
+  });
+
+  describe("pkhx 90d unexpired", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhx90dOutput(pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      }
+
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+    });
+
+    test("should sign and verify unexpired pkhx 90d", () => {
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
+
+      const tx = txBuilder.build().unwrap();
+
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+      expect(tx.outputs[1].value).toBe(BigInt(50));
+
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
+
+      const txVerifier = new TxVerifier(tx, txOutBnMap, 0n);
+      const verifiedInputScript = txVerifier.verifyInputScript(0);
+      expect(verifiedInputScript).toBe(true);
+
+      const verifiedInputLockRel = txVerifier.verifyInputLockRel(0);
+      expect(verifiedInputLockRel).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
+  });
+
+  describe("pkhx 90d expired", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhx90dOutput(pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      }
+
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(
+        txOutBnMap,
+        changeScript,
+        0n,
+        BigInt(Script.PKHX_90D_LOCK_REL),
+      );
+    });
+
+    test("should sign and verify expired pkhx 90d", () => {
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
+
+      const tx = txBuilder.build().unwrap();
+
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+      expect(tx.outputs[1].value).toBe(BigInt(50));
+
+      txSigner = new TxSigner(
+        tx,
+        txOutBnMap,
+        pkhKeyMap,
+        BigInt(Script.PKHX_90D_LOCK_REL),
+      );
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+      expect(tx.inputs[0].script.isExpiredPkhxInput()).toBe(true);
+
+      const txVerifier = new TxVerifier(
+        tx,
+        txOutBnMap,
+        BigInt(Script.PKHX_90D_LOCK_REL),
+      );
+      const verifiedInputScript = txVerifier.verifyInputScript(0);
+      expect(verifiedInputScript).toBe(true);
+
+      const verifiedInputLockRel = txVerifier.verifyInputLockRel(0);
+      expect(verifiedInputLockRel).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
   });
 });

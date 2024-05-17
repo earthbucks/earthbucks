@@ -13,6 +13,21 @@ export default class ScriptChunk {
     this.buf = buf;
   }
 
+  getData(): Result<Buffer, string> {
+    if (this.opcode === Opcode.OP_1NEGATE) {
+      return new Ok(Buffer.from([0x80]));
+    } else if (this.opcode === Opcode.OP_0) {
+      return new Ok(Buffer.from([]));
+    } else if (this.opcode >= Opcode.OP_1 && this.opcode <= Opcode.OP_16) {
+      return new Ok(Buffer.from([this.opcode - Opcode.OP_1 + 1]));
+    }
+    if (this.buf) {
+      return new Ok(this.buf);
+    } else {
+      return new Err("no data");
+    }
+  }
+
   toIsoStr(): Result<string, string> {
     if (this.buf) {
       return new Ok(`0x${this.buf.toString("hex")}`);

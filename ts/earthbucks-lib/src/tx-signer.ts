@@ -69,7 +69,7 @@ export default class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return new Ok(this.tx);
         } else {
           return new Err("expected expired pkhx input");
         }
@@ -104,7 +104,7 @@ export default class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return new Ok(this.tx);
         } else {
           return new Err("expected expired pkhx input");
         }
