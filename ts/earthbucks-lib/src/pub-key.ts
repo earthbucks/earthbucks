@@ -34,7 +34,7 @@ export default class PubKey {
   }
 
   static fromIsoHex(hex: string): Result<PubKey, string> {
-    let res = IsoHex.decode(hex);
+    const res = IsoHex.decode(hex);
     if (res.err) {
       return new Err(res.val);
     }
@@ -43,9 +43,9 @@ export default class PubKey {
   }
 
   toIsoStr(): string {
-    let checkHash = blake3Hash(this.buf);
-    let checkSum = checkHash.subarray(0, 4);
-    let checkHex = checkSum.toString("hex");
+    const checkHash = blake3Hash(this.buf);
+    const checkSum = checkHash.subarray(0, 4);
+    const checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + bs58.encode(this.buf);
   }
 
@@ -53,20 +53,20 @@ export default class PubKey {
     if (!str.startsWith("ebxpub")) {
       return new Err("Invalid public key format");
     }
-    let checkHex = str.slice(6, 14);
-    let res = IsoHex.decode(checkHex);
+    const checkHex = str.slice(6, 14);
+    const res = IsoHex.decode(checkHex);
     if (res.err) {
       return new Err(res.val);
     }
-    let checkBuf = res.unwrap();
+    const checkBuf = res.unwrap();
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return new Err("Invalid base58 encoding");
     }
-    let checkHash = blake3Hash(decoded);
-    let checkSum = checkHash.subarray(0, 4);
+    const checkHash = blake3Hash(decoded);
+    const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
       return new Err("Invalid checksum");
     }
@@ -74,7 +74,7 @@ export default class PubKey {
   }
 
   static isValidStringFmt(str: string): boolean {
-    let res = PubKey.fromIsoStr(str);
+    const res = PubKey.fromIsoStr(str);
     return res.ok;
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace */
 import { toString } from "./utils";
 import { Option, None, Some } from "./option";
 
@@ -312,7 +313,7 @@ export namespace Result {
     ...results: T
   ): Result<ResultOkTypes<T>, ResultErrTypes<T>[number]> {
     const okResult = [];
-    for (let result of results) {
+    for (const result of results) {
       if (result.ok) {
         okResult.push(result.val);
       } else {

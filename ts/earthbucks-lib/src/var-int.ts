@@ -41,7 +41,7 @@ export default class VarInt {
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
-    let res = br.readVarIntBuf();
+    const res = br.readVarIntBuf();
     if (res.err) {
       return new Err(res.val);
     }

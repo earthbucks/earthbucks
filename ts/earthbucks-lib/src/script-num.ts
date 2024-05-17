@@ -24,7 +24,7 @@ export default class ScriptNum {
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
-      let invertedBuffer = Buffer.alloc(buffer.length);
+      const invertedBuffer = Buffer.alloc(buffer.length);
       for (let i = 0; i < buffer.length; i++) {
         invertedBuffer[i] = ~buffer[i]; // Invert all bits
       }

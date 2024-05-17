@@ -63,9 +63,9 @@ export default class TxSigner {
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else if (txOut.script.isPkhx90dOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
-      let expired =
+      const expired =
         this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
-      let inputScript = txInput.script;
+      const inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
@@ -98,9 +98,9 @@ export default class TxSigner {
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else if (txOut.script.isPkhx1hOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
-      let expired =
+      const expired =
         this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
-      let inputScript = txInput.script;
+      const inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
@@ -140,7 +140,7 @@ export default class TxSigner {
 
   signAll(): Result<Tx, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      let res = this.sign(i);
+      const res = this.sign(i);
       if (res.err) {
         return new Err("sign_all: " + res.err);
       }

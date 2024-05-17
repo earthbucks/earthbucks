@@ -68,7 +68,7 @@ export default class Script {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<Script, string> {
-    let script = new Script();
+    const script = new Script();
     while (!reader.eof()) {
       const chunkRes = ScriptChunk.fromIsoBufReader(reader);
       if (chunkRes.err) {

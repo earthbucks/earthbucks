@@ -29,7 +29,7 @@ export default class SignedMessage {
   }
 
   static createMac(message: Buffer, keyStr: string) {
-    let key = blake3Hash(Buffer.from(keyStr));
+    const key = blake3Hash(Buffer.from(keyStr));
     return blake3Mac(key, message);
   }
 
@@ -41,7 +41,7 @@ export default class SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
     const sigBuf = Buffer.from(sigObj.signature);
-    let pubKey = privKey.toPubKeyBuffer();
+    const pubKey = privKey.toPubKeyBuffer();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
@@ -49,7 +49,7 @@ export default class SignedMessage {
     if (keyStr !== this.keyStr) {
       return false;
     }
-    let mac = SignedMessage.createMac(this.message, this.keyStr);
+    const mac = SignedMessage.createMac(this.message, this.keyStr);
     if (!mac.equals(this.mac)) {
       return false;
     }

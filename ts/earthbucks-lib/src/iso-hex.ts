@@ -17,5 +17,5 @@ export function decode(hex: string): Result<Buffer, string> {
   return new Ok(buffer);
 }
 
-let IsoHex = { encode, decode, isValid };
+const IsoHex = { encode, decode, isValid };
 export default IsoHex;

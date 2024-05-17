@@ -12,8 +12,8 @@ export default class HashNum {
     if (target.length !== 32) {
       return new Err("Invalid target length");
     }
-    let hex = target.toString("hex");
-    let num = BigInt("0x" + hex);
+    const hex = target.toString("hex");
+    const num = BigInt("0x" + hex);
     return new Ok(new HashNum(num));
   }
 

@@ -60,7 +60,7 @@ export default class ScriptChunk {
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
-        return OP.hasOwnProperty(str);
+        return Object.prototype.hasOwnProperty.call(OP, str);
       }
       if (isOpcodeName(str)) {
         const opcode = OP[str];

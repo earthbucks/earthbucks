@@ -57,7 +57,7 @@ export default class TxBuilder {
         inputScript = Script.fromPkhInputPlaceholder();
         lockRel = 0;
       } else if (txOut.script.isPkhx90dOutput()) {
-        let expired =
+        const expired =
           this.workingBlockNum >=
           prevBlockNum + BigInt(Script.PKHX_90D_LOCK_REL);
         if (expired) {
@@ -68,7 +68,7 @@ export default class TxBuilder {
           lockRel = 0;
         }
       } else if (txOut.script.isPkhx1hOutput()) {
-        let expired =
+        const expired =
           this.workingBlockNum >=
           prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
         if (expired) {

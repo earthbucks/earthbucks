@@ -66,20 +66,20 @@ export default class PrivKey {
     if (!str.startsWith("ebxprv")) {
       return new Err("Invalid private key format");
     }
-    let hexStr = str.slice(6, 14);
-    let checkBufRes = IsoHex.decode(hexStr);
+    const hexStr = str.slice(6, 14);
+    const checkBufRes = IsoHex.decode(hexStr);
     if (checkBufRes.err) {
       return checkBufRes;
     }
-    let checkBuf = checkBufRes.unwrap();
+    const checkBuf = checkBufRes.unwrap();
     let decoded: Buffer;
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return new Err("Invalid base58 encoding");
     }
-    let hashBuf = blake3Hash(decoded);
-    let checkBuf2 = hashBuf.subarray(0, 4);
+    const hashBuf = blake3Hash(decoded);
+    const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
       return new Err("Checksum mismatch");
     }

@@ -7,6 +7,7 @@
     "main": "tsx src/main.ts",
     "test": "jest",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "keywords": [],
@@ -28,9 +29,14 @@
     "singleQuote": false
   },
   "devDependencies": {
+    "@eslint/js": "^9.2.0",
     "@jest/globals": "^29.7.0",
+    "eslint": "^9.2.0",
+    "eslint-plugin-react": "^7.34.0",
+    "globals": "^15.2.0",
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
-    "ts-jest": "^29.1.2"
+    "ts-jest": "^29.1.2",
+    "typescript-eslint": "^7.9.0"
   }
 }

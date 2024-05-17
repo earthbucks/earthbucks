@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace */
 import { toString } from "./utils";
 import { Result, Ok, Err } from "./result";
 
@@ -196,7 +197,7 @@ export namespace Option {
     ...options: T
   ): Option<OptionSomeTypes<T>> {
     const someOption = [];
-    for (let option of options) {
+    for (const option of options) {
       if (option.some) {
         someOption.push(option.val);
       } else {

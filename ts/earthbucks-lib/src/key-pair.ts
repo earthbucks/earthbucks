@@ -13,24 +13,24 @@ export default class KeyPair {
   }
 
   static fromPrivKey(privKey: PrivKey): KeyPair {
-    let pubKey = PubKey.fromPrivKey(privKey);
+    const pubKey = PubKey.fromPrivKey(privKey);
     return new KeyPair(privKey, pubKey);
   }
 
   static fromPrivKeyBuffer(privKeyBuf: Buffer): Result<KeyPair, string> {
-    let privKeyRes = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf)).mapErr(
+    const privKeyRes = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf)).mapErr(
       (err) => "Error parsing private key: " + err,
     );
     if (privKeyRes.err) {
       return privKeyRes;
     }
-    let privKey = privKeyRes.unwrap();
-    let pubKey = PubKey.fromPrivKey(privKey);
+    const privKey = privKeyRes.unwrap();
+    const pubKey = PubKey.fromPrivKey(privKey);
     return new Ok(new KeyPair(privKey, pubKey));
   }
 
   static fromRandom(): KeyPair {
-    let privKey = PrivKey.fromRandom();
+    const privKey = PrivKey.fromRandom();
     return KeyPair.fromPrivKey(privKey);
   }
 }

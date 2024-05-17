@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 export function toString(val: unknown): string {
   let value = String(val);
   if (value === "[object Object]") {

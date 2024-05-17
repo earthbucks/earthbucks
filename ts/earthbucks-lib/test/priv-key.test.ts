@@ -24,8 +24,8 @@ describe("PrivKey", () => {
       ),
     ).toBe(false);
 
-    let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
-    let privKey2 = PrivKey.fromIsoStr(str).unwrap();
+    const str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
+    const privKey2 = PrivKey.fromIsoStr(str).unwrap();
     expect(privKey2.toIsoStr()).toBe(str);
   });
 });

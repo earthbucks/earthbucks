@@ -239,7 +239,7 @@ export default class Tx {
       hashType,
       hashCache,
     );
-    let hash = doubleBlake3Hash(preimage);
+    const hash = doubleBlake3Hash(preimage);
     return hash;
   }
 
@@ -257,7 +257,7 @@ export default class Tx {
       hashType,
       hashCache,
     );
-    let hash = doubleBlake3Hash(preimage);
+    const hash = doubleBlake3Hash(preimage);
     return hash;
   }
 
@@ -269,7 +269,7 @@ export default class Tx {
     hashType: number,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    let sigBuf = Buffer.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = Buffer.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
@@ -289,7 +289,7 @@ export default class Tx {
       hashType,
       hashCache,
     );
-    let sigBuf = Buffer.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = Buffer.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
