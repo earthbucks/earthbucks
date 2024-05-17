@@ -102,8 +102,9 @@ impl<'a> BlockVerifier<'a> {
         // if invalid, return false
         // if valid, add outputs to tx_output_map and remove used outputs
         for tx in txs {
-            let mut tx_verifier = TxVerifier::new(tx.clone(), &self.tx_out_bn_map);
-            if !tx_verifier.verify(self.block.header.block_num) {
+            let mut tx_verifier =
+                TxVerifier::new(tx.clone(), &self.tx_out_bn_map, self.block.header.block_num);
+            if !tx_verifier.verify() {
                 return false;
             }
             let header = &self.block.header;

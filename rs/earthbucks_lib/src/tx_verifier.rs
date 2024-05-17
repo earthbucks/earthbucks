@@ -6,15 +6,17 @@ pub struct TxVerifier<'a> {
     tx: Tx,
     tx_out_bn_map: &'a TxOutBnMap,
     hash_cache: HashCache,
+    block_num: u64,
 }
 
 impl<'a> TxVerifier<'a> {
-    pub fn new(tx: Tx, tx_out_bn_map: &'a TxOutBnMap) -> Self {
+    pub fn new(tx: Tx, tx_out_bn_map: &'a TxOutBnMap, block_num: u64) -> Self {
         let hash_cache = HashCache::new();
         Self {
             tx,
             tx_out_bn_map,
             hash_cache,
+            block_num,
         }
     }
 
@@ -49,7 +51,7 @@ impl<'a> TxVerifier<'a> {
         }
     }
 
-    pub fn verify_input_lock_rel(&mut self, n_in: usize, block_num: u64) -> bool {
+    pub fn verify_input_lock_rel(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
         let tx_out_hash = &tx_input.input_tx_id;
         let output_index = tx_input.input_tx_out_num;
@@ -59,18 +61,18 @@ impl<'a> TxVerifier<'a> {
             Some(tx_out_bn) => {
                 let lock_rel: u64 = tx_input.lock_rel as u64;
                 let prev_block_num = tx_out_bn.block_num;
-                let cur_block_num = block_num;
+                let cur_block_num = self.block_num;
                 cur_block_num >= prev_block_num + lock_rel
             }
         }
     }
 
-    pub fn verify_inputs(&mut self, block_num: u64) -> bool {
+    pub fn verify_inputs(&mut self) -> bool {
         for i in 0..self.tx.inputs.len() {
             if !self.verify_input_script(i) {
                 return false;
             }
-            if !self.verify_input_lock_rel(i, block_num) {
+            if !self.verify_input_lock_rel(i) {
                 return false;
             }
         }
@@ -121,15 +123,15 @@ impl<'a> TxVerifier<'a> {
         true
     }
 
-    pub fn verify_lock_abs(&self, block_num: u64) -> bool {
-        if self.tx.lock_abs > block_num {
+    pub fn verify_lock_abs(&self) -> bool {
+        if self.tx.lock_abs > self.block_num {
             return false;
         }
         true
     }
 
-    pub fn verify(&mut self, block_num: u64) -> bool {
-        if !self.verify_lock_abs(block_num) {
+    pub fn verify(&mut self) -> bool {
+        if !self.verify_lock_abs() {
             return false;
         }
         if !self.verify_is_not_coinbase() {
@@ -138,7 +140,7 @@ impl<'a> TxVerifier<'a> {
         if !self.verify_no_double_spend() {
             return false;
         }
-        if !self.verify_inputs(block_num) {
+        if !self.verify_inputs() {
             return false;
         }
         if !self.verify_output_values() {
@@ -194,21 +196,21 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, 0);
 
         let verified_input_script = tx_verifier.verify_input_script(0);
         assert!(verified_input_script);
 
-        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0, 0);
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
         assert!(verified_input_lock_rel);
 
-        let verified_scripts = tx_verifier.verify_inputs(0);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(0);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 
@@ -245,17 +247,17 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, 0);
         let verified_input = tx_verifier.verify_input_script(0);
         assert!(verified_input);
 
-        let verified_scripts = tx_verifier.verify_inputs(0);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(0);
+        let verified = tx_verifier.verify();
         assert!(!verified);
     }
 
@@ -295,19 +297,19 @@ mod tests {
         assert!(tx_res2.is_ok());
         let signed_tx = tx_signer.tx;
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, 0);
         let verified_input1 = tx_verifier.verify_input_script(0);
         assert!(verified_input1);
         let verified_input2 = tx_verifier.verify_input_script(1);
         assert!(verified_input2);
 
-        let verified_scripts = tx_verifier.verify_inputs(0);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(0);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 
@@ -344,21 +346,21 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, 0);
 
         let verified_input_script = tx_verifier.verify_input_script(0);
         assert!(verified_input_script);
 
-        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0, 0);
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
         assert!(verified_input_lock_rel);
 
-        let verified_scripts = tx_verifier.verify_inputs(0);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(0);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 
@@ -399,21 +401,21 @@ mod tests {
 
         assert!(tx.inputs[0].script.is_expired_pkhx_input());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, working_block_num);
 
         let verified_input_script = tx_verifier.verify_input_script(0);
         assert!(verified_input_script);
 
-        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0, working_block_num);
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
         assert!(verified_input_lock_rel);
 
-        let verified_scripts = tx_verifier.verify_inputs(working_block_num);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(working_block_num);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 
@@ -450,21 +452,21 @@ mod tests {
         let signed_tx = tx_signer.tx;
         assert!(tx_res.is_ok());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, 0);
 
         let verified_input_script = tx_verifier.verify_input_script(0);
         assert!(verified_input_script);
 
-        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0, 0);
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
         assert!(verified_input_lock_rel);
 
-        let verified_scripts = tx_verifier.verify_inputs(0);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(0);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 
@@ -505,21 +507,21 @@ mod tests {
 
         assert!(tx.inputs[0].script.is_expired_pkhx_input());
 
-        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map);
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, working_block_num);
 
         let verified_input_script = tx_verifier.verify_input_script(0);
         assert!(verified_input_script);
 
-        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0, working_block_num);
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
         assert!(verified_input_lock_rel);
 
-        let verified_scripts = tx_verifier.verify_inputs(working_block_num);
+        let verified_scripts = tx_verifier.verify_inputs();
         assert!(verified_scripts);
 
         let verified_output_values = tx_verifier.verify_output_values();
         assert!(verified_output_values);
 
-        let verified = tx_verifier.verify(working_block_num);
+        let verified = tx_verifier.verify();
         assert!(verified);
     }
 }
