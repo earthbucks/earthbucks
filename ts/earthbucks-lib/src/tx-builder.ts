@@ -49,12 +49,34 @@ export default class TxBuilder {
       const prevBlockNum = txOutBn.blockNum;
       const txId = TxOutBnMap.nameToTxIdHash(txOutId);
       const txOutNum = TxOutBnMap.nameToOutputIndex(txOutId);
+      const txOut = txOutBn.txOut;
 
       let inputScript: Script;
       let lockRel: number;
-      if (txOutBn.txOut.script.isPkhOutput()) {
+      if (txOut.script.isPkhOutput()) {
         inputScript = Script.fromPkhInputPlaceholder();
         lockRel = 0;
+      } else if (txOut.script.isPkhx90dOutput()) {
+        let expired =
+          this.workingBlockNum >
+          prevBlockNum + BigInt(Script.PKHX_90D_LOCK_REL);
+        if (expired) {
+          inputScript = Script.fromExpiredPkhxInput();
+          lockRel = Script.PKHX_90D_LOCK_REL;
+        } else {
+          inputScript = Script.fromUnexpiredPkhxInputPlaceholder();
+          lockRel = 0;
+        }
+      } else if (txOut.script.isPkhx1hOutput()) {
+        let expired =
+          this.workingBlockNum > prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+        if (expired) {
+          inputScript = Script.fromExpiredPkhxInput();
+          lockRel = Script.PKHX_1H_LOCK_REL;
+        } else {
+          inputScript = Script.fromUnexpiredPkhxInputPlaceholder();
+          lockRel = 0;
+        }
       } else {
         return new Err("unsupported script type");
       }

@@ -247,7 +247,7 @@ export default class Script {
     );
   }
 
-  fromUnexpredPkhxInputPlaceholder(): Script {
+  static fromUnexpiredPkhxInputPlaceholder(): Script {
     const sig = Buffer.alloc(TxSignature.SIZE);
     const pubKey = Buffer.alloc(PubKey.SIZE);
     return Script.fromUnexpiredPkhxInput(sig, pubKey);
