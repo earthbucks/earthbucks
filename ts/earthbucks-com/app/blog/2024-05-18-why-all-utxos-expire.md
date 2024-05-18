@@ -218,7 +218,7 @@ standard script type, otherwise your transactions will not be valid.
 
 EarthBucks is designed to be used. UTXO expiry is consistent with this
 philosophy. Active users will have no problems maintaining their tokens, because
-all they will have to do is press a button once per month or so to rotate their
+all they will have to do is press a button once per quarter to rotate their
 keys. Inactive users can simply pay someone to do this for them, ensuring that
 the network is paid for maintenance either way. Advantages include software
 upgradeability, scalability, and incentivizing the right culture of usage and
