@@ -154,5 +154,11 @@
     "title": "EarthBucks Overview: 42 million EBX, no pre-mine, GPUs, big blocks, and script",
     "author": "Ryan X. Charles",
     "date": "2024-05-13"
+  },
+  {
+    "filename": "2024-05-18-why-all-utxos-expire.md",
+    "title": "Why All UTXOs Expire After 90 Days",
+    "author": "Ryan X. Charles",
+    "date": "2024-05-18"
   }
 ]
