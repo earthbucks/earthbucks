@@ -183,10 +183,7 @@ impl IsoBufReader {
         let buf = self.read_var_int_buf().map_err(|e: IsoBufReaderError| {
             IsoBufReaderError::ReadVarIntError {
                 code: 1,
-                message: match e {
-                    IsoBufReaderError::ReadVarIntBufError { message, .. } => message,
-                    _ => "".to_string(),
-                },
+                message: "unable to read varint buf: ".to_string() + &e.to_string(),
             }
         })?;
         let first = buf[0];
@@ -424,8 +421,6 @@ mod tests {
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_var_int_buf();
-            // println!("expected error: {}", test_vector.error);
-            // println!("{:?}", result);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
@@ -443,8 +438,6 @@ mod tests {
             let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_var_int();
-            // println!("expected error: {}", test_vector.error);
-            // println!("{:?}", result);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
                 Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),

@@ -96,21 +96,21 @@ describe("IsoBufReader", () => {
   test("readVarIntNum", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -144,21 +144,21 @@ describe("IsoBufReader", () => {
   test("readVarInt", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));

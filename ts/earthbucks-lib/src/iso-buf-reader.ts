@@ -19,11 +19,19 @@ class ReadError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
   }
+
+  toString(): string {
+    return `IsoBufReader::ReadError (${this.code}): ${this.message}`;
+  }
 }
 
 class ReadU8Error extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
+  }
+
+  toString(): string {
+    return `IsoBufReader::ReadU8Error (${this.code}): ${this.message}`;
   }
 }
 
@@ -31,11 +39,19 @@ class ReadU16BEError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
   }
+
+  toString(): string {
+    return `IsoBufReader::ReadU16BEError (${this.code}): ${this.message}`;
+  }
 }
 
 class ReadU32BEError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
+  }
+
+  toString(): string {
+    return `IsoBufReader::ReadU32BEError (${this.code}): ${this.message}`;
   }
 }
 
@@ -43,11 +59,19 @@ class ReadU64BEError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
   }
+
+  toString(): string {
+    return `IsoBufReader::ReadU64BEError (${this.code}): ${this.message}`;
+  }
 }
 
 class ReadVarIntBufError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
+  }
+
+  toString(): string {
+    return `IsoBufReader::ReadVarIntBufError (${this.code}): ${this.message}`;
   }
 }
 
@@ -55,11 +79,19 @@ class ReadVarIntError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
   }
+
+  toString(): string {
+    return `IsoBufReader::ReadVarIntError (${this.code}): ${this.message}`;
+  }
 }
 
 class ReadVarIntNumError extends IsoBufReaderError {
   constructor(code: number, message: string) {
     super(code, message);
+  }
+
+  toString(): string {
+    return `IsoBufReader::ReadVarIntNumError (${this.code}): ${this.message}`;
   }
 }
 
@@ -138,11 +170,9 @@ export default class IsoBufReader {
   }
 
   readVarIntBuf(): Result<Buffer, IsoBufReaderError> {
-    const res = this.readU8().mapErr(
-      (err) => new ReadVarIntBufError(1, `${err}`),
-    );
+    const res = this.readU8();
     if (res.err) {
-      return res;
+      return Err(new ReadVarIntBufError(1, `${res.val}`));
     }
     const first = res.unwrap();
     if (first === 0xfd) {
@@ -191,7 +221,7 @@ export default class IsoBufReader {
     const res = this.readVarIntBuf();
     if (res.err) {
       return Err(
-        new ReadVarIntError(1, `unable to read varint buf: ${res.val.message}`),
+        new ReadVarIntError(1, `unable to read varint buf: ${res.val}`),
       );
     }
     const buf = res.unwrap();
@@ -218,10 +248,7 @@ export default class IsoBufReader {
     const value = this.readVarInt();
     if (value.err) {
       return Err(
-        new ReadVarIntNumError(
-          1,
-          `unable to read varint: ${value.val.message}`,
-        ),
+        new ReadVarIntNumError(1, `unable to read varint: ${value.val}`),
       );
     }
     if (value.unwrap() > BigInt(Number.MAX_SAFE_INTEGER)) {
