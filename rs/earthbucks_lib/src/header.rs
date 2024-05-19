@@ -45,16 +45,16 @@ impl Header {
             return Err("Invalid block header size".to_string());
         }
         let mut br = IsoBufReader::new(buf);
-        let version = br.read_u32_be()?;
-        let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let timestamp = br.read_u64_be()?;
-        let block_num = br.read_u64_be()?;
-        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_algo = br.read_u64_be()?;
-        let work_ser: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let version = br.read_u32_be().map_err(|e| e.to_string())?;
+        let prev_block_id: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let timestamp = br.read_u64_be().map_err(|e| e.to_string())?;
+        let block_num = br.read_u64_be().map_err(|e| e.to_string())?;
+        let target: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_algo = br.read_u64_be().map_err(|e| e.to_string())?;
+        let work_ser: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -73,16 +73,16 @@ impl Header {
         if br.remainder_len() < Header::BLOCK_HEADER_SIZE {
             panic!("Invalid block header size");
         }
-        let version = br.read_u32_be()?;
-        let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let timestamp = br.read_u64_be()?;
-        let block_num = br.read_u64_be()?;
-        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_algo = br.read_u64_be()?;
-        let work_ser: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let version = br.read_u32_be().map_err(|e| e.to_string())?;
+        let prev_block_id: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let merkle_root: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let timestamp = br.read_u64_be().map_err(|e| e.to_string())?;
+        let block_num = br.read_u64_be().map_err(|e| e.to_string())?;
+        let target: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let nonce: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_algo = br.read_u64_be().map_err(|e| e.to_string())?;
+        let work_ser: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_par: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,

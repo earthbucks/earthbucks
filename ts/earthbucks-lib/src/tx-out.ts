@@ -20,17 +20,17 @@ export default class TxOut {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, string> {
-    const valueRes = reader.readU64BE();
+    const valueRes = reader.readU64BE().mapErr((e) => e.toString());
     if (valueRes.err) {
       return valueRes;
     }
     const value = valueRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum();
+    const scriptLenRes = reader.readVarIntNum().mapErr((e) => e.toString());
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptArrRes = reader.read(scriptLen);
+    const scriptArrRes = reader.read(scriptLen).mapErr((e) => e.toString());
     if (scriptArrRes.err) {
       return scriptArrRes;
     }

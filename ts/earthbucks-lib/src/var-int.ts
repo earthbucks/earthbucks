@@ -33,7 +33,7 @@ export default class VarInt {
   }
 
   toBigInt(): Result<bigint, string> {
-    return new IsoBufReader(this.buf).readVarInt();
+    return new IsoBufReader(this.buf).readVarInt().mapErr((e) => e.toString());
   }
 
   toNumber() {
@@ -43,7 +43,7 @@ export default class VarInt {
   static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
     const res = br.readVarIntBuf();
     if (res.err) {
-      return Err(res.val);
+      return Err(res.val.toString());
     }
     const buf = res.unwrap();
     return Ok(new VarInt(buf));

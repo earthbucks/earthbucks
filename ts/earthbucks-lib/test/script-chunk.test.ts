@@ -168,7 +168,7 @@ describe("ScriptChunk", () => {
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
       expect(res.val).toEqual(
-        "script_chunk::from_iso_buf_reader 3: unable to read buffer: read: not enough bytes left in the buffer to read",
+        "script_chunk::from_iso_buf_reader 3: unable to read buffer: IsoBufReader::ReadError (1): not enough bytes left in the buffer to read",
       );
     });
 

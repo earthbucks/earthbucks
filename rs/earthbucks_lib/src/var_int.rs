@@ -28,11 +28,13 @@ impl VarInt {
     }
 
     pub fn to_u64(&self) -> Result<u64, String> {
-        IsoBufReader::new(self.buf.clone()).read_var_int()
+        IsoBufReader::new(self.buf.clone())
+            .read_var_int()
+            .map_err(|e| e.to_string())
     }
 
     pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, String> {
-        let buf = br.read_var_int_buf()?;
+        let buf = br.read_var_int_buf().map_err(|e| e.to_string())?;
         Ok(VarInt { buf })
     }
 

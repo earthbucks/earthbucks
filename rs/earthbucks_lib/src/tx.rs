@@ -58,18 +58,18 @@ impl Tx {
     }
 
     pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
-        let version = reader.read_u8()?;
-        let input_count = reader.read_var_int()? as usize;
+        let version = reader.read_u8().map_err(|e| e.to_string())?;
+        let input_count = reader.read_var_int().map_err(|e| e.to_string())? as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
             inputs.push(TxIn::from_iso_buf_reader(reader)?);
         }
-        let output_count = reader.read_var_int()? as usize;
+        let output_count = reader.read_var_int().map_err(|e| e.to_string())? as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
             outputs.push(TxOut::from_iso_buf_reader(reader)?);
         }
-        let lock_num = reader.read_u64_be()?;
+        let lock_num = reader.read_u64_be().map_err(|e| e.to_string())?;
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 

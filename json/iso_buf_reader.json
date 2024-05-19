@@ -4,27 +4,27 @@
       {
         "hex": "",
         "len": 1,
-        "error": "read: not enough bytes left in the buffer to read"
+        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
       },
       {
         "hex": "00",
         "len": 2,
-        "error": "read: not enough bytes left in the buffer to read"
+        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
       },
       {
         "hex": "0000",
         "len": 3,
-        "error": "read: not enough bytes left in the buffer to read"
+        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
       },
       {
         "hex": "000000",
         "len": 4,
-        "error": "read: not enough bytes left in the buffer to read"
+        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
       },
       {
         "hex": "00000000",
         "len": 5,
-        "error": "read: not enough bytes left in the buffer to read"
+        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
       }
     ]
   },
@@ -32,7 +32,7 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_u8: unable to read 1 byte: "
+        "error": "IsoBufReader::ReadU8Error (1): "
       }
     ]
   },
@@ -40,11 +40,11 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_u16_be: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadU16BEError (1): "
       },
       {
         "hex": "00",
-        "error": "read_u16_be: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadU16BEError (1): "
       }
     ]
   },
@@ -52,19 +52,19 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_u32_be: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadU32BEError (1): "
       },
       {
         "hex": "00",
-        "error": "read_u32_be: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadU32BEError (1): "
       },
       {
         "hex": "0000",
-        "error": "read_u32_be: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadU32BEError (1): "
       },
       {
         "hex": "000000",
-        "error": "read_u32_be: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadU32BEError (1): "
       }
     ]
   },
@@ -72,35 +72,35 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "00",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "0000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "000000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "00000000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "0000000000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "000000000000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       },
       {
         "hex": "00000000000000",
-        "error": "read_u64_be: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadU64BEError (1): "
       }
     ]
   },
@@ -108,75 +108,75 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_var_int_buf 1: "
+        "error": "IsoBufReader::ReadVarIntBufError (1): "
       },
       {
         "hex": "fd",
-        "error": "read_var_int_buf 2: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (2): "
       },
       {
         "hex": "fd00",
-        "error": "read_var_int_buf 2: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (2): "
       },
       {
         "hex": "fd0000",
-        "error": "read_var_int_buf 3: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding"
       },
       {
         "hex": "fe",
-        "error": "read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (4): "
       },
       {
         "hex": "fe00",
-        "error": "read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (4): "
       },
       {
         "hex": "fe0000",
-        "error": "read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (4): "
       },
       {
         "hex": "fe000000",
-        "error": "read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (4): "
       },
       {
         "hex": "fe00000000",
-        "error": "read_var_int_buf 5: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding"
       },
       {
         "hex": "ff",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff00",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff0000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff000000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff00000000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff0000000000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff000000000000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff00000000000000",
-        "error": "read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntBufError (6): "
       },
       {
         "hex": "ff0000000000000000",
-        "error": "read_var_int_buf 7: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding"
       }
     ]
   },
@@ -184,75 +184,75 @@
     "errors": [
       {
         "hex": "",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 1: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fd",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 2: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fd00",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 2: unable to read 2 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fd0000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 3: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fe",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fe00",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fe0000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fe000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 4: unable to read 4 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "fe00000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 5: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff00",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff0000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff00000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff0000000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff000000000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff00000000000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 6: unable to read 8 bytes: "
+        "error": "IsoBufReader::ReadVarIntError (1): "
       },
       {
         "hex": "ff0000000000000000",
-        "error": "read_var_int 1: unable to read varint buffer: read_var_int_buf 7: non-minimal varint encoding"
+        "error": "IsoBufReader::ReadVarIntError (1): "
       }
     ]
   }

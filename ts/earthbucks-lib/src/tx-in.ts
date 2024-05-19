@@ -29,22 +29,22 @@ export default class TxIn {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, string> {
-    const inputTxHashRes = reader.read(32);
+    const inputTxHashRes = reader.read(32).mapErr((e) => e.toString());
     if (inputTxHashRes.err) {
       return inputTxHashRes;
     }
     const inputTxHash = inputTxHashRes.unwrap();
-    const inputTxIndexRes = reader.readU32BE();
+    const inputTxIndexRes = reader.readU32BE().mapErr((e) => e.toString());
     if (inputTxIndexRes.err) {
       return inputTxIndexRes;
     }
     const inputTxIndex = inputTxIndexRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum();
+    const scriptLenRes = reader.readVarIntNum().mapErr((e) => e.toString());
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptBufRes = reader.read(scriptLen);
+    const scriptBufRes = reader.read(scriptLen).mapErr((e) => e.toString());
     if (scriptBufRes.err) {
       return scriptBufRes;
     }
@@ -54,7 +54,7 @@ export default class TxIn {
       return scriptRes;
     }
     const script = scriptRes.unwrap();
-    const lockRelRes = reader.readU32BE();
+    const lockRelRes = reader.readU32BE().mapErr((e) => e.toString());
     if (lockRelRes.err) {
       return lockRelRes;
     }

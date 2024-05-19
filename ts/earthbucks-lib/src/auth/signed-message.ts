@@ -67,7 +67,7 @@ export default class SignedMessage {
     const sig = reader.read(64).unwrap();
     const pubKey = reader.read(PubKey.SIZE).unwrap();
     const mac = reader.read(32).unwrap();
-    const message = reader.readRemainder().unwrap();
+    const message = reader.readRemainder();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 

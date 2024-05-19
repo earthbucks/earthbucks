@@ -111,16 +111,18 @@ impl ScriptChunk {
         // OP_1..OP_16 for that data. e.g. 0x01 is actually OP_1, so
         // OP_PUSHDATA1 0x01 0x01 is actually invalid and should be just OP_1.
         let opcode = reader.read_u8().map_err(|e| {
-            "script_chunk::from_iso_buf_reader 1: unable to read opcode: ".to_string() + &e
+            "script_chunk::from_iso_buf_reader 1: unable to read opcode: ".to_string()
+                + &e.to_string()
         })?;
         let mut chunk = ScriptChunk::new(opcode, None);
         if opcode == Opcode::OP_PUSHDATA1 {
             let len = reader.read_u8().map_err(|e| {
                 "script_chunk::from_iso_buf_reader 2: unable to read 1 byte length: ".to_string()
-                    + &e
+                    + &e.to_string()
             })? as usize;
             chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string() + &e
+                "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string()
+                    + &e.to_string()
             })?);
             if len == 0 || (len == 1 && (1..=16).contains(&chunk.buffer.as_ref().unwrap()[0])) {
                 return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata".to_string());
@@ -128,24 +130,26 @@ impl ScriptChunk {
         } else if opcode == Opcode::OP_PUSHDATA2 {
             let len = reader.read_u16_be().map_err(|e| {
                 "script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ".to_string()
-                    + &e
+                    + &e.to_string()
             })? as usize;
             if len <= 0xff {
                 return Err("script_chunk::from_iso_buf_reader 6: non-minimal pushdata".to_string());
             }
             chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string() + &e
+                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string()
+                    + &e.to_string()
             })?);
         } else if opcode == Opcode::OP_PUSHDATA4 {
             let len = reader.read_u32_be().map_err(|e| {
                 "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ".to_string()
-                    + &e
+                    + &e.to_string()
             })? as usize;
             if len <= 0xffff {
                 return Err("script_chunk::from_iso_buf_reader 9: non-minimal pushdata".to_string());
             }
             chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 10: unable to read buffer: ".to_string() + &e
+                "script_chunk::from_iso_buf_reader 10: unable to read buffer: ".to_string()
+                    + &e.to_string()
             })?);
         }
         Ok(chunk)
@@ -361,7 +365,7 @@ mod tests {
         match result {
             Err(e) => assert_eq!(
                 e.to_string(),
-                "script_chunk::from_iso_buf_reader 3: unable to read buffer: read: not enough bytes left in the buffer to read"
+                "script_chunk::from_iso_buf_reader 3: unable to read buffer: IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
             ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA1 case"),
         }

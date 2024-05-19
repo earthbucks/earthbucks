@@ -41,12 +41,12 @@ export default class Tx {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<Tx, string> {
-    const versionRes = reader.readU8();
+    const versionRes = reader.readU8().mapErr((e) => e.toString());
     if (versionRes.err) {
       return versionRes;
     }
     const version = versionRes.unwrap();
-    const numInputsRes = reader.readVarIntNum();
+    const numInputsRes = reader.readVarIntNum().mapErr((e) => e.toString());
     if (numInputsRes.err) {
       return numInputsRes;
     }
@@ -60,7 +60,7 @@ export default class Tx {
       const txIn = txInRes.unwrap();
       inputs.push(txIn);
     }
-    const numOutputsRes = reader.readVarIntNum();
+    const numOutputsRes = reader.readVarIntNum().mapErr((e) => e.toString());
     if (numOutputsRes.err) {
       return numOutputsRes;
     }
@@ -74,7 +74,7 @@ export default class Tx {
       const txOut = txOutRes.unwrap();
       outputs.push(txOut);
     }
-    const lockNumRes = reader.readU64BE();
+    const lockNumRes = reader.readU64BE().mapErr((e) => e.toString());
     if (lockNumRes.err) {
       return lockNumRes;
     }

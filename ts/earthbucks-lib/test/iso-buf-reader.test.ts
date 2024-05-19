@@ -4,7 +4,7 @@ import { Buffer } from "buffer";
 import fs from "fs";
 import path from "path";
 
-describe("BufferReader", () => {
+describe("IsoBufReader", () => {
   let bufferReader: IsoBufReader;
   let testBuffer: Buffer;
 
@@ -95,22 +95,22 @@ describe("BufferReader", () => {
 
   test("readVarIntNum", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 3: non-minimal varint encoding",
+    expect(bufferReader.readVarIntNum().val.toString()).toBe(
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 5: non-minimal varint encoding",
+    expect(bufferReader.readVarIntNum().val.toString()).toBe(
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntNum().val).toBe(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 7: non-minimal varint encoding",
+    expect(bufferReader.readVarIntNum().val.toString()).toBe(
+      "IsoBufReader::ReadVarIntNumError (1): unable to read varint: unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -119,22 +119,22 @@ describe("BufferReader", () => {
 
   test("readVarIntBuf", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 3: non-minimal varint encoding",
+    expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 5: non-minimal varint encoding",
+    expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarIntBuf().val).toEqual(
-      "read_var_int_buf 7: non-minimal varint encoding",
+    expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -143,22 +143,22 @@ describe("BufferReader", () => {
 
   test("readVarInt", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 3: non-minimal varint encoding",
+    expect(bufferReader.readVarInt().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 5: non-minimal varint encoding",
+    expect(bufferReader.readVarInt().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(bufferReader.readVarInt().val).toEqual(
-      "read_var_int 1: unable to read varint buffer: read_var_int_buf 7: non-minimal varint encoding",
+    expect(bufferReader.readVarInt().val.toString()).toEqual(
+      "IsoBufReader::ReadVarIntError (1): unable to read varint buf: non-minimal varint encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -206,9 +206,7 @@ describe("BufferReader", () => {
       testVector.read.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.read(test.len).val).toMatch(
-          new RegExp("^" + test.error),
-        );
+        expect(bufferReader.read(test.len).val.toString()).toEqual(test.error);
       });
     });
 
@@ -216,7 +214,9 @@ describe("BufferReader", () => {
       testVector.read_u8.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readU8().val).toMatch(new RegExp("^" + test.error));
+        expect(
+          bufferReader.readU8().val.toString().startsWith(test.error),
+        ).toBeTruthy();
       });
     });
 
@@ -224,9 +224,9 @@ describe("BufferReader", () => {
       testVector.read_u16_be.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readU16BE().val).toMatch(
-          new RegExp("^" + test.error),
-        );
+        expect(
+          bufferReader.readU16BE().val.toString().startsWith(test.error),
+        ).toBeTruthy();
       });
     });
 
@@ -234,9 +234,9 @@ describe("BufferReader", () => {
       testVector.read_u32_be.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readU32BE().val).toMatch(
-          new RegExp("^" + test.error),
-        );
+        expect(
+          bufferReader.readU32BE().val.toString().startsWith(test.error),
+        ).toBeTruthy();
       });
     });
 
@@ -244,9 +244,9 @@ describe("BufferReader", () => {
       testVector.read_u64_be.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readU64BE().val).toMatch(
-          new RegExp("^" + test.error),
-        );
+        expect(
+          bufferReader.readU64BE().val.toString().startsWith(test.error),
+        ).toBeTruthy();
       });
     });
 
@@ -254,8 +254,8 @@ describe("BufferReader", () => {
       testVector.read_var_int_buf.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readVarIntBuf().val).toMatch(
-          new RegExp("^" + test.error),
+        expect(bufferReader.readVarIntBuf().val.toString()).toMatch(
+          new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
         );
       });
     });
@@ -264,8 +264,8 @@ describe("BufferReader", () => {
       testVector.read_var_int.errors.forEach((test) => {
         const buf = Buffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
-        expect(bufferReader.readVarInt().val).toMatch(
-          new RegExp("^" + test.error),
+        expect(bufferReader.readVarInt().val.toString()).toMatch(
+          new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
         );
       });
     });

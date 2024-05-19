@@ -119,12 +119,12 @@ impl MerkleProof {
 
     pub fn from_iso_buf(u8: &[u8]) -> Result<MerkleProof, String> {
         let mut br = IsoBufReader::new(u8.to_vec());
-        let root: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let root: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         let mut proof = vec![];
-        let proof_length = br.read_var_int()? as usize;
+        let proof_length = br.read_var_int().map_err(|e| e.to_string())? as usize;
         for _ in 0..proof_length {
-            let sibling: [u8; 32] = br.read(32)?.try_into().unwrap();
-            let is_left = br.read_u8()? == 1;
+            let sibling: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+            let is_left = br.read_u8().map_err(|e| e.to_string())? == 1;
             proof.push((sibling, is_left));
         }
         Ok(MerkleProof::new(root, proof))
