@@ -21,7 +21,7 @@ impl<'a> BlockVerifier<'a> {
         }
     }
 
-    pub fn header_is_valid_at_timestamp(&mut self, timestamp: u64) -> bool {
+    pub fn header_is_valid_at(&mut self, timestamp: u64) -> bool {
         let header = &self.block.header;
         let lch = &self.lch;
         lch.new_header_is_valid_at(header, timestamp)
@@ -119,11 +119,11 @@ impl<'a> BlockVerifier<'a> {
         true
     }
 
-    pub fn is_valid_at_timestamp(&mut self, timestamp: u64) -> bool {
+    pub fn is_valid_at(&mut self, timestamp: u64) -> bool {
         if timestamp < self.block.header.timestamp {
             return false;
         }
-        if !self.header_is_valid_at_timestamp(timestamp) {
+        if !self.header_is_valid_at(timestamp) {
             return false;
         }
         if !self.merkle_root_is_valid() {
@@ -137,6 +137,6 @@ impl<'a> BlockVerifier<'a> {
 
     pub fn is_valid_now(&mut self) -> bool {
         let timestamp = Header::get_new_timestamp();
-        self.is_valid_at_timestamp(timestamp)
+        self.is_valid_at(timestamp)
     }
 }
