@@ -1,42 +1,12 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
 import { Option, Some, None } from "./ts-results/option";
-
-export abstract class IsoBufReaderError extends Error {
-  constructor() {
-    super();
-  }
-}
-
-export class InsufficientLengthError extends IsoBufReaderError {
-  constructor(public source: Option<Error>) {
-    super();
-  }
-
-  toString(): string {
-    return `not enough bytes in the buffer to read`;
-  }
-}
-
-export class NonMinimalEncodingError extends IsoBufReaderError {
-  constructor(public source: Option<Error>) {
-    super();
-  }
-
-  toString(): string {
-    return `non-minimal varint encoding`;
-  }
-}
-
-export class InsufficientPrecisionError extends IsoBufReaderError {
-  constructor(public source: Option<Error>) {
-    super();
-  }
-
-  toString(): string {
-    return `number too large to retain precision`;
-  }
-}
+import {
+  InsufficientLengthError,
+  EbxError,
+  NonMinimalEncodingError,
+  InsufficientPrecisionError,
+} from "./errors";
 
 export default class IsoBufReader {
   buf: Buffer;
@@ -51,7 +21,7 @@ export default class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  read(len: number): Result<Buffer, IsoBufReaderError> {
+  read(len: number): Result<Buffer, EbxError> {
     if (this.pos + len > this.buf.length) {
       return Err(new InsufficientLengthError(None));
     }
@@ -66,7 +36,7 @@ export default class IsoBufReader {
     return this.read(this.buf.length - this.pos).unwrap();
   }
 
-  readU8(): Result<number, IsoBufReaderError> {
+  readU8(): Result<number, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt8(this.pos);
@@ -77,7 +47,7 @@ export default class IsoBufReader {
     return Ok(val);
   }
 
-  readU16BE(): Result<number, IsoBufReaderError> {
+  readU16BE(): Result<number, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt16BE(this.pos);
@@ -88,7 +58,7 @@ export default class IsoBufReader {
     return Ok(val);
   }
 
-  readU32BE(): Result<number, IsoBufReaderError> {
+  readU32BE(): Result<number, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt32BE(this.pos);
@@ -99,7 +69,7 @@ export default class IsoBufReader {
     return Ok(val);
   }
 
-  readU64BE(): Result<bigint, IsoBufReaderError> {
+  readU64BE(): Result<bigint, EbxError> {
     let val: bigint;
     try {
       val = this.buf.readBigUInt64BE(this.pos);
@@ -110,7 +80,7 @@ export default class IsoBufReader {
     return Ok(val);
   }
 
-  readVarIntBuf(): Result<Buffer, IsoBufReaderError> {
+  readVarIntBuf(): Result<Buffer, EbxError> {
     const res = this.readU8();
     if (res.err) {
       return Err(new InsufficientLengthError(Some(res.val)));
@@ -152,7 +122,7 @@ export default class IsoBufReader {
     }
   }
 
-  readVarInt(): Result<bigint, IsoBufReaderError> {
+  readVarInt(): Result<bigint, EbxError> {
     const res = this.readVarIntBuf();
     if (res.err) {
       return Err(res.val);
@@ -177,7 +147,7 @@ export default class IsoBufReader {
     return Ok(value);
   }
 
-  readVarIntNum(): Result<number, IsoBufReaderError> {
+  readVarIntNum(): Result<number, EbxError> {
     const value = this.readVarInt();
     if (value.err) {
       return Err(value.val);
