@@ -3,6 +3,14 @@ import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
+import {
+  EbxError,
+  InvalidOpcodeError,
+  NonMinimalEncodingError,
+  TooLittleDataError,
+  TooMuchDataError,
+} from "./ebx-error";
+import { Option, Some, None } from "./ts-results/option";
 
 export default class ScriptChunk {
   opcode: number;
@@ -13,7 +21,7 @@ export default class ScriptChunk {
     this.buf = buf;
   }
 
-  getData(): Result<Buffer, string> {
+  getData(): Result<Buffer, EbxError> {
     if (this.opcode === Opcode.OP_1NEGATE) {
       return Ok(Buffer.from([0x80]));
     } else if (this.opcode === Opcode.OP_0) {
@@ -24,11 +32,11 @@ export default class ScriptChunk {
     if (this.buf) {
       return Ok(this.buf);
     } else {
-      return Err("no data");
+      return Err(new TooLittleDataError(None));
     }
   }
 
-  toIsoStr(): Result<string, string> {
+  toIsoStr(): Result<string, EbxError> {
     if (this.buf) {
       return Ok(`0x${this.buf.toString("hex")}`);
     } else {
@@ -36,12 +44,12 @@ export default class ScriptChunk {
       if (name !== undefined) {
         return Ok(name);
       } else {
-        return Err("invalid opcode");
+        return Err(new InvalidOpcodeError(None));
       }
     }
   }
 
-  static fromIsoStr(str: string): Result<ScriptChunk, string> {
+  static fromIsoStr(str: string): Result<ScriptChunk, EbxError> {
     const scriptChunk = new ScriptChunk();
     if (str.startsWith("0x")) {
       scriptChunk.buf = Buffer.from(str.slice(2), "hex");
@@ -56,7 +64,7 @@ export default class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        return Err("too much data");
+        return Err(new TooMuchDataError(None));
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -66,7 +74,7 @@ export default class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        return Err("invalid opcode");
+        return Err(new InvalidOpcodeError(None));
       }
 
       scriptChunk.buf = undefined;
@@ -98,81 +106,60 @@ export default class ScriptChunk {
     return Buffer.from([opcode]);
   }
 
-  static fromIsoBuf(buf: Buffer): Result<ScriptChunk, string> {
+  static fromIsoBuf(buf: Buffer): Result<ScriptChunk, EbxError> {
     const reader = new IsoBufReader(buf);
     return ScriptChunk.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<ScriptChunk, string> {
+  static fromIsoBufReader(reader: IsoBufReader): Result<ScriptChunk, EbxError> {
     const opcodeRes = reader.readU8();
     if (opcodeRes.err) {
-      return opcodeRes.mapErr(
-        (err) =>
-          `script_chunk::from_iso_buf_reader 1: unable to read opcode: ${err}`,
-      );
+      return opcodeRes;
     }
     const opcode = opcodeRes.val;
     const chunk = new ScriptChunk(opcode);
     if (opcode === OP.PUSHDATA1) {
       const lenRes = reader.readU8();
       if (lenRes.err) {
-        return lenRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 2: unable to read 1 byte length: ${err}`,
-        );
+        return lenRes;
       }
       const len = lenRes.unwrap();
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
-        return bufferRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 3: unable to read buffer: ${err}`,
-        );
+        return bufferRes;
       }
       const buffer = bufferRes.unwrap();
       if (len == 0 || (len === 1 && buffer[0] >= 1 && buffer[0] <= 16)) {
-        return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata");
+        return Err(new NonMinimalEncodingError(None));
       }
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA2) {
       const lenRes = reader.readU16BE();
       if (lenRes.err) {
-        return lenRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ${err}`,
-        );
+        return lenRes;
       }
       const len = lenRes.unwrap();
       if (len <= 0xff) {
-        return Err("script_chunk::from_iso_buf_reader 6: non-minimal pushdata");
+        return Err(new NonMinimalEncodingError(None));
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
-        return bufferRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 7: unable to read buffer: ${err}`,
-        );
+        return bufferRes;
       }
       const buffer = bufferRes.unwrap();
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA4) {
       const lenRes = reader.readU32BE();
       if (lenRes.err) {
-        return lenRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ${err}`,
-        );
+        return lenRes;
       }
       const len = lenRes.unwrap();
       if (len <= 0xffff) {
-        return Err("script_chunk::from_iso_buf_reader 9: non-minimal pushdata");
+        return Err(new NonMinimalEncodingError(None));
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
-        return bufferRes.mapErr(
-          (err) =>
-            `script_chunk::from_iso_buf_reader 10: unable to read buffer: ${err}`,
-        );
+        return bufferRes;
       }
       const buffer = bufferRes.unwrap();
       chunk.buf = buffer;

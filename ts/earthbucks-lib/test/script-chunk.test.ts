@@ -76,7 +76,7 @@ describe("ScriptChunk", () => {
     test("should throw an error for invalid opcode", () => {
       const res = ScriptChunk.fromIsoStr("INVALID_OPCODE");
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual("invalid opcode");
+      expect(res.val.toString()).toEqual("invalid opcode");
     });
   });
 
@@ -167,8 +167,8 @@ describe("ScriptChunk", () => {
       const arr = Buffer.from([OP.PUSHDATA1, 200, ...buffer]);
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual(
-        "script_chunk::from_iso_buf_reader 3: unable to read buffer: not enough bytes in the buffer to read",
+      expect(res.val.toString()).toEqual(
+        "not enough bytes in the buffer to read",
       );
     });
 
@@ -181,9 +181,7 @@ describe("ScriptChunk", () => {
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual(
-        "script_chunk::from_iso_buf_reader 6: non-minimal pushdata",
-      );
+      expect(res.val.toString()).toEqual("non-minimal encoding");
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -195,9 +193,7 @@ describe("ScriptChunk", () => {
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
-      expect(res.val).toEqual(
-        "script_chunk::from_iso_buf_reader 9: non-minimal pushdata",
-      );
+      expect(res.val.toString()).toEqual("non-minimal encoding");
     });
   });
 

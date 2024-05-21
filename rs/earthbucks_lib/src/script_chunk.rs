@@ -1,9 +1,7 @@
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
-
-#[derive(Debug)]
-pub enum ScriptChunkError {}
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {
@@ -19,7 +17,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn get_data(&self) -> Result<Vec<u8>, String> {
+    pub fn get_data(&self) -> Result<Vec<u8>, EbxError> {
         if self.opcode == Opcode::OP_1NEGATE {
             return Ok(vec![0x80]);
         } else if self.opcode == Opcode::OP_0 {
@@ -29,11 +27,11 @@ impl ScriptChunk {
         }
         match &self.buffer {
             Some(buffer) => Ok(buffer.clone()),
-            None => Err("no data".into()),
+            None => Err(EbxError::TooLittleDataError { source: None }),
         }
     }
 
-    pub fn to_iso_str(&self) -> Result<String, String> {
+    pub fn to_iso_str(&self) -> Result<String, EbxError> {
         match &self.buffer {
             Some(buffer) => {
                 let hex: Vec<String> = buffer.iter().map(|b| format!("{:02x}", b)).collect();
@@ -43,16 +41,20 @@ impl ScriptChunk {
                 let name = OPCODE_TO_NAME.get(&self.opcode);
                 match name {
                     Some(name) => Ok(name.to_string()),
-                    None => Err("invalid opcode".into()),
+                    None => Err(EbxError::InvalidOpcodeError { source: None }),
                 }
             }
         }
     }
 
-    pub fn from_iso_str(str: String) -> Result<ScriptChunk, String> {
+    pub fn from_iso_str(str: String) -> Result<ScriptChunk, EbxError> {
         let mut chunk = ScriptChunk::new(0, None);
         if str.starts_with("0x") {
-            let buffer = hex::decode(str.strip_prefix("0x").unwrap()).map_err(|e| e.to_string())?;
+            let buffer = hex::decode(str.strip_prefix("0x").unwrap()).map_err(|e| {
+                EbxError::InvalidHexError {
+                    source: Some(Box::new(e)),
+                }
+            })?;
             let len = buffer.len();
             chunk.buffer = Some(buffer);
             if len <= 0xff {
@@ -62,13 +64,13 @@ impl ScriptChunk {
             } else if len <= 0xffffffff {
                 chunk.opcode = Opcode::OP_PUSHDATA4;
             } else {
-                return Err("too much data".into());
+                return Err(EbxError::TooMuchDataError { source: None });
             }
         } else {
             let opcode = OP.get(&str.as_str());
             match opcode {
                 Some(opcode) => chunk.opcode = *opcode,
-                None => return Err("invalid opcode".into()),
+                None => return Err(EbxError::InvalidOpcodeError { source: None }),
             }
             chunk.buffer = None;
         }
@@ -103,66 +105,37 @@ impl ScriptChunk {
         result
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<ScriptChunk, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<ScriptChunk, EbxError> {
         let mut reader = IsoBufReader::new(buf);
         ScriptChunk::from_iso_buf_reader(&mut reader)
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<ScriptChunk, String> {
-        // Note that we enforce minimal encoding of data, not only must you use
-        // the smallest PUSHDATA, but if your data is 1..16, then you must use
-        // OP_1..OP_16 for that data. e.g. 0x01 is actually OP_1, so
-        // OP_PUSHDATA1 0x01 0x01 is actually invalid and should be just OP_1.
-        let opcode = reader.read_u8().map_err(|e| {
-            "script_chunk::from_iso_buf_reader 1: unable to read opcode: ".to_string()
-                + &e.to_string()
-        })?;
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<ScriptChunk, EbxError> {
+        let opcode = reader.read_u8()?;
         let mut chunk = ScriptChunk::new(opcode, None);
         if opcode == Opcode::OP_PUSHDATA1 {
-            let len = reader.read_u8().map_err(|e| {
-                "script_chunk::from_iso_buf_reader 2: unable to read 1 byte length: ".to_string()
-                    + &e.to_string()
-            })? as usize;
-            chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 3: unable to read buffer: ".to_string()
-                    + &e.to_string()
-            })?);
+            let len = reader.read_u8()? as usize;
+            chunk.buffer = Some(reader.read(len)?);
             if len == 0 || (len == 1 && (1..=16).contains(&chunk.buffer.as_ref().unwrap()[0])) {
-                return Err("script_chunk::from_iso_buf_reader 4: non-minimal pushdata".to_string());
+                return Err(EbxError::NonMinimalEncodingError { source: None });
             }
         } else if opcode == Opcode::OP_PUSHDATA2 {
-            let len = reader.read_u16_be().map_err(|e| {
-                "script_chunk::from_iso_buf_reader 5: unable to read 2 byte length: ".to_string()
-                    + &e.to_string()
-            })? as usize;
+            let len = reader.read_u16_be()? as usize;
             if len <= 0xff {
-                return Err("script_chunk::from_iso_buf_reader 6: non-minimal pushdata".to_string());
+                return Err(EbxError::NonMinimalEncodingError { source: None });
             }
-            chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 7: unable to read buffer: ".to_string()
-                    + &e.to_string()
-            })?);
+            chunk.buffer = Some(reader.read(len)?);
         } else if opcode == Opcode::OP_PUSHDATA4 {
-            let len = reader.read_u32_be().map_err(|e| {
-                "script_chunk::from_iso_buf_reader 8: unable to read 4 byte length: ".to_string()
-                    + &e.to_string()
-            })? as usize;
+            let len = reader.read_u32_be()? as usize;
             if len <= 0xffff {
-                return Err("script_chunk::from_iso_buf_reader 9: non-minimal pushdata".to_string());
+                return Err(EbxError::NonMinimalEncodingError { source: None });
             }
-            chunk.buffer = Some(reader.read(len).map_err(|e| {
-                "script_chunk::from_iso_buf_reader 10: unable to read buffer: ".to_string()
-                    + &e.to_string()
-            })?);
+            chunk.buffer = Some(reader.read(len)?);
         }
         Ok(chunk)
     }
 
     pub fn from_data(data: Vec<u8>) -> ScriptChunk {
-        // Note that we enforce minimal encoding of data, not only must you use
-        // the smallest PUSHDATA, but if your data is 0..16, then you must use
-        // OP_0..OP_16 for that data. e.g. 0x01 is actually OP_1, so
-        // OP_PUSHDATA1 0x01 0x01 is actually invalid and should be just OP_1.
         let len = data.len();
         if len == 0 {
             ScriptChunk::new(Opcode::OP_0, None)
@@ -366,10 +339,7 @@ mod tests {
             "Expected an error for insufficient buffer length in PUSHDATA1 case"
         );
         match result {
-            Err(e) => assert_eq!(
-                e.to_string(),
-                "script_chunk::from_iso_buf_reader 3: unable to read buffer: not enough bytes in the buffer to read"
-            ),
+            Err(e) => assert_eq!(e.to_string(), "not enough bytes in the buffer to read"),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA1 case"),
         }
     }
@@ -383,10 +353,7 @@ mod tests {
             "Expected an error for insufficient buffer length in PUSHDATA2 case"
         );
         match result {
-            Err(e) => assert_eq!(
-                e.to_string(),
-                "script_chunk::from_iso_buf_reader 6: non-minimal pushdata"
-            ),
+            Err(e) => assert_eq!(e.to_string(), "non-minimal encoding"),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA2 case"),
         }
     }
@@ -400,10 +367,7 @@ mod tests {
             "Expected an error for insufficient buffer length in PUSHDATA4 case"
         );
         match result {
-            Err(e) => assert_eq!(
-                e.to_string(),
-                "script_chunk::from_iso_buf_reader 9: non-minimal pushdata"
-            ),
+            Err(e) => assert_eq!(e.to_string(), "non-minimal encoding"),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA4 case"),
         }
     }

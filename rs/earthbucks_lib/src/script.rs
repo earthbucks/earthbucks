@@ -28,13 +28,13 @@ impl Script {
             .split_whitespace()
             .map(|s| ScriptChunk::from_iso_str(s.to_string()))
             .collect();
-        Ok(Self::new(chunks?))
+        Ok(Self::new(chunks.map_err(|e| e.to_string())?))
     }
 
     pub fn to_iso_str(&self) -> Result<String, String> {
         let chunks: Result<Vec<String>, _> =
             self.chunks.iter().map(|chunk| chunk.to_iso_str()).collect();
-        Ok(chunks?.join(" "))
+        Ok(chunks.map_err(|e| e.to_string())?.join(" "))
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
@@ -54,8 +54,7 @@ impl Script {
         let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
-            let chunk = ScriptChunk::from_iso_buf_reader(reader)
-                .map_err(|e| "script::from_iso_buf_reader: ".to_string() + &e)?;
+            let chunk = ScriptChunk::from_iso_buf_reader(reader).map_err(|e| e.to_string())?;
             script.chunks.push(chunk);
         }
         Result::Ok(script)

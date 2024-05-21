@@ -7,7 +7,7 @@ export abstract class EbxError extends Error {
   }
 }
 
-export class InsufficientLengthError extends EbxError {
+export class TooLittleDataError extends EbxError {
   constructor(public source: Option<Error>) {
     super();
   }
@@ -17,13 +17,23 @@ export class InsufficientLengthError extends EbxError {
   }
 }
 
+export class TooMuchDataError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `too many bytes in the buffer to read`;
+  }
+}
+
 export class NonMinimalEncodingError extends EbxError {
   constructor(public source: Option<Error>) {
     super();
   }
 
   toString(): string {
-    return `non-minimal varint encoding`;
+    return `non-minimal encoding`;
   }
 }
 
@@ -34,5 +44,25 @@ export class InsufficientPrecisionError extends EbxError {
 
   toString(): string {
     return `number too large to retain precision`;
+  }
+}
+
+export class InvalidOpcodeError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid opcode`;
+  }
+}
+
+export class InvalidHexError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid hex`;
   }
 }

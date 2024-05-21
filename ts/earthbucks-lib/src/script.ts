@@ -70,7 +70,7 @@ export default class Script {
     while (!reader.eof()) {
       const chunkRes = ScriptChunk.fromIsoBufReader(reader);
       if (chunkRes.err) {
-        return chunkRes.mapErr((err) => `script::from_iso_buf_reader: ${err}`);
+        return chunkRes.mapErr((err) => `${err}`);
       }
       script.chunks.push(chunkRes.unwrap());
     }

@@ -96,21 +96,21 @@ describe("IsoBufReader", () => {
   test("readVarIntNum", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -120,21 +120,21 @@ describe("IsoBufReader", () => {
   test("readVarIntBuf", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));
@@ -144,21 +144,21 @@ describe("IsoBufReader", () => {
   test("readVarInt", () => {
     let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
       Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
-      "non-minimal varint encoding",
+      "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(Buffer.from([0x01]));

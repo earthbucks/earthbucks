@@ -120,7 +120,7 @@
       },
       {
         "hex": "fd0000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       },
       {
         "hex": "fe",
@@ -140,7 +140,7 @@
       },
       {
         "hex": "fe00000000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       },
       {
         "hex": "ff",
@@ -176,7 +176,7 @@
       },
       {
         "hex": "ff0000000000000000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       }
     ]
   },
@@ -196,7 +196,7 @@
       },
       {
         "hex": "fd0000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       },
       {
         "hex": "fe",
@@ -216,7 +216,7 @@
       },
       {
         "hex": "fe00000000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       },
       {
         "hex": "ff",
@@ -252,7 +252,7 @@
       },
       {
         "hex": "ff0000000000000000",
-        "error": "non-minimal varint encoding"
+        "error": "non-minimal encoding"
       }
     ]
   }

@@ -4,7 +4,7 @@ pub mod block_builder;
 pub mod block_verifier;
 pub mod buffer;
 pub mod domain;
-pub mod errors;
+pub mod ebx_error;
 pub mod header;
 pub mod header_chain;
 pub mod iso_buf_reader;
