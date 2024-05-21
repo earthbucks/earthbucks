@@ -9,7 +9,7 @@ import {
   InvalidChecksumError,
   InvalidEncodingError,
   InvalidKeyError,
-  TooLittleDataError,
+  NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error";
 import { None } from "./ts-results/option";
@@ -54,7 +54,7 @@ export default class PrivKey {
       return Err(new TooMuchDataError(None));
     }
     if (buf.length < 32) {
-      return Err(new TooLittleDataError(None));
+      return Err(new NotEnoughDataError(None));
     }
     if (!secp256k1.privateKeyVerify(buf)) {
       return Err(new InvalidEncodingError(None));

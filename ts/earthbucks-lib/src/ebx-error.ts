@@ -7,7 +7,7 @@ export abstract class EbxError extends Error {
   }
 }
 
-export class TooLittleDataError extends EbxError {
+export class NotEnoughDataError extends EbxError {
   constructor(public source: Option<EbxError>) {
     super();
   }

@@ -2,7 +2,7 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum EbxError {
-    TooLittleDataError { source: Option<Box<EbxError>> },
+    NotEnoughDataError { source: Option<Box<EbxError>> },
     TooMuchDataError { source: Option<Box<EbxError>> },
     NonMinimalEncodingError { source: Option<Box<EbxError>> },
     InsufficientPrecisionError { source: Option<Box<EbxError>> },
@@ -16,7 +16,7 @@ pub enum EbxError {
 impl fmt::Display for EbxError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            EbxError::TooLittleDataError { .. } => {
+            EbxError::NotEnoughDataError { .. } => {
                 write!(f, "not enough bytes in the buffer to read")
             }
             EbxError::TooMuchDataError { .. } => {

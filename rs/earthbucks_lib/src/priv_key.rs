@@ -50,7 +50,7 @@ impl PrivKey {
             return Err(EbxError::TooMuchDataError { source: None });
         }
         if vec.len() < 32 {
-            return Err(EbxError::TooLittleDataError { source: None });
+            return Err(EbxError::NotEnoughDataError { source: None });
         }
         let mut priv_key = [0u8; 32];
         priv_key.copy_from_slice(&vec);

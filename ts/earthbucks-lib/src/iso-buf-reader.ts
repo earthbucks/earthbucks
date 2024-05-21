@@ -3,7 +3,7 @@ import { Result, Ok, Err } from "./ts-results/result";
 import { Option, Some, None } from "./ts-results/option";
 import {
   EbxError,
-  TooLittleDataError,
+  NotEnoughDataError,
   NonMinimalEncodingError,
   InsufficientPrecisionError,
 } from "./ebx-error";
@@ -23,7 +23,7 @@ export default class IsoBufReader {
 
   read(len: number): Result<Buffer, EbxError> {
     if (this.pos + len > this.buf.length) {
-      return Err(new TooLittleDataError(None));
+      return Err(new NotEnoughDataError(None));
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = Buffer.alloc(len);
@@ -41,7 +41,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt8(this.pos);
     } catch (err: unknown) {
-      return Err(new TooLittleDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(Some(err as Error)));
     }
     this.pos += 1;
     return Ok(val);
@@ -52,7 +52,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt16BE(this.pos);
     } catch (err) {
-      return Err(new TooLittleDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(Some(err as Error)));
     }
     this.pos += 2;
     return Ok(val);
@@ -63,7 +63,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt32BE(this.pos);
     } catch (err) {
-      return Err(new TooLittleDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(Some(err as Error)));
     }
     this.pos += 4;
     return Ok(val);
@@ -74,7 +74,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readBigUInt64BE(this.pos);
     } catch (err) {
-      return Err(new TooLittleDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(Some(err as Error)));
     }
     this.pos += 8;
     return Ok(val);
@@ -83,13 +83,13 @@ export default class IsoBufReader {
   readVarIntBuf(): Result<Buffer, EbxError> {
     const res = this.readU8();
     if (res.err) {
-      return Err(new TooLittleDataError(Some(res.val)));
+      return Err(new NotEnoughDataError(Some(res.val)));
     }
     const first = res.unwrap();
     if (first === 0xfd) {
       const res = this.read(2);
       if (res.err) {
-        return Err(new TooLittleDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(Some(res.val)));
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(0) < 0xfd) {
@@ -99,7 +99,7 @@ export default class IsoBufReader {
     } else if (first === 0xfe) {
       const res = this.read(4);
       if (res.err) {
-        return Err(new TooLittleDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(Some(res.val)));
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(0) < 0x10000) {
@@ -109,7 +109,7 @@ export default class IsoBufReader {
     } else if (first === 0xff) {
       const res = this.read(8);
       if (res.err) {
-        return Err(new TooLittleDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(Some(res.val)));
       }
       const buf = res.unwrap();
       const bn = buf.readBigUInt64BE(0);

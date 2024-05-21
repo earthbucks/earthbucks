@@ -7,7 +7,7 @@ import {
   EbxError,
   InvalidOpcodeError,
   NonMinimalEncodingError,
-  TooLittleDataError,
+  NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error";
 import { Option, Some, None } from "./ts-results/option";
@@ -32,7 +32,7 @@ export default class ScriptChunk {
     if (this.buf) {
       return Ok(this.buf);
     } else {
-      return Err(new TooLittleDataError(None));
+      return Err(new NotEnoughDataError(None));
     }
   }
 

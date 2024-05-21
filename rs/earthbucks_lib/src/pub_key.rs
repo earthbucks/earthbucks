@@ -22,7 +22,7 @@ impl PubKey {
             return Err(EbxError::TooMuchDataError { source: None });
         }
         if vec.len() < PubKey::SIZE {
-            return Err(EbxError::TooLittleDataError { source: None });
+            return Err(EbxError::NotEnoughDataError { source: None });
         }
         let mut pub_key = [0u8; PubKey::SIZE];
         pub_key.copy_from_slice(&vec);

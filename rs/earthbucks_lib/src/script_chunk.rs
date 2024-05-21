@@ -27,7 +27,7 @@ impl ScriptChunk {
         }
         match &self.buffer {
             Some(buffer) => Ok(buffer.clone()),
-            None => Err(EbxError::TooLittleDataError { source: None }),
+            None => Err(EbxError::NotEnoughDataError { source: None }),
         }
     }
 

@@ -8,7 +8,7 @@ import {
   EbxError,
   InvalidChecksumError,
   InvalidEncodingError,
-  TooLittleDataError,
+  NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error";
 import { None } from "./ts-results/option";
@@ -35,7 +35,7 @@ export default class PubKey {
       return Err(new TooMuchDataError(None));
     }
     if (buf.length < PubKey.SIZE) {
-      return Err(new TooLittleDataError(None));
+      return Err(new NotEnoughDataError(None));
     }
     return Ok(new PubKey(buf));
   }
