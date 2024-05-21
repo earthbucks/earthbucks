@@ -27,7 +27,7 @@ impl PrivKey {
     pub fn to_pub_key_buffer(&self) -> Result<[u8; 33], EbxError> {
         let secret_key = SecretKey::from_slice(&self.buf);
         if secret_key.is_err() {
-            return Err(EbxError::InvalidPrivKeyError { source: None });
+            return Err(EbxError::InvalidKeyError { source: None });
         }
         let secp = Secp256k1::new();
         let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key.unwrap());
@@ -84,7 +84,7 @@ impl PrivKey {
         let check_buf = blake3::hash(&buf);
         let expected_check_sum = &check_buf.as_bytes()[0..4];
         if check_sum != expected_check_sum {
-            return Err(EbxError::InvalidEncodingError { source: None });
+            return Err(EbxError::InvalidChecksumError { source: None });
         }
         PrivKey::from_iso_buf(buf)
     }

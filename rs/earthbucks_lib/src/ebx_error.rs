@@ -9,7 +9,8 @@ pub enum EbxError {
     InvalidOpcodeError { source: Option<Box<dyn Error>> },
     InvalidHexError { source: Option<Box<dyn Error>> },
     InvalidEncodingError { source: Option<Box<dyn Error>> },
-    InvalidPrivKeyError { source: Option<Box<dyn Error>> },
+    InvalidKeyError { source: Option<Box<dyn Error>> },
+    InvalidChecksumError { source: Option<Box<dyn Error>> },
 }
 
 impl Error for EbxError {
@@ -22,7 +23,8 @@ impl Error for EbxError {
             EbxError::InvalidOpcodeError { source } => source.as_deref(),
             EbxError::InvalidHexError { source } => source.as_deref(),
             EbxError::InvalidEncodingError { source } => source.as_deref(),
-            EbxError::InvalidPrivKeyError { source } => source.as_deref(),
+            EbxError::InvalidKeyError { source } => source.as_deref(),
+            EbxError::InvalidChecksumError { source } => source.as_deref(),
         }
     }
 }
@@ -51,8 +53,11 @@ impl fmt::Display for EbxError {
             EbxError::InvalidEncodingError { .. } => {
                 write!(f, "invalid encoding")
             }
-            EbxError::InvalidPrivKeyError { .. } => {
+            EbxError::InvalidKeyError { .. } => {
                 write!(f, "invalid private key")
+            }
+            EbxError::InvalidChecksumError { .. } => {
+                write!(f, "invalid checksum")
             }
         }
     }

@@ -36,7 +36,7 @@ impl PubKey {
     pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, EbxError> {
         let pub_key_buf = priv_key.to_pub_key_buffer();
         if pub_key_buf.is_err() {
-            return Err(EbxError::InvalidPrivKeyError { source: None });
+            return Err(EbxError::InvalidKeyError { source: None });
         }
         Ok(PubKey::new(pub_key_buf.unwrap()))
     }
@@ -69,7 +69,7 @@ impl PubKey {
         let check_hash = blake3_hash(&buf);
         let check_sum = &check_hash[0..4];
         if check_buf != check_sum {
-            return Err(EbxError::InvalidEncodingError { source: None });
+            return Err(EbxError::InvalidChecksumError { source: None });
         }
         PubKey::from_iso_buf(buf)
     }

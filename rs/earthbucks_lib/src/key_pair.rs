@@ -2,7 +2,6 @@ use crate::ebx_error::EbxError;
 use crate::priv_key::PrivKey;
 use crate::pub_key::PubKey;
 
-// enable clone
 #[derive(Clone, Debug)]
 pub struct KeyPair {
     pub priv_key: PrivKey,
@@ -25,7 +24,7 @@ impl KeyPair {
     pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, EbxError> {
         let pub_key_res = PubKey::from_priv_key(priv_key);
         if pub_key_res.is_err() {
-            return Err(EbxError::InvalidPrivKeyError { source: None });
+            return Err(EbxError::InvalidKeyError { source: None });
         }
         Ok(KeyPair {
             priv_key: priv_key.clone(),
@@ -47,13 +46,19 @@ impl KeyPair {
     }
 }
 
-// standard test vectors: key_pair.json
 #[cfg(test)]
 mod tests {
     use super::*;
     use serde::Deserialize;
     use std::fs;
 
+    #[test]
+    fn test_is_valid() {
+        let key_pair = KeyPair::from_random();
+        assert!(key_pair.is_valid());
+    }
+
+    // standard test vectors: key_pair.json
     #[derive(Deserialize)]
     struct JsonKeyPair {
         priv_key: String,
@@ -80,11 +85,5 @@ mod tests {
 
             assert_eq!(expected_public_key, &actual_public_key);
         }
-    }
-
-    #[test]
-    fn test_is_valid() {
-        let key_pair = KeyPair::from_random();
-        assert!(key_pair.is_valid());
     }
 }
