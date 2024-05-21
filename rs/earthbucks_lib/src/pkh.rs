@@ -1,4 +1,5 @@
 use crate::blake3::{blake3_hash, double_blake3_hash};
+use crate::ebx_error::EbxError;
 use crate::iso_hex;
 use crate::pub_key;
 use bs58;
@@ -18,10 +19,10 @@ impl Pkh {
         Self::from_pub_key_buffer(pub_key.to_buffer().to_vec())
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
         let pkh_buf = iso_hex::decode(hex)?.to_vec();
         if pkh_buf.len() != 32 {
-            return Err("Invalid pkh length".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
         Ok(Self {
             buf: pkh_buf.try_into().unwrap(),

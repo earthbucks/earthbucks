@@ -1,5 +1,6 @@
 use crate::blake3::blake3_hash;
 use crate::blake3::double_blake3_hash;
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::iso_hex;
@@ -48,7 +49,7 @@ impl Tx {
         }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut reader = IsoBufReader::new(buf);
         Self::from_iso_buf_reader(&mut reader)
     }
@@ -57,19 +58,19 @@ impl Tx {
         self.to_buffer_writer().to_iso_buf()
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
-        let version = reader.read_u8().map_err(|e| e.to_string())?;
-        let input_count = reader.read_var_int().map_err(|e| e.to_string())? as usize;
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+        let version = reader.read_u8()?;
+        let input_count = reader.read_var_int()? as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
             inputs.push(TxIn::from_iso_buf_reader(reader)?);
         }
-        let output_count = reader.read_var_int().map_err(|e| e.to_string())? as usize;
+        let output_count = reader.read_var_int()? as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
             outputs.push(TxOut::from_iso_buf_reader(reader)?);
         }
-        let lock_num = reader.read_u64_be().map_err(|e| e.to_string())?;
+        let lock_num = reader.read_u64_be()?;
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
@@ -92,7 +93,7 @@ impl Tx {
         hex::encode(self.to_iso_buf())
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
         Self::from_iso_buf(iso_hex::decode(hex)?)
     }
 
@@ -100,7 +101,7 @@ impl Tx {
         hex::encode(self.to_iso_buf())
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_str(hex: &str) -> Result<Self, EbxError> {
         Self::from_iso_hex(hex)
     }
 

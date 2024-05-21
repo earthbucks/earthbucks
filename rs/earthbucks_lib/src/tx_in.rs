@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
@@ -22,24 +23,22 @@ impl TxIn {
         }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut reader = IsoBufReader::new(buf);
-        let input_tx_id = reader.read(32).map_err(|e| e.to_string())?;
-        let input_tx_index = reader.read_u32_be().map_err(|e| e.to_string())?;
-        let size = reader.read_u8().map_err(|e| e.to_string())? as usize;
-        let script =
-            Script::from_iso_buf(reader.read(size).map_err(|e| e.to_string())?.as_slice())?;
-        let lock_rel = reader.read_u32_be().map_err(|e| e.to_string())?;
+        let input_tx_id = reader.read(32)?;
+        let input_tx_index = reader.read_u32_be()?;
+        let size = reader.read_u8()? as usize;
+        let script = Script::from_iso_buf(reader.read(size)?.as_slice())?;
+        let lock_rel = reader.read_u32_be()?;
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
-        let input_tx_id = reader.read(32).map_err(|e| e.to_string())?;
-        let input_tx_index = reader.read_u32_be().map_err(|e| e.to_string())?;
-        let size = reader.read_var_int().map_err(|e| e.to_string())? as usize;
-        let script =
-            Script::from_iso_buf(reader.read(size).map_err(|e| e.to_string())?.as_slice())?;
-        let lock_rel = reader.read_u32_be().map_err(|e| e.to_string())?;
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+        let input_tx_id = reader.read(32)?;
+        let input_tx_index = reader.read_u32_be()?;
+        let size = reader.read_var_int()? as usize;
+        let script = Script::from_iso_buf(reader.read(size)?.as_slice())?;
+        let lock_rel = reader.read_u32_be()?;
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 

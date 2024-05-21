@@ -1,4 +1,4 @@
-use crate::iso_hex;
+use crate::{ebx_error::EbxError, iso_hex};
 use bs58;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
@@ -24,17 +24,17 @@ impl PrivKey {
         }
     }
 
-    pub fn to_pub_key_buffer(&self) -> Result<[u8; 33], String> {
+    pub fn to_pub_key_buffer(&self) -> Result<[u8; 33], EbxError> {
         let secret_key = SecretKey::from_slice(&self.buf);
         if secret_key.is_err() {
-            return Err("Invalid secret key".to_string());
+            return Err(EbxError::InvalidPrivKeyError { source: None });
         }
         let secp = Secp256k1::new();
         let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key.unwrap());
         Ok(public_key_obj.serialize())
     }
 
-    pub fn to_pub_key_hex(&self) -> Result<String, String> {
+    pub fn to_pub_key_hex(&self) -> Result<String, EbxError> {
         let pub_key_buf = self.to_pub_key_buffer()?;
         Ok(iso_hex::encode(&pub_key_buf))
     }
@@ -45,9 +45,12 @@ impl PrivKey {
         PrivKey::new(priv_key)
     }
 
-    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
-        if vec.len() != 32 {
-            return Err("Invalid buffer length".to_string());
+    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
+        if vec.len() > 32 {
+            return Err(EbxError::TooMuchDataError { source: None });
+        }
+        if vec.len() < 32 {
+            return Err(EbxError::TooLittleDataError { source: None });
         }
         let mut priv_key = [0u8; 32];
         priv_key.copy_from_slice(&vec);
@@ -58,7 +61,7 @@ impl PrivKey {
         iso_hex::encode(&self.buf)
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
         let priv_key_vec: Vec<u8> = iso_hex::decode(hex)?;
         PrivKey::from_iso_buf(priv_key_vec)
     }
@@ -70,18 +73,18 @@ impl PrivKey {
         "ebxprv".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
-    pub fn from_iso_str(s: &str) -> Result<Self, String> {
+    pub fn from_iso_str(s: &str) -> Result<Self, EbxError> {
         if !s.starts_with("ebxprv") {
-            return Err("Invalid private key format".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
         let check_sum = iso_hex::decode(&s[6..14])?;
         let buf = bs58::decode(&s[14..])
             .into_vec()
-            .map_err(|_| "Invalid base58 encoding".to_string())?;
+            .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         let check_buf = blake3::hash(&buf);
         let expected_check_sum = &check_buf.as_bytes()[0..4];
         if check_sum != expected_check_sum {
-            return Err("Invalid checksum".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
         PrivKey::from_iso_buf(buf)
     }

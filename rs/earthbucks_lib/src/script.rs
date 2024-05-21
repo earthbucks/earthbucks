@@ -46,16 +46,16 @@ impl Script {
         buf
     }
 
-    pub fn from_iso_buf(arr: &[u8]) -> Result<Self, String> {
+    pub fn from_iso_buf(arr: &[u8]) -> Result<Self, EbxError> {
         let mut reader = IsoBufReader::new(arr.to_vec());
         Self::from_iso_buf_reader(&mut reader)
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
         let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
-            let chunk = ScriptChunk::from_iso_buf_reader(reader).map_err(|e| e.to_string())?;
+            let chunk = ScriptChunk::from_iso_buf_reader(reader)?;
             script.chunks.push(chunk);
         }
         Result::Ok(script)

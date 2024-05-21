@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::priv_key::PrivKey;
 use crate::pub_key::PubKey;
 
@@ -9,7 +10,7 @@ pub struct KeyPair {
 }
 
 impl KeyPair {
-    pub fn new(priv_key: [u8; 32]) -> Result<Self, String> {
+    pub fn new(priv_key: [u8; 32]) -> Result<Self, EbxError> {
         let priv_key = PrivKey::new(priv_key);
         let pub_key = PubKey::from_priv_key(&priv_key);
         if pub_key.is_err() {
@@ -21,14 +22,14 @@ impl KeyPair {
         })
     }
 
-    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
-        let pub_key = PubKey::from_priv_key(priv_key);
-        if pub_key.is_err() {
-            return Err(pub_key.err().unwrap());
+    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, EbxError> {
+        let pub_key_res = PubKey::from_priv_key(priv_key);
+        if pub_key_res.is_err() {
+            return Err(EbxError::InvalidPrivKeyError { source: None });
         }
         Ok(KeyPair {
             priv_key: priv_key.clone(),
-            pub_key: pub_key.unwrap(),
+            pub_key: pub_key_res.unwrap(),
         })
     }
 

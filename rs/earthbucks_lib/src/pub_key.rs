@@ -1,4 +1,5 @@
 use crate::blake3::blake3_hash;
+use crate::ebx_error::EbxError;
 use crate::iso_hex;
 use crate::priv_key::PrivKey;
 use bs58;
@@ -16,9 +17,12 @@ impl PubKey {
         PubKey { buf: pub_key }
     }
 
-    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, String> {
-        if vec.len() != PubKey::SIZE {
-            return Err("Invalid buffer length".to_string());
+    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
+        if vec.len() > PubKey::SIZE {
+            return Err(EbxError::TooMuchDataError { source: None });
+        }
+        if vec.len() < PubKey::SIZE {
+            return Err(EbxError::TooLittleDataError { source: None });
         }
         let mut pub_key = [0u8; PubKey::SIZE];
         pub_key.copy_from_slice(&vec);
@@ -29,10 +33,10 @@ impl PubKey {
         &self.buf
     }
 
-    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, String> {
+    pub fn from_priv_key(priv_key: &PrivKey) -> Result<Self, EbxError> {
         let pub_key_buf = priv_key.to_pub_key_buffer();
         if pub_key_buf.is_err() {
-            return Err(pub_key_buf.err().unwrap());
+            return Err(EbxError::InvalidPrivKeyError { source: None });
         }
         Ok(PubKey::new(pub_key_buf.unwrap()))
     }
@@ -41,7 +45,7 @@ impl PubKey {
         hex::encode(self.buf)
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<PubKey, String> {
+    pub fn from_iso_hex(hex: &str) -> Result<PubKey, EbxError> {
         let pub_key_buf = iso_hex::decode(hex)?;
         PubKey::from_iso_buf(pub_key_buf)
     }
@@ -53,19 +57,19 @@ impl PubKey {
         "ebxpub".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
-    pub fn from_iso_str(s: &str) -> Result<PubKey, String> {
+    pub fn from_iso_str(s: &str) -> Result<PubKey, EbxError> {
         if !s.starts_with("ebxpub") {
-            return Err("Invalid format".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
         let check_str = &s[6..14];
-        let check_buf = iso_hex::decode(check_str).map_err(|_| "Invalid hex pub key")?;
+        let check_buf = iso_hex::decode(check_str)?;
         let buf = bs58::decode(&s[14..])
             .into_vec()
-            .map_err(|_| "Invalid base58")?;
+            .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         let check_hash = blake3_hash(&buf);
         let check_sum = &check_hash[0..4];
         if check_buf != check_sum {
-            return Err("Invalid checksum".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
         PubKey::from_iso_buf(buf)
     }

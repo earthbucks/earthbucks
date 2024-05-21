@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
@@ -14,11 +15,11 @@ impl TxOut {
         Self { value, script }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut reader = IsoBufReader::new(buf);
-        let value = reader.read_u64_be().map_err(|e| e.to_string())?;
-        let script_len = reader.read_var_int().map_err(|e| e.to_string())? as usize;
-        let script_arr = reader.read(script_len).map_err(|e| e.to_string())?;
+        let value = reader.read_u64_be()?;
+        let script_len = reader.read_var_int()? as usize;
+        let script_arr = reader.read(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),
@@ -26,10 +27,10 @@ impl TxOut {
         Ok(Self::new(value, script))
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, String> {
-        let value = reader.read_u64_be().map_err(|e| e.to_string())?;
-        let script_len = reader.read_var_int().map_err(|e| e.to_string())? as usize;
-        let script_arr = reader.read(script_len).map_err(|e| e.to_string())?;
+    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+        let value = reader.read_u64_be()?;
+        let script_len = reader.read_var_int()? as usize;
+        let script_arr = reader.read(script_len)?;
         let script = match Script::from_iso_buf(&script_arr[..]) {
             Ok(script) => script,
             Err(e) => return Err(e),

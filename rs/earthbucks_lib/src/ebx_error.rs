@@ -8,6 +8,8 @@ pub enum EbxError {
     InsufficientPrecisionError { source: Option<Box<dyn Error>> },
     InvalidOpcodeError { source: Option<Box<dyn Error>> },
     InvalidHexError { source: Option<Box<dyn Error>> },
+    InvalidEncodingError { source: Option<Box<dyn Error>> },
+    InvalidPrivKeyError { source: Option<Box<dyn Error>> },
 }
 
 impl Error for EbxError {
@@ -19,6 +21,8 @@ impl Error for EbxError {
             EbxError::InsufficientPrecisionError { source } => source.as_deref(),
             EbxError::InvalidOpcodeError { source } => source.as_deref(),
             EbxError::InvalidHexError { source } => source.as_deref(),
+            EbxError::InvalidEncodingError { source } => source.as_deref(),
+            EbxError::InvalidPrivKeyError { source } => source.as_deref(),
         }
     }
 }
@@ -43,6 +47,12 @@ impl fmt::Display for EbxError {
             }
             EbxError::InvalidHexError { .. } => {
                 write!(f, "invalid hex")
+            }
+            EbxError::InvalidEncodingError { .. } => {
+                write!(f, "invalid encoding")
+            }
+            EbxError::InvalidPrivKeyError { .. } => {
+                write!(f, "invalid private key")
             }
         }
     }
