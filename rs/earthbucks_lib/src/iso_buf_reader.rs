@@ -12,6 +12,8 @@ pub enum IsoBufReaderError {
     ReadVarIntError { code: u32, message: String },
 }
 
+impl std::error::Error for IsoBufReaderError {}
+
 impl std::fmt::Display for IsoBufReaderError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
