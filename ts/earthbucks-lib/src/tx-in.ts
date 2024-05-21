@@ -3,7 +3,7 @@ import IsoBufReader from "./iso-buf-reader";
 import Script from "./script";
 import VarInt from "./var-int";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 import { EbxError } from "./ebx-error";
 
 export default class TxIn {

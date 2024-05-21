@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export default class ScriptNum {

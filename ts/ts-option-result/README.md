@@ -1,4 +1,8 @@
-# ts-results
+# ts-option-result
+
+A fork of ts-results but with no ES5 build and works with modern typescript. The README for ts-results is provided below.
+
+## ts-results
 
 A typescript implementation of Rust's [Result](https://doc.rust-lang.org/std/result/)
 and [Option](https://doc.rust-lang.org/std/option/) objects.

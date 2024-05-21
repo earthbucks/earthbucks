@@ -2,7 +2,7 @@ import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 import {
   EbxError,
   InvalidOpcodeError,
@@ -10,7 +10,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error";
-import { Option, Some, None } from "./ts-results/option";
+import { Option, Some, None } from "ts-option-result/src/option";
 
 export default class ScriptChunk {
   opcode: number;

@@ -1,7 +1,7 @@
 import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 
 export default class VarInt {
   private buf: Buffer;

@@ -9,7 +9,7 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import TxSignature from "./tx-signature";
 import Script from "./script";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 import IsoHex from "./iso-hex";
 import { EbxError } from "./ebx-error";
 

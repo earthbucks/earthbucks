@@ -22,6 +22,7 @@
     "buffer": "^6.0.3",
     "mathjs": "^12.4.1",
     "secp256k1": "^5.0.0",
+    "ts-option-result": "workspace:^",
     "tsx": "^4.7.1"
   },
   "prettier": {

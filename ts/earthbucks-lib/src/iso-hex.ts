@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./ts-results/result";
+import { Result, Ok, Err } from "ts-option-result/src/result";
 import { EbxError, InvalidHexError } from "./ebx-error";
-import { Option, Some, None } from "./ts-results/option";
+import { Option, Some, None } from "ts-option-result/src/option";
 
 export function isValid(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
