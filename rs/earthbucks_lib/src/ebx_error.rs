@@ -1,4 +1,4 @@
-use std::{error::Error, fmt};
+use std::fmt;
 
 #[derive(Debug)]
 pub enum EbxError {
@@ -11,40 +11,6 @@ pub enum EbxError {
     InvalidEncodingError { source: Option<Box<EbxError>> },
     InvalidKeyError { source: Option<Box<EbxError>> },
     InvalidChecksumError { source: Option<Box<EbxError>> },
-}
-
-impl Error for EbxError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            EbxError::TooLittleDataError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::TooMuchDataError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::NonMinimalEncodingError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InsufficientPrecisionError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InvalidOpcodeError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InvalidHexError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InvalidEncodingError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InvalidKeyError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-            EbxError::InvalidChecksumError { source } => {
-                source.as_deref().map(|s| s as &(dyn Error + 'static))
-            }
-        }
-    }
 }
 
 impl fmt::Display for EbxError {
@@ -72,7 +38,7 @@ impl fmt::Display for EbxError {
                 write!(f, "invalid encoding")
             }
             EbxError::InvalidKeyError { .. } => {
-                write!(f, "invalid private key")
+                write!(f, "invalid key")
             }
             EbxError::InvalidChecksumError { .. } => {
                 write!(f, "invalid checksum")

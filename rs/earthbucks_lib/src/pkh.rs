@@ -22,7 +22,7 @@ impl Pkh {
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
         let pkh_buf = iso_hex::decode(hex)?.to_vec();
         if pkh_buf.len() != 32 {
-            return Err(EbxError::InvalidEncodingError { source: None });
+            return Err(EbxError::InvalidKeyError { source: None });
         }
         Ok(Self {
             buf: pkh_buf.try_into().unwrap(),
