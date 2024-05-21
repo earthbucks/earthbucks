@@ -11,6 +11,7 @@ import Script from "./script";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
 import IsoHex from "./iso-hex";
+import { EbxError } from "./ebx-error";
 
 export class HashCache {
   public hashPrevouts?: Buffer;
@@ -36,17 +37,17 @@ export default class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromIsoBuf(buf: Buffer): Result<Tx, string> {
+  static fromIsoBuf(buf: Buffer): Result<Tx, EbxError> {
     return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<Tx, string> {
-    const versionRes = reader.readU8().mapErr((e) => e.toString());
+  static fromIsoBufReader(reader: IsoBufReader): Result<Tx, EbxError> {
+    const versionRes = reader.readU8();
     if (versionRes.err) {
       return versionRes;
     }
     const version = versionRes.unwrap();
-    const numInputsRes = reader.readVarIntNum().mapErr((e) => e.toString());
+    const numInputsRes = reader.readVarIntNum();
     if (numInputsRes.err) {
       return numInputsRes;
     }
@@ -60,7 +61,7 @@ export default class Tx {
       const txIn = txInRes.unwrap();
       inputs.push(txIn);
     }
-    const numOutputsRes = reader.readVarIntNum().mapErr((e) => e.toString());
+    const numOutputsRes = reader.readVarIntNum();
     if (numOutputsRes.err) {
       return numOutputsRes;
     }
@@ -74,7 +75,7 @@ export default class Tx {
       const txOut = txOutRes.unwrap();
       outputs.push(txOut);
     }
-    const lockNumRes = reader.readU64BE().mapErr((e) => e.toString());
+    const lockNumRes = reader.readU64BE();
     if (lockNumRes.err) {
       return lockNumRes;
     }
@@ -101,10 +102,8 @@ export default class Tx {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<Tx, string> {
-    const bufRes = IsoHex.decode(hex).mapErr(
-      (err) => `Could not decode hex: ${err}`,
-    );
+  static fromIsoHex(hex: string): Result<Tx, EbxError> {
+    const bufRes = IsoHex.decode(hex);
     if (bufRes.err) {
       return bufRes;
     }

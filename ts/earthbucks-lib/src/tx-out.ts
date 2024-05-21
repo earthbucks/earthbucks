@@ -4,6 +4,7 @@ import VarInt from "./var-int";
 import Script from "./script";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
+import { EbxError } from "./ebx-error";
 
 export default class TxOut {
   public value: bigint;
@@ -14,30 +15,30 @@ export default class TxOut {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: Buffer): Result<TxOut, string> {
+  static fromIsoBuf(buf: Buffer): Result<TxOut, EbxError> {
     const reader = new IsoBufReader(buf);
     return TxOut.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, string> {
-    const valueRes = reader.readU64BE().mapErr((e) => e.toString());
+  static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, EbxError> {
+    const valueRes = reader.readU64BE();
     if (valueRes.err) {
       return valueRes;
     }
     const value = valueRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum().mapErr((e) => e.toString());
+    const scriptLenRes = reader.readVarIntNum();
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptArrRes = reader.read(scriptLen).mapErr((e) => e.toString());
+    const scriptArrRes = reader.read(scriptLen);
     if (scriptArrRes.err) {
       return scriptArrRes;
     }
     const scriptArr = scriptArrRes.unwrap();
     const scriptRes = Script.fromIsoBuf(scriptArr);
     if (scriptRes.err) {
-      return Err(scriptRes.val.toString());
+      return scriptRes;
     }
     const script = scriptRes.unwrap();
     return Ok(new TxOut(value, script));

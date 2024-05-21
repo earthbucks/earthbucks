@@ -1,5 +1,7 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
+import { EbxError, InvalidHexError } from "./ebx-error";
+import { Option, Some, None } from "./ts-results/option";
 
 export function isValid(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
@@ -9,9 +11,9 @@ export function encode(buffer: Buffer): string {
   return buffer.toString("hex");
 }
 
-export function decode(hex: string): Result<Buffer, string> {
+export function decode(hex: string): Result<Buffer, EbxError> {
   if (!isValid(hex)) {
-    return Err("Invalid hex string");
+    return Err(new InvalidHexError(None));
   }
   const buffer = Buffer.from(hex, "hex");
   return Ok(buffer);

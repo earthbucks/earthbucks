@@ -4,6 +4,7 @@ import Script from "./script";
 import VarInt from "./var-int";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "./ts-results/result";
+import { EbxError } from "./ebx-error";
 
 export default class TxIn {
   public inputTxId: Buffer;
@@ -23,38 +24,38 @@ export default class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: Buffer): Result<TxIn, string> {
+  static fromIsoBuf(buf: Buffer): Result<TxIn, EbxError> {
     const reader = new IsoBufReader(buf);
     return TxIn.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, string> {
-    const inputTxHashRes = reader.read(32).mapErr((e) => e.toString());
+  static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, EbxError> {
+    const inputTxHashRes = reader.read(32);
     if (inputTxHashRes.err) {
       return inputTxHashRes;
     }
     const inputTxHash = inputTxHashRes.unwrap();
-    const inputTxIndexRes = reader.readU32BE().mapErr((e) => e.toString());
+    const inputTxIndexRes = reader.readU32BE();
     if (inputTxIndexRes.err) {
       return inputTxIndexRes;
     }
     const inputTxIndex = inputTxIndexRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum().mapErr((e) => e.toString());
+    const scriptLenRes = reader.readVarIntNum();
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
     const scriptLen = scriptLenRes.unwrap();
-    const scriptBufRes = reader.read(scriptLen).mapErr((e) => e.toString());
+    const scriptBufRes = reader.read(scriptLen);
     if (scriptBufRes.err) {
       return scriptBufRes;
     }
     const scriptBuf = scriptBufRes.unwrap();
     const scriptRes = Script.fromIsoBuf(scriptBuf);
     if (scriptRes.err) {
-      return Err(scriptRes.val.toString());
+      return scriptRes;
     }
     const script = scriptRes.unwrap();
-    const lockRelRes = reader.readU32BE().mapErr((e) => e.toString());
+    const lockRelRes = reader.readU32BE();
     if (lockRelRes.err) {
       return lockRelRes;
     }

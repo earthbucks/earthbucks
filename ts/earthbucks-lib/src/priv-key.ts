@@ -4,6 +4,13 @@ import IsoHex from "./iso-hex";
 import bs58 from "bs58";
 import { blake3Hash } from "./blake3";
 import { Result, Ok, Err } from "./ts-results/result";
+import {
+  EbxError,
+  InvalidEncodingError,
+  TooLittleDataError,
+  TooMuchDataError,
+} from "./ebx-error";
+import { None } from "./ts-results/option";
 
 export default class PrivKey {
   buf: Buffer;
@@ -32,12 +39,15 @@ export default class PrivKey {
     return this.toPubKeyBuffer().toString("hex");
   }
 
-  static fromIsoBuf(buf: Buffer): Result<PrivKey, string> {
-    if (buf.length !== 32) {
-      return Err("Invalid private key length");
+  static fromIsoBuf(buf: Buffer): Result<PrivKey, EbxError> {
+    if (buf.length > 32) {
+      return Err(new TooMuchDataError(None));
+    }
+    if (buf.length < 32) {
+      return Err(new TooLittleDataError(None));
     }
     if (!secp256k1.privateKeyVerify(buf)) {
-      return Err("Invalid private key");
+      return Err(new InvalidEncodingError(None));
     }
     return Ok(new PrivKey(buf));
   }
@@ -46,7 +56,7 @@ export default class PrivKey {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<PrivKey, string> {
+  static fromIsoHex(hex: string): Result<PrivKey, EbxError> {
     const bufRes = IsoHex.decode(hex);
     if (bufRes.err) {
       return bufRes;
@@ -62,9 +72,9 @@ export default class PrivKey {
     return "ebxprv" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromIsoStr(str: string): Result<PrivKey, string> {
+  static fromIsoStr(str: string): Result<PrivKey, EbxError> {
     if (!str.startsWith("ebxprv")) {
-      return Err("Invalid private key format");
+      return Err(new InvalidEncodingError(None));
     }
     const hexStr = str.slice(6, 14);
     const checkBufRes = IsoHex.decode(hexStr);
@@ -76,12 +86,12 @@ export default class PrivKey {
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return Err("Invalid base58 encoding");
+      return Err(new InvalidEncodingError(None));
     }
     const hashBuf = blake3Hash(decoded);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
-      return Err("Checksum mismatch");
+      return Err(new InvalidEncodingError(None));
     }
     return PrivKey.fromIsoBuf(decoded);
   }

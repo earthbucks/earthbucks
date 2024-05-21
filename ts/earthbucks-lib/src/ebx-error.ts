@@ -66,3 +66,13 @@ export class InvalidHexError extends EbxError {
     return `invalid hex`;
   }
 }
+
+export class InvalidEncodingError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid encoding`;
+  }
+}

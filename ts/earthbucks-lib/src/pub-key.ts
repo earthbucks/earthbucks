@@ -4,6 +4,13 @@ import bs58 from "bs58";
 import PrivKey from "./priv-key";
 import { blake3Hash } from "./blake3";
 import { Result, Ok, Err } from "./ts-results/result";
+import {
+  EbxError,
+  InvalidEncodingError,
+  TooLittleDataError,
+  TooMuchDataError,
+} from "./ebx-error";
+import { None } from "./ts-results/option";
 
 export default class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
@@ -18,9 +25,12 @@ export default class PubKey {
     return new PubKey(privKey.toPubKeyBuffer());
   }
 
-  static fromIsoBuf(buf: Buffer): Result<PubKey, string> {
-    if (buf.length !== PubKey.SIZE) {
-      return Err("Invalid public key length");
+  static fromIsoBuf(buf: Buffer): Result<PubKey, EbxError> {
+    if (buf.length > PubKey.SIZE) {
+      return Err(new TooMuchDataError(None));
+    }
+    if (buf.length < PubKey.SIZE) {
+      return Err(new TooLittleDataError(None));
     }
     return Ok(new PubKey(buf));
   }
@@ -33,7 +43,7 @@ export default class PubKey {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<PubKey, string> {
+  static fromIsoHex(hex: string): Result<PubKey, EbxError> {
     const res = IsoHex.decode(hex);
     if (res.err) {
       return Err(res.val);
@@ -49,9 +59,9 @@ export default class PubKey {
     return "ebxpub" + checkHex + bs58.encode(this.buf);
   }
 
-  static fromIsoStr(str: string): Result<PubKey, string> {
+  static fromIsoStr(str: string): Result<PubKey, EbxError> {
     if (!str.startsWith("ebxpub")) {
-      return Err("Invalid public key format");
+      return Err(new InvalidEncodingError(None));
     }
     const checkHex = str.slice(6, 14);
     const res = IsoHex.decode(checkHex);
@@ -63,12 +73,12 @@ export default class PubKey {
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return Err("Invalid base58 encoding");
+      return Err(new InvalidEncodingError(None));
     }
     const checkHash = blake3Hash(decoded);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
-      return Err("Invalid checksum");
+      return Err(new InvalidEncodingError(None));
     }
     return PubKey.fromIsoBuf(decoded);
   }
