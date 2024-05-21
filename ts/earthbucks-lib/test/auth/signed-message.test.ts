@@ -6,7 +6,7 @@ import PrivKey from "../../src/priv-key";
 describe("SignedMessage", () => {
   test("sign and verify", async () => {
     const privKey = PrivKey.fromRandom();
-    const pubKey = PubKey.fromPrivKey(privKey);
+    const pubKey = PubKey.fromPrivKey(privKey).unwrap();
     const message = Buffer.from("message");
     const keyStr = "signed message";
     const signedMessage = SignedMessage.fromSignMessage(

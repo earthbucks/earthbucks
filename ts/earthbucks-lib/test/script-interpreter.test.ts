@@ -193,7 +193,7 @@ describe("ScriptInterpreter", () => {
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map((privKey) =>
-        PrivKey.fromIsoBuf(privKey).unwrap().toPubKeyBuffer(),
+        PrivKey.fromIsoBuf(privKey).unwrap().toPubKeyBuffer().unwrap(),
       );
 
       // Create a multisig output script

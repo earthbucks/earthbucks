@@ -6,6 +6,7 @@ import { blake3Hash } from "./blake3";
 import { Result, Ok, Err } from "./ts-results/result";
 import {
   EbxError,
+  InvalidChecksumError,
   InvalidEncodingError,
   TooLittleDataError,
   TooMuchDataError,
@@ -21,8 +22,12 @@ export default class PubKey {
     this.buf = buf;
   }
 
-  static fromPrivKey(privKey: PrivKey): PubKey {
-    return new PubKey(privKey.toPubKeyBuffer());
+  static fromPrivKey(privKey: PrivKey): Result<PubKey, EbxError> {
+    const res = privKey.toPubKeyBuffer();
+    if (res.err) {
+      return Err(res.val);
+    }
+    return Ok(new PubKey(res.unwrap()));
   }
 
   static fromIsoBuf(buf: Buffer): Result<PubKey, EbxError> {
@@ -73,7 +78,7 @@ export default class PubKey {
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidChecksumError(None));
     }
     const checkHash = blake3Hash(decoded);
     const checkSum = checkHash.subarray(0, 4);

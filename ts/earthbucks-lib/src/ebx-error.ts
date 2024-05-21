@@ -76,3 +76,23 @@ export class InvalidEncodingError extends EbxError {
     return `invalid encoding`;
   }
 }
+
+export class InvalidKeyError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid key`;
+  }
+}
+
+export class InvalidChecksumError extends EbxError {
+  constructor(public source: Option<Error>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid checksum`;
+  }
+}

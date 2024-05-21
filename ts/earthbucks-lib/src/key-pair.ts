@@ -13,7 +13,7 @@ export default class KeyPair {
   }
 
   static fromPrivKey(privKey: PrivKey): KeyPair {
-    const pubKey = PubKey.fromPrivKey(privKey);
+    const pubKey = PubKey.fromPrivKey(privKey).unwrap();
     return new KeyPair(privKey, pubKey);
   }
 
@@ -25,7 +25,7 @@ export default class KeyPair {
       return privKeyRes;
     }
     const privKey = privKeyRes.unwrap();
-    const pubKey = PubKey.fromPrivKey(privKey);
+    const pubKey = PubKey.fromPrivKey(privKey).unwrap();
     return Ok(new KeyPair(privKey, pubKey));
   }
 

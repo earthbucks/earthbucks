@@ -41,7 +41,7 @@ export default class SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
     const sigBuf = Buffer.from(sigObj.signature);
-    const pubKey = privKey.toPubKeyBuffer();
+    const pubKey = privKey.toPubKeyBuffer().unwrap();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 

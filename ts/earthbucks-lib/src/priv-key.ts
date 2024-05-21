@@ -6,7 +6,9 @@ import { blake3Hash } from "./blake3";
 import { Result, Ok, Err } from "./ts-results/result";
 import {
   EbxError,
+  InvalidChecksumError,
   InvalidEncodingError,
+  InvalidKeyError,
   TooLittleDataError,
   TooMuchDataError,
 } from "./ebx-error";
@@ -31,12 +33,20 @@ export default class PrivKey {
     return this.buf;
   }
 
-  toPubKeyBuffer(): Buffer {
-    return Buffer.from(secp256k1.publicKeyCreate(this.buf));
+  toPubKeyBuffer(): Result<Buffer, EbxError> {
+    try {
+      return Ok(Buffer.from(secp256k1.publicKeyCreate(this.buf)));
+    } catch (err) {
+      return Err(new InvalidKeyError(None));
+    }
   }
 
-  toPubKeyHex(): string {
-    return this.toPubKeyBuffer().toString("hex");
+  toPubKeyHex(): Result<string, EbxError> {
+    const res = this.toPubKeyBuffer();
+    if (res.err) {
+      return res;
+    }
+    return Ok(res.unwrap().toString("hex"));
   }
 
   static fromIsoBuf(buf: Buffer): Result<PrivKey, EbxError> {
@@ -86,7 +96,7 @@ export default class PrivKey {
     try {
       decoded = Buffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidChecksumError(None));
     }
     const hashBuf = blake3Hash(decoded);
     const checkBuf2 = hashBuf.subarray(0, 4);
