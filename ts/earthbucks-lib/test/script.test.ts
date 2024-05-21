@@ -112,7 +112,9 @@ describe("Script", () => {
         const arr = Buffer.from(testVector.hex, "hex");
         const result = Script.fromIsoBuf(arr);
         expect(result.err).toBeTruthy();
-        expect(result.val).toMatch(new RegExp("^" + testVector.error));
+        expect(result.val.toString()).toMatch(
+          new RegExp("^" + testVector.error),
+        );
       }
     });
   });

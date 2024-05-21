@@ -6,6 +6,7 @@ import { Result, Ok, Err } from "./ts-results/result";
 import ScriptNum from "./script-num";
 import TxSignature from "./tx-signature";
 import PubKey from "./pub-key";
+import { EbxError } from "./ebx-error";
 
 export default class Script {
   chunks: ScriptChunk[] = [];
@@ -14,14 +15,12 @@ export default class Script {
     this.chunks = chunks;
   }
 
-  toIsoStr(): Result<string, string> {
-    const chunksRes = this.chunks.map((chunk) =>
-      chunk.toIsoStr().mapErr((err) => `Unable to stringify chunk: ${err}`),
-    );
-    if (chunksRes.some((res) => res.err)) {
-      return Err(
-        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
-      );
+  toIsoStr(): Result<string, EbxError> {
+    const chunksRes = this.chunks.map((chunk) => chunk.toIsoStr());
+    for (const res of chunksRes) {
+      if (res.err) {
+        return res;
+      }
     }
     return Ok(chunksRes.map((res) => res.unwrap()).join(" "));
   }
@@ -30,26 +29,17 @@ export default class Script {
     return new Script();
   }
 
-  static fromIsoStr(str: string): Result<Script, string> {
+  static fromIsoStr(str: string): Result<Script, EbxError> {
     const script = new Script();
     if (str === "") {
       return Ok(script);
     }
 
-    if (/ {2,}/.test(str)) {
-      return Err("String should not contain two or more consecutive spaces");
-    }
-
-    const chunksRes = str
-      .split(" ")
-      .map(ScriptChunk.fromIsoStr)
-      .map((res) =>
-        res.mapErr((err) => `Unable to parse script chunk: ${err}`),
-      );
-    if (chunksRes.some((res) => res.err)) {
-      return Err(
-        chunksRes.map((res, i) => `Chunk ${i}: ${res.err}`).join(", "),
-      );
+    const chunksRes = str.split(" ").map(ScriptChunk.fromIsoStr);
+    for (const res of chunksRes) {
+      if (res.err) {
+        return res;
+      }
     }
     script.chunks = chunksRes.map((res) => res.unwrap());
     return Ok(script);
@@ -60,17 +50,17 @@ export default class Script {
     return Buffer.concat(bufArray);
   }
 
-  static fromIsoBuf(arr: Buffer): Result<Script, string> {
+  static fromIsoBuf(arr: Buffer): Result<Script, EbxError> {
     const reader = new IsoBufReader(arr);
     return Script.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<Script, string> {
+  static fromIsoBufReader(reader: IsoBufReader): Result<Script, EbxError> {
     const script = new Script();
     while (!reader.eof()) {
       const chunkRes = ScriptChunk.fromIsoBufReader(reader);
       if (chunkRes.err) {
-        return chunkRes.mapErr((err) => `${err}`);
+        return chunkRes;
       }
       script.chunks.push(chunkRes.unwrap());
     }

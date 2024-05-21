@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::Opcode;
 use crate::pub_key::PubKey;
@@ -19,7 +20,7 @@ impl Script {
         Self::new(Vec::new())
     }
 
-    pub fn from_iso_str(s: &str) -> Result<Self, String> {
+    pub fn from_iso_str(s: &str) -> Result<Self, EbxError> {
         // use from_iso_str
         if s.is_empty() {
             return Ok(Self::new(Vec::new()));
@@ -28,13 +29,13 @@ impl Script {
             .split_whitespace()
             .map(|s| ScriptChunk::from_iso_str(s.to_string()))
             .collect();
-        Ok(Self::new(chunks.map_err(|e| e.to_string())?))
+        Ok(Self::new(chunks?))
     }
 
-    pub fn to_iso_str(&self) -> Result<String, String> {
+    pub fn to_iso_str(&self) -> Result<String, EbxError> {
         let chunks: Result<Vec<String>, _> =
             self.chunks.iter().map(|chunk| chunk.to_iso_str()).collect();
-        Ok(chunks.map_err(|e| e.to_string())?.join(" "))
+        Ok(chunks?.join(" "))
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {

@@ -51,7 +51,7 @@ export default class TxIn {
     const scriptBuf = scriptBufRes.unwrap();
     const scriptRes = Script.fromIsoBuf(scriptBuf);
     if (scriptRes.err) {
-      return scriptRes;
+      return Err(scriptRes.val.toString());
     }
     const script = scriptRes.unwrap();
     const lockRelRes = reader.readU32BE().mapErr((e) => e.toString());

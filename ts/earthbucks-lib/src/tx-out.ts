@@ -37,7 +37,7 @@ export default class TxOut {
     const scriptArr = scriptArrRes.unwrap();
     const scriptRes = Script.fromIsoBuf(scriptArr);
     if (scriptRes.err) {
-      return scriptRes;
+      return Err(scriptRes.val.toString());
     }
     const script = scriptRes.unwrap();
     return Ok(new TxOut(value, script));
