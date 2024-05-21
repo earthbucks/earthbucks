@@ -50,11 +50,8 @@ impl ScriptChunk {
     pub fn from_iso_str(str: String) -> Result<ScriptChunk, EbxError> {
         let mut chunk = ScriptChunk::new(0, None);
         if str.starts_with("0x") {
-            let buffer = hex::decode(str.strip_prefix("0x").unwrap()).map_err(|e| {
-                EbxError::InvalidHexError {
-                    source: Some(Box::new(e)),
-                }
-            })?;
+            let buffer = hex::decode(str.strip_prefix("0x").unwrap())
+                .map_err(|_| EbxError::InvalidHexError { source: None })?;
             let len = buffer.len();
             chunk.buffer = Some(buffer);
             if len <= 0xff {

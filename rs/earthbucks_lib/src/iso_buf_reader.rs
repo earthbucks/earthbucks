@@ -41,33 +41,25 @@ impl IsoBufReader {
     pub fn read_u8(&mut self) -> Result<u8, EbxError> {
         self.buf
             .read_u8()
-            .map_err(|e| EbxError::TooLittleDataError {
-                source: Some(Box::new(e)),
-            })
+            .map_err(|_| EbxError::TooLittleDataError { source: None })
     }
 
     pub fn read_u16_be(&mut self) -> Result<u16, EbxError> {
         self.buf
             .read_u16::<BigEndian>()
-            .map_err(|e| EbxError::TooLittleDataError {
-                source: Some(Box::new(e)),
-            })
+            .map_err(|_| EbxError::TooLittleDataError { source: None })
     }
 
     pub fn read_u32_be(&mut self) -> Result<u32, EbxError> {
         self.buf
             .read_u32::<BigEndian>()
-            .map_err(|e| EbxError::TooLittleDataError {
-                source: Some(Box::new(e)),
-            })
+            .map_err(|_| EbxError::TooLittleDataError { source: None })
     }
 
     pub fn read_u64_be(&mut self) -> Result<u64, EbxError> {
         self.buf
             .read_u64::<BigEndian>()
-            .map_err(|e| EbxError::TooLittleDataError {
-                source: Some(Box::new(e)),
-            })
+            .map_err(|_| EbxError::TooLittleDataError { source: None })
     }
 
     pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, EbxError> {

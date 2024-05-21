@@ -8,7 +8,7 @@ export abstract class EbxError extends Error {
 }
 
 export class TooLittleDataError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -18,7 +18,7 @@ export class TooLittleDataError extends EbxError {
 }
 
 export class TooMuchDataError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -28,7 +28,7 @@ export class TooMuchDataError extends EbxError {
 }
 
 export class NonMinimalEncodingError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -38,7 +38,7 @@ export class NonMinimalEncodingError extends EbxError {
 }
 
 export class InsufficientPrecisionError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -48,7 +48,7 @@ export class InsufficientPrecisionError extends EbxError {
 }
 
 export class InvalidOpcodeError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -58,7 +58,7 @@ export class InvalidOpcodeError extends EbxError {
 }
 
 export class InvalidHexError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -68,7 +68,7 @@ export class InvalidHexError extends EbxError {
 }
 
 export class InvalidEncodingError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -78,7 +78,7 @@ export class InvalidEncodingError extends EbxError {
 }
 
 export class InvalidKeyError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 
@@ -88,7 +88,7 @@ export class InvalidKeyError extends EbxError {
 }
 
 export class InvalidChecksumError extends EbxError {
-  constructor(public source: Option<Error>) {
+  constructor(public source: Option<EbxError>) {
     super();
   }
 

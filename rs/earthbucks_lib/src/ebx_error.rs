@@ -2,29 +2,47 @@ use std::{error::Error, fmt};
 
 #[derive(Debug)]
 pub enum EbxError {
-    TooLittleDataError { source: Option<Box<dyn Error>> },
-    TooMuchDataError { source: Option<Box<dyn Error>> },
-    NonMinimalEncodingError { source: Option<Box<dyn Error>> },
-    InsufficientPrecisionError { source: Option<Box<dyn Error>> },
-    InvalidOpcodeError { source: Option<Box<dyn Error>> },
-    InvalidHexError { source: Option<Box<dyn Error>> },
-    InvalidEncodingError { source: Option<Box<dyn Error>> },
-    InvalidKeyError { source: Option<Box<dyn Error>> },
-    InvalidChecksumError { source: Option<Box<dyn Error>> },
+    TooLittleDataError { source: Option<Box<EbxError>> },
+    TooMuchDataError { source: Option<Box<EbxError>> },
+    NonMinimalEncodingError { source: Option<Box<EbxError>> },
+    InsufficientPrecisionError { source: Option<Box<EbxError>> },
+    InvalidOpcodeError { source: Option<Box<EbxError>> },
+    InvalidHexError { source: Option<Box<EbxError>> },
+    InvalidEncodingError { source: Option<Box<EbxError>> },
+    InvalidKeyError { source: Option<Box<EbxError>> },
+    InvalidChecksumError { source: Option<Box<EbxError>> },
 }
 
 impl Error for EbxError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            EbxError::TooLittleDataError { source } => source.as_deref(),
-            EbxError::TooMuchDataError { source } => source.as_deref(),
-            EbxError::NonMinimalEncodingError { source } => source.as_deref(),
-            EbxError::InsufficientPrecisionError { source } => source.as_deref(),
-            EbxError::InvalidOpcodeError { source } => source.as_deref(),
-            EbxError::InvalidHexError { source } => source.as_deref(),
-            EbxError::InvalidEncodingError { source } => source.as_deref(),
-            EbxError::InvalidKeyError { source } => source.as_deref(),
-            EbxError::InvalidChecksumError { source } => source.as_deref(),
+            EbxError::TooLittleDataError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::TooMuchDataError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::NonMinimalEncodingError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InsufficientPrecisionError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InvalidOpcodeError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InvalidHexError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InvalidEncodingError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InvalidKeyError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
+            EbxError::InvalidChecksumError { source } => {
+                source.as_deref().map(|s| s as &(dyn Error + 'static))
+            }
         }
     }
 }
