@@ -1,46 +1,31 @@
 use byteorder::{BigEndian, ReadBytesExt};
+use std::error::Error;
+use std::fmt;
 use std::io::Cursor;
 
 #[derive(Debug)]
 pub enum IsoBufReaderError {
-    ReadError { code: u32, message: String },
-    ReadU8Error { code: u32, message: String },
-    ReadU16BEError { code: u32, message: String },
-    ReadU32BEError { code: u32, message: String },
-    ReadU64BEError { code: u32, message: String },
-    ReadVarIntBufError { code: u32, message: String },
-    ReadVarIntError { code: u32, message: String },
+    InsufficientLengthError { source: Option<Box<dyn Error>> },
+    NonMinimalEncodingError { source: Option<Box<dyn Error>> },
 }
 
-impl std::error::Error for IsoBufReaderError {}
-
-impl std::fmt::Display for IsoBufReaderError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl Error for IsoBufReaderError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            IsoBufReaderError::ReadError { code, message } => {
-                write!(f, "IsoBufReader::ReadError ({}): {}", code, message)
+            IsoBufReaderError::InsufficientLengthError { source } => source.as_deref(),
+            IsoBufReaderError::NonMinimalEncodingError { source } => source.as_deref(),
+        }
+    }
+}
+
+impl fmt::Display for IsoBufReaderError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            IsoBufReaderError::InsufficientLengthError { .. } => {
+                write!(f, "not enough bytes in the buffer to read")
             }
-            IsoBufReaderError::ReadU8Error { code, message } => {
-                write!(f, "IsoBufReader::ReadU8Error ({}): {}", code, message)
-            }
-            IsoBufReaderError::ReadU16BEError { code, message } => {
-                write!(f, "IsoBufReader::ReadU16BEError ({}): {}", code, message)
-            }
-            IsoBufReaderError::ReadU32BEError { code, message } => {
-                write!(f, "IsoBufReader::ReadU32BEError ({}): {}", code, message)
-            }
-            IsoBufReaderError::ReadU64BEError { code, message } => {
-                write!(f, "IsoBufReader::ReadU64BEError ({}): {}", code, message)
-            }
-            IsoBufReaderError::ReadVarIntBufError { code, message } => {
-                write!(
-                    f,
-                    "IsoBufReader::ReadVarIntBufError ({}): {}",
-                    code, message
-                )
-            }
-            IsoBufReaderError::ReadVarIntError { code, message } => {
-                write!(f, "IsoBufReader::ReadVarIntError ({}): {}", code, message)
+            IsoBufReaderError::NonMinimalEncodingError { .. } => {
+                write!(f, "non-minimal varint encoding")
             }
         }
     }
@@ -68,10 +53,7 @@ impl IsoBufReader {
     pub fn read(&mut self, len: usize) -> Result<Vec<u8>, IsoBufReaderError> {
         let pos = self.buf.position() as usize;
         if pos + len > self.buf.get_ref().len() {
-            return Err(IsoBufReaderError::ReadError {
-                code: 1,
-                message: "not enough bytes left in the buffer to read".to_string(),
-            });
+            return Err(IsoBufReaderError::InsufficientLengthError { source: None });
         }
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
@@ -88,92 +70,76 @@ impl IsoBufReader {
     pub fn read_u8(&mut self) -> Result<u8, IsoBufReaderError> {
         self.buf
             .read_u8()
-            .map_err(|e| IsoBufReaderError::ReadU8Error {
-                code: 1,
-                message: e.to_string(),
+            .map_err(|e| IsoBufReaderError::InsufficientLengthError {
+                source: Some(Box::new(e)),
             })
     }
 
     pub fn read_u16_be(&mut self) -> Result<u16, IsoBufReaderError> {
         self.buf
             .read_u16::<BigEndian>()
-            .map_err(|e| IsoBufReaderError::ReadU16BEError {
-                code: 1,
-                message: e.to_string(),
+            .map_err(|e| IsoBufReaderError::InsufficientLengthError {
+                source: Some(Box::new(e)),
             })
     }
 
     pub fn read_u32_be(&mut self) -> Result<u32, IsoBufReaderError> {
         self.buf
             .read_u32::<BigEndian>()
-            .map_err(|e| IsoBufReaderError::ReadU32BEError {
-                code: 1,
-                message: e.to_string(),
+            .map_err(|e| IsoBufReaderError::InsufficientLengthError {
+                source: Some(Box::new(e)),
             })
     }
 
     pub fn read_u64_be(&mut self) -> Result<u64, IsoBufReaderError> {
         self.buf
             .read_u64::<BigEndian>()
-            .map_err(|e| IsoBufReaderError::ReadU64BEError {
-                code: 1,
-                message: e.to_string(),
+            .map_err(|e| IsoBufReaderError::InsufficientLengthError {
+                source: Some(Box::new(e)),
             })
     }
 
     pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, IsoBufReaderError> {
         let first = self
             .read_u8()
-            .map_err(|e| IsoBufReaderError::ReadVarIntBufError {
-                code: 1,
-                message: e.to_string(),
+            .map_err(|e| IsoBufReaderError::InsufficientLengthError {
+                source: Some(Box::new(e)),
             })?;
         match first {
             0xfd => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(2).map_err(|e| {
-                    IsoBufReaderError::ReadVarIntBufError {
-                        code: 2,
-                        message: e.to_string(),
+                    IsoBufReaderError::InsufficientLengthError {
+                        source: Some(Box::new(e)),
                     }
                 })?);
                 if Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() < 0xfd {
-                    return Err(IsoBufReaderError::ReadVarIntBufError {
-                        code: 3,
-                        message: "non-minimal varint encoding".to_string(),
-                    });
+                    return Err(IsoBufReaderError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
             0xfe => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(4).map_err(|e| {
-                    IsoBufReaderError::ReadVarIntBufError {
-                        code: 4,
-                        message: e.to_string(),
+                    IsoBufReaderError::InsufficientLengthError {
+                        source: Some(Box::new(e)),
                     }
                 })?);
+
                 if Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() < 0x10000 {
-                    return Err(IsoBufReaderError::ReadVarIntBufError {
-                        code: 5,
-                        message: "non-minimal varint encoding".to_string(),
-                    });
+                    return Err(IsoBufReaderError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
             0xff => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(8).map_err(|e| {
-                    IsoBufReaderError::ReadVarIntBufError {
-                        code: 6,
-                        message: e.to_string(),
+                    IsoBufReaderError::InsufficientLengthError {
+                        source: Some(Box::new(e)),
                     }
                 })?);
                 if Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap() < 0x100000000 {
-                    return Err(IsoBufReaderError::ReadVarIntBufError {
-                        code: 7,
-                        message: "non-minimal varint encoding".to_string(),
-                    });
+                    return Err(IsoBufReaderError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
@@ -182,12 +148,7 @@ impl IsoBufReader {
     }
 
     pub fn read_var_int(&mut self) -> Result<u64, IsoBufReaderError> {
-        let buf = self.read_var_int_buf().map_err(|e: IsoBufReaderError| {
-            IsoBufReaderError::ReadVarIntError {
-                code: 1,
-                message: "unable to read varint buf: ".to_string() + &e.to_string(),
-            }
-        })?;
+        let buf = self.read_var_int_buf()?;
         let first = buf[0];
         match first {
             0xfd => Ok(Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() as u64),
@@ -357,7 +318,7 @@ mod tests {
             let result = reader.read_u8();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
-                Err(e) => assert!(e.to_string().starts_with(&test_vector.error)),
+                Err(e) => assert_eq!(e.to_string(), test_vector.error),
             }
         }
     }

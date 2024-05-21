@@ -1,97 +1,40 @@
 import { Buffer } from "buffer";
-import { Err, Ok, Result } from "./ts-results/result";
+import { Result, Ok, Err } from "./ts-results/result";
+import { Option, Some, None } from "./ts-results/option";
 
-abstract class IsoBufReaderError extends Error {
-  constructor(
-    public code: number,
-    message: string,
-  ) {
-    super(message);
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
-
-  toString(): string {
-    return `IsoBufReader::${this.constructor.name} (${this.code}): ${this.message}`;
+export abstract class IsoBufReaderError extends Error {
+  constructor() {
+    super();
   }
 }
 
-class ReadError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
+export class InsufficientLengthError extends IsoBufReaderError {
+  constructor(public source: Option<Error>) {
+    super();
   }
 
   toString(): string {
-    return `IsoBufReader::ReadError (${this.code}): ${this.message}`;
+    return `not enough bytes in the buffer to read`;
   }
 }
 
-class ReadU8Error extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
+export class NonMinimalEncodingError extends IsoBufReaderError {
+  constructor(public source: Option<Error>) {
+    super();
   }
 
   toString(): string {
-    return `IsoBufReader::ReadU8Error (${this.code}): ${this.message}`;
+    return `non-minimal varint encoding`;
   }
 }
 
-class ReadU16BEError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
+export class InsufficientPrecisionError extends IsoBufReaderError {
+  constructor(public source: Option<Error>) {
+    super();
   }
 
   toString(): string {
-    return `IsoBufReader::ReadU16BEError (${this.code}): ${this.message}`;
-  }
-}
-
-class ReadU32BEError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
-  }
-
-  toString(): string {
-    return `IsoBufReader::ReadU32BEError (${this.code}): ${this.message}`;
-  }
-}
-
-class ReadU64BEError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
-  }
-
-  toString(): string {
-    return `IsoBufReader::ReadU64BEError (${this.code}): ${this.message}`;
-  }
-}
-
-class ReadVarIntBufError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
-  }
-
-  toString(): string {
-    return `IsoBufReader::ReadVarIntBufError (${this.code}): ${this.message}`;
-  }
-}
-
-class ReadVarIntError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
-  }
-
-  toString(): string {
-    return `IsoBufReader::ReadVarIntError (${this.code}): ${this.message}`;
-  }
-}
-
-class ReadVarIntNumError extends IsoBufReaderError {
-  constructor(code: number, message: string) {
-    super(code, message);
-  }
-
-  toString(): string {
-    return `IsoBufReader::ReadVarIntNumError (${this.code}): ${this.message}`;
+    return `number too large to retain precision`;
   }
 }
 
@@ -110,9 +53,7 @@ export default class IsoBufReader {
 
   read(len: number): Result<Buffer, IsoBufReaderError> {
     if (this.pos + len > this.buf.length) {
-      return Err(
-        new ReadError(1, "not enough bytes left in the buffer to read"),
-      );
+      return Err(new InsufficientLengthError(None));
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = Buffer.alloc(len);
@@ -129,8 +70,8 @@ export default class IsoBufReader {
     let val: number;
     try {
       val = this.buf.readUInt8(this.pos);
-    } catch (err) {
-      return Err(new ReadU8Error(1, `${err}`));
+    } catch (err: unknown) {
+      return Err(new InsufficientLengthError(Some(err as Error)));
     }
     this.pos += 1;
     return Ok(val);
@@ -141,7 +82,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt16BE(this.pos);
     } catch (err) {
-      return Err(new ReadU16BEError(1, `${err}`));
+      return Err(new InsufficientLengthError(Some(err as Error)));
     }
     this.pos += 2;
     return Ok(val);
@@ -152,7 +93,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readUInt32BE(this.pos);
     } catch (err) {
-      return Err(new ReadU32BEError(1, `${err}`));
+      return Err(new InsufficientLengthError(Some(err as Error)));
     }
     this.pos += 4;
     return Ok(val);
@@ -163,7 +104,7 @@ export default class IsoBufReader {
     try {
       val = this.buf.readBigUInt64BE(this.pos);
     } catch (err) {
-      return Err(new ReadU64BEError(1, `${err}`));
+      return Err(new InsufficientLengthError(Some(err as Error)));
     }
     this.pos += 8;
     return Ok(val);
@@ -172,44 +113,38 @@ export default class IsoBufReader {
   readVarIntBuf(): Result<Buffer, IsoBufReaderError> {
     const res = this.readU8();
     if (res.err) {
-      return Err(new ReadVarIntBufError(1, `${res.val}`));
+      return Err(new InsufficientLengthError(Some(res.val)));
     }
     const first = res.unwrap();
     if (first === 0xfd) {
-      const res = this.read(2).mapErr(
-        (err) => new ReadVarIntBufError(2, `${err}`),
-      );
+      const res = this.read(2);
       if (res.err) {
-        return res;
+        return Err(new InsufficientLengthError(Some(res.val)));
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(0) < 0xfd) {
-        return Err(new ReadVarIntBufError(3, "non-minimal varint encoding"));
+        return Err(new NonMinimalEncodingError(None));
       }
       return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xfe) {
-      const res = this.read(4).mapErr(
-        (err) => new ReadVarIntBufError(4, `${err}`),
-      );
+      const res = this.read(4);
       if (res.err) {
-        return res;
+        return Err(new InsufficientLengthError(Some(res.val)));
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(0) < 0x10000) {
-        return Err(new ReadVarIntBufError(5, "non-minimal varint encoding"));
+        return Err(new NonMinimalEncodingError(None));
       }
       return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else if (first === 0xff) {
-      const res = this.read(8).mapErr(
-        (err) => new ReadVarIntBufError(6, `${err}`),
-      );
+      const res = this.read(8);
       if (res.err) {
-        return res;
+        return Err(new InsufficientLengthError(Some(res.val)));
       }
       const buf = res.unwrap();
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
-        return Err(new ReadVarIntBufError(7, "non-minimal varint encoding"));
+        return Err(new NonMinimalEncodingError(None));
       }
       return Ok(Buffer.concat([Buffer.from([first]), buf]));
     } else {
@@ -220,9 +155,7 @@ export default class IsoBufReader {
   readVarInt(): Result<bigint, IsoBufReaderError> {
     const res = this.readVarIntBuf();
     if (res.err) {
-      return Err(
-        new ReadVarIntError(1, `unable to read varint buf: ${res.val}`),
-      );
+      return Err(res.val);
     }
     const buf = res.unwrap();
     const first = buf.readUInt8(0);
@@ -247,17 +180,10 @@ export default class IsoBufReader {
   readVarIntNum(): Result<number, IsoBufReaderError> {
     const value = this.readVarInt();
     if (value.err) {
-      return Err(
-        new ReadVarIntNumError(1, `unable to read varint: ${value.val}`),
-      );
+      return Err(value.val);
     }
     if (value.unwrap() > BigInt(Number.MAX_SAFE_INTEGER)) {
-      return Err(
-        new ReadVarIntNumError(
-          2,
-          "Number too large to retain precision - use readVarInt",
-        ),
-      );
+      return Err(new InsufficientPrecisionError(None));
     }
     return Ok(Number(value.unwrap()));
   }

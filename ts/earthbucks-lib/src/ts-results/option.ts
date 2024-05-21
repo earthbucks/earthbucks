@@ -96,6 +96,10 @@ class NoneImpl implements BaseOption<never> {
 // Export None as a singleton, then freeze it so it can't be modified
 export const None = new NoneImpl();
 export type None = NoneImpl;
+// export function None(): NoneImpl {
+//   return new NoneImpl();
+// }
+// export type None = NoneImpl;
 Object.freeze(None);
 
 /**
@@ -176,7 +180,11 @@ class SomeImpl<T> implements BaseOption<T> {
 }
 
 // This allows Some to be callable - possible because of the es5 compilation target
-export const Some = SomeImpl as typeof SomeImpl & (<T>(val: T) => SomeImpl<T>);
+// export const Some = SomeImpl as typeof SomeImpl & (<T>(val: T) => SomeImpl<T>);
+// export type Some<T> = SomeImpl<T>;
+export function Some<T>(val: T): SomeImpl<T> {
+  return new SomeImpl(val);
+}
 export type Some<T> = SomeImpl<T>;
 
 export type Option<T> = Some<T> | None;

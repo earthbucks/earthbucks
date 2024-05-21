@@ -4,27 +4,27 @@
       {
         "hex": "",
         "len": 1,
-        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00",
         "len": 2,
-        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "0000",
         "len": 3,
-        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "000000",
         "len": 4,
-        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00000000",
         "len": 5,
-        "error": "IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       }
     ]
   },
@@ -32,7 +32,7 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadU8Error (1): "
+        "error": "not enough bytes in the buffer to read"
       }
     ]
   },
@@ -40,11 +40,11 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadU16BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00",
-        "error": "IsoBufReader::ReadU16BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       }
     ]
   },
@@ -52,19 +52,19 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadU32BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00",
-        "error": "IsoBufReader::ReadU32BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "0000",
-        "error": "IsoBufReader::ReadU32BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "000000",
-        "error": "IsoBufReader::ReadU32BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       }
     ]
   },
@@ -72,35 +72,35 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "0000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "000000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00000000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "0000000000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "000000000000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "00000000000000",
-        "error": "IsoBufReader::ReadU64BEError (1): "
+        "error": "not enough bytes in the buffer to read"
       }
     ]
   },
@@ -108,75 +108,75 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadVarIntBufError (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd",
-        "error": "IsoBufReader::ReadVarIntBufError (2): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd00",
-        "error": "IsoBufReader::ReadVarIntBufError (2): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd0000",
-        "error": "IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       },
       {
         "hex": "fe",
-        "error": "IsoBufReader::ReadVarIntBufError (4): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe00",
-        "error": "IsoBufReader::ReadVarIntBufError (4): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe0000",
-        "error": "IsoBufReader::ReadVarIntBufError (4): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe000000",
-        "error": "IsoBufReader::ReadVarIntBufError (4): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe00000000",
-        "error": "IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       },
       {
         "hex": "ff",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff000000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00000000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000000000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff000000000000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00000000000000",
-        "error": "IsoBufReader::ReadVarIntBufError (6): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000000000000000",
-        "error": "IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       }
     ]
   },
@@ -184,75 +184,75 @@
     "errors": [
       {
         "hex": "",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (1): IsoBufReader::ReadU8Error (1): "
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (2): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd00",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (2): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fd0000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (3): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       },
       {
         "hex": "fe",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (4): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe00",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (4): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe0000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (4): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (4): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "fe00000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (5): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       },
       {
         "hex": "ff",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff000000000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff00000000000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (6): IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+        "error": "not enough bytes in the buffer to read"
       },
       {
         "hex": "ff0000000000000000",
-        "error": "IsoBufReader::ReadVarIntError (1): unable to read varint buf: IsoBufReader::ReadVarIntBufError (7): non-minimal varint encoding"
+        "error": "non-minimal varint encoding"
       }
     ]
   }

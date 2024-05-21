@@ -2,6 +2,9 @@ use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
 
+#[derive(Debug)]
+pub enum ScriptChunkError {}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {
     pub opcode: u8,
@@ -365,7 +368,7 @@ mod tests {
         match result {
             Err(e) => assert_eq!(
                 e.to_string(),
-                "script_chunk::from_iso_buf_reader 3: unable to read buffer: IsoBufReader::ReadError (1): not enough bytes left in the buffer to read"
+                "script_chunk::from_iso_buf_reader 3: unable to read buffer: not enough bytes in the buffer to read"
             ),
             _ => panic!("Expected an error for insufficient buffer length in PUSHDATA1 case"),
         }
