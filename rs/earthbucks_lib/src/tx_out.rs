@@ -4,7 +4,7 @@ use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub struct TxOut {
     pub value: u64,
     pub script: Script,

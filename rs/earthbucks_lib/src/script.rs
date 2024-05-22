@@ -6,7 +6,7 @@ use crate::script_chunk::ScriptChunk;
 use crate::script_num::ScriptNum;
 use crate::tx_signature::TxSignature;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub struct Script {
     pub chunks: Vec<ScriptChunk>,
 }
@@ -175,6 +175,10 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
+    pub fn is_pkhx_90d_expired(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL as u64
+    }
+
     // PKHX 90D = PubKey Hash with Expiry: 90 Days
     // And recovery: 60 Days
     // 13104 blocks = 2016 blocks / 14 * 90
@@ -258,6 +262,10 @@ impl Script {
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
+    pub fn is_pkhxr_90d_60d_expired(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_X_LOCK_REL as u64
+    }
+
     // PKHX 1H = PubKey Hash Expiry: 1 Hour
     // 6 blocks = 1 hour for 10 min blocks
     pub const PKHX_1H_LOCK_REL: u32 = 6;
@@ -295,6 +303,10 @@ impl Script {
             && self.chunks[9].opcode == Opcode::OP_DROP
             && self.chunks[10].opcode == Opcode::OP_1
             && self.chunks[11].opcode == Opcode::OP_ENDIF
+    }
+
+    pub fn is_pkhx_1h_expired(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHX_1H_LOCK_REL as u64
     }
 
     // PKHXR 1h 40m = PubKey Hash with Expiry: 1 Hour
@@ -364,6 +376,10 @@ impl Script {
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
+    pub fn is_pkhxr_1h_40m_expired(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_X_LOCK_REL as u64
+    }
+
     pub fn from_expired_pkhx_input() -> Self {
         Self::new(vec![ScriptChunk::new(Opcode::OP_0, None)])
     }
@@ -398,6 +414,62 @@ impl Script {
         let sig_buf = vec![0; TxSignature::SIZE];
         let pub_key_buf = vec![0; PubKey::SIZE];
         Self::from_unexpired_pkhx_input(
+            &sig_buf.try_into().unwrap(),
+            &pub_key_buf.try_into().unwrap(),
+        )
+    }
+
+    pub fn from_expired_pkhxr_input() -> Self {
+        Self::new(vec![
+            ScriptChunk::new(Opcode::OP_0, None),
+            ScriptChunk::new(Opcode::OP_0, None),
+        ])
+    }
+
+    pub fn is_expired_pkhxr_input(&self) -> bool {
+        self.chunks.len() == 2
+            && self.chunks[0].opcode == Opcode::OP_0
+            && self.chunks[1].opcode == Opcode::OP_0
+    }
+
+    pub fn from_recovery_pkhxr_input(
+        sig_buf: &[u8; TxSignature::SIZE],
+        pub_key_buf: &[u8; PubKey::SIZE],
+    ) -> Self {
+        Self::new(vec![
+            ScriptChunk::from_data(sig_buf.to_vec()),
+            ScriptChunk::from_data(pub_key_buf.to_vec()),
+            ScriptChunk::new(Opcode::OP_1, None),
+            ScriptChunk::new(Opcode::OP_0, None),
+        ])
+    }
+
+    pub fn from_unexpired_pkhxr_input(
+        sig_buf: &[u8; TxSignature::SIZE],
+        pub_key_buf: &[u8; PubKey::SIZE],
+    ) -> Self {
+        Self::new(vec![
+            ScriptChunk::from_data(sig_buf.to_vec()),
+            ScriptChunk::from_data(pub_key_buf.to_vec()),
+            ScriptChunk::new(Opcode::OP_1, None),
+        ])
+    }
+
+    pub fn is_unexpired_pkhxr_input(&self) -> bool {
+        self.chunks.len() == 3
+            && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[0].buffer.is_some()
+            && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
+            && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[1].buffer.is_some()
+            && self.chunks[1].buffer.as_ref().unwrap().len() == PubKey::SIZE
+            && self.chunks[2].opcode == Opcode::OP_1
+    }
+
+    pub fn from_unexpired_pkhxr_input_placeholder() -> Self {
+        let sig_buf = vec![0; TxSignature::SIZE];
+        let pub_key_buf = vec![0; PubKey::SIZE];
+        Self::from_unexpired_pkhxr_input(
             &sig_buf.try_into().unwrap(),
             &pub_key_buf.try_into().unwrap(),
         )

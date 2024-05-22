@@ -34,16 +34,20 @@ impl TxBuilder {
         self.tx.outputs.push(tx_out);
     }
 
+    pub fn add_input(&mut self, tx_in: TxIn, amount: u64) {
+        self.tx.inputs.push(tx_in);
+        self.input_amount += amount;
+    }
+
     // "tx fees", also called "change fees", are zero on earthbucks. this
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
     pub fn build(&mut self) -> Result<Tx, String> {
         self.tx.lock_abs = self.lock_abs;
-        self.tx.inputs = vec![];
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
-        let mut input_amount = 0;
+        let mut input_amount = self.input_amount;
         for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
             let prev_block_num = tx_out_bn.block_num;
             let tx_out = &tx_out_bn.tx_out;
@@ -56,8 +60,7 @@ impl TxBuilder {
                 input_script = Script::from_pkh_input_placeholder();
                 lock_rel = 0;
             } else if tx_out.script.is_pkhx_90d_output() {
-                let expired =
-                    self.working_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL as u64;
+                let expired = Script::is_pkhx_90d_expired(self.working_block_num, prev_block_num);
                 if expired {
                     input_script = Script::from_expired_pkhx_input();
                     lock_rel = Script::PKHX_90D_LOCK_REL;
@@ -66,13 +69,31 @@ impl TxBuilder {
                     lock_rel = 0;
                 }
             } else if tx_out.script.is_pkhx_1h_output() {
-                let expired =
-                    self.working_block_num >= prev_block_num + Script::PKHX_1H_LOCK_REL as u64;
+                let expired = Script::is_pkhx_1h_expired(self.working_block_num, prev_block_num);
                 if expired {
                     input_script = Script::from_expired_pkhx_input();
                     lock_rel = Script::PKHX_1H_LOCK_REL;
                 } else {
                     input_script = Script::from_unexpired_pkhx_input_placeholder();
+                    lock_rel = 0;
+                }
+            } else if tx_out.script.is_pkhxr_90d_60d_output() {
+                let expired =
+                    Script::is_pkhxr_90d_60d_expired(self.working_block_num, prev_block_num);
+                if expired {
+                    input_script = Script::from_expired_pkhxr_input();
+                    lock_rel = Script::PKHXR_90D_60D_X_LOCK_REL;
+                } else {
+                    input_script = Script::from_unexpired_pkhxr_input_placeholder();
+                    lock_rel = 0;
+                }
+            } else if tx_out.script.is_pkhxr_1h_40m_output() {
+                let expired = Script::is_pkhxr_1h_40m_expired(self.input_amount, prev_block_num);
+                if expired {
+                    input_script = Script::from_expired_pkhxr_input();
+                    lock_rel = Script::PKHXR_1H_40M_X_LOCK_REL;
+                } else {
+                    input_script = Script::from_unexpired_pkhxr_input_placeholder();
                     lock_rel = 0;
                 }
             } else {
