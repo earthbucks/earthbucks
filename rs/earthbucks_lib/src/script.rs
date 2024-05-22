@@ -85,19 +85,13 @@ impl Script {
     }
 
     pub fn from_pkh_output(pkh: &[u8; 32]) -> Self {
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
-        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
-        script
+        Self::new(vec![
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::from_data(pkh.to_vec()),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
+        ])
     }
 
     pub fn is_pkh_output(&self) -> bool {
@@ -141,30 +135,20 @@ impl Script {
     pub const PKHX_90D_LOCK_REL: u32 = 12960;
 
     pub fn from_pkhx_90d_output(pkh: &[u8; 32]) -> Self {
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
-        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script.chunks.push(ScriptChunk::from_data(
-            ScriptNum::from_u32(Script::PKHX_90D_LOCK_REL).to_iso_buf(),
-        ));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
-        script
+        Self::new(vec![
+            ScriptChunk::new(Opcode::OP_IF, None),
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::from_data(pkh.to_vec()),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
+            ScriptChunk::new(Opcode::OP_ELSE, None),
+            ScriptChunk::from_data(ScriptNum::from_u32(Script::PKHX_90D_LOCK_REL).to_iso_buf()),
+            ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
+            ScriptChunk::new(Opcode::OP_DROP, None),
+            ScriptChunk::new(Opcode::OP_1, None),
+            ScriptChunk::new(Opcode::OP_ENDIF, None),
+        ])
     }
 
     pub fn is_pkhx_90d_output(&self) -> bool {
@@ -196,28 +180,20 @@ impl Script {
     pub const PKHX_1H_LOCK_REL: u32 = 6;
 
     pub fn from_pkhx_1h_output(pkh: &[u8; 32]) -> Self {
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_IF, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DUP, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None));
-        script.chunks.push(ScriptChunk::from_data(pkh.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_EQUALVERIFY, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKSIG, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ELSE, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_6, None));
-        script
-            .chunks
-            .push(ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_DROP, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_ENDIF, None));
-        script
+        Self::new(vec![
+            ScriptChunk::new(Opcode::OP_IF, None),
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::from_data(pkh.to_vec()),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
+            ScriptChunk::new(Opcode::OP_ELSE, None),
+            ScriptChunk::new(Opcode::OP_6, None),
+            ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
+            ScriptChunk::new(Opcode::OP_DROP, None),
+            ScriptChunk::new(Opcode::OP_1, None),
+            ScriptChunk::new(Opcode::OP_ENDIF, None),
+        ])
     }
 
     pub fn is_pkhx_1h_output(&self) -> bool {
