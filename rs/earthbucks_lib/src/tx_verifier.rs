@@ -157,6 +157,7 @@ mod tests {
     use crate::pkh_key_map::PkhKeyMap;
     use crate::script::Script;
     use crate::tx_builder::TxBuilder;
+    use crate::tx_in::TxIn;
     use crate::tx_out::TxOut;
     use crate::tx_out_bn_map::TxOutBnMap;
     use crate::tx_signer::TxSigner;
@@ -179,7 +180,7 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -230,7 +231,7 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 1, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 1);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -277,7 +278,7 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
@@ -329,7 +330,7 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -381,7 +382,16 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, working_block_num);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
+
+        let expired_input_script = Script::from_expired_pkhx_input();
+        let tx_in = TxIn::new(
+            [0; 32].to_vec(),
+            0,
+            expired_input_script,
+            Script::PKHX_1H_LOCK_REL,
+        );
+        tx_builder.add_input(tx_in, 100);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -435,7 +445,7 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
@@ -487,7 +497,16 @@ mod tests {
         }
 
         let change_script = Script::from_empty();
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0, working_block_num);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
+
+        let expired_input_script = Script::from_expired_pkhx_input();
+        let tx_in = TxIn::new(
+            [0; 32].to_vec(),
+            0,
+            expired_input_script,
+            Script::PKHX_90D_LOCK_REL,
+        );
+        tx_builder.add_input(tx_in, 100);
 
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);

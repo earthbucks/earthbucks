@@ -189,7 +189,7 @@ mod tests {
             tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
         let tx_out = TxOut::new(50, Script::from_empty());
         tx_builder.add_output(tx_out);
 
@@ -246,7 +246,7 @@ mod tests {
             tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
         }
 
-        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0, 0);
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
         let tx_out = TxOut::new(100, Script::from_empty());
         tx_builder.add_output(tx_out.clone());
         tx_builder.add_output(tx_out.clone());

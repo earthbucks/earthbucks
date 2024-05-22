@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::script::Script;
 use crate::tx::Tx;
 use crate::tx_in::TxIn;
@@ -5,28 +6,21 @@ use crate::tx_out::TxOut;
 use crate::tx_out_bn_map::TxOutBnMap;
 
 pub struct TxBuilder {
-    input_tx_out_bn_map: TxOutBnMap, // TODO: This should be a vector of TxOutMap
+    input_tx_out_bn_map: TxOutBnMap, // TODO: This should be a vector of TxOut
     tx: Tx,
     change_script: Script,
     input_amount: u64,
     lock_abs: u64,
-    working_block_num: u64,
 }
 
 impl TxBuilder {
-    pub fn new(
-        input_tx_out_bn_map: &TxOutBnMap,
-        change_script: Script,
-        lock_abs: u64,
-        working_block_num: u64,
-    ) -> Self {
+    pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_abs: u64) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
             input_tx_out_bn_map: input_tx_out_bn_map.clone(),
             change_script,
             input_amount: 0,
             lock_abs,
-            working_block_num,
         }
     }
 
@@ -43,70 +37,38 @@ impl TxBuilder {
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
-    pub fn build(&mut self) -> Result<Tx, String> {
+    pub fn build(&mut self) -> Result<Tx, EbxError> {
         self.tx.lock_abs = self.lock_abs;
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = self.input_amount;
         for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
-            let prev_block_num = tx_out_bn.block_num;
-            let tx_out = &tx_out_bn.tx_out;
-            let tx_id = TxOutBnMap::name_to_tx_id(tx_out_id);
-            let tx_out_num = TxOutBnMap::name_to_tx_out_num(tx_out_id);
-
-            let input_script: Script;
-            let lock_rel: u32;
-            if tx_out.script.is_pkh_output() {
-                input_script = Script::from_pkh_input_placeholder();
-                lock_rel = 0;
-            } else if tx_out.script.is_pkhx_90d_output() {
-                let expired = Script::is_pkhx_90d_expired(self.working_block_num, prev_block_num);
-                if expired {
-                    input_script = Script::from_expired_pkhx_input();
-                    lock_rel = Script::PKHX_90D_LOCK_REL;
-                } else {
-                    input_script = Script::from_unexpired_pkhx_input_placeholder();
-                    lock_rel = 0;
-                }
-            } else if tx_out.script.is_pkhx_1h_output() {
-                let expired = Script::is_pkhx_1h_expired(self.working_block_num, prev_block_num);
-                if expired {
-                    input_script = Script::from_expired_pkhx_input();
-                    lock_rel = Script::PKHX_1H_LOCK_REL;
-                } else {
-                    input_script = Script::from_unexpired_pkhx_input_placeholder();
-                    lock_rel = 0;
-                }
-            } else if tx_out.script.is_pkhxr_90d_60d_output() {
-                let expired =
-                    Script::is_pkhxr_90d_60d_expired(self.working_block_num, prev_block_num);
-                if expired {
-                    input_script = Script::from_expired_pkhxr_input();
-                    lock_rel = Script::PKHXR_90D_60D_X_LOCK_REL;
-                } else {
-                    input_script = Script::from_unexpired_pkhxr_input_placeholder();
-                    lock_rel = 0;
-                }
-            } else if tx_out.script.is_pkhxr_1h_40m_output() {
-                let expired = Script::is_pkhxr_1h_40m_expired(self.input_amount, prev_block_num);
-                if expired {
-                    input_script = Script::from_expired_pkhxr_input();
-                    lock_rel = Script::PKHXR_1H_40M_X_LOCK_REL;
-                } else {
-                    input_script = Script::from_unexpired_pkhxr_input_placeholder();
-                    lock_rel = 0;
-                }
-            } else {
-                return Err("unsupported script type".to_string());
-            };
-
-            let tx_input = TxIn::new(tx_id, tx_out_num, input_script, lock_rel);
-            self.tx.inputs.push(tx_input);
-            input_amount += tx_out.value;
             if input_amount >= total_spend_amount {
                 change_amount = input_amount - total_spend_amount;
                 break;
             }
+            let tx_out = &tx_out_bn.tx_out;
+            let tx_id = TxOutBnMap::name_to_tx_id(tx_out_id);
+            let tx_out_num = TxOutBnMap::name_to_tx_out_num(tx_out_id);
+
+            let input_script: Script = if tx_out.script.is_pkh_output() {
+                Script::from_pkh_input_placeholder()
+            } else if tx_out.script.is_pkhx_90d_output() || tx_out.script.is_pkhx_1h_output() {
+                Script::from_unexpired_pkhx_input_placeholder()
+            } else if tx_out.script.is_pkhxr_90d_60d_output()
+                || tx_out.script.is_pkhxr_1h_40m_output()
+            {
+                Script::from_unexpired_pkhxr_input_placeholder()
+            } else {
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "unsupported script type".to_string(),
+                });
+            };
+
+            let tx_input = TxIn::new(tx_id, tx_out_num, input_script, 0);
+            self.tx.inputs.push(tx_input);
+            input_amount += tx_out.value;
         }
         self.input_amount = input_amount;
         if change_amount > 0 {
@@ -137,7 +99,7 @@ mod tests {
             tx_out_bn_map.add(&[0; 32], i, tx_out, block_num);
         }
 
-        TxBuilder::new(&tx_out_bn_map, change_script.unwrap(), 0, 0)
+        TxBuilder::new(&tx_out_bn_map, change_script.unwrap(), 0)
     }
 
     #[test]
