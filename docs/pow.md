@@ -34,3 +34,4 @@
 - EZKL - zk-snarcks for tensorflow computational charts
   - https://github.com/zkonduit/ezkl
   - https://www.investopedia.com/terms/z/zksnark.asp
+- https://github.com/CoinFuMasterShifu/ProofOfBalancedWork/blob/main/PoBW.pdf
