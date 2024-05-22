@@ -452,6 +452,15 @@ impl Script {
         ])
     }
 
+    pub fn from_recovery_pkhxr_input_placeholder() -> Self {
+        let sig_buf = vec![0; TxSignature::SIZE];
+        let pub_key_buf = vec![0; PubKey::SIZE];
+        Self::from_recovery_pkhxr_input(
+            &sig_buf.try_into().unwrap(),
+            &pub_key_buf.try_into().unwrap(),
+        )
+    }
+
     pub fn is_recovery_pkhxr_input(&self) -> bool {
         self.chunks.len() == 4
             && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
