@@ -831,4 +831,66 @@ mod tests {
         let verified = tx_verifier.verify();
         assert!(verified);
     }
+
+    #[test]
+    fn should_sign_and_verify_expired_pkhxr_90d_60d() {
+        let mut tx_out_bn_map = TxOutBnMap::new();
+        let mut pkh_key_map = PkhKeyMap::new();
+        let working_block_num: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64;
+        // generate 5 keys, 5 outputs, and add them to the tx_out_map
+        for i in 0..5 {
+            let key = KeyPair::from_random();
+            let pkh = Pkh::from_pub_key_buffer(key.clone().pub_key.buf.to_vec());
+            pkh_key_map.add(key, &pkh.buf);
+            let script = Script::from_pkhxr_90d_60d_output(&[0; 32], &pkh.buf);
+            let output = TxOut::new(100, script);
+            let block_num = 0;
+            tx_out_bn_map.add(&[0; 32], i, output.clone(), block_num);
+        }
+
+        let change_script = Script::from_empty();
+        let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
+
+        let recovery_input_script = Script::from_expired_pkhxr_input();
+        let tx_in = TxIn::new(
+            [0; 32].to_vec(),
+            0,
+            recovery_input_script,
+            Script::PKHXR_90D_60D_X_LOCK_REL,
+        );
+        tx_builder.add_input(tx_in, 100);
+
+        let tx_out = TxOut::new(50, Script::from_empty());
+        tx_builder.add_output(tx_out);
+
+        let tx = tx_builder.build().unwrap();
+
+        assert_eq!(tx.inputs.len(), 1);
+        assert_eq!(tx.outputs.len(), 2);
+        assert_eq!(tx.outputs[0].value, 50);
+        assert_eq!(tx.outputs[1].value, 50);
+
+        let mut tx_signer =
+            TxSigner::new(tx.clone(), &tx_out_bn_map, &pkh_key_map, working_block_num);
+        let tx_res = tx_signer.sign_input(0);
+        let signed_tx = tx_signer.tx;
+        assert!(tx_res.is_ok());
+
+        let mut tx_verifier = TxVerifier::new(signed_tx, &tx_out_bn_map, working_block_num);
+
+        let verified_input_script = tx_verifier.verify_input_script(0);
+        assert!(verified_input_script);
+
+        let verified_input_lock_rel = tx_verifier.verify_input_lock_rel(0);
+        assert!(verified_input_lock_rel);
+
+        let verified_scripts = tx_verifier.verify_inputs();
+        assert!(verified_scripts);
+
+        let verified_output_values = tx_verifier.verify_output_values();
+        assert!(verified_output_values);
+
+        let verified = tx_verifier.verify();
+        assert!(verified);
+    }
 }
