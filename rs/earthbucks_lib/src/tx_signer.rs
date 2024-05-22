@@ -153,7 +153,7 @@ impl TxSigner {
             let expired = Script::is_pkhxr_1h_40m_expired(self.working_block_num, prev_block_num);
             let input_script = &mut tx_input.script;
             if expired {
-                if input_script.is_expired_pkhx_input() {
+                if input_script.is_expired_pkhxr_input() {
                     // no need to sign expired pkhx
                     return Ok(self.tx.clone());
                 } else {
