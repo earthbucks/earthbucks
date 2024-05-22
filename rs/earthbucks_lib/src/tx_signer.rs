@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::pkh_key_map::PkhKeyMap;
 use crate::script::Script;
 use crate::tx::Tx;
@@ -26,7 +27,7 @@ impl TxSigner {
         }
     }
 
-    pub fn sign_input(&mut self, n_in: usize) -> Result<Tx, String> {
+    pub fn sign_input(&mut self, n_in: usize) -> Result<Tx, EbxError> {
         let mut tx_clone = self.tx.clone();
 
         let tx_input = &mut self.tx.inputs[n_in];
@@ -34,7 +35,12 @@ impl TxSigner {
         let output_index = tx_input.input_tx_out_num;
         let tx_out_bn = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
             Some(tx_out_bn) => tx_out_bn.clone(),
-            None => return Err("tx_out not found".to_string()),
+            None => {
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "tx_out not found".to_string(),
+                })
+            }
         };
         let tx_out = tx_out_bn.tx_out;
         let prev_block_num = tx_out_bn.block_num;
@@ -46,11 +52,19 @@ impl TxSigner {
                 .expect("pkh not found");
             let input_script = &mut tx_input.script;
             if !input_script.is_pkh_input() {
-                return Err("expected pkh input placeholder".to_string());
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "expected pkh input placeholder".to_string(),
+                });
             }
             let key_pair = match self.pkh_key_map.get(&pkh_buf) {
                 Some(key) => key,
-                None => return Err("key not found".to_string()),
+                None => {
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "key not found".to_string(),
+                    })
+                }
             };
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
             let output_script_buf = tx_out.script.to_iso_buf();
@@ -79,15 +93,26 @@ impl TxSigner {
                     // no need to sign expired pkhx
                     return Ok(self.tx.clone());
                 } else {
-                    return Err("expected expired pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected expired pkhx input".to_string(),
+                    });
                 }
             }
             if !input_script.is_unexpired_pkhx_input() {
-                return Err("expected unexpired pkhx input placeholder".to_string());
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "expected unexpired pkhx input placeholder".to_string(),
+                });
             }
             let key_pair = match self.pkh_key_map.get(&pkh_buf) {
                 Some(key) => key,
-                None => return Err("key not found".to_string()),
+                None => {
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "key not found".to_string(),
+                    })
+                }
             };
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
             let output_script_buf = tx_out.script.to_iso_buf();
@@ -116,15 +141,26 @@ impl TxSigner {
                     // no need to sign expired pkhx
                     return Ok(self.tx.clone());
                 } else {
-                    return Err("expected expired pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected expired pkhx input".to_string(),
+                    });
                 }
             }
             if !input_script.is_unexpired_pkhx_input() {
-                return Err("expected unexpired pkhx input placeholder".to_string());
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "expected unexpired pkhx input placeholder".to_string(),
+                });
             }
             let key_pair = match self.pkh_key_map.get(&pkh_buf) {
                 Some(key) => key,
-                None => return Err("key not found".to_string()),
+                None => {
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "key not found".to_string(),
+                    })
+                }
             };
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
             let output_script_buf = tx_out.script.to_iso_buf();
@@ -157,7 +193,10 @@ impl TxSigner {
                     // no need to sign expired pkhx
                     return Ok(self.tx.clone());
                 } else {
-                    return Err("expected expired pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected expired pkhx input".to_string(),
+                    });
                 }
             }
 
@@ -165,19 +204,35 @@ impl TxSigner {
                 let recoverable =
                     Script::is_pkhxr_1h_40m_recoverable(self.working_block_num, prev_block_num);
                 if !recoverable {
-                    return Err("expected recoverable pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected recoverable pkhx input".to_string(),
+                    });
                 }
                 match self.pkh_key_map.get(&rpkh_buf) {
                     Some(key) => key,
-                    None => return Err("key not found".to_string()),
+                    None => {
+                        return Err(EbxError::GenericError {
+                            source: None,
+                            message: "key not found".to_string(),
+                        })
+                    }
                 }
             } else if input_script.is_unexpired_pkhxr_input() {
                 match self.pkh_key_map.get(&pkh_buf) {
                     Some(key) => key,
-                    None => return Err("key not found".to_string()),
+                    None => {
+                        return Err(EbxError::GenericError {
+                            source: None,
+                            message: "key not found".to_string(),
+                        })
+                    }
                 }
             } else {
-                return Err("expected unexpired pkhx input placeholder".to_string());
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "expected unexpired pkhx input placeholder".to_string(),
+                });
             };
 
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
@@ -211,7 +266,10 @@ impl TxSigner {
                     // no need to sign expired pkhx
                     return Ok(self.tx.clone());
                 } else {
-                    return Err("expected expired pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected expired pkhx input".to_string(),
+                    });
                 }
             }
 
@@ -219,19 +277,35 @@ impl TxSigner {
                 let recoverable =
                     Script::is_pkhxr_90d_60d_recoverable(self.working_block_num, prev_block_num);
                 if !recoverable {
-                    return Err("expected recoverable pkhx input".to_string());
+                    return Err(EbxError::GenericError {
+                        source: None,
+                        message: "expected recoverable pkhx input".to_string(),
+                    });
                 }
                 match self.pkh_key_map.get(&rpkh_buf) {
                     Some(key) => key,
-                    None => return Err("key not found".to_string()),
+                    None => {
+                        return Err(EbxError::GenericError {
+                            source: None,
+                            message: "key not found".to_string(),
+                        })
+                    }
                 }
             } else if input_script.is_unexpired_pkhxr_input() {
                 match self.pkh_key_map.get(&pkh_buf) {
                     Some(key) => key,
-                    None => return Err("key not found".to_string()),
+                    None => {
+                        return Err(EbxError::GenericError {
+                            source: None,
+                            message: "key not found".to_string(),
+                        })
+                    }
                 }
             } else {
-                return Err("expected unexpired pkhx input placeholder".to_string());
+                return Err(EbxError::GenericError {
+                    source: None,
+                    message: "expected unexpired pkhx input placeholder".to_string(),
+                });
             };
 
             let pub_key_buf = &key_pair.pub_key.buf.to_vec();
@@ -250,16 +324,18 @@ impl TxSigner {
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
             input_script.chunks[1].buffer = Some(pub_key_buf.clone());
         } else {
-            return Err("unsupported script type".to_string());
+            return Err(EbxError::GenericError {
+                source: None,
+                message: "unsupported script type".to_string(),
+            });
         }
 
         Ok(self.tx.clone())
     }
 
-    pub fn sign(&mut self) -> Result<Tx, String> {
+    pub fn sign(&mut self) -> Result<Tx, EbxError> {
         for i in 0..self.tx.inputs.len() {
-            self.sign_input(i)
-                .map_err(|e| "sign_all: ".to_string() + &e)?;
+            self.sign_input(i)?;
         }
         Ok(self.tx.clone())
     }
