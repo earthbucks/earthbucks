@@ -266,6 +266,10 @@ impl Script {
         new_block_num >= prev_block_num + Script::PKHXR_90D_60D_X_LOCK_REL as u64
     }
 
+    pub fn is_pkhxr_90d_60d_recoverable(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_R_LOCK_REL as u64
+    }
+
     // PKHX 1H = PubKey Hash Expiry: 1 Hour
     // 6 blocks = 1 hour for 10 min blocks
     pub const PKHX_1H_LOCK_REL: u32 = 6;
@@ -380,6 +384,10 @@ impl Script {
         new_block_num >= prev_block_num + Script::PKHXR_1H_40M_X_LOCK_REL as u64
     }
 
+    pub fn is_pkhxr_1h_40m_recoverable(new_block_num: u64, prev_block_num: u64) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_R_LOCK_REL as u64
+    }
+
     pub fn from_expired_pkhx_input() -> Self {
         Self::new(vec![ScriptChunk::new(Opcode::OP_0, None)])
     }
@@ -442,6 +450,18 @@ impl Script {
             ScriptChunk::new(Opcode::OP_1, None),
             ScriptChunk::new(Opcode::OP_0, None),
         ])
+    }
+
+    pub fn is_recovery_pkhxr_input(&self) -> bool {
+        self.chunks.len() == 4
+            && self.chunks[0].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[0].buffer.is_some()
+            && self.chunks[0].buffer.as_ref().unwrap().len() == TxSignature::SIZE
+            && self.chunks[1].opcode == Opcode::OP_PUSHDATA1
+            && self.chunks[1].buffer.is_some()
+            && self.chunks[1].buffer.as_ref().unwrap().len() == PubKey::SIZE
+            && self.chunks[2].opcode == Opcode::OP_1
+            && self.chunks[3].opcode == Opcode::OP_0
     }
 
     pub fn from_unexpired_pkhxr_input(
