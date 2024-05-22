@@ -175,6 +175,47 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
+    // PKHX 90D = PubKey Hash with Expiry: 90 Days
+    // And recovery: 60 Days
+    // 13104 blocks = 2016 blocks / 14 * 90
+    pub const PKHXR_90D_60D_X_LOCK_REL: u32 = 12960;
+    pub const PKHXR_90D_60D_R_LOCK_REL: u32 = 8640;
+
+    pub fn from_pkhxr_90d_60d_output(pkh: &[u8; 32], rpkh: &[u8; 32]) -> Self {
+        Self::new(vec![
+            // if simple pkh
+            ScriptChunk::new(Opcode::OP_IF, None),
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::from_data(pkh.to_vec()),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
+            // else
+            ScriptChunk::new(Opcode::OP_ELSE, None),
+            // if recovery pkh
+            ScriptChunk::new(Opcode::OP_IF, None),
+            ScriptChunk::from_data(
+                ScriptNum::from_u32(Script::PKHXR_90D_60D_R_LOCK_REL).to_iso_buf(),
+            ),
+            ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
+            ScriptChunk::new(Opcode::OP_DROP, None),
+            ScriptChunk::new(Opcode::OP_DUP, None),
+            ScriptChunk::new(Opcode::OP_DOUBLEBLAKE3, None),
+            ScriptChunk::from_data(rpkh.to_vec()),
+            ScriptChunk::new(Opcode::OP_EQUALVERIFY, None),
+            ScriptChunk::new(Opcode::OP_CHECKSIG, None),
+            // else expiry
+            ScriptChunk::new(Opcode::OP_ELSE, None),
+            ScriptChunk::from_data(
+                ScriptNum::from_u32(Script::PKHXR_90D_60D_X_LOCK_REL).to_iso_buf(),
+            ),
+            ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
+            ScriptChunk::new(Opcode::OP_DROP, None),
+            ScriptChunk::new(Opcode::OP_1, None),
+            ScriptChunk::new(Opcode::OP_ENDIF, None),
+        ])
+    }
+
     // PKHX 1H = PubKey Hash Expiry: 1 Hour
     // 6 blocks = 1 hour for 10 min blocks
     pub const PKHX_1H_LOCK_REL: u32 = 6;
