@@ -4,7 +4,7 @@ import TxOut from "./tx-out";
 import TxOutBnMap from "./tx-out-bn-map";
 import Script from "./script";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-option-result/src/result";
+import { Result, Ok, Err } from "option-result/src/result";
 
 export default class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;

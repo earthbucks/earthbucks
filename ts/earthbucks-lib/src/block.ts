@@ -3,7 +3,7 @@ import Tx from "./tx";
 import IsoBufWriter from "./iso-buf-writer";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "ts-option-result/src/result";
+import { Result, Ok, Err } from "option-result/src/result";
 
 export default class Block {
   public header: Header;

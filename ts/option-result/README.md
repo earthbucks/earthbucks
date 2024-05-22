@@ -1,4 +1,4 @@
-# ts-option-result
+# option-result
 
 A fork of ts-results but with no ES5 build and works with modern typescript. The README for ts-results is provided below.
 

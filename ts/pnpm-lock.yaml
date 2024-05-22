@@ -205,9 +205,9 @@ importers:
       secp256k1:
         specifier: ^5.0.0
         version: 5.0.0
-      ts-option-result:
+      option-result:
         specifier: workspace:^
-        version: link:../ts-option-result
+        version: link:../option-result
       tsx:
         specifier: ^4.7.1
         version: 4.7.2
@@ -410,7 +410,7 @@ importers:
         specifier: ^29.1.2
         version: 29.1.2(@babel/core@7.24.5)(jest@29.7.0)(typescript@5.4.5)
 
-  ts-option-result:
+  option-result:
     devDependencies:
       '@eslint/js':
         specifier: ^9.2.0

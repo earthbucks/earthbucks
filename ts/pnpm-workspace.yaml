@@ -6,4 +6,4 @@ packages:
   - 'earthbucks-db'
   - 'earthbucks-lib'
   - 'earthbucks-tf'
-  - 'ts-option-result'
+  - 'option-result'

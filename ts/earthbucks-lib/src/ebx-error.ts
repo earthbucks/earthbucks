@@ -1,5 +1,5 @@
-import { Result, Ok, Err } from "ts-option-result/src/result";
-import { Option, Some, None } from "ts-option-result/src/option";
+import { Result, Ok, Err } from "option-result/src/result";
+import { Option, Some, None } from "option-result/src/option";
 
 export abstract class EbxError extends Error {
   constructor() {
