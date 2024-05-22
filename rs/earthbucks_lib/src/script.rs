@@ -316,9 +316,7 @@ impl Script {
             ScriptChunk::new(Opcode::OP_ELSE, None),
             // if recovery pkh
             ScriptChunk::new(Opcode::OP_IF, None),
-            ScriptChunk::from_data(
-                ScriptNum::from_u32(Script::PKHXR_1H_40M_R_LOCK_REL).to_iso_buf(),
-            ),
+            ScriptChunk::new(Opcode::OP_4, None),
             ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
             ScriptChunk::new(Opcode::OP_DROP, None),
             ScriptChunk::new(Opcode::OP_DUP, None),
@@ -328,9 +326,7 @@ impl Script {
             ScriptChunk::new(Opcode::OP_CHECKSIG, None),
             // else expiry
             ScriptChunk::new(Opcode::OP_ELSE, None),
-            ScriptChunk::from_data(
-                ScriptNum::from_u32(Script::PKHXR_1H_40M_X_LOCK_REL).to_iso_buf(),
-            ),
+            ScriptChunk::new(Opcode::OP_6, None),
             ScriptChunk::new(Opcode::OP_CHECKLOCKRELVERIFY, None),
             ScriptChunk::new(Opcode::OP_DROP, None),
             ScriptChunk::new(Opcode::OP_1, None),
@@ -350,13 +346,7 @@ impl Script {
             && self.chunks[5].opcode == Opcode::OP_CHECKSIG
             && self.chunks[6].opcode == Opcode::OP_ELSE
             && self.chunks[7].opcode == Opcode::OP_IF
-            && self.chunks[8].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[8].buffer.is_some()
-            && self.chunks[8].buffer.as_ref().unwrap().len() == 2
-            && u16::from_be_bytes([
-                self.chunks[8].buffer.as_ref().unwrap()[0],
-                self.chunks[8].buffer.as_ref().unwrap()[1],
-            ]) == Script::PKHXR_1H_40M_R_LOCK_REL as u16
+            && self.chunks[8].opcode == Opcode::OP_4
             && self.chunks[9].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[10].opcode == Opcode::OP_DROP
             && self.chunks[11].opcode == Opcode::OP_DUP
@@ -367,13 +357,7 @@ impl Script {
             && self.chunks[14].opcode == Opcode::OP_EQUALVERIFY
             && self.chunks[15].opcode == Opcode::OP_CHECKSIG
             && self.chunks[16].opcode == Opcode::OP_ELSE
-            && self.chunks[17].opcode == Opcode::OP_PUSHDATA1
-            && self.chunks[17].buffer.is_some()
-            && self.chunks[17].buffer.as_ref().unwrap().len() == 2
-            && u16::from_be_bytes([
-                self.chunks[17].buffer.as_ref().unwrap()[0],
-                self.chunks[17].buffer.as_ref().unwrap()[1],
-            ]) == Script::PKHXR_1H_40M_X_LOCK_REL as u16
+            && self.chunks[17].opcode == Opcode::OP_6
             && self.chunks[18].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[19].opcode == Opcode::OP_DROP
             && self.chunks[20].opcode == Opcode::OP_1
