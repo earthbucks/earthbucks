@@ -365,9 +365,7 @@ impl Script {
     }
 
     pub fn from_expired_pkhx_input() -> Self {
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::new(Opcode::OP_0, None));
-        script
+        Self::new(vec![ScriptChunk::new(Opcode::OP_0, None)])
     }
 
     pub fn is_expired_pkhx_input(&self) -> bool {
@@ -378,13 +376,11 @@ impl Script {
         sig_buf: &[u8; TxSignature::SIZE],
         pub_key_buf: &[u8; PubKey::SIZE],
     ) -> Self {
-        let mut script = Self::new(Vec::new());
-        script.chunks.push(ScriptChunk::from_data(sig_buf.to_vec()));
-        script
-            .chunks
-            .push(ScriptChunk::from_data(pub_key_buf.to_vec()));
-        script.chunks.push(ScriptChunk::new(Opcode::OP_1, None));
-        script
+        Self::new(vec![
+            ScriptChunk::from_data(sig_buf.to_vec()),
+            ScriptChunk::from_data(pub_key_buf.to_vec()),
+            ScriptChunk::new(Opcode::OP_1, None),
+        ])
     }
 
     pub fn is_unexpired_pkhx_input(&self) -> bool {
