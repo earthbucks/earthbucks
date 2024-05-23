@@ -2,7 +2,7 @@
 
 <img src="./earthbucks-e.png" width="200" height="200" alt="EarthBucks">
 
-Small casual transactions for everybody on Planet Earth
+AI for everybody on Planet Earth.
 
 ## Launch Information
 
