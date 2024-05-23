@@ -1,6 +1,6 @@
 # EarthBucks
 
-<img src="./earthbucks-e.png" width="200" height="200" alt="EarthBucks">
+<img src="./earthbucks-e-2-300.png" width="150" height="150" alt="EarthBucks">
 
 AI for everybody on Planet Earth.
 
