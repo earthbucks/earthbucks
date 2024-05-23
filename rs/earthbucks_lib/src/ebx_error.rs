@@ -39,7 +39,7 @@ impl fmt::Display for EbxError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             EbxError::GenericError { message, .. } => {
-                write!(f, "generic error: {}", message)
+                write!(f, "ebx error: {}", message)
             }
             EbxError::NotEnoughDataError { .. } => {
                 write!(f, "not enough bytes in the buffer to read")

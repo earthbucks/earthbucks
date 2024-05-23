@@ -7,6 +7,19 @@ export abstract class EbxError extends Error {
   }
 }
 
+export class GenericError extends EbxError {
+  constructor(
+    public source: Option<EbxError>,
+    public message: string,
+  ) {
+    super();
+  }
+
+  toString(): string {
+    return `ebx error: ${this.message}`;
+  }
+}
+
 export class NotEnoughDataError extends EbxError {
   constructor(public source: Option<EbxError>) {
     super();
