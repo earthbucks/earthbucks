@@ -80,9 +80,10 @@ export default class TxBuilder {
         inputScript = Script.fromPkhInputPlaceholder();
         lockRel = 0;
       } else if (txOut.script.isPkhx90dOutput()) {
-        const expired =
-          this.workingBlockNum >=
-          prevBlockNum + BigInt(Script.PKHX_90D_LOCK_REL);
+        const expired = Script.isPkhx90dExpired(
+          this.workingBlockNum,
+          prevBlockNum,
+        );
         if (expired) {
           inputScript = Script.fromExpiredPkhxInput();
           lockRel = Script.PKHX_90D_LOCK_REL;
@@ -91,9 +92,10 @@ export default class TxBuilder {
           lockRel = 0;
         }
       } else if (txOut.script.isPkhx1hOutput()) {
-        const expired =
-          this.workingBlockNum >=
-          prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+        const expired = Script.isPkhx1hExpired(
+          this.workingBlockNum,
+          prevBlockNum,
+        );
         if (expired) {
           inputScript = Script.fromExpiredPkhxInput();
           lockRel = Script.PKHX_1H_LOCK_REL;

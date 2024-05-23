@@ -172,6 +172,10 @@ export default class Script {
     );
   }
 
+  static isPkhx90dExpired(newBlockNum: bigint, prevBlockNum: bigint) {
+    return newBlockNum >= prevBlockNum + BigInt(Script.PKHX_90D_LOCK_REL);
+  }
+
   // PKHX 1H = PubKey Hash Expiry: 1 Hour
   // 6 blocks = 1 hour for 10 min blocks
   static readonly PKHX_1H_LOCK_REL: number = 6;
@@ -210,6 +214,10 @@ export default class Script {
       this.chunks[10].opcode === Opcode.OP_1 &&
       this.chunks[11].opcode === Opcode.OP_ENDIF
     );
+  }
+
+  static isPkhx1hExpired(newBlockNum: bigint, prevBlockNum: bigint) {
+    return newBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
   }
 
   static fromExpiredPkhxInput(): Script {
