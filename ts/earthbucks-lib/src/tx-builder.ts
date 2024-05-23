@@ -47,7 +47,28 @@ export default class TxBuilder {
     );
     let changeAmount = BigInt(0);
     let inputAmount = BigInt(0);
-    for (const [txOutId, txOutBn] of this.inputTxOutBnMap.map) {
+
+    // sort by block number first, but if those are the same, sort by the id
+    // of the tx_out, which is tx_id plus tx_out_num together in a string.
+    // this logic means we use the "most confirmed" outputs first, which is
+    // what we want, and then we have a deterministic way to sort the UTXOs
+    // in the same block.
+    const sortedTxOutBns = Array.from(this.inputTxOutBnMap.map.entries()).sort(
+      ([aId, aBn], [bId, bBn]) => {
+        const blockNumCmp =
+          aBn.blockNum < bBn.blockNum
+            ? -1
+            : aBn.blockNum > bBn.blockNum
+              ? 1
+              : 0;
+        if (blockNumCmp !== 0) {
+          return blockNumCmp;
+        }
+        return aId < bId ? -1 : aId > bId ? 1 : 0;
+      },
+    );
+
+    for (const [txOutId, txOutBn] of sortedTxOutBns) {
       const prevBlockNum = txOutBn.blockNum;
       const txId = TxOutBnMap.nameToTxIdHash(txOutId);
       const txOutNum = TxOutBnMap.nameToOutputIndex(txOutId);
