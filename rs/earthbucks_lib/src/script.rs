@@ -179,7 +179,7 @@ impl Script {
         new_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL as u64
     }
 
-    // PKHX 90D = PubKey Hash with Expiry: 90 Days
+    // PKHXR 90D 60D = PubKey Hash with Expiry: 90 Days
     // And recovery: 60 Days
     // 13104 blocks = 2016 blocks / 14 * 90
     pub const PKHXR_90D_60D_X_LOCK_REL: u32 = 12960;
