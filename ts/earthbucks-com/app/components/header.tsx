@@ -17,7 +17,7 @@ export default function Header() {
           </h1>
 
           <p className="text-center text-black dark:text-white">
-            AI for everybody on Planet Earth.
+            Small casual transactions for everybody on Planet Earth.
           </p>
         </div>
       </div>

@@ -31,7 +31,7 @@ export default function Index() {
           />
         </div>
         <div className="mb-4 text-center text-black dark:text-white">
-          AI for everybody on Planet Earth.
+          Small casual transactions for everybody on Planet Earth.
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
