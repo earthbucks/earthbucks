@@ -29,6 +29,7 @@ type ImagePath =
   | "/pink-heart-128.png"
   | "/sun-128.png"
   | "/earthbucks-e.png"
+  | "/earthbucks-e-2-300.png"
   | "/washington-button-128.png";
 
 export const $image = (path: ImagePath) => {
