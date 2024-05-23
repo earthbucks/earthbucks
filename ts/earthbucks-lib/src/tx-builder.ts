@@ -14,24 +14,26 @@ export default class TxBuilder {
   public changeScript: Script;
   public inputAmount: bigint;
   public lockAbs: bigint;
-  public workingBlockNum: bigint;
 
   constructor(
     inputTxOutMap: TxOutBnMap,
     changeScript: Script,
     lockAbs: bigint,
-    workingBlockNum: bigint,
   ) {
     this.tx = new Tx(1, [], [], BigInt(0));
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = BigInt(0);
     this.lockAbs = lockAbs;
-    this.workingBlockNum = workingBlockNum;
   }
 
   addOutput(txOut: TxOut): void {
     this.tx.outputs.push(txOut);
+  }
+
+  addInput(txIn: TxIn, amount: bigint): void {
+    this.tx.inputs.push(txIn);
+    this.inputAmount += amount;
   }
 
   build(): Result<Tx, EbxError> {
@@ -40,13 +42,12 @@ export default class TxBuilder {
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
     this.tx.lockAbs = this.lockAbs;
-    this.tx.inputs = [];
     const totalSpendAmount = this.tx.outputs.reduce(
       (acc, output) => acc + output.value,
       BigInt(0),
     );
     let changeAmount = BigInt(0);
-    let inputAmount = BigInt(0);
+    let inputAmount = this.inputAmount;
 
     // sort by block number first, but if those are the same, sort by the id
     // of the tx_out, which is tx_id plus tx_out_num together in a string.
@@ -69,52 +70,35 @@ export default class TxBuilder {
     );
 
     for (const [txOutId, txOutBn] of sortedTxOutBns) {
-      const prevBlockNum = txOutBn.blockNum;
+      if (inputAmount >= totalSpendAmount) {
+        changeAmount = inputAmount - totalSpendAmount;
+        break;
+      }
       const txId = TxOutBnMap.nameToTxIdHash(txOutId);
       const txOutNum = TxOutBnMap.nameToOutputIndex(txOutId);
       const txOut = txOutBn.txOut;
 
       let inputScript: Script;
-      let lockRel: number;
       if (txOut.script.isPkhOutput()) {
         inputScript = Script.fromPkhInputPlaceholder();
-        lockRel = 0;
-      } else if (txOut.script.isPkhx90dOutput()) {
-        const expired = Script.isPkhx90dExpired(
-          this.workingBlockNum,
-          prevBlockNum,
-        );
-        if (expired) {
-          inputScript = Script.fromExpiredPkhxInput();
-          lockRel = Script.PKHX_90D_LOCK_REL;
-        } else {
-          inputScript = Script.fromUnexpiredPkhxInputPlaceholder();
-          lockRel = 0;
-        }
-      } else if (txOut.script.isPkhx1hOutput()) {
-        const expired = Script.isPkhx1hExpired(
-          this.workingBlockNum,
-          prevBlockNum,
-        );
-        if (expired) {
-          inputScript = Script.fromExpiredPkhxInput();
-          lockRel = Script.PKHX_1H_LOCK_REL;
-        } else {
-          inputScript = Script.fromUnexpiredPkhxInputPlaceholder();
-          lockRel = 0;
-        }
+      } else if (
+        txOut.script.isPkhx90dOutput() ||
+        txOut.script.isPkhx1hOutput()
+      ) {
+        inputScript = Script.fromUnexpiredPkhxInputPlaceholder();
+      } else if (
+        txOut.script.isPkhxr1h40mOutput() ||
+        txOut.script.isPkhxr90d60dOutput()
+      ) {
+        inputScript = Script.fromUnexpiredPkhxrInputPlaceholder();
       } else {
         return Err(new GenericError(None, "unsupported script type"));
       }
 
-      const txInput = new TxIn(txId, txOutNum, inputScript, lockRel);
+      const txInput = new TxIn(txId, txOutNum, inputScript, 0);
       const outputAmount = txOutBn.txOut.value;
       inputAmount += outputAmount;
       this.tx.inputs.push(txInput);
-      if (inputAmount >= totalSpendAmount) {
-        changeAmount = inputAmount - totalSpendAmount;
-        break;
-      }
     }
     this.inputAmount = inputAmount;
     if (changeAmount > BigInt(0)) {

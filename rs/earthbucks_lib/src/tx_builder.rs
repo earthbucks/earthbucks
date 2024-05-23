@@ -42,13 +42,13 @@ impl TxBuilder {
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = self.input_amount;
-        let mut sorted_tx_out_bns: Vec<_> = self.input_tx_out_bn_map.map.iter().collect();
 
         // sort by block number first, but if those are the same, sort by the id
         // of the tx_out, which is tx_id plus tx_out_num together in a string.
         // this logic means we use the "most confirmed" outputs first, which is
         // what we want, and then we have a deterministic way to sort the UTXOs
         // in the same block.
+        let mut sorted_tx_out_bns: Vec<_> = self.input_tx_out_bn_map.map.iter().collect();
         sorted_tx_out_bns
             .sort_by(|a, b| a.1.block_num.cmp(&b.1.block_num).then_with(|| a.0.cmp(b.0)));
 

@@ -33,7 +33,7 @@ describe("TxSigner", () => {
     }
 
     const changeScript = Script.fromEmpty();
-    txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+    txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
   });
 
   test("should sign a tx", () => {

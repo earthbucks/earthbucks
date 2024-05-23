@@ -407,6 +407,31 @@ export default class Script {
     return Script.fromUnexpiredPkhxInput(sig, pubKey);
   }
 
+  static fromUnexpiredPkhxrInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+    return new Script([
+      ScriptChunk.fromData(sigBuf),
+      ScriptChunk.fromData(pubKeyBuf),
+      new ScriptChunk(Opcode.OP_1),
+    ]);
+  }
+
+  isUnexpiredPkhxrInput(): boolean {
+    return (
+      this.chunks.length === 3 &&
+      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0].buf?.length === TxSignature.SIZE &&
+      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1].buf?.length === PubKey.SIZE &&
+      this.chunks[2].opcode === Opcode.OP_1
+    );
+  }
+
+  static fromUnexpiredPkhxrInputPlaceholder(): Script {
+    const sig = Buffer.alloc(TxSignature.SIZE);
+    const pubKey = Buffer.alloc(PubKey.SIZE);
+    return Script.fromUnexpiredPkhxrInput(sig, pubKey);
+  }
+
   isPushOnly(): boolean {
     return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }

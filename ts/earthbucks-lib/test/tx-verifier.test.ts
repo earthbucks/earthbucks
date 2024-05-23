@@ -10,6 +10,7 @@ import TxSigner from "../src/tx-signer";
 import TxVerifier from "../src/tx-verifier";
 import { Buffer } from "buffer";
 import TxOutBn from "../src/tx-out-bn";
+import TxIn from "../src/tx-in";
 
 describe("TxVerifier", () => {
   let txBuilder: TxBuilder;
@@ -29,11 +30,11 @@ describe("TxVerifier", () => {
         const script = Script.fromPkhOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
     });
 
     test("should sign and verify a tx", () => {
@@ -111,11 +112,11 @@ describe("TxVerifier", () => {
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
     });
 
     test("should sign and verify unexpired pkhx 1h", () => {
@@ -164,17 +165,25 @@ describe("TxVerifier", () => {
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 6n);
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
     });
 
     test("should sign and verify expired pkhx 1h", () => {
       const txOut = new TxOut(BigInt(50), Script.fromEmpty());
       txBuilder.addOutput(txOut);
 
+      const expiredInputScript = Script.fromExpiredPkhxInput();
+      const txIn = new TxIn(
+        Buffer.alloc(32),
+        0,
+        expiredInputScript,
+        Script.PKHX_1H_LOCK_REL,
+      );
+      txBuilder.addInput(txIn, 100n);
       const tx = txBuilder.build().unwrap();
 
       expect(tx.inputs.length).toBe(1);
@@ -182,12 +191,21 @@ describe("TxVerifier", () => {
       expect(tx.outputs[0].value).toBe(BigInt(50));
       expect(tx.outputs[1].value).toBe(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 6n);
+      txSigner = new TxSigner(
+        tx,
+        txOutBnMap,
+        pkhKeyMap,
+        BigInt(Script.PKHX_1H_LOCK_REL),
+      );
       const signed = txSigner.sign(0);
       expect(signed.ok).toBe(true);
       expect(tx.inputs[0].script.isExpiredPkhxInput()).toBe(true);
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, 6n);
+      const txVerifier = new TxVerifier(
+        tx,
+        txOutBnMap,
+        BigInt(Script.PKHX_1H_LOCK_REL),
+      );
       const verifiedInputScript = txVerifier.verifyInputScript(0);
       expect(verifiedInputScript).toBe(true);
 
@@ -217,11 +235,11 @@ describe("TxVerifier", () => {
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
     });
 
     test("should sign and verify unexpired pkhx 90d", () => {
@@ -270,22 +288,25 @@ describe("TxVerifier", () => {
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(
-        txOutBnMap,
-        changeScript,
-        0n,
-        BigInt(Script.PKHX_90D_LOCK_REL),
-      );
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
     });
 
     test("should sign and verify expired pkhx 90d", () => {
       const txOut = new TxOut(BigInt(50), Script.fromEmpty());
       txBuilder.addOutput(txOut);
 
+      const expiredInputScript = Script.fromExpiredPkhxInput();
+      const txIn = new TxIn(
+        Buffer.alloc(32),
+        0,
+        expiredInputScript,
+        Script.PKHX_90D_LOCK_REL,
+      );
+      txBuilder.addInput(txIn, 100n);
       const tx = txBuilder.build().unwrap();
 
       expect(tx.inputs.length).toBe(1);

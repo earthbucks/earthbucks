@@ -29,7 +29,7 @@ describe("TxBuilder", () => {
     }
 
     const changeScript = Script.fromEmpty();
-    txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n, 0n);
+    txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
   });
 
   test("should build a valid tx when input is enough to cover the output", () => {
