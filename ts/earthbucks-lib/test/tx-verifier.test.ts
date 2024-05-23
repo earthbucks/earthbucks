@@ -596,7 +596,78 @@ describe("TxVerifier", () => {
     });
   });
 
-  describe.only("pkhxr 90d 60d expired", () => {
+  describe("pkhxr 90d 60d recovery", () => {
+    beforeEach(() => {
+      txOutBnMap = new TxOutBnMap();
+      pkhKeyMap = new PkhKeyMap();
+      // generate 5 keys, 5 outputs, and add them to the txOutMap
+      for (let i = 0; i < 5; i++) {
+        const key = KeyPair.fromRandom();
+        const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+        pkhKeyMap.add(key, pkh.buf);
+        const script = Script.fromPkhxr90d60dOutput(Buffer.alloc(32), pkh.buf);
+        const txOut = new TxOut(BigInt(100), script);
+        const txOutBn = new TxOutBn(txOut, 0n);
+        txOutBnMap.add(txOutBn, Buffer.alloc(32), i);
+      }
+
+      const changeScript = Script.fromEmpty();
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
+    });
+
+    test("should sign and verify recovery pkhxr 90d 60d", () => {
+      const recoveryInputScript = Script.fromRecoveryPkhxrInputPlaceholder();
+      const txIn = new TxIn(
+        Buffer.alloc(32),
+        0,
+        recoveryInputScript,
+        Script.PKHXR_90D_60D_R_LOCK_REL,
+      );
+      txBuilder.addInput(txIn, 100n);
+
+      const txOut = new TxOut(BigInt(50), Script.fromEmpty());
+      txBuilder.addOutput(txOut);
+
+      const tx = txBuilder.build().unwrap();
+
+      expect(tx.inputs.length).toBe(1);
+      expect(tx.outputs.length).toBe(2);
+      expect(tx.outputs[0].value).toBe(BigInt(50));
+      expect(tx.outputs[1].value).toBe(BigInt(50));
+
+      txSigner = new TxSigner(
+        tx,
+        txOutBnMap,
+        pkhKeyMap,
+        BigInt(Script.PKHXR_90D_60D_R_LOCK_REL),
+      );
+      const signed = txSigner.sign(0);
+      expect(signed.ok).toBe(true);
+      expect(tx.inputs[0].script.isRecoveryPkhxrInput()).toBe(true);
+
+      const txVerifier = new TxVerifier(
+        tx,
+        txOutBnMap,
+        BigInt(Script.PKHXR_90D_60D_R_LOCK_REL),
+      );
+      const verifiedInputScript = txVerifier.verifyInputScript(0);
+      expect(verifiedInputScript).toBe(true);
+
+      const verifiedInputLockRel = txVerifier.verifyInputLockRel(0);
+      expect(verifiedInputLockRel).toBe(true);
+
+      const verifiedScripts = txVerifier.verifyInputs();
+      expect(verifiedScripts).toBe(true);
+
+      const verifiedOutputValues = txVerifier.verifyOutputValues();
+      expect(verifiedOutputValues).toBe(true);
+
+      const verified = txVerifier.verify();
+      expect(verified).toBe(true);
+    });
+  });
+
+  describe("pkhxr 90d 60d expired", () => {
     beforeEach(() => {
       txOutBnMap = new TxOutBnMap();
       pkhKeyMap = new PkhKeyMap();
