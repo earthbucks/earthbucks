@@ -402,7 +402,7 @@ export default class Script {
     );
   }
 
-  fromExpiredPkhxrInput(): Script {
+  static fromExpiredPkhxrInput(): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_0),
       new ScriptChunk(Opcode.OP_0),
