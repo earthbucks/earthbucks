@@ -374,6 +374,7 @@ export default class Script {
   static isPkhxr1h40mRecoverable(newBlockNum: bigint, prevBlockNum: bigint) {
     return newBlockNum >= prevBlockNum + BigInt(Script.PKHXR_1H_40M_R_LOCK_REL);
   }
+
   static fromExpiredPkhxInput(): Script {
     return new Script([new ScriptChunk(Opcode.OP_0)]);
   }
@@ -398,6 +399,48 @@ export default class Script {
       this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === PubKey.SIZE &&
       this.chunks[2].opcode === Opcode.OP_1
+    );
+  }
+
+  fromExpiredPkhxrInput(): Script {
+    return new Script([
+      new ScriptChunk(Opcode.OP_0),
+      new ScriptChunk(Opcode.OP_0),
+    ]);
+  }
+
+  isExpiredPkhxrInput(): boolean {
+    return (
+      this.chunks.length === 2 &&
+      this.chunks[0].opcode === Opcode.OP_0 &&
+      this.chunks[1].opcode === Opcode.OP_0
+    );
+  }
+
+  static fromRecoveryPkhxrInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+    return new Script([
+      ScriptChunk.fromData(sigBuf),
+      ScriptChunk.fromData(pubKeyBuf),
+      new ScriptChunk(Opcode.OP_1),
+      new ScriptChunk(Opcode.OP_0),
+    ]);
+  }
+
+  static fromRecoveryPkhxrInputPlaceholder(): Script {
+    const sig = Buffer.alloc(TxSignature.SIZE);
+    const pubKey = Buffer.alloc(PubKey.SIZE);
+    return Script.fromRecoveryPkhxrInput(sig, pubKey);
+  }
+
+  isRecoveryPkhxrInput(): boolean {
+    return (
+      this.chunks.length === 4 &&
+      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0].buf?.length === TxSignature.SIZE &&
+      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1].buf?.length === PubKey.SIZE &&
+      this.chunks[2].opcode === Opcode.OP_1 &&
+      this.chunks[3].opcode === Opcode.OP_0
     );
   }
 

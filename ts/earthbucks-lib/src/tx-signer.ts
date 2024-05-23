@@ -6,6 +6,7 @@ import { Buffer } from "buffer";
 import PubKey from "./pub-key";
 import { Result, Ok, Err } from "option-result/src/result";
 import Script from "./script";
+import KeyPair from "./key-pair";
 
 export default class TxSigner {
   public tx: Tx;
@@ -63,8 +64,10 @@ export default class TxSigner {
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else if (txOut.script.isPkhx90dOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
-      const expired =
-        this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+      const expired = Script.isPkhx90dExpired(
+        this.workingBlockNum,
+        prevBlockNum,
+      );
       const inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
@@ -98,8 +101,10 @@ export default class TxSigner {
       inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
     } else if (txOut.script.isPkhx1hOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as Buffer;
-      const expired =
-        this.workingBlockNum >= prevBlockNum + BigInt(Script.PKHX_1H_LOCK_REL);
+      const expired = Script.isPkhx1hExpired(
+        this.workingBlockNum,
+        prevBlockNum,
+      );
       const inputScript = txInput.script;
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
@@ -118,6 +123,120 @@ export default class TxSigner {
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
+      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputAmount = txOut.value;
+      const sig = this.tx.signNoCache(
+        nIn,
+        keyPair.privKey.toIsoBuf(),
+        outputScriptBuf,
+        outputAmount,
+        TxSignature.SIGHASH_ALL,
+      );
+      const sigBuf = sig.toIsoBuf();
+
+      inputScript.chunks[0].buf = Buffer.from(sigBuf);
+      inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
+    } else if (txOut.script.isPkhxr1h40mOutput()) {
+      const pkh_buf = txOut.script.chunks[3].buf as Buffer;
+      const rpkh_buf = txOut.script.chunks[13].buf as Buffer;
+      const expired = Script.isPkhxr1h40mExpired(
+        this.workingBlockNum,
+        prevBlockNum,
+      );
+      const inputScript = txInput.script;
+      if (expired) {
+        if (inputScript.isExpiredPkhxrInput()) {
+          // no need to sign expired pkhx
+          return Ok(this.tx);
+        } else {
+          return Err("expected expired pkhx input");
+        }
+      }
+
+      let keyPair: KeyPair;
+      if (inputScript.isRecoveryPkhxrInput()) {
+        const recoverable = Script.isPkhxr1h40mRecoverable(
+          this.workingBlockNum,
+          prevBlockNum,
+        );
+        if (!recoverable) {
+          return Err("expected recoverable pkhx input");
+        }
+        const res = this.pkhKeyMap.get(rpkh_buf);
+        if (res) {
+          keyPair = res;
+        } else {
+          return Err("key not found");
+        }
+      } else if (inputScript.isUnexpiredPkhxrInput()) {
+        const res = this.pkhKeyMap.get(pkh_buf);
+        if (res) {
+          keyPair = res;
+        } else {
+          return Err("key not found");
+        }
+      } else {
+        return Err("expected unexpired pkhx input placeholder");
+      }
+
+      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
+      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputAmount = txOut.value;
+      const sig = this.tx.signNoCache(
+        nIn,
+        keyPair.privKey.toIsoBuf(),
+        outputScriptBuf,
+        outputAmount,
+        TxSignature.SIGHASH_ALL,
+      );
+      const sigBuf = sig.toIsoBuf();
+
+      inputScript.chunks[0].buf = Buffer.from(sigBuf);
+      inputScript.chunks[1].buf = Buffer.from(pubKeyBuf);
+    } else if (txOut.script.isPkhxr90d60dOutput()) {
+      const pkh_buf = txOut.script.chunks[3].buf as Buffer;
+      const rpkh_buf = txOut.script.chunks[13].buf as Buffer;
+      const expired = Script.isPkhxr90d60dExpired(
+        this.workingBlockNum,
+        prevBlockNum,
+      );
+      const inputScript = txInput.script;
+      if (expired) {
+        if (inputScript.isExpiredPkhxrInput()) {
+          // no need to sign expired pkhx
+          return Ok(this.tx);
+        } else {
+          return Err("expected expired pkhx input");
+        }
+      }
+
+      let keyPair: KeyPair;
+      if (inputScript.isRecoveryPkhxrInput()) {
+        const recoverable = Script.isPkhxr90d60dRecoverable(
+          this.workingBlockNum,
+          prevBlockNum,
+        );
+        if (!recoverable) {
+          return Err("expected recoverable pkhx input");
+        }
+        const res = this.pkhKeyMap.get(rpkh_buf);
+        if (res) {
+          keyPair = res;
+        } else {
+          return Err("key not found");
+        }
+      } else if (inputScript.isUnexpiredPkhxrInput()) {
+        const res = this.pkhKeyMap.get(pkh_buf);
+        if (res) {
+          keyPair = res;
+        } else {
+          return Err("key not found");
+        }
+      } else {
+        return Err("expected unexpired pkhx input placeholder");
+      }
+
+      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
       const outputScriptBuf = txOut.script.toIsoBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
