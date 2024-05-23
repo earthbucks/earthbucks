@@ -6,7 +6,7 @@ use crate::tx_out::TxOut;
 use crate::tx_out_bn_map::TxOutBnMap;
 
 pub struct TxBuilder {
-    input_tx_out_bn_map: TxOutBnMap, // TODO: This should be a vector of TxOut
+    input_tx_out_bn_map: TxOutBnMap,
     tx: Tx,
     change_script: Script,
     input_amount: u64,
@@ -42,7 +42,17 @@ impl TxBuilder {
         let total_spend_amount: u64 = self.tx.outputs.iter().map(|output| output.value).sum();
         let mut change_amount = 0;
         let mut input_amount = self.input_amount;
-        for (tx_out_id, tx_out_bn) in self.input_tx_out_bn_map.map.iter() {
+        let mut sorted_tx_out_bns: Vec<_> = self.input_tx_out_bn_map.map.iter().collect();
+
+        // sort by block number first, but if those are the same, sort by the id
+        // of the tx_out, which is tx_id plus tx_out_num together in a string.
+        // this logic means we use the "most confirmed" outputs first, which is
+        // what we want, and then we have a deterministic way to sort the UTXOs
+        // in the same block.
+        sorted_tx_out_bns
+            .sort_by(|a, b| a.1.block_num.cmp(&b.1.block_num).then_with(|| a.0.cmp(b.0)));
+
+        for (tx_out_id, tx_out_bn) in sorted_tx_out_bns {
             if input_amount >= total_spend_amount {
                 change_amount = input_amount - total_spend_amount;
                 break;
