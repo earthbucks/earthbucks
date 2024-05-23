@@ -106,7 +106,7 @@ I am also making another important change. The consensus algorithm is not just
 determined by PoW, but also has a vote. After each transaction and block is
 received, the mine will ping all other mines. The mines are known because they
 must publish a domain name in the block header. The transactions are thus
-technically validated *and* voted on. In order to be valid, a transaction and
+technically validated _and_ voted on. In order to be valid, a transaction and
 block must pass all technical tests, and must also be agreed to by a majority of
 PoW power. This enables nearly instant transaction and block confirmations and
 makes blockchain reorgs impossible. This improves the user experience, developer

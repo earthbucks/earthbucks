@@ -4,7 +4,6 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import Logo from "~/components/logo";
-import blogPosts from "~/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
 import MyMarkdown from "~/components/my-markdown";
 import { $path } from "remix-routes";
@@ -58,7 +57,9 @@ export default function BlogIndex() {
   return (
     <div>
       <div className="mx-auto my-4">
-        <Logo />
+        <Link to={$path("/")}>
+          <Logo />
+        </Link>
       </div>
       <div className="mx-auto my-4 max-w-[500px]">
         <div>

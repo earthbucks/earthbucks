@@ -46,7 +46,9 @@ export default function BlogIndex() {
   return (
     <div>
       <div className="mx-auto my-4">
-        <Logo />
+        <Link to={$path("/")}>
+          <Logo />
+        </Link>
       </div>
       <div className="mx-auto my-4 max-w-[400px]">
         <div>

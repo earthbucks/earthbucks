@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
+import { $path } from "remix-routes";
 import Footer from "~/components/footer";
 import Logo from "~/components/logo";
 
@@ -44,40 +45,40 @@ export default function Index() {
           <br />
           <Link to="/blog" className="underline">
             Blog
-          </Link>{" "}
-          &middot;{" "}
+          </Link>
+          <span> &middot; </span>
           <a
             href="https://x.com/earthbucks_com"
             target="_blank"
             className="underline"
           >
             X
-          </a>{" "}
-          &middot;{" "}
+          </a>
+          <span> &middot; </span>
           <a
             href="https://t.me/+e-PoBNNgdDU3MDUx"
             target="_blank"
             className="underline"
           >
             Telegram
-          </a>{" "}
-          &middot;{" "}
+          </a>
+          <span> &middot; </span>
           <a
             href="https://discord.gg/dZfyrFk6uh"
             target="_blank"
             className="underline"
           >
             Discord
-          </a>{" "}
-          &middot;{" "}
+          </a>
+          <span> &middot; </span>
           <a
             href="https://www.reddit.com/r/earthbucks/"
             target="_blank"
             className="underline"
           >
             reddit
-          </a>{" "}
-          &middot;{" "}
+          </a>
+          <span> &middot; </span>
           <a
             href="https://github.com/earthbucks/earthbucks"
             target="_blank"
