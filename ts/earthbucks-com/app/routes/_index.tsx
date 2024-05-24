@@ -40,7 +40,7 @@ export default function Index() {
           42 million EBX. No pre-mine. GPUs. Big blocks. Script.
           <br />
           <br />
-          <strong>2024</strong>
+          Genesis block in 2024.
           <br />
           <br />
           <Link to="/blog" className="underline">

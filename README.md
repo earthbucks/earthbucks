@@ -6,7 +6,7 @@ Small casual transactions for everybody on Planet Earth.
 
 ## Launch Information
 
-Launch in 2024.
+Genesis block in 2024.
 
 42 million EBX. No pre-mine. GPUs. Big blocks. Script.
 
