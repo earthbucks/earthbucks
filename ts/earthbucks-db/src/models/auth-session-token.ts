@@ -53,7 +53,7 @@ export async function getAuthSessionToken(
       ),
     )
     .limit(1);
-  return authSigninToken;
+  return authSigninToken || null;
 }
 
 export async function deleteAuthSessionToken(sessionId: string) {

@@ -9,7 +9,7 @@ let DOMAIN_PRIV_KEY: PrivKey;
 let DOMAIN_PUB_KEY: PubKey;
 try {
   DOMAIN_PRIV_KEY = PrivKey.fromIsoStr(DOMAIN_PRIV_KEY_STR).unwrap();
-  DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY);
+  DOMAIN_PUB_KEY = PubKey.fromPrivKey(DOMAIN_PRIV_KEY).unwrap();
 } catch (err) {
   console.error(err);
   throw new Error("Invalid DOMAIN_PRIV_KEY");

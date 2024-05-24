@@ -4,8 +4,8 @@ type BufferFunction = (input: Buffer) => Buffer;
 
 function lt(a: Buffer, b: Buffer): boolean {
   for (let i = 0; i < a.length; i++) {
-    if (a[i] < b[i]) return true;
-    if (a[i] > b[i]) return false;
+    if ((a[i] as number) < (b[i] as number)) return true;
+    if ((a[i] as number) > (b[i] as number)) return false;
   }
   return false;
 }

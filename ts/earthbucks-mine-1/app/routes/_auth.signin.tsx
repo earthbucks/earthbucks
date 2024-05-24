@@ -66,7 +66,7 @@ export default function Signin() {
       return false;
     }
     let privKey = PrivKey.fromIsoStr(keyStr).unwrap();
-    let pubKey = PubKey.fromPrivKey(privKey);
+    let pubKey = PubKey.fromPrivKey(privKey).unwrap();
     return pubKey.toIsoStr() === publicKey;
   };
 

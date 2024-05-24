@@ -124,7 +124,7 @@ export class ErrImpl<E> implements BaseResult<never, E> {
     if (
       stackLines &&
       stackLines.length > 0 &&
-      stackLines[0].includes("ErrImpl")
+      stackLines[0]?.includes("ErrImpl")
     ) {
       stackLines.shift();
     }
