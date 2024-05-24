@@ -6,7 +6,7 @@ Small casual transactions for everybody on Planet Earth.
 
 ## Launch Information
 
-Launch: **Mining starts July 2024**
+Launch ETA July 2024.
 
 42 million EBX. No pre-mine. GPUs. Big blocks. Script.
 
