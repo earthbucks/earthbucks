@@ -35,3 +35,5 @@
   - https://github.com/zkonduit/ezkl
   - https://www.investopedia.com/terms/z/zksnark.asp
 - https://github.com/CoinFuMasterShifu/ProofOfBalancedWork/blob/main/PoBW.pdf
+- pow20 is hand-mined layer1 tokens https://pow20.io/
+- more hand-mining: 1sat.market
