@@ -39,8 +39,8 @@ export default function Index() {
         <div className="text-center text-black dark:text-white">
           42 million EBX. No pre-mine. GPUs. Big blocks. Script.
           <br />
-          <br />Launch ETA:<br />
-          <strong>July 2024</strong>
+          <br />
+          <strong>2024</strong>
           <br />
           <br />
           <Link to="/blog" className="underline">
