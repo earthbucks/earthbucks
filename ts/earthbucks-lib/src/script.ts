@@ -210,12 +210,13 @@ export default class Script {
       new ScriptChunk(Opcode.OP_DROP),
       new ScriptChunk(Opcode.OP_1),
       new ScriptChunk(Opcode.OP_ENDIF),
+      new ScriptChunk(Opcode.OP_ENDIF),
     ]);
   }
 
   isPkhxr90d60dOutput(): boolean {
     return (
-      this.chunks.length === 22 &&
+      this.chunks.length === 23 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
       this.chunks[1].opcode === Opcode.OP_DUP &&
       this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
@@ -244,6 +245,7 @@ export default class Script {
       this.chunks[18].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[19].opcode === Opcode.OP_DROP &&
       this.chunks[20].opcode === Opcode.OP_1 &&
+      this.chunks[21].opcode === Opcode.OP_ENDIF &&
       this.chunks[21].opcode === Opcode.OP_ENDIF
     );
   }
@@ -334,12 +336,13 @@ export default class Script {
       new ScriptChunk(Opcode.OP_DROP),
       new ScriptChunk(Opcode.OP_1),
       new ScriptChunk(Opcode.OP_ENDIF),
+      new ScriptChunk(Opcode.OP_ENDIF),
     ]);
   }
 
   isPkhxr1h40mOutput(): boolean {
     return (
-      this.chunks.length === 22 &&
+      this.chunks.length === 23 &&
       this.chunks[0].opcode === Opcode.OP_IF &&
       this.chunks[1].opcode === Opcode.OP_DUP &&
       this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
@@ -363,6 +366,7 @@ export default class Script {
       this.chunks[18].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[19].opcode === Opcode.OP_DROP &&
       this.chunks[20].opcode === Opcode.OP_1 &&
+      this.chunks[21].opcode === Opcode.OP_ENDIF &&
       this.chunks[21].opcode === Opcode.OP_ENDIF
     );
   }

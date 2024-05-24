@@ -217,11 +217,12 @@ impl Script {
             ScriptChunk::new(Opcode::OP_DROP, None),
             ScriptChunk::new(Opcode::OP_1, None),
             ScriptChunk::new(Opcode::OP_ENDIF, None),
+            ScriptChunk::new(Opcode::OP_ENDIF, None),
         ])
     }
 
     pub fn is_pkhxr_90d_60d_output(&self) -> bool {
-        self.chunks.len() == 22
+        self.chunks.len() == 23
             && self.chunks[0].opcode == Opcode::OP_IF
             && self.chunks[1].opcode == Opcode::OP_DUP
             && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
@@ -259,6 +260,7 @@ impl Script {
             && self.chunks[18].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[19].opcode == Opcode::OP_DROP
             && self.chunks[20].opcode == Opcode::OP_1
+            && self.chunks[21].opcode == Opcode::OP_ENDIF
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
@@ -347,11 +349,12 @@ impl Script {
             ScriptChunk::new(Opcode::OP_DROP, None),
             ScriptChunk::new(Opcode::OP_1, None),
             ScriptChunk::new(Opcode::OP_ENDIF, None),
+            ScriptChunk::new(Opcode::OP_ENDIF, None),
         ])
     }
 
     pub fn is_pkhxr_1h_40m_output(&self) -> bool {
-        self.chunks.len() == 22
+        self.chunks.len() == 23
             && self.chunks[0].opcode == Opcode::OP_IF
             && self.chunks[1].opcode == Opcode::OP_DUP
             && self.chunks[2].opcode == Opcode::OP_DOUBLEBLAKE3
@@ -377,6 +380,7 @@ impl Script {
             && self.chunks[18].opcode == Opcode::OP_CHECKLOCKRELVERIFY
             && self.chunks[19].opcode == Opcode::OP_DROP
             && self.chunks[20].opcode == Opcode::OP_1
+            && self.chunks[21].opcode == Opcode::OP_ENDIF
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
