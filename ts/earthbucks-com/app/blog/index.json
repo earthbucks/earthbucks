@@ -166,5 +166,11 @@
     "title": "Mines vs. Miners",
     "author": "Ryan X. Charles",
     "date": "2024-05-22"
+  },
+  {
+    "filename": "2024-05-24-recovery.md",
+    "title": "Recovering Tokens from Lost Private Keys and Expired Outputs",
+    "author": "Ryan X. Charles",
+    "date": "2024-05-24"
   }
 ]
