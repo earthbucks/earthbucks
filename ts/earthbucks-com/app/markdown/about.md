@@ -12,11 +12,10 @@ X. Charles, an American entrepreneur.
 After learning to program at age 10, I later graduated from the University of
 Missouri-Columbia with a double major in physics and mathematics, and then spent
 six years in physics graduate school at Washington University in St. Louis
-before quitting in 2013 to [work full-time on
-Bitcoin](https://youtu.be/6F57HIxQuMo). I joined BitPay in September 2013 as a
-software engineer. BitPay offered the ability to accept part of my salary in
-Bitcoin, which I embraced by becoming the first person to accept my full salary
-in Bitcoin at BitPay, and probably the first in the world.
+before quitting in 2013 to work full-time on Bitcoin. I joined BitPay in
+September 2013 as a software engineer. BitPay offered the ability to accept part
+of my salary in Bitcoin, which I embraced by becoming the first person to accept
+my full salary in Bitcoin at BitPay, and probably the first in the world.
 
 I worked on the full-stack BitPay software in node.js/Mongo (callback pyramids
 and undefined is not a function), and transitioned into working on what would
