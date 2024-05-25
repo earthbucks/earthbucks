@@ -42,6 +42,47 @@ export default function Index() {
           <br />
           <br />
           Genesis block in 2024.
+          <br />
+          <br />
+          <a
+            href="https://x.com/earthbucks_com"
+            target="_blank"
+            className="underline"
+          >
+            X
+          </a>
+          <span> &middot; </span>
+          <a
+            href="https://t.me/+e-PoBNNgdDU3MDUx"
+            target="_blank"
+            className="underline"
+          >
+            Telegram
+          </a>
+          <span> &middot; </span>
+          <a
+            href="https://discord.gg/dZfyrFk6uh"
+            target="_blank"
+            className="underline"
+          >
+            Discord
+          </a>
+          <span> &middot; </span>
+          <a
+            href="https://www.reddit.com/r/earthbucks/"
+            target="_blank"
+            className="underline"
+          >
+            reddit
+          </a>
+          <span> &middot; </span>
+          <a
+            href="https://github.com/earthbucks/earthbucks"
+            target="_blank"
+            className="underline"
+          >
+            GitHub
+          </a>
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />

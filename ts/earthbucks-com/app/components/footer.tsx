@@ -6,8 +6,6 @@ export default function Footer() {
     <div className="mx-auto mb-4">
       <div className="mb-4 text-center text-sm text-black dark:text-white"></div>
       <div className="text-center text-sm text-black dark:text-white">
-        Copyright &copy; 2024 Ryan X. Charles LLC
-        <br />
         <Link to={$path("/")} className="underline">
           Home
         </Link>
@@ -20,45 +18,7 @@ export default function Footer() {
           Blog
         </Link>
         <br />
-        <a
-          href="https://x.com/earthbucks_com"
-          target="_blank"
-          className="underline"
-        >
-          X
-        </a>
-        <span> &middot; </span>
-        <a
-          href="https://t.me/+e-PoBNNgdDU3MDUx"
-          target="_blank"
-          className="underline"
-        >
-          Telegram
-        </a>
-        <span> &middot; </span>
-        <a
-          href="https://discord.gg/dZfyrFk6uh"
-          target="_blank"
-          className="underline"
-        >
-          Discord
-        </a>
-        <span> &middot; </span>
-        <a
-          href="https://www.reddit.com/r/earthbucks/"
-          target="_blank"
-          className="underline"
-        >
-          reddit
-        </a>
-        <span> &middot; </span>
-        <a
-          href="https://github.com/earthbucks/earthbucks"
-          target="_blank"
-          className="underline"
-        >
-          GitHub
-        </a>
+        Copyright &copy; 2024 Ryan X. Charles LLC
       </div>
     </div>
   );
