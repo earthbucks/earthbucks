@@ -19,8 +19,7 @@
     "@tensorflow/tfjs": "^4.18.0",
     "blake3": "2.1.7",
     "blake3-wasm": "2.1.5",
-    "buffer": "^6.0.3",
-    "earthbucks-lib": "^0.1.0"
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

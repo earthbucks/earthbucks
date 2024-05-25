@@ -151,9 +151,6 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
-      earthbucks-lib:
-        specifier: ^0.1.0
-        version: link:../earthbucks-lib
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
