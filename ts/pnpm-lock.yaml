@@ -75,7 +75,7 @@ importers:
         specifier: workspace:^
         version: link:../earthbucks-db
       earthbucks-lib:
-        specifier: workspace:^
+        specifier: ^0.1.0
         version: link:../earthbucks-lib
       earthbucks-tf:
         specifier: workspace:^

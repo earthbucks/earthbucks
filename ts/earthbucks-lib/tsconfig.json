@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "outDir": "./dist",
+    "noEmit": true,
     "declaration": true
   }
 }
