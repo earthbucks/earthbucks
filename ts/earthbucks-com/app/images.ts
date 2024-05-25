@@ -13,6 +13,7 @@ type ImagePath =
   | "/images/earthbucks-e-2-300.png"
   | "/images/earthbucks-text-white.png"
   | "/images/earthbucks-text-black.png"
+  | "/images/sun-128.png"
   | "/images/washington-button-128.png";
 
 export const $image = (path: ImagePath) => {

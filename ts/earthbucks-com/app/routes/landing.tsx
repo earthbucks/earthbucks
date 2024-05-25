@@ -1,9 +1,19 @@
-import type { MetaFunction } from "@remix-run/node";
-import { Link, useNavigate } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Link, json, redirect, useNavigate } from "@remix-run/react";
 import { $path } from "remix-routes";
+import { getUserPubKey } from "~/.server/session";
 import Button from "~/components/button";
 import Footer from "~/components/footer";
 import Logo from "~/components/logo";
+import { $image } from "~/images";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userPubKey = await getUserPubKey(request);
+  if (userPubKey) {
+    return redirect($path("/home"));
+  }
+  return json({});
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,11 +26,11 @@ export default function Index() {
   const navigate = useNavigate();
 
   async function onSignin() {
-    navigate("/signin");
+    navigate($path("/signin"));
   }
 
   async function onRegister() {
-    navigate("/new");
+    navigate($path("/new"));
   }
   return (
     <div>
@@ -28,14 +38,14 @@ export default function Index() {
         <Logo />
         <div className="my-4 hidden dark:block">
           <img
-            src="/earthbucks-text-white.png"
+            src={$image("/images/earthbucks-text-white.png")}
             alt="EarthBucks"
             className="mx-auto block w-[250px]"
           />
         </div>
         <div className="my-4 block dark:hidden">
           <img
-            src="/earthbucks-text-black.png"
+            src={$image("/images/earthbucks-text-black.png")}
             alt="EarthBucks"
             className="mx-auto block w-[250px]"
           />

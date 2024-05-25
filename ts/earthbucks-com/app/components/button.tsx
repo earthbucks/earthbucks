@@ -553,7 +553,7 @@ export default function Button({
 
   return (
     <div className="flex h-[60px] w-[320px]">
-      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-black dark:bg-white p-[1px] shadow-lg shadow-[#04408d]">
+      <div className="mx-auto h-[60px] w-[320px] rounded-full bg-black p-[1px] shadow-lg shadow-[#04408d] dark:bg-white">
         <div className="h-full w-full rounded-full bg-[#42f6eb] p-[3px]">
           <div className="relative h-full w-full rounded-full bg-[#12b3ec] shadow-[inset_5px_5px_10px_#04408d]">
             <div className="absolute z-20 h-full w-full">

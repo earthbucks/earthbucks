@@ -42,7 +42,6 @@ export default function Index() {
           <br />
           <br />
           Genesis block in 2024.
-
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />

@@ -68,6 +68,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      earthbucks-blake3:
+        specifier: workspace:^
+        version: link:../earthbucks-blake3
       earthbucks-db:
         specifier: workspace:^
         version: link:../earthbucks-db
@@ -98,9 +101,15 @@ importers:
       toml:
         specifier: ^3.0.0
         version: 3.0.0
+      vite-plugin-top-level-await-worker:
+        specifier: '=1.4.3'
+        version: 1.4.3(vite@5.2.11)
       vite-plugin-wasm:
         specifier: ^3.3.0
         version: 3.3.0(vite@5.2.11)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@remix-run/dev':
         specifier: ^2.9.1

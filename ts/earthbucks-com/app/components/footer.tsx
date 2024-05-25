@@ -4,11 +4,22 @@ import { $path } from "remix-routes";
 export default function Footer() {
   return (
     <div className="mx-auto mb-4">
-      <div className="text-center mb-4 text-sm text-black dark:text-white">
+      <div className="mb-4 text-center text-sm text-black dark:text-white"></div>
+      <div className="text-center text-sm text-black dark:text-white">
+        Copyright &copy; 2024 Ryan X. Charles LLC
+        <br />
+        <Link to={$path("/")} className="underline">
+          Home
+        </Link>
+        <span> &middot; </span>
+        <Link to={$path("/about")} className="underline">
+          About
+        </Link>
+        <span> &middot; </span>
         <Link to="/blog" className="underline">
           Blog
         </Link>
-        <span> &middot; </span>
+        <br />
         <a
           href="https://x.com/earthbucks_com"
           target="_blank"
@@ -48,17 +59,6 @@ export default function Footer() {
         >
           GitHub
         </a>
-      </div>
-      <div className="text-center text-sm text-black dark:text-white">
-        Copyright &copy; 2024 Ryan X. Charles LLC
-        <span> &middot; </span>
-        <Link to={$path("/")} className="underline">
-          Home
-        </Link>
-        <span> &middot; </span>
-        <Link to={$path("/about")} className="underline">
-          About
-        </Link>
       </div>
     </div>
   );

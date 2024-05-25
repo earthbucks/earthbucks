@@ -32,6 +32,7 @@
     "blake3-js": "^0.0.5",
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
+    "earthbucks-blake3": "workspace:^",
     "earthbucks-db": "workspace:^",
     "earthbucks-lib": "workspace:^",
     "earthbucks-tf": "workspace:^",
@@ -42,7 +43,9 @@
     "remix-routes": "^1.7.3",
     "tailwind-merge": "^2.3.0",
     "toml": "^3.0.0",
-    "vite-plugin-wasm": "^3.3.0"
+    "vite-plugin-top-level-await-worker": "=1.4.3",
+    "vite-plugin-wasm": "^3.3.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.9.1",
