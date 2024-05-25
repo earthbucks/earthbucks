@@ -4,7 +4,7 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import Logo from "~/components/logo";
-import blogPosts from "~/blog/index.json";
+import blogPosts from "~/markdown/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
 import MyMarkdown from "~/components/my-markdown";
 import { $path } from "remix-routes";
@@ -40,7 +40,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 });
   }
   // load content from app/blog/filename
-  const blogDir = path.join("app", "blog");
+  const blogDir = path.join("app", "markdown", "blog");
   const filePath = path.join(blogDir, `${filename}`);
   const fileContent = fs
     .readFileSync(filePath, "utf8")

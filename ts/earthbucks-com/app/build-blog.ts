@@ -9,7 +9,7 @@ interface BlogPost {
   filename: string;
 }
 
-const blogDir = path.join("app", "blog");
+const blogDir = path.join("app", "markdown", "blog");
 const filenames = fs
   .readdirSync(blogDir)
   .filter((filename) => filename.endsWith(".md"));
@@ -30,5 +30,5 @@ const blogPosts: BlogPost[] = filenames.map((filename) => {
   };
 });
 
-const jsonPath = path.join("app", "blog", "index.json");
+const jsonPath = path.join("app", "markdown", "blog", "index.json");
 fs.writeFileSync(jsonPath, JSON.stringify(blogPosts, null, 2));

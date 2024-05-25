@@ -4,7 +4,7 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import Logo from "~/components/logo";
-import blogPosts from "~/blog/index.json";
+import blogPosts from "~/markdown/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
 import Footer from "~/components/footer";
 import { $path } from "remix-routes";
