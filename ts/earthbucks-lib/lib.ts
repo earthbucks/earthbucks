@@ -9,7 +9,7 @@ export { default as Header } from "./src/header";
 export { default as IsoBufReader } from "./src/iso-buf-reader";
 export { default as IsoBufWriter } from "./src/iso-buf-writer";
 export { default as IsoHex } from "./src/iso-hex";
-export { default as Keypair } from "./src/key-pair";
+export { default as KeyPair } from "./src/key-pair";
 export { default as MerkleNode } from "./src/merkle-node";
 export { default as MerkleProof } from "./src/merkle-proof";
 export { default as MerkleTxs } from "./src/merkle-txs";
