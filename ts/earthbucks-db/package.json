@@ -19,7 +19,7 @@
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.8",
-    "earthbucks-lib": "^0.1.0",
+    "earthbucks-lib": "^0.1.2",
     "mysql2": "^3.9.2"
   },
   "devDependencies": {

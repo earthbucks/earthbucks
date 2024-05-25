@@ -51,7 +51,7 @@ importers:
         specifier: ^0.30.8
         version: 0.30.8(mysql2@3.9.6)
       earthbucks-lib:
-        specifier: ^0.1.0
+        specifier: ^0.1.2
         version: link:../earthbucks-lib
       mysql2:
         specifier: ^3.9.2

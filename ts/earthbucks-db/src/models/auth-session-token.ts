@@ -16,15 +16,14 @@ import {
   max,
   Table,
 } from "drizzle-orm";
-import PubKey from "earthbucks-lib/src/pub-key";
-import { blake3Hash } from "earthbucks-lib/src/blake3";
+import { PubKey, blake3 } from "earthbucks-lib";
 
 export async function createAuthSessionToken(
   pubKey: PubKey,
   expiresAt: Date | undefined,
 ): Promise<string> {
   let sessionId = crypto.getRandomValues(Buffer.alloc(16));
-  let tokenId: Buffer = blake3Hash(sessionId).subarray(0, 16);
+  let tokenId: Buffer = blake3.blake3Hash(sessionId).subarray(0, 16);
   let now = Date.now(); // milliseconds
   let createdAt = new Date(now);
   expiresAt = expiresAt || new Date(now + 1000 * 60 * 60 * 24 * 365 * 2); // two years
@@ -42,7 +41,7 @@ export async function getAuthSessionToken(
   sessionId: string,
 ): Promise<AuthSessionToken | null> {
   let sessionIdBuf = Buffer.from(sessionId, "hex");
-  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
+  let tokenId: Buffer = blake3.blake3Hash(sessionIdBuf).subarray(0, 16);
   const [authSigninToken] = await db
     .select()
     .from(TableAuthSessionToken)
@@ -59,7 +58,7 @@ export async function getAuthSessionToken(
 export async function deleteAuthSessionToken(sessionId: string) {
   // TODO: Instead of deleting, we should mark the token as invalid
   let sessionIdBuf = Buffer.from(sessionId, "hex");
-  let tokenId: Buffer = blake3Hash(sessionIdBuf).subarray(0, 16);
+  let tokenId: Buffer = blake3.blake3Hash(sessionIdBuf).subarray(0, 16);
   await db
     .delete(TableAuthSessionToken)
     .where(eq(TableAuthSessionToken.id, tokenId));
