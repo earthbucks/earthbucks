@@ -37,7 +37,7 @@ function Slider({
   onError = async () => {},
   onFinishedSuccess = async () => {},
   onFinishedError = async () => {},
-  buttonSrc = $image("/button-128.png"),
+  buttonSrc = $image("/images/button-128.png"),
   delayComputedMs = 0,
   disabled = false,
 }: {
@@ -275,13 +275,13 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src={$image("/pink-heart-128.png")}
+                  src={$image("/images/pink-heart-128.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
                 />
                 <img
-                  src={$image("/pink-heart-128.png")}
+                  src={$image("/images/pink-heart-128.png")}
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                   draggable="false"
@@ -297,7 +297,7 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src={$image("/pink-heart-128.png")}
+                  src={$image("/images/pink-heart-128.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
@@ -313,13 +313,13 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src={$image("/error-2-96.png")}
+                  src={$image("/images/error-2-96.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
                 />
                 <img
-                  src={$image("/error-2-96.png")}
+                  src={$image("/images/error-2-96.png")}
                   alt=""
                   className="absolute top-0 h-[36px] w-[36px] animate-ping"
                   draggable="false"
@@ -335,7 +335,7 @@ function Slider({
             >
               <div className="relative h-[36px] w-[36px]">
                 <img
-                  src={$image("/error-2-96.png")}
+                  src={$image("/images/error-2-96.png")}
                   alt=""
                   className="h-[36px] w-[36px]"
                   draggable="false"
@@ -445,7 +445,7 @@ function Slider({
             >
               <img
                 // src={$image("/earthbucks-earth-1-128.png")}
-                src={$image("/compute-circle-128.png")}
+                src={$image("/images/compute-circle-128.png")}
                 alt=""
                 className="h-20px] w-[40px]"
               />
@@ -520,21 +520,21 @@ export default function Button({
 
   let buttonSrc = "";
   if (buttonMode === "standard") {
-    buttonSrc = $image("/button-128.png");
+    buttonSrc = $image("/images/button-128.png");
     // } else if (buttonMode === "pay") {
     //   buttonSrc = $image("/earthbucks-42-128.png");
   } else if (buttonMode === "pay") {
-    buttonSrc = $image("/earthbucks-wallet-5-128.png");
+    buttonSrc = $image("/images/earthbucks-coin-3-128.png");
   } else if (buttonMode === "computcha") {
-    buttonSrc = $image("/computcha-bottlecap-128.png");
+    buttonSrc = $image("/images/computcha-bottlecap-128.png");
   } else if (buttonMode === "secret") {
-    buttonSrc = $image("/black-button-128.png");
+    buttonSrc = $image("/images/black-button-128.png");
   } else if (buttonMode == "ai") {
-    buttonSrc = $image("/artintellica-button-128.png");
+    buttonSrc = $image("/images/artintellica-button-128.png");
   } else if (buttonMode == "credits") {
-    buttonSrc = $image("/washington-button-128.png");
+    buttonSrc = $image("/images/washington-button-128.png");
   } else if (buttonMode == "mine") {
-    buttonSrc = $image("/mining-button-128.png");
+    buttonSrc = $image("/images/mining-button-128.png");
   }
 
   let MAX_TEXT_LEN = 16;
@@ -576,7 +576,7 @@ export default function Button({
                 </div>
                 <div className="h-full flex-shrink-0">
                   <img
-                    src={$image("/imp-avatar-bw.png")}
+                    src={$image("/images/imp-avatar-bw.png")}
                     alt=""
                     className="h-[52px] w-[52px] rounded-full outline outline-1 outline-[#42f6eb]"
                   />
