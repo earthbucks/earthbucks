@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import Button from "../button";
+import Button from "../components/button";
 import React, { useEffect, useState } from "react";
 import KeyPair from "earthbucks-lib/src/key-pair";
 import { json, redirect, useNavigate } from "@remix-run/react";

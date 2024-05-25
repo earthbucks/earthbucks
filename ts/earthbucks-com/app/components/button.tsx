@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { $image } from "./images";
+import { $image } from "../images";
 import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
 import { twMerge } from "tailwind-merge";
 

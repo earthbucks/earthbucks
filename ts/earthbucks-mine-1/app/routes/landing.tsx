@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect, useNavigate } from "@remix-run/react";
-import Button from "~/button";
+import Button from "~/components/button";
 import Footer from "~/components/footer";
 import Header from "~/components/header";
 import { $path } from "remix-routes";

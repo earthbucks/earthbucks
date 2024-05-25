@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import Button from "../button";
+import Button from "../components/button";
 import { Buffer } from "buffer";
 import PowGpu from "../.client/pow-gpu";
 import { blake3Sync, blake3Async } from "earthbucks-blake3/src/blake3-async";
