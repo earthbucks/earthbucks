@@ -1,6 +1,2 @@
 packages:
-  - 'earthbucks-blake3'
-  - 'earthbucks-db'
   - 'earthbucks-lib'
-  - 'earthbucks-tf'
-  - 'option-result'
