@@ -1,17 +1,29 @@
 {
   "name": "earthbucks-lib",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "EarthBucks library for data structures and algorithms.",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.js",
   "scripts": {
+    "clean": "rimraf dist",
     "main": "tsx src/main.ts",
     "test": "jest --config jest.config.cjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=20.8.0",
+    "pnpm": ">=6.0.0"
   },
   "keywords": [],
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
   "license": "MIT",
   "dependencies": {
     "@noble/hashes": "^1.4.0",
@@ -21,8 +33,9 @@
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "mathjs": "^12.4.1",
-    "secp256k1": "^5.0.0",
     "option-result": "workspace:^",
+    "rimraf": "^5.0.7",
+    "secp256k1": "^5.0.0",
     "tsx": "^4.7.1"
   },
   "prettier": {
