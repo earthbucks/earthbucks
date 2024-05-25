@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export default class ScriptNum {

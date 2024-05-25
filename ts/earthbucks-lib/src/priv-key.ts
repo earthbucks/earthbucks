@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import IsoHex from "./iso-hex";
 import bs58 from "bs58";
 import { blake3Hash } from "./blake3";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 import {
   EbxError,
   InvalidChecksumError,
@@ -12,7 +12,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error";
-import { Option, None, Some } from "./opt-res/option";
+import { Option, None, Some } from "./option";
 
 export default class PrivKey {
   buf: Buffer;

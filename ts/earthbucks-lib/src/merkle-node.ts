@@ -1,6 +1,6 @@
 import { doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 
 export default class MerkleNode {
   public left: MerkleNode | null;

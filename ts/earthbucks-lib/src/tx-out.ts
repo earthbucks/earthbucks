@@ -3,7 +3,7 @@ import IsoBufWriter from "./iso-buf-writer";
 import VarInt from "./var-int";
 import Script from "./script";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 import { EbxError } from "./ebx-error";
 
 export default class TxOut {

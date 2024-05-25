@@ -1,6 +1,6 @@
-import PrivKey from "../priv-key";
-import PubKey from "../pub-key";
-import IsoHex from "../iso-hex";
+import PrivKey from "./priv-key";
+import PubKey from "./pub-key";
+import IsoHex from "./iso-hex";
 import SignedMessage from "./signed-message";
 import SigninChallenge from "./signin-challenge";
 

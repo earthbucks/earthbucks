@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import bs58 from "bs58";
 import IsoHex from "./iso-hex";
 import PubKey from "./pub-key";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 
 // public key hash
 export default class Pkh {

@@ -6,7 +6,7 @@ import Script from "./script";
 import TxIn from "./tx-in";
 import TxOut from "./tx-out";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 
 export default class BlockBuilder {
   public header: Header;

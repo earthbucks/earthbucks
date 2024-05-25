@@ -2,7 +2,7 @@ import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { blake3Hash, doubleBlake3Hash } from "./blake3";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./opt-res/result";
+import { Result, Ok, Err } from "./result";
 
 export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;

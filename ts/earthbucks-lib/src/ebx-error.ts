@@ -1,5 +1,5 @@
-import { Result, Ok, Err } from "./opt-res/result";
-import { Option, Some, None } from "./opt-res/option";
+import { Result, Ok, Err } from "./result";
+import { Option, Some, None } from "./option";
 
 export abstract class EbxError extends Error {
   constructor() {
