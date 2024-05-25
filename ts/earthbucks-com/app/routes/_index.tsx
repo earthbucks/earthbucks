@@ -3,6 +3,7 @@ import { Link } from "@remix-run/react";
 import { $path } from "remix-routes";
 import Footer from "~/components/footer";
 import Logo from "~/components/logo";
+import { $image } from "~/images";
 
 export const meta: MetaFunction = () => {
   return [
@@ -18,14 +19,14 @@ export default function Index() {
         <Logo />
         <div className="my-4 hidden dark:block">
           <img
-            src="/earthbucks-text-white.png"
+            src={$image("/images/earthbucks-text-white.png")}
             alt="EarthBucks"
             className="mx-auto block w-[250px]"
           />
         </div>
         <div className="my-4 block dark:hidden">
           <img
-            src="/earthbucks-text-black.png"
+            src={$image("/images/earthbucks-text-black.png")}
             alt="EarthBucks"
             className="mx-auto block w-[250px]"
           />

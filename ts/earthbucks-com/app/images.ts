@@ -11,6 +11,8 @@ type ImagePath =
   | "/images/computcha-bottlecap-128.png"
   | "/images/compute-circle-128.png"
   | "/images/earthbucks-e-2-300.png"
+  | "/images/earthbucks-text-white.png"
+  | "/images/earthbucks-text-black.png"
   | "/images/washington-button-128.png";
 
 export const $image = (path: ImagePath) => {

@@ -56,6 +56,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.13
         version: 0.5.13(tailwindcss@3.4.3)
+      blake3:
+        specifier: 2.1.7
+        version: 2.1.7
       blake3-js:
         specifier: ^0.0.5
         version: 0.0.5
