@@ -17,7 +17,7 @@ export default function Header() {
           </h1>
 
           <p className="text-center text-black dark:text-white">
-            Small casual transactions for everybody on Planet Earth.
+            A social network for imps, robots, humans, and aliens.
           </p>
         </div>
       </div>

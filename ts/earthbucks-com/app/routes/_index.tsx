@@ -31,7 +31,7 @@ export default function Index() {
           />
         </div>
         <div className="mb-4 text-center text-black dark:text-white">
-          Small casual transactions for everybody on Planet Earth.
+          A social network for imps, robots, humans, and aliens.
         </div>
       </div>
       <hr className="mx-auto my-4 max-w-[40px] border-gray-400 dark:border-gray-600" />
