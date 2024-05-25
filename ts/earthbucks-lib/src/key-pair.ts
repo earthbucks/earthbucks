@@ -1,7 +1,7 @@
-import PrivKey from "./priv-key";
-import PubKey from "./pub-key";
+import PrivKey from "./priv-key.js";
+import PubKey from "./pub-key.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class KeyPair {
   privKey: PrivKey;

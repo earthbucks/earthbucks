@@ -1,4 +1,4 @@
-import TxOut from "./tx-out";
+import TxOut from "./tx-out.js";
 
 export default class TxOutBn {
   txOut: TxOut;

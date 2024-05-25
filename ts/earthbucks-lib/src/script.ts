@@ -1,12 +1,12 @@
-import { OP, Opcode } from "./opcode";
-import ScriptChunk from "./script-chunk";
-import IsoBufReader from "./iso-buf-reader";
+import { OP, Opcode } from "./opcode.js";
+import ScriptChunk from "./script-chunk.js";
+import IsoBufReader from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import ScriptNum from "./script-num";
-import TxSignature from "./tx-signature";
-import PubKey from "./pub-key";
-import { EbxError } from "./ebx-error";
+import { Result, Ok, Err } from "./result.js";
+import ScriptNum from "./script-num.js";
+import TxSignature from "./tx-signature.js";
+import PubKey from "./pub-key.js";
+import { EbxError } from "./ebx-error.js";
 
 export default class Script {
   chunks: ScriptChunk[] = [];

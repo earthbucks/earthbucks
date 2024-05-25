@@ -1,17 +1,17 @@
 import { Buffer } from "buffer";
-import IsoHex from "./iso-hex";
+import IsoHex from "./iso-hex.js";
 import bs58 from "bs58";
-import PrivKey from "./priv-key";
-import { blake3Hash } from "./blake3";
-import { Result, Ok, Err } from "./result";
+import PrivKey from "./priv-key.js";
+import { blake3Hash } from "./blake3.js";
+import { Result, Ok, Err } from "./result.js";
 import {
   EbxError,
   InvalidChecksumError,
   InvalidEncodingError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error";
-import { Option, None, Some } from "./option";
+} from "./ebx-error.js";
+import { Option, None, Some } from "./option.js";
 
 export default class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x

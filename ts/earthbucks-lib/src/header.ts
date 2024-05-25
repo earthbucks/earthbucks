@@ -1,8 +1,8 @@
-import IsoBufReader from "./iso-buf-reader";
-import IsoBufWriter from "./iso-buf-writer";
-import { blake3Hash, doubleBlake3Hash } from "./blake3";
+import IsoBufReader from "./iso-buf-reader.js";
+import IsoBufWriter from "./iso-buf-writer.js";
+import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;

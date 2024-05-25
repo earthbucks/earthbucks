@@ -1,4 +1,4 @@
-import KeyPair from "./key-pair";
+import KeyPair from "./key-pair.js";
 import { Buffer } from "buffer";
 
 export default class PkhKeyMap {

@@ -1,12 +1,12 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import { Option, Some, None } from "./option";
+import { Result, Ok, Err } from "./result.js";
+import { Option, Some, None } from "./option.js";
 import {
   EbxError,
   NotEnoughDataError,
   NonMinimalEncodingError,
   InsufficientPrecisionError,
-} from "./ebx-error";
+} from "./ebx-error.js";
 
 export default class IsoBufReader {
   buf: Buffer;

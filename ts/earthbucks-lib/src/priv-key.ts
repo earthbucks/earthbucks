@@ -1,9 +1,9 @@
 import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import IsoHex from "./iso-hex";
+import IsoHex from "./iso-hex.js";
 import bs58 from "bs58";
-import { blake3Hash } from "./blake3";
-import { Result, Ok, Err } from "./result";
+import { blake3Hash } from "./blake3.js";
+import { Result, Ok, Err } from "./result.js";
 import {
   EbxError,
   InvalidChecksumError,
@@ -11,8 +11,8 @@ import {
   InvalidKeyError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error";
-import { Option, None, Some } from "./option";
+} from "./ebx-error.js";
+import { Option, None, Some } from "./option.js";
 
 export default class PrivKey {
   buf: Buffer;

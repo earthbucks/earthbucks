@@ -1,8 +1,8 @@
-import PrivKey from "./priv-key";
-import PubKey from "./pub-key";
-import IsoHex from "./iso-hex";
-import PermissionToken from "./permission-token";
-import SignedMessage from "./signed-message";
+import PrivKey from "./priv-key.js";
+import PubKey from "./pub-key.js";
+import IsoHex from "./iso-hex.js";
+import PermissionToken from "./permission-token.js";
+import SignedMessage from "./signed-message.js";
 
 export default class SigninChallenge {
   signedMessage: SignedMessage;

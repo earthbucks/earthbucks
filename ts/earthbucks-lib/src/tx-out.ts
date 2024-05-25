@@ -1,10 +1,10 @@
-import IsoBufReader from "./iso-buf-reader";
-import IsoBufWriter from "./iso-buf-writer";
-import VarInt from "./var-int";
-import Script from "./script";
+import IsoBufReader from "./iso-buf-reader.js";
+import IsoBufWriter from "./iso-buf-writer.js";
+import VarInt from "./var-int.js";
+import Script from "./script.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import { EbxError } from "./ebx-error";
+import { Result, Ok, Err } from "./result.js";
+import { EbxError } from "./ebx-error.js";
 
 export default class TxOut {
   public value: bigint;

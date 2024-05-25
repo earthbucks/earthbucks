@@ -1,12 +1,12 @@
-import Tx from "./tx";
-import PkhKeyMap from "./pkh-key-map";
-import TxOutBnMap from "./tx-out-bn-map";
-import TxSignature from "./tx-signature";
+import Tx from "./tx.js";
+import PkhKeyMap from "./pkh-key-map.js";
+import TxOutBnMap from "./tx-out-bn-map.js";
+import TxSignature from "./tx-signature.js";
 import { Buffer } from "buffer";
-import PubKey from "./pub-key";
-import { Result, Ok, Err } from "./result";
-import Script from "./script";
-import KeyPair from "./key-pair";
+import PubKey from "./pub-key.js";
+import { Result, Ok, Err } from "./result.js";
+import Script from "./script.js";
+import KeyPair from "./key-pair.js";
 
 export default class TxSigner {
   public tx: Tx;

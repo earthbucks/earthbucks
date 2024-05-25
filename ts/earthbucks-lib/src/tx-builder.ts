@@ -1,12 +1,12 @@
-import Tx from "./tx";
-import TxIn from "./tx-in";
-import TxOut from "./tx-out";
-import TxOutBnMap from "./tx-out-bn-map";
-import Script from "./script";
+import Tx from "./tx.js";
+import TxIn from "./tx-in.js";
+import TxOut from "./tx-out.js";
+import TxOutBnMap from "./tx-out-bn-map.js";
+import Script from "./script.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import { Option, Some, None } from "./option";
-import { EbxError, GenericError } from "./ebx-error";
+import { Result, Ok, Err } from "./result.js";
+import { Option, Some, None } from "./option.js";
+import { EbxError, GenericError } from "./ebx-error.js";
 
 export default class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;

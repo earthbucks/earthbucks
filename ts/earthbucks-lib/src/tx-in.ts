@@ -1,10 +1,10 @@
-import IsoBufWriter from "./iso-buf-writer";
-import IsoBufReader from "./iso-buf-reader";
-import Script from "./script";
-import VarInt from "./var-int";
+import IsoBufWriter from "./iso-buf-writer.js";
+import IsoBufReader from "./iso-buf-reader.js";
+import Script from "./script.js";
+import VarInt from "./var-int.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import { EbxError } from "./ebx-error";
+import { Result, Ok, Err } from "./result.js";
+import { EbxError } from "./ebx-error.js";
 
 export default class TxIn {
   public inputTxId: Buffer;

@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class HashNum {
   num: bigint;

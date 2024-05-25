@@ -1,11 +1,11 @@
-import { OPCODE_TO_NAME, OP, Opcode } from "./opcode";
-import Script from "./script";
-import Tx, { HashCache } from "./tx";
-import ScriptNum from "./script-num";
-import { blake3Hash, doubleBlake3Hash } from "./blake3";
-import TxSignature from "./tx-signature";
+import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
+import Script from "./script.js";
+import Tx, { HashCache } from "./tx.js";
+import ScriptNum from "./script-num.js";
+import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
+import TxSignature from "./tx-signature.js";
 import { Buffer } from "buffer";
-import PubKey from "./pub-key";
+import PubKey from "./pub-key.js";
 
 export default class ScriptInterpreter {
   public script: Script;

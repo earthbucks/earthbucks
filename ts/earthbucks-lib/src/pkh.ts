@@ -1,9 +1,9 @@
-import { doubleBlake3Hash, blake3Hash } from "./blake3";
+import { doubleBlake3Hash, blake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
-import IsoHex from "./iso-hex";
-import PubKey from "./pub-key";
-import { Result, Ok, Err } from "./result";
+import IsoHex from "./iso-hex.js";
+import PubKey from "./pub-key.js";
+import { Result, Ok, Err } from "./result.js";
 
 // public key hash
 export default class Pkh {

@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
-import { EbxError, InvalidHexError } from "./ebx-error";
-import { Option, Some, None } from "./option";
+import { Result, Ok, Err } from "./result.js";
+import { EbxError, InvalidHexError } from "./ebx-error.js";
+import { Option, Some, None } from "./option.js";
 
 export function isValid(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;

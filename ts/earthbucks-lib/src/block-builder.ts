@@ -1,12 +1,12 @@
-import Block from "./block";
-import Header from "./header";
-import Tx from "./tx";
-import MerkleTxs from "./merkle-txs";
-import Script from "./script";
-import TxIn from "./tx-in";
-import TxOut from "./tx-out";
+import Block from "./block.js";
+import Header from "./header.js";
+import Tx from "./tx.js";
+import MerkleTxs from "./merkle-txs.js";
+import Script from "./script.js";
+import TxIn from "./tx-in.js";
+import TxOut from "./tx-out.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class BlockBuilder {
   public header: Header;

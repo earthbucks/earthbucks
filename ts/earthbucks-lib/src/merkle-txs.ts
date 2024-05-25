@@ -1,5 +1,5 @@
-import MerkleProof from "./merkle-proof";
-import Tx from "./tx";
+import MerkleProof from "./merkle-proof.js";
+import Tx from "./tx.js";
 import { Buffer } from "buffer";
 
 export default class MerkleTxs {

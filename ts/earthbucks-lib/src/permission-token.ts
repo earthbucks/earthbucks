@@ -1,7 +1,7 @@
-import IsoBufReader from "./iso-buf-reader";
-import IsoBufWriter from "./iso-buf-writer";
+import IsoBufReader from "./iso-buf-reader.js";
+import IsoBufWriter from "./iso-buf-writer.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class PermissionToken {
   randValue: Buffer;

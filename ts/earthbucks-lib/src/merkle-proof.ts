@@ -1,8 +1,8 @@
-import { doubleBlake3Hash } from "./blake3";
-import IsoBufWriter from "./iso-buf-writer";
-import IsoBufReader from "./iso-buf-reader";
+import { doubleBlake3Hash } from "./blake3.js";
+import IsoBufWriter from "./iso-buf-writer.js";
+import IsoBufReader from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 
 export default class MerkleProof {
   public root: Buffer;

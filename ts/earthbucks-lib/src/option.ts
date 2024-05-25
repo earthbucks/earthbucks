@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace */
-import { toString } from "./utils";
-import { Result, Ok, Err } from "./result";
+import { toString } from "./utils.js";
+import { Result, Ok, Err } from "./result.js";
 
 interface BaseOption<T>
   extends Iterable<T extends Iterable<infer U> ? U : never> {

@@ -1,16 +1,16 @@
-import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode";
-import IsoBufWriter from "./iso-buf-writer";
-import IsoBufReader from "./iso-buf-reader";
+import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
+import IsoBufWriter from "./iso-buf-writer.js";
+import IsoBufReader from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result";
+import { Result, Ok, Err } from "./result.js";
 import {
   EbxError,
   InvalidOpcodeError,
   NonMinimalEncodingError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error";
-import { Option, Some, None } from "./option";
+} from "./ebx-error.js";
+import { Option, Some, None } from "./option.js";
 
 export default class ScriptChunk {
   opcode: number;
