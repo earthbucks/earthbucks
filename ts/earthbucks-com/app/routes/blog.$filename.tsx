@@ -11,14 +11,7 @@ import { $path } from "remix-routes";
 import Footer from "~/components/footer";
 import fs from "fs";
 import path from "path";
-
-interface BlogPost {
-  title: string;
-  date: string;
-  author: string;
-  filename: string;
-  content: string;
-}
+import { BlogPost } from "~/build-blog";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const filename = params.filename;

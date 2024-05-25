@@ -3,174 +3,203 @@
     "filename": "2024-03-26-one-gpu-one-vote.md",
     "title": "One-GPU-one-vote",
     "author": "Ryan X. Charles",
-    "date": "2024-03-26"
+    "date": "2024-03-26",
+    "content": ""
   },
   {
     "filename": "2024-03-28-blake-3-and-big-endian.md",
     "title": "Blake3 and Big Endian",
     "author": "Ryan X. Charles",
-    "date": "2024-03-28"
+    "date": "2024-03-28",
+    "content": ""
   },
   {
     "filename": "2024-03-29-var-ints-script-and-names.md",
     "title": "Var Ints, Script, and Names",
     "author": "Ryan X. Charles",
-    "date": "2024-03-29"
+    "date": "2024-03-29",
+    "content": ""
   },
   {
     "filename": "2024-03-30-data-structures.md",
     "title": "Data Structures",
     "author": "Ryan X. Charles",
-    "date": "2024-03-30"
+    "date": "2024-03-30",
+    "content": ""
   },
   {
     "filename": "2024-03-30-why-we-need-another-blockchain.md",
     "title": "Why We Need Another Blockchain",
     "author": "Ryan X. Charles",
-    "date": "2024-03-30"
+    "date": "2024-03-30",
+    "content": ""
   },
   {
     "filename": "2024-04-01-script-num-etc.md",
     "title": "ScriptNum, PUSHDATA, CODESEPARATOR, and Hash Functions",
     "author": "Ryan X. Charles",
-    "date": "2024-04-01"
+    "date": "2024-04-01",
+    "content": ""
   },
   {
     "filename": "2024-04-04-checksig-etc.md",
     "title": "CHECKSIG, CHECKMULTISIG, Building, Signing, and Verifying Transactions",
     "author": "Ryan X. Charles",
-    "date": "2024-04-04"
+    "date": "2024-04-04",
+    "content": ""
   },
   {
     "filename": "2024-04-05-thoughts-on-decentralization.md",
     "title": "Thoughts on Decentralization",
     "author": "Ryan X. Charles",
-    "date": "2024-04-05"
+    "date": "2024-04-05",
+    "content": ""
   },
   {
     "filename": "2024-04-05-thoughts-on-fees.md",
     "title": "Thoughts on Fees",
     "author": "Ryan X. Charles",
-    "date": "2024-04-05"
+    "date": "2024-04-05",
+    "content": ""
   },
   {
     "filename": "2024-04-05-verifying-transactions.md",
     "title": "Verifying Transactions and Input/Output Equality",
     "author": "Ryan X. Charles",
-    "date": "2024-04-05"
+    "date": "2024-04-05",
+    "content": ""
   },
   {
     "filename": "2024-04-09-merkle-proofs.md",
     "title": "Merkle Proofs and Blocks",
     "author": "Ryan X. Charles",
-    "date": "2024-04-09"
+    "date": "2024-04-09",
+    "content": ""
   },
   {
     "filename": "2024-04-10-library-prototoype-etc.md",
     "title": "Library Prototype and Software Architecture Plan",
     "author": "Ryan X. Charles",
-    "date": "2024-04-10"
+    "date": "2024-04-10",
+    "content": ""
   },
   {
     "filename": "2024-04-13-building-the-full-node.md",
     "title": "Building the Full Node",
     "author": "Ryan X. Charles",
-    "date": "2024-04-13"
+    "date": "2024-04-13",
+    "content": ""
   },
   {
     "filename": "2024-04-15-database-architecture.md",
     "title": "Database Architecture",
     "author": "Ryan X. Charles",
-    "date": "2024-04-15"
+    "date": "2024-04-15",
+    "content": ""
   },
   {
     "filename": "2024-04-17-incentivizing-accurate-timestamps.md",
     "title": "Incentivizing Accurate Timestamps with Continuous Target Adjustment",
     "author": "Ryan X. Charles",
-    "date": "2024-04-17"
+    "date": "2024-04-17",
+    "content": ""
   },
   {
     "filename": "2024-04-18-preventing-reorgs-with-a-vote.md",
     "title": "Preventing Reorgs with a Vote on Blocks and Transactions",
     "author": "Ryan X. Charles",
-    "date": "2024-04-18"
+    "date": "2024-04-18",
+    "content": ""
   },
   {
     "filename": "2024-04-21-network-structure.md",
     "title": "Network Structure, Domain Names, and Email Addresses",
     "author": "Ryan X. Charles",
-    "date": "2024-04-21"
+    "date": "2024-04-21",
+    "content": ""
   },
   {
     "filename": "2024-04-25-a-pow-algo-for-gpus.md",
     "title": "A Proof-of-Work Algorithm for GPUs",
     "author": "Ryan X. Charles",
-    "date": "2024-04-25"
+    "date": "2024-04-25",
+    "content": ""
   },
   {
     "filename": "2024-04-26-questions-about-forks-and-reorgs.md",
     "title": "Questions about Forks and Reorgs",
     "author": "Ryan X. Charles",
-    "date": "2024-04-26"
+    "date": "2024-04-26",
+    "content": ""
   },
   {
     "filename": "2024-04-27-more-thoughts-on-network.md",
     "title": "More Thoughts on Network Architecture",
     "author": "Ryan X. Charles",
-    "date": "2024-04-27"
+    "date": "2024-04-27",
+    "content": ""
   },
   {
     "filename": "2024-04-28-private-keys-public-keys.md",
     "title": "Private Keys, Public Keys, and Public Key Hashes",
     "author": "Ryan X. Charles",
-    "date": "2024-04-28"
+    "date": "2024-04-28",
+    "content": ""
   },
   {
     "filename": "2024-05-01-client-side-key-management.md",
     "title": "Client-Side Key Management",
     "author": "Ryan X. Charles",
-    "date": "2024-05-01"
+    "date": "2024-05-01",
+    "content": ""
   },
   {
     "filename": "2024-05-05-signing-in-and-rpc.md",
     "title": "Signing In with a Key and the RPC API",
     "author": "Ryan X. Charles",
-    "date": "2024-05-05"
+    "date": "2024-05-05",
+    "content": ""
   },
   {
     "filename": "2024-05-08-42-million.md",
     "title": "42 Million EarthBucks",
     "author": "Ryan X. Charles",
-    "date": "2024-05-08"
+    "date": "2024-05-08",
+    "content": ""
   },
   {
     "filename": "2024-05-09-rust-result-in-typescript.md",
     "title": "Rust Result in TypeScript",
     "author": "Ryan X. Charles",
-    "date": "2024-05-09"
+    "date": "2024-05-09",
+    "content": ""
   },
   {
     "filename": "2024-05-13-earthbucks-overview.md",
     "title": "EarthBucks Overview: 42 million EBX, no pre-mine, GPUs, big blocks, and script",
     "author": "Ryan X. Charles",
-    "date": "2024-05-13"
+    "date": "2024-05-13",
+    "content": ""
   },
   {
     "filename": "2024-05-18-why-all-utxos-expire.md",
     "title": "Why All UTXOs Expire After 90 Days",
     "author": "Ryan X. Charles",
-    "date": "2024-05-18"
+    "date": "2024-05-18",
+    "content": ""
   },
   {
     "filename": "2024-05-22-mines-vs-miners.md",
     "title": "Mines vs. Miners",
     "author": "Ryan X. Charles",
-    "date": "2024-05-22"
+    "date": "2024-05-22",
+    "content": ""
   },
   {
     "filename": "2024-05-24-recovery.md",
     "title": "Recovering Tokens from Lost Private Keys and Expired Outputs",
     "author": "Ryan X. Charles",
-    "date": "2024-05-24"
+    "date": "2024-05-24",
+    "content": ""
   }
 ]

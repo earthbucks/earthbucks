@@ -8,14 +8,7 @@ import blogPosts from "~/markdown/blog/index.json";
 import { Link, useLoaderData } from "@remix-run/react";
 import Footer from "~/components/footer";
 import { $path } from "remix-routes";
-
-interface BlogPost {
-  title: string;
-  date: string;
-  author: string;
-  filename: string;
-  content: string;
-}
+import { BlogPost } from "~/build-blog";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const newBlogPosts: BlogPost[] = blogPosts

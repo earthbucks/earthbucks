@@ -2,11 +2,12 @@ import fs from "fs";
 import path from "path";
 import toml from "toml";
 
-interface BlogPost {
+export interface BlogPost {
   title: string;
   author: string;
   date: string;
   filename: string;
+  content: string;
 }
 
 const blogDir = path.join("app", "markdown", "blog");
@@ -27,6 +28,7 @@ const blogPosts: BlogPost[] = filenames.map((filename) => {
     title: frontmatter.title as string,
     author: frontmatter.author as string,
     date: frontmatter.date as string,
+    content: ""
   };
 });
 
