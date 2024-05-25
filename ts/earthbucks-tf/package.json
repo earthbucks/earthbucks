@@ -20,7 +20,7 @@
     "blake3": "2.1.7",
     "blake3-wasm": "2.1.5",
     "buffer": "^6.0.3",
-    "earthbucks-lib": "workspace:^"
+    "earthbucks-lib": "^0.1.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

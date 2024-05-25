@@ -1,7 +1,4 @@
 packages:
-  - 'compubutton-com'
-  - 'earthbucks-com'
-  - 'earthbucks-mine-1'
   - 'earthbucks-blake3'
   - 'earthbucks-db'
   - 'earthbucks-lib'
