@@ -41,25 +41,6 @@ export default function Landing() {
       <div className="my-4 flex">
         <div className="mx-auto">
           <div className="inline-block align-middle">
-            <img
-              src={$image("/button-logo.png")}
-              alt=""
-              className="mx-auto mb-4 block aspect-square w-[120px] rounded-full bg-[#020a2c] p-[1px] shadow-lg shadow-[#04408d]"
-            />
-            <div className="hidden dark:block">
-              <img
-                src={$image("/compubutton-text-white.png")}
-                alt="EarthBucks Mine 1"
-                className="mx-auto block w-[300px]"
-              />
-            </div>
-            <div className="block dark:hidden">
-              <img
-                src={$image("/compubutton-text-black.png")}
-                alt="EarthBucks Mine 1"
-                className="mx-auto block w-[300px]"
-              />
-            </div>
             <div className="mt-4 text-center text-black dark:text-white">
               EarthBucks proof-of-GPU demonstration.
               <br />
