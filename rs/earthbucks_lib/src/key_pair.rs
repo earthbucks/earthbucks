@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn test_key_pairs() {
-        let data = fs::read_to_string("../../json/key_pair.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/key_pair.json").expect("Unable to read file");
         let key_pairs: JsonKeyPairs = serde_json::from_str(&data).expect("Unable to parse JSON");
 
         for pair in key_pairs.key_pair {

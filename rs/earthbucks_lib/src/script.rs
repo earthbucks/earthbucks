@@ -665,7 +665,7 @@ mod tests {
 
     #[test]
     fn test_vectors_from_iso_buf() {
-        let file = std::fs::File::open("../../json/script.json").unwrap();
+        let file = std::fs::File::open("./test_vectors/script.json").unwrap();
         let test_vectors: TestVectorScript = serde_json::from_reader(file).unwrap();
 
         for test_vector in test_vectors.from_iso_buf.errors {

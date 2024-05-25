@@ -1344,7 +1344,7 @@ mod tests {
 
         #[test]
         fn test_vectors() {
-            let file = fs::read_to_string("../../json/script_interpreter.json")
+            let file = fs::read_to_string("./test_vectors/script_interpreter.json")
                 .expect("Failed to read JSON file");
             let test_scripts: TestScripts =
                 serde_json::from_str(&file).expect("Failed to parse JSON file");

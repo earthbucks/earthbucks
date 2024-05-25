@@ -1,0 +1,24 @@
+{
+  "pkh": [
+    {
+      "pub_key": "ebxpub797a29b4eDH5dbm3pKVJSeUfeEdmG1qJzdg3i9VtgQAe3hZ8hpo2",
+      "pkh": "ebxpkh3b7d4038BXFEqqdGs8ouzbWiGaMjKeDiur875Cq2BT59dQfqEQRQ"
+    },
+    {
+      "pub_key": "ebxpub48940fc6pvtvQ1KzVwXQ9WoHGvmVBQ9atULrP4UovgnkE4nA9wFm",
+      "pkh": "ebxpkhd581ced4DaN5UWEjrSdhkPLmAkY6mtdtXhJ4M1DyMrRkJZ8DcRZK"
+    },
+    {
+      "pub_key": "ebxpub6a58a9ba22DPwqaEJtS9dUWPsAyQL8qY64yWsRbYKnG3LU5WtajMi",
+      "pkh": "ebxpkh48f40a337fEmKEaaTXS7zViYqJA4Mugvmev2JGUywEXW1qkbxn4L"
+    },
+    {
+      "pub_key": "ebxpub5db62c1aiFuoARSwqWoJRiRf6mXXLKuG5LmGHDNQBTrfWhhCBbkD",
+      "pkh": "ebxpkhe68198abHfKk2UachQC1ZdjzT7WpCYVYsJam1YXeFgBgVq4yNrcb"
+    },
+    {
+      "pub_key": "ebxpub66b5fc4c29E1PLJnWhvERqsdq5bja6aSibT1geYrXK5X29bKcDkbv",
+      "pkh": "ebxpkhf28534a57pWLfX24WikXAVVttFaUnW6VJEFdi6SvM9R6AKtYJUVq"
+    }
+  ]
+}

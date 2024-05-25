@@ -14,7 +14,7 @@ describe("KeyPair", () => {
 
   describe("standard test vectors: key_pair.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../../../json/key_pair.json"),
+      path.resolve(__dirname, "../test-vectors/key_pair.json"),
       "utf-8",
     );
 

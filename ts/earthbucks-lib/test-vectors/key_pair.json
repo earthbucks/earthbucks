@@ -1,0 +1,24 @@
+{
+  "key_pair": [
+    {
+      "priv_key": "ebxprv7a1d54f4EVKHHG3ATw78Te1Zpm4eKHwqKqhXRAh3CygTbPmjs24D",
+      "pub_key": "ebxpub9673eae8r3q6zV4y2hihNKqe97dX9ZxyHoVPsCS9ryJWAyH9wqAB"
+    },
+    {
+      "priv_key": "ebxprv80abb8d3GPDECrJrMsv2AcesjXyHazmBxWS4PzEXECJtnMvhiVDt",
+      "pub_key": "ebxpuba972ff24uhj56AZtGVSv55wwcrJcFcBsypyjMwDo1EbBM33SPW4o"
+    },
+    {
+      "priv_key": "ebxprv54f46ae02DbCQ2as9gQBypHnfVexTfZfKdAqyB5TBpJjYaRCMcVW",
+      "pub_key": "ebxpub1e4b8d0chhkrjSqj4iRJdfYMkDHu7JcbCbVzu5Bdmbgx1sw17fYT"
+    },
+    {
+      "priv_key": "ebxprv4bfc5a9bGzmprFVRzgXt6nQKvhSckhm65jfcj4PGkV1pJS8AsMND",
+      "pub_key": "ebxpube0858b3c25wYwWdGXyyoqcR2fNkRUDyBbqRFmi4FQK6sJCe2sxgna"
+    },
+    {
+      "priv_key": "ebxprv3ac6dd1f9qx5SP3HKWhe9WkUQUefTUCPz2E5CX5yg7aiHyRPGrhE",
+      "pub_key": "ebxpub9a44c95bwBwEhc3yLqw9ucEiT8U8WS8MJ3r6TYq7NwHEfoLdEMPi"
+    }
+  ]
+}

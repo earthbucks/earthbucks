@@ -41,7 +41,7 @@ describe("Pkh", () => {
 
   describe("standard test vectors: pkh.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../../../json/pkh.json"),
+      path.resolve(__dirname, "../test-vectors/pkh.json"),
       "utf-8",
     );
 

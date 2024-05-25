@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn test_pkh_pairs() {
         // Read the JSON file
-        let data = fs::read_to_string("../../json/pkh.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/pkh.json").expect("Unable to read file");
 
         // Parse the JSON data
         let pkh_data: PkhData = serde_json::from_str(&data).expect("Unable to parse JSON");

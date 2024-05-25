@@ -1,0 +1,1061 @@
+{
+  "scripts": [
+    {
+      "name": "0",
+      "script": "0",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "PUSHDATA1 - one byte",
+      "script": "0xff",
+      "expected_return_value": "ff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "PUSHDATA1 - two bytes",
+      "script": "0xffff",
+      "expected_return_value": "ffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "PUSHDATA2",
+      "script": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_return_value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "1NEGATE",
+      "script": "1NEGATE",
+      "expected_return_value": "ff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 1",
+      "script": "1",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 2",
+      "script": "2",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 3",
+      "script": "3",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 4",
+      "script": "4",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 5",
+      "script": "5",
+      "expected_return_value": "05",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 6",
+      "script": "6",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 7",
+      "script": "7",
+      "expected_return_value": "07",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 8",
+      "script": "8",
+      "expected_return_value": "08",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 9",
+      "script": "9",
+      "expected_return_value": "09",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 10",
+      "script": "10",
+      "expected_return_value": "0a",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 11",
+      "script": "11",
+      "expected_return_value": "0b",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 12",
+      "script": "12",
+      "expected_return_value": "0c",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 13",
+      "script": "13",
+      "expected_return_value": "0d",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 14",
+      "script": "14",
+      "expected_return_value": "0e",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 15",
+      "script": "15",
+      "expected_return_value": "0f",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "push 16",
+      "script": "16",
+      "expected_return_value": "10",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "if 1",
+      "script": "1 IF 1 ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "if 0",
+      "script": "0 IF 1 ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "if 1 with a push 0",
+      "script": "1 IF 0 ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "nested if 1",
+      "script": "1 IF 1 IF 1 ENDIF ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nested if 0",
+      "script": "1 IF 1 IF 0 ENDIF ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "unbalanced conditional 1",
+      "script": "IF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 2",
+      "script": "ELSE",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 3",
+      "script": "ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "unbalanced conditional 4",
+      "script": "NOTIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "unbalanced conditional"
+    },
+    {
+      "name": "not if",
+      "script": "0 NOTIF 1 ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "else",
+      "script": "0 IF 1 ELSE 2 ENDIF",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nested else",
+      "script": "0 IF 0 IF 1 ELSE 2 ENDIF ELSE 3 ENDIF",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "verify",
+      "script": "1 VERIFY 2",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "verify",
+      "script": "0 VERIFY 2",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "VERIFY failed"
+    },
+    {
+      "name": "return true",
+      "script": "1 RETURN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "return false",
+      "script": "0 RETURN",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "nested return true",
+      "script": "1 IF 1 RETURN ENDIF",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nested return false",
+      "script": "1 IF 0 RETURN ENDIF",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack",
+      "script": "1 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 2",
+      "script": "0 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 3",
+      "script": "1 TOALTSTACK FROMALTSTACK TOALTSTACK",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 4",
+      "script": "1 0 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "to/from altstack 5",
+      "script": "1 1 TOALTSTACK FROMALTSTACK",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "drop 2",
+      "script": "1 1 2DROP",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 2",
+      "script": "0 1 2DUP",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 3",
+      "script": "0 0 3 3DUP",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "dup 3 and drop",
+      "script": "0 0 3 3DUP 2DROP",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "2 over",
+      "script": "1 2 3 4 2OVER",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 rot",
+      "script": "1 2 3 4 5 6 2ROT",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 rot",
+      "script": "1 2 3 4 5 6 2ROT",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2 swap",
+      "script": "1 2 3 4 2SWAP",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "ifdup 1",
+      "script": "1 IFDUP",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "ifdup 2",
+      "script": "0 IFDUP",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "depth 1",
+      "script": "1 2 3 4 5 6 7 8 9 DEPTH",
+      "expected_return_value": "09",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "depth 2",
+      "script": "1 2 3 3 2 1 DEPTH",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "drop",
+      "script": "1 2 3 DROP",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "dup",
+      "script": "6 DUP",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "nip",
+      "script": "1 2 NIP",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "over",
+      "script": "1 2 OVER",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "pick",
+      "script": "1 2 3 4 5 1 PICK",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "pick error",
+      "script": "1 2 3 4 5 10 PICK",
+      "expected_return_value": "05",
+      "expected_success": false,
+      "expected_error": "invalid stack operation"
+    },
+    {
+      "name": "pick error 2",
+      "script": "10 PICK",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "invalid stack operation"
+    },
+    {
+      "name": "roll",
+      "script": "1 2 3 4 5 1 ROLL",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "roll 2",
+      "script": "1 2 3 4 5 2 ROLL",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "roll 0",
+      "script": "1 2 3 4 5 0 ROLL",
+      "expected_return_value": "05",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rot",
+      "script": "1 2 3 ROT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rot rot",
+      "script": "1 2 3 ROT ROT",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rot rot rot",
+      "script": "1 2 3 ROT ROT ROT",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "swap",
+      "script": "1 2 SWAP",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "swap swap",
+      "script": "1 2 SWAP SWAP",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "tuck",
+      "script": "1 2 TUCK",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "tuck pick",
+      "script": "1 2 TUCK 2 PICK",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "tuck pick 0",
+      "script": "1 2 TUCK 0 PICK",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "cat",
+      "script": "0x0102 0x0304 CAT",
+      "expected_return_value": "01020304",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "substr",
+      "script": "0x01020304 1 2 SUBSTR",
+      "expected_return_value": "0203",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "left",
+      "script": "0x01020304 2 LEFT",
+      "expected_return_value": "0102",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "right",
+      "script": "0x01020304 2 RIGHT",
+      "expected_return_value": "0304",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "size",
+      "script": "0x01020304 SIZE",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "invert",
+      "script": "0xf0f0f0 INVERT",
+      "expected_return_value": "0f0f0f",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "and 1",
+      "script": "0xf0f0f0 0xf0f0f0 AND",
+      "expected_return_value": "f0f0f0",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "and 2",
+      "script": "0xf0f0f0 0x0f0f0f AND",
+      "expected_return_value": "000000",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "and 3",
+      "script": "0xffffff 0xffffff AND",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "or 1",
+      "script": "0xf0f0f0 0xf0f0f0 OR",
+      "expected_return_value": "f0f0f0",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "or 2",
+      "script": "0xf0f0f0 0x0f0f0f OR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "or 3",
+      "script": "0xffffff 0xffffff OR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 1",
+      "script": "0xf0f0f0 0xf0f0f0 XOR",
+      "expected_return_value": "000000",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 2",
+      "script": "0xf0f0f0 0x0f0f0f XOR",
+      "expected_return_value": "ffffff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "xor 3",
+      "script": "0xffffff 0xffffff XOR",
+      "expected_return_value": "000000",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 1",
+      "script": "0xf0f0f0 0xf0f0f0 EQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 2",
+      "script": "0xf0f0f0 0x0f0f0f EQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equal 3",
+      "script": "0xffffff 0xffffff EQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "equalverify 1",
+      "script": "0xf0f0f0 0xf0f0f0 EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "equalverify 2",
+      "script": "0xf0f0f0 0x0f0f0f EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "EQUALVERIFY failed"
+    },
+    {
+      "name": "equalverify 3",
+      "script": "0xffffff 0xffffff EQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "1add",
+      "script": "0x01 1ADD",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "1sub",
+      "script": "0x01 1SUB",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "1sub 2",
+      "script": "0x05 1SUB",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2mul",
+      "script": "0x02 2MUL",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "2div",
+      "script": "0x04 2DIV",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate",
+      "script": "0x04 NEGATE",
+      "expected_return_value": "fc",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate 2",
+      "script": "0xfc NEGATE",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "negate 3",
+      "script": "0x00 NEGATE",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "abs",
+      "script": "0x04 ABS",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "abs 2",
+      "script": "0xf0 ABS",
+      "expected_return_value": "10",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "abs 3",
+      "script": "0xf088 ABS",
+      "expected_return_value": "0f78",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "not",
+      "script": "0x00 NOT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "not 2",
+      "script": "0x01 NOT",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "0notequal",
+      "script": "0x00 0NOTEQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "0notequal 2",
+      "script": "0x01 0NOTEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "add",
+      "script": "0x01 0x02 ADD",
+      "expected_return_value": "03",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "sub",
+      "script": "0x03 0x02 SUB",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "sub 2",
+      "script": "0x02 0x03 SUB",
+      "expected_return_value": "ff",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "mul",
+      "script": "0x02 0x03 MUL",
+      "expected_return_value": "06",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "mul 2",
+      "script": "0x02 0xff MUL",
+      "expected_return_value": "fe",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "div",
+      "script": "0x06 0x03 DIV",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "div by zero",
+      "script": "0x06 0x00 DIV",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "division by zero"
+    },
+    {
+      "name": "mod",
+      "script": "0x06 0x03 MOD",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "mod by zero",
+      "script": "0x06 0x00 MOD",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "division by zero"
+    },
+    {
+      "name": "lshift",
+      "script": "0x01 0x02 LSHIFT",
+      "expected_return_value": "04",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lshift 2",
+      "script": "0x01 0x08 LSHIFT",
+      "expected_return_value": "0100",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rshift",
+      "script": "0x04 0x02 RSHIFT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "rshift 2",
+      "script": "0x0100 0x08 RSHIFT",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "booland",
+      "script": "0x01 0x01 BOOLAND",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "booland 2",
+      "script": "0x01 0x00 BOOLAND",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "boolor",
+      "script": "0x01 0x01 BOOLOR",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "boolor 2",
+      "script": "0x01 0x00 BOOLOR",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "numequal",
+      "script": "0x01 0x01 NUMEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "numequal 2",
+      "script": "0x01 0x00 NUMEQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numequalverify",
+      "script": "0x01 0x01 NUMEQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numequalverify 2",
+      "script": "0x01 0x00 NUMEQUALVERIFY",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": "NUMEQUALVERIFY failed"
+    },
+    {
+      "name": "numnotequal",
+      "script": "0x01 0x01 NUMNOTEQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "numnotequal 2",
+      "script": "0x01 0x00 NUMNOTEQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthan",
+      "script": "0x01 0x02 LESSTHAN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthan 2",
+      "script": "0x02 0x01 LESSTHAN",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthan",
+      "script": "0x02 0x01 GREATERTHAN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthan 2",
+      "script": "0x01 0x02 GREATERTHAN",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthanorequal",
+      "script": "0x01 0x02 LESSTHANOREQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "lessthanorequal 2",
+      "script": "0x02 0x01 LESSTHANOREQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthanorequal",
+      "script": "0x02 0x01 GREATERTHANOREQUAL",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "greaterthanorequal 2",
+      "script": "0x01 0x02 GREATERTHANOREQUAL",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "min",
+      "script": "0x01 0x02 MIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "min 2",
+      "script": "0x02 0x01 MIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "max",
+      "script": "0x01 0x02 MAX",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "max 2",
+      "script": "0x02 0x01 MAX",
+      "expected_return_value": "02",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "within",
+      "script": "0x01 0x02 0x03 WITHIN",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "within 2",
+      "script": "0x02 0x01 0x03 WITHIN",
+      "expected_return_value": "01",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "within 3",
+      "script": "0x03 0x01 0x02 WITHIN",
+      "expected_return_value": "",
+      "expected_success": false,
+      "expected_error": ""
+    },
+    {
+      "name": "blake3",
+      "script": "0x00 BLAKE3",
+      "expected_return_value": "2d3adedff11b61f14c886e35afa036736dcd87a74d27b5c1510225d0f592e213",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "double blake3",
+      "script": "0x00 DOUBLEBLAKE3",
+      "expected_return_value": "2bf4d007e0cefcaf167e4641bb0f343b402775122dbff17b11514e9cbd21eefa",
+      "expected_success": true,
+      "expected_error": ""
+    },
+    {
+      "name": "blake3 blake3",
+      "script": "0x00 BLAKE3 BLAKE3",
+      "expected_return_value": "2bf4d007e0cefcaf167e4641bb0f343b402775122dbff17b11514e9cbd21eefa",
+      "expected_success": true,
+      "expected_error": ""
+    }
+  ]
+}
