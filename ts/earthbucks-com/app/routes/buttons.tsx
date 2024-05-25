@@ -3,8 +3,8 @@ import Button from "../components/button";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Button Modes Demonstration | EarthBucks Mine 1" },
-    { name: "description", content: "Welcome to EarthBucks Mine 1!" },
+    { title: "Button Modes Demonstration | EarthBucks" },
+    { name: "description", content: "Welcome to EarthBucks!" },
   ];
 };
 
