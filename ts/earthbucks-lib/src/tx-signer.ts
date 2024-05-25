@@ -4,7 +4,7 @@ import TxOutBnMap from "./tx-out-bn-map";
 import TxSignature from "./tx-signature";
 import { Buffer } from "buffer";
 import PubKey from "./pub-key";
-import { Result, Ok, Err } from "option-result/src/result";
+import { Result, Ok, Err } from "./opt-res/result";
 import Script from "./script";
 import KeyPair from "./key-pair";
 

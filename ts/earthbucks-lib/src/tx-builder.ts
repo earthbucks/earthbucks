@@ -4,8 +4,8 @@ import TxOut from "./tx-out";
 import TxOutBnMap from "./tx-out-bn-map";
 import Script from "./script";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "option-result/src/result";
-import { Option, Some, None } from "option-result/src/option";
+import { Result, Ok, Err } from "./opt-res/result";
+import { Option, Some, None } from "./opt-res/option";
 import { EbxError, GenericError } from "./ebx-error";
 
 export default class TxBuilder {

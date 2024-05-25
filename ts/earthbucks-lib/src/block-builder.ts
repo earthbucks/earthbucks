@@ -6,7 +6,7 @@ import Script from "./script";
 import TxIn from "./tx-in";
 import TxOut from "./tx-out";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "option-result/src/result";
+import { Result, Ok, Err } from "./opt-res/result";
 
 export default class BlockBuilder {
   public header: Header;
@@ -54,7 +54,7 @@ export default class BlockBuilder {
       prevAdjustmentBlockHeader,
     ).mapErr((err) => `Error creating block builder: ${err}`);
     if (res.err) {
-      return res;
+      return Err(res.val);
     }
     const header = res.unwrap();
     const txs = [];

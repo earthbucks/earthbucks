@@ -2,7 +2,7 @@ import { OP, Opcode } from "./opcode";
 import ScriptChunk from "./script-chunk";
 import IsoBufReader from "./iso-buf-reader";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "option-result/src/result";
+import { Result, Ok, Err } from "./opt-res/result";
 import ScriptNum from "./script-num";
 import TxSignature from "./tx-signature";
 import PubKey from "./pub-key";

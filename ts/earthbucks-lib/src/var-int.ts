@@ -1,7 +1,7 @@
 import IsoBufReader from "./iso-buf-reader";
 import IsoBufWriter from "./iso-buf-writer";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "option-result/src/result";
+import { Result, Ok, Err } from "./opt-res/result";
 
 export default class VarInt {
   private buf: Buffer;

@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "option-result/src/result";
+import { Result, Ok, Err } from "./opt-res/result";
 
 export default class HashNum {
   num: bigint;
