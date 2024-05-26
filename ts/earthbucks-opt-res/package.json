@@ -1,22 +1,19 @@
 {
   "name": "earthbucks-opt-res",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Rust's Option and Result enums for TypeScript.",
-  "main": "dist/lib.js",
-  "types": "dist/lib.d.js",
+  "main": "lib.ts",
   "scripts": {
-    "clean": "rimraf dist",
-    "main": "tsx src/main.ts",
     "test": "jest --config jest.config.cjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "build": "tsc -p tsconfig.build.json",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
     "node": ">=20.8.0",
-    "pnpm": ">=6.0.0"
+    "pnpm": ">=6.0.0",
+    "typescript": ">=5.4.5"
   },
   "keywords": [],
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
