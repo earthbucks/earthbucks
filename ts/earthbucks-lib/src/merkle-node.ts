@@ -1,6 +1,6 @@
 import { doubleBlake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export default class MerkleNode {
   public left: MerkleNode | null;

@@ -3,7 +3,7 @@ import IsoHex from "./iso-hex.js";
 import bs58 from "bs58";
 import PrivKey from "./priv-key.js";
 import { blake3Hash } from "./blake3.js";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,
   InvalidChecksumError,
@@ -11,7 +11,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, None, Some } from "./option.js";
+import { Option, None, Some } from "earthbucks-opt-res";
 
 export default class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x

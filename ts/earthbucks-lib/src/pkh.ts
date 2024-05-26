@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import bs58 from "bs58";
 import IsoHex from "./iso-hex.js";
 import PubKey from "./pub-key.js";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // public key hash
 export default class Pkh {

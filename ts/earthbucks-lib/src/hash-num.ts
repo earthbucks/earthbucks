@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export default class HashNum {
   num: bigint;

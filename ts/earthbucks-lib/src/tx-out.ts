@@ -3,7 +3,7 @@ import IsoBufWriter from "./iso-buf-writer.js";
 import VarInt from "./var-int.js";
 import Script from "./script.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 import { EbxError } from "./ebx-error.js";
 
 export default class TxOut {

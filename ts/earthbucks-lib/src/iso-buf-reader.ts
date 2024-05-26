@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
-import { Option, Some, None } from "./option.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Option, Some, None } from "earthbucks-opt-res";
 import {
   EbxError,
   NotEnoughDataError,

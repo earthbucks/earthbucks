@@ -9,7 +9,7 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import TxSignature from "./tx-signature.js";
 import Script from "./script.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 import IsoHex from "./iso-hex.js";
 import { EbxError } from "./ebx-error.js";
 

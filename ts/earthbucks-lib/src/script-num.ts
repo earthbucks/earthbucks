@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export default class ScriptNum {

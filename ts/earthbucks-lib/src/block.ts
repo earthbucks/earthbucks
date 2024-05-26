@@ -3,7 +3,7 @@ import Tx from "./tx.js";
 import IsoBufWriter from "./iso-buf-writer.js";
 import IsoBufReader from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export default class Block {
   public header: Header;
