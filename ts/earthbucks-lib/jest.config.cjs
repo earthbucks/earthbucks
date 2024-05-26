@@ -14,4 +14,5 @@ module.exports = {
     "(.+)\\.js": "$1",
   },
   extensionsToTreatAsEsm: [".ts"],
+  roots: ['<rootDir>/test-jest'],
 };
