@@ -28,14 +28,20 @@
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
-  "rust-analyzer.linkedProjects": [
-    "rs/Cargo.toml"
-  ],
+  "rust-analyzer.linkedProjects": ["rs/Cargo.toml"],
   "[sql]": {
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   },
   "sql-formatter.uppercase": true,
   "rust-analyzer.check.command": "clippy",
   "eslint.workingDirectories": ["ts/earthbucks-lib"],
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "markdownlint.config": {
+    "MD033": false
+  }
 }
