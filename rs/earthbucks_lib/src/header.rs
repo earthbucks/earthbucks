@@ -8,22 +8,22 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone)]
 pub struct Header {
-    pub version: u32,            // uint32
-    pub prev_block_id: [u8; 32], // 256 bits
-    pub timestamp: u64,          // uint64 (seconds)
-    pub block_num: u64,          // uint64
-    pub merkle_root: [u8; 32],   // 256 bits
-    pub target: [u8; 32],        // 32 bits
-    pub nonce: [u8; 32],         // 256 bits
-    pub work_algo: u64,          // uint64
-    pub work_ser: [u8; 32],      // 256 bits
-    pub work_par: [u8; 32],      // 256 bits
+    pub version: u32,
+    pub prev_block_id: [u8; 32],
+    pub timestamp: u64,
+    pub block_num: u64,
+    pub merkle_root: [u8; 32],
+    pub target: [u8; 32],
+    pub nonce: [u8; 32],
+    pub work_algo: u64,
+    pub work_ser: [u8; 32],
+    pub work_par: [u8; 32],
 }
 
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCKS_PER_EXPIRY_PERIOD: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64;
-    pub const BLOCKS_PER_EXPIRY_SAFETY_PERIOD: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64 * 2;
+    pub const BLOCKS_PER_SAFETY_PERIOD: u64 = Header::BLOCKS_PER_EXPIRY_PERIOD * 2;
     pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
     pub const BLOCK_HEADER_SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
