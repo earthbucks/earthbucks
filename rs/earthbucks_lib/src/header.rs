@@ -2,6 +2,7 @@ use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::buffer::Buffer;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
+use crate::script::Script;
 use num_bigint::BigUint;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -21,6 +22,8 @@ pub struct Header {
 
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ: u64 = 2016; // exactly two weeks if block interval is 10 minutes
+    pub const BLOCKS_PER_EXPIRY_PERIOD: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64;
+    pub const BLOCKS_PER_EXPIRY_SAFETY_PERIOD: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64 * 2;
     pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
     pub const BLOCK_HEADER_SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
