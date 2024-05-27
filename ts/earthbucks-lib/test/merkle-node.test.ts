@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import MerkleNode from "../src/merkle-node";
+import { MerkleNode } from "../src/merkle-node";
 import { doubleBlake3Hash } from "../src/blake3";
 import { Buffer } from "buffer";
 

@@ -1,9 +1,9 @@
-import PrivKey from "./priv-key.js";
-import PubKey from "./pub-key.js";
+import { PrivKey } from "./priv-key.js";
+import { PubKey } from "./pub-key.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class KeyPair {
+export class KeyPair {
   privKey: PrivKey;
   pubKey: PubKey;
 

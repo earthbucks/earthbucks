@@ -1,14 +1,14 @@
-import Block from "./block.js";
-import Header from "./header.js";
-import Tx from "./tx.js";
-import MerkleTxs from "./merkle-txs.js";
-import Script from "./script.js";
-import TxIn from "./tx-in.js";
-import TxOut from "./tx-out.js";
+import { Block } from "./block.js";
+import { Header } from "./header.js";
+import { Tx } from "./tx.js";
+import { MerkleTxs } from "./merkle-txs.js";
+import { Script } from "./script.js";
+import { TxIn } from "./tx-in.js";
+import { TxOut } from "./tx-out.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class BlockBuilder {
+export class BlockBuilder {
   public header: Header;
   public txs: Tx[];
   public merkleTxs: MerkleTxs;

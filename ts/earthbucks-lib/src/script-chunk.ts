@@ -1,6 +1,6 @@
 import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
-import IsoBufWriter from "./iso-buf-writer.js";
-import IsoBufReader from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
@@ -12,7 +12,7 @@ import {
 } from "./ebx-error.js";
 import { Option, Some, None } from "earthbucks-opt-res";
 
-export default class ScriptChunk {
+export class ScriptChunk {
   opcode: number;
   buf?: Buffer;
 

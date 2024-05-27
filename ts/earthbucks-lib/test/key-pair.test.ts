@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import KeyPair from "../src/key-pair";
-import PrivKey from "../src/priv-key";
+import { KeyPair } from "../src/key-pair";
+import { PrivKey } from "../src/priv-key";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";

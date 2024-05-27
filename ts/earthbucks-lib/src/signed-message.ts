@@ -2,12 +2,12 @@ import { Buffer } from "buffer";
 import { blake3Hash, blake3Mac } from "./blake3.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import PrivKey from "./priv-key.js";
-import PubKey from "./pub-key.js";
-import IsoBufReader from "./iso-buf-reader.js";
-import IsoBufWriter from "./iso-buf-writer.js";
+import { PrivKey } from "./priv-key.js";
+import { PubKey } from "./pub-key.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
 
-export default class SignedMessage {
+export class SignedMessage {
   sig: Buffer;
   pubKey: Buffer;
   mac: Buffer;

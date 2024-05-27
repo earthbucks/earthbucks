@@ -1,10 +1,10 @@
-import IsoBufReader from "./iso-buf-reader.js";
-import IsoBufWriter from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
 import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class Header {
+export class Header {
   static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;

@@ -1,13 +1,13 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import Tx, { HashCache } from "../src/tx";
-import TxIn from "../src/tx-in";
-import TxOut from "../src/tx-out";
-import Script from "../src/script";
-import IsoBufReader from "../src/iso-buf-reader";
-import IsoBufWriter from "../src/iso-buf-writer";
+import { Tx, HashCache } from "../src/tx";
+import { TxIn } from "../src/tx-in";
+import { TxOut } from "../src/tx-out";
+import { Script } from "../src/script";
+import { IsoBufReader } from "../src/iso-buf-reader";
+import { IsoBufWriter } from "../src/iso-buf-writer";
 import { blake3Hash } from "../src/blake3";
-import TxSignature from "../src/tx-signature";
-import KeyPair from "../src/key-pair";
+import { TxSignature } from "../src/tx-signature";
+import { KeyPair } from "../src/key-pair";
 import { Buffer } from "buffer";
 
 describe("Tx", () => {

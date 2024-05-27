@@ -1,15 +1,15 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import ScriptInterpreter from "../src/script-interpreter";
-import Script from "../src/script";
-import Tx, { HashCache } from "../src/tx";
-import TxIn from "../src/tx-in";
-import TxOut from "../src/tx-out";
+import { ScriptInterpreter } from "../src/script-interpreter";
+import { Script } from "../src/script";
+import { Tx, HashCache } from "../src/tx";
+import { TxIn } from "../src/tx-in";
+import { TxOut } from "../src/tx-out";
 import fs from "fs";
 import path from "path";
-import KeyPair from "../src/key-pair";
-import Pkh from "../src/pkh";
-import TxSignature from "../src/tx-signature";
-import PrivKey from "../src/priv-key";
+import { KeyPair } from "../src/key-pair";
+import { Pkh } from "../src/pkh";
+import { TxSignature } from "../src/tx-signature";
+import { PrivKey } from "../src/priv-key";
 import { Buffer } from "buffer";
 
 describe("ScriptInterpreter", () => {

@@ -1,10 +1,10 @@
 import { doubleBlake3Hash } from "./blake3.js";
-import IsoBufWriter from "./iso-buf-writer.js";
-import IsoBufReader from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class MerkleProof {
+export class MerkleProof {
   public root: Buffer;
   public proof: Array<[Buffer, boolean]>;
 

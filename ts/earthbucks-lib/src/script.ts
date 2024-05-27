@@ -1,14 +1,14 @@
 import { OP, Opcode } from "./opcode.js";
-import ScriptChunk from "./script-chunk.js";
-import IsoBufReader from "./iso-buf-reader.js";
+import { ScriptChunk } from "./script-chunk.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import ScriptNum from "./script-num.js";
-import TxSignature from "./tx-signature.js";
-import PubKey from "./pub-key.js";
+import { ScriptNum } from "./script-num.js";
+import { TxSignature } from "./tx-signature.js";
+import { PubKey } from "./pub-key.js";
 import { EbxError } from "./ebx-error.js";
 
-export default class Script {
+export class Script {
   chunks: ScriptChunk[] = [];
 
   constructor(chunks: ScriptChunk[] = []) {

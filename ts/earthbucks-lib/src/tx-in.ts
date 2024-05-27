@@ -1,12 +1,12 @@
-import IsoBufWriter from "./iso-buf-writer.js";
-import IsoBufReader from "./iso-buf-reader.js";
-import Script from "./script.js";
-import VarInt from "./var-int.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { Script } from "./script.js";
+import { VarInt } from "./var-int.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { EbxError } from "./ebx-error.js";
 
-export default class TxIn {
+export class TxIn {
   public inputTxId: Buffer;
   public inputTxNOut: number;
   public script: Script;

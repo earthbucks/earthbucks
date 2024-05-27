@@ -2,7 +2,7 @@ import { doubleBlake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class MerkleNode {
+export class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
   public hashedData: Buffer;

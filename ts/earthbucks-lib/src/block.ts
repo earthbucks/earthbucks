@@ -1,11 +1,11 @@
-import Header from "./header.js";
-import Tx from "./tx.js";
-import IsoBufWriter from "./iso-buf-writer.js";
-import IsoBufReader from "./iso-buf-reader.js";
+import { Header } from "./header.js";
+import { Tx } from "./tx.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class Block {
+export class Block {
   public header: Header;
   public txs: Tx[];
 

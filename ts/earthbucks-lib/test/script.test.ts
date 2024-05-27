@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import Script from "../src/script";
+import { Script } from "../src/script";
 import { Buffer } from "buffer";
 import fs from "fs";
 import path from "path";

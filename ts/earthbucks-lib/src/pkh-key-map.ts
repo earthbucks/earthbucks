@@ -1,7 +1,7 @@
-import KeyPair from "./key-pair.js";
+import { KeyPair } from "./key-pair.js";
 import { Buffer } from "buffer";
 
-export default class PkhKeyMap {
+export class PkhKeyMap {
   public map: Map<string, KeyPair>;
 
   constructor() {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import PubKey from "../src/pub-key";
-import PrivKey from "../src/priv-key";
+import { PubKey } from "../src/pub-key";
+import { PrivKey } from "../src/priv-key";
 
 describe("PubKey", () => {
   test("PubKey", () => {

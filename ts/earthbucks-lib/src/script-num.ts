@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // big integers, positive or negative, encoded as big endian, two's complement
-export default class ScriptNum {
+export class ScriptNum {
   num: bigint;
 
   constructor(num: bigint = BigInt(0)) {

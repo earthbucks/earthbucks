@@ -1,16 +1,16 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import TxBuilder from "../src/tx-builder";
-import TxOutBnMap from "../src/tx-out-bn-map";
-import TxOut from "../src/tx-out";
-import Script from "../src/script";
-import KeyPair from "../src/key-pair";
-import Pkh from "../src/pkh";
-import PkhKeyMap from "../src/pkh-key-map";
-import TxSigner from "../src/tx-signer";
-import ScriptInterpreter from "../src/script-interpreter";
+import { TxBuilder } from "../src/tx-builder";
+import { TxOutBnMap } from "../src/tx-out-bn-map";
+import { TxOut } from "../src/tx-out";
+import { Script } from "../src/script";
+import { KeyPair } from "../src/key-pair";
+import { Pkh } from "../src/pkh";
+import { PkhKeyMap } from "../src/pkh-key-map";
+import { TxSigner } from "../src/tx-signer";
+import { ScriptInterpreter } from "../src/script-interpreter";
 import { HashCache } from "../src/tx";
 import { Buffer } from "buffer";
-import TxOutBn from "../src/tx-out-bn";
+import { TxOutBn } from "../src/tx-out-bn";
 
 describe("TxSigner", () => {
   let txBuilder: TxBuilder;

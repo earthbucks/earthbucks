@@ -1,16 +1,16 @@
-import TxIn from "./tx-in.js";
-import TxOut from "./tx-out.js";
-import VarInt from "./var-int.js";
-import IsoBufReader from "./iso-buf-reader.js";
-import IsoBufWriter from "./iso-buf-writer.js";
+import { TxIn } from "./tx-in.js";
+import { TxOut } from "./tx-out.js";
+import { VarInt } from "./var-int.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
 import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import TxSignature from "./tx-signature.js";
-import Script from "./script.js";
+import { TxSignature } from "./tx-signature.js";
+import { Script } from "./script.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import IsoHex from "./iso-hex.js";
+import { IsoHex } from "./iso-hex.js";
 import { EbxError } from "./ebx-error.js";
 
 export class HashCache {
@@ -19,7 +19,7 @@ export class HashCache {
   public hashOutputs?: Buffer;
 }
 
-export default class Tx {
+export class Tx {
   public version: number;
   public inputs: TxIn[];
   public outputs: TxOut[];

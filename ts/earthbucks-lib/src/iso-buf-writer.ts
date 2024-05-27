@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class IsoBufWriter {
+export class IsoBufWriter {
   bufs: Buffer[];
 
   constructor(bufs?: Buffer[]) {

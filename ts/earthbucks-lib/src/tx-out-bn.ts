@@ -1,6 +1,6 @@
-import TxOut from "./tx-out.js";
+import { TxOut } from "./tx-out.js";
 
-export default class TxOutBn {
+export class TxOutBn {
   txOut: TxOut;
   blockNum: bigint;
 

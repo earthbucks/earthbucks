@@ -1,14 +1,14 @@
-import Tx from "./tx.js";
-import TxIn from "./tx-in.js";
-import TxOut from "./tx-out.js";
-import TxOutBnMap from "./tx-out-bn-map.js";
-import Script from "./script.js";
+import { Tx } from "./tx.js";
+import { TxIn } from "./tx-in.js";
+import { TxOut } from "./tx-out.js";
+import { TxOutBnMap } from "./tx-out-bn-map.js";
+import { Script } from "./script.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { Option, Some, None } from "earthbucks-opt-res";
 import { EbxError, GenericError } from "./ebx-error.js";
 
-export default class TxBuilder {
+export class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;
   public tx: Tx;
   public changeScript: Script;

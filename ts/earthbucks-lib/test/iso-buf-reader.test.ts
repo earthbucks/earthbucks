@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from "vitest";
-import IsoBufReader from "../src/iso-buf-reader";
+import { IsoBufReader } from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 import fs from "fs";
 import path from "path";

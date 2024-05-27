@@ -1,9 +1,9 @@
-import IsoBufReader from "./iso-buf-reader.js";
-import IsoBufWriter from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class VarInt {
+export class VarInt {
   private buf: Buffer;
 
   constructor(buf: Buffer = Buffer.alloc(0)) {

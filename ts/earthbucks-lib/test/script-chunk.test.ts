@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import ScriptChunk from "../src/script-chunk";
+import { ScriptChunk } from "../src/script-chunk";
 import { OP } from "../src/opcode";
-import IsoBufWriter from "../src/iso-buf-writer";
+import { IsoBufWriter } from "../src/iso-buf-writer";
 import { Buffer } from "buffer";
 
 describe("ScriptChunk", () => {

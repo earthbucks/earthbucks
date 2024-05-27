@@ -1,6 +1,6 @@
 import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import IsoHex from "./iso-hex.js";
+import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
 import { blake3Hash } from "./blake3.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
@@ -14,7 +14,7 @@ import {
 } from "./ebx-error.js";
 import { Option, None, Some } from "earthbucks-opt-res";
 
-export default class PrivKey {
+export class PrivKey {
   buf: Buffer;
 
   constructor(buf: Buffer) {

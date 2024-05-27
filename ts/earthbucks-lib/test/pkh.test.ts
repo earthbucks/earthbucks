@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
-import KeyPair from "../src/key-pair";
+import { KeyPair } from "../src/key-pair";
 import fs from "fs";
 import path from "path";
-import Pkh from "../src/pkh";
+import { Pkh } from "../src/pkh";
 import { Buffer } from "buffer";
-import PubKey from "../src/pub-key";
+import { PubKey } from "../src/pub-key";
 
 describe("Pkh", () => {
   test("Pkh", () => {

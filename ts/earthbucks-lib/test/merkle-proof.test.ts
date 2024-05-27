@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import MerkleProof from "../src/merkle-proof";
+import { MerkleProof } from "../src/merkle-proof";
 import { doubleBlake3Hash } from "../src/blake3";
 import { Buffer } from "buffer";
 

@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class TxSignature {
+export class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001;
   static readonly SIGHASH_NONE = 0x00000002;
   static readonly SIGHASH_SINGLE = 0x00000003;

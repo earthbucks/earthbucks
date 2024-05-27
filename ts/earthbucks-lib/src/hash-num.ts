@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
-export default class HashNum {
+export class HashNum {
   num: bigint;
 
   constructor(num: bigint) {

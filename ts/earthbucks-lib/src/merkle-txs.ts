@@ -1,8 +1,8 @@
-import MerkleProof from "./merkle-proof.js";
-import Tx from "./tx.js";
+import { MerkleProof } from "./merkle-proof.js";
+import { Tx } from "./tx.js";
 import { Buffer } from "buffer";
 
-export default class MerkleTxs {
+export class MerkleTxs {
   public txs: Tx[];
   public root: Buffer;
   public proofs: MerkleProof[];

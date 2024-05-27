@@ -8,7 +8,7 @@ import {
   InsufficientPrecisionError,
 } from "./ebx-error.js";
 
-export default class IsoBufReader {
+export class IsoBufReader {
   buf: Buffer;
   pos: number;
 

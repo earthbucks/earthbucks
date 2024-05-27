@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-export default class Domain {
+export class Domain {
   public domainStr: string;
 
   constructor(domainStr: string) {

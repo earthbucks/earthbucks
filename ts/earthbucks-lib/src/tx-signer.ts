@@ -1,14 +1,14 @@
-import Tx from "./tx.js";
-import PkhKeyMap from "./pkh-key-map.js";
-import TxOutBnMap from "./tx-out-bn-map.js";
-import TxSignature from "./tx-signature.js";
+import { Tx } from "./tx.js";
+import { PkhKeyMap } from "./pkh-key-map.js";
+import { TxOutBnMap } from "./tx-out-bn-map.js";
+import { TxSignature } from "./tx-signature.js";
 import { Buffer } from "buffer";
-import PubKey from "./pub-key.js";
+import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import Script from "./script.js";
-import KeyPair from "./key-pair.js";
+import { Script } from "./script.js";
+import { KeyPair } from "./key-pair.js";
 
-export default class TxSigner {
+export class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
   public txOutMap: TxOutBnMap;

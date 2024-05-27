@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import ScriptNum from "../src/script-num";
+import { ScriptNum } from "../src/script-num";
 import { Buffer } from "buffer";
 
 describe("ScriptNum", () => {

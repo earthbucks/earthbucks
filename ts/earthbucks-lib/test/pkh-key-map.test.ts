@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import PkhKeyMap from "../src/pkh-key-map";
-import Pkh from "../src/pkh";
-import KeyPair from "../src/key-pair";
+import { PkhKeyMap } from "../src/pkh-key-map";
+import { Pkh } from "../src/pkh";
+import { KeyPair } from "../src/key-pair";
 import { Buffer } from "buffer";
 
 describe("PkhKeyMap", () => {

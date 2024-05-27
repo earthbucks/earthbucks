@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import IsoBufWriter from "../src/iso-buf-writer";
+import { IsoBufWriter } from "../src/iso-buf-writer";
 import { Buffer } from "buffer";
 
 describe("BufferWriter", () => {

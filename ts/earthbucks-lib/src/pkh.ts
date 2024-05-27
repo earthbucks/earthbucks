@@ -1,12 +1,12 @@
 import { doubleBlake3Hash, blake3Hash } from "./blake3.js";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
-import IsoHex from "./iso-hex.js";
-import PubKey from "./pub-key.js";
+import { IsoHex } from "./iso-hex.js";
+import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // public key hash
-export default class Pkh {
+export class Pkh {
   buf: Buffer;
 
   constructor(pkhBuf: Buffer) {

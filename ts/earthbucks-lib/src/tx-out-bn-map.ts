@@ -1,7 +1,7 @@
-import TxOutBn from "./tx-out-bn.js";
+import { TxOutBn } from "./tx-out-bn.js";
 import { Buffer } from "buffer";
 
-export default class TxOutBnMap {
+export class TxOutBnMap {
   public map: Map<string, TxOutBn>;
 
   constructor() {
