@@ -1,5 +1,5 @@
-use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::buffer::Buffer;
+use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use num_bigint::BigUint;

@@ -1,4 +1,4 @@
-use crate::blake3::{blake3_hash, double_blake3_hash};
+use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::opcode::{Opcode, OP};
 use crate::pub_key::PubKey;
 use crate::script::Script;

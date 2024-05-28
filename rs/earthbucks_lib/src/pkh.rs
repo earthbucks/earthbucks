@@ -1,5 +1,5 @@
-use crate::blake3::{blake3_hash, double_blake3_hash};
 use crate::ebx_error::EbxError;
+use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::iso_hex;
 use crate::pub_key;
 use bs58;

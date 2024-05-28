@@ -1,4 +1,4 @@
-use crate::blake3::double_blake3_hash;
+use crate::hash::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 
