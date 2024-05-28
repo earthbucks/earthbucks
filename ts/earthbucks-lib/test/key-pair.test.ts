@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { KeyPair } from "../src/key-pair.ts";
-import { PrivKey } from "../src/priv-key.ts";
+import { KeyPair } from "../src/key-pair";
+import { PrivKey } from "../src/priv-key";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";
@@ -12,9 +12,9 @@ describe("KeyPair", () => {
     expect(keypair.pubKey.toIsoBuf()).toBeDefined();
   });
 
-  describe("standard test vectors: key_pair.json", () => {
+  describe("standard test vectors: key_pair.tson", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../test-vectors/key_pair.json"),
+      path.resolve(__dirname, "../test-vectors/key_pair.tson"),
       "utf-8",
     );
 

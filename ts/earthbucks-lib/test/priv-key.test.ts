@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { PrivKey } from "../src/priv-key.ts";
+import { PrivKey } from "../src/priv-key";
 
 describe("PrivKey", () => {
   test("PrivKey", () => {

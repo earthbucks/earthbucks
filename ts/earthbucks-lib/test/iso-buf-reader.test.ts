@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from "vitest";
-import { IsoBufReader } from "../src/iso-buf-reader.ts";
+import { IsoBufReader } from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 import fs from "fs";
 import path from "path";
@@ -197,7 +197,7 @@ describe("IsoBufReader", () => {
 
     const filePath = path.resolve(
       __dirname,
-      "../test-vectors/iso_buf_reader.json",
+      "../test-vectors/iso_buf_reader.tson",
     );
     const jsonString = fs.readFileSync(filePath, "utf-8");
     const testVector: TestVectorIsoBufReader = JSON.parse(jsonString);

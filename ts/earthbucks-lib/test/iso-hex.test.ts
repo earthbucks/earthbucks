@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { IsoHex } from "../src/iso-hex.ts";
+import { IsoHex } from "../src/iso-hex";
 
 describe("strictHex", () => {
   test("should return true for valid hex strings", () => {

@@ -1,15 +1,15 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { ScriptInterpreter } from "../src/script-interpreter.ts";
-import { Script } from "../src/script.ts";
-import { Tx, HashCache } from "../src/tx.ts";
-import { TxIn } from "../src/tx-in.ts";
-import { TxOut } from "../src/tx-out.ts";
+import { ScriptInterpreter } from "../src/script-interpreter";
+import { Script } from "../src/script";
+import { Tx, HashCache } from "../src/tx";
+import { TxIn } from "../src/tx-in";
+import { TxOut } from "../src/tx-out";
 import fs from "fs";
 import path from "path";
-import { KeyPair } from "../src/key-pair.ts";
-import { Pkh } from "../src/pkh.ts";
-import { TxSignature } from "../src/tx-signature.ts";
-import { PrivKey } from "../src/priv-key.ts";
+import { KeyPair } from "../src/key-pair";
+import { Pkh } from "../src/pkh";
+import { TxSignature } from "../src/tx-signature";
+import { PrivKey } from "../src/priv-key";
 import { Buffer } from "buffer";
 
 describe("ScriptInterpreter", () => {
@@ -260,7 +260,7 @@ describe("ScriptInterpreter", () => {
     describe("script interpreter scripts", () => {
       const filePath = path.resolve(
         __dirname,
-        "../test-vectors/script_interpreter.json",
+        "../test-vectors/script_interpreter.tson",
       );
       const jsonString = fs.readFileSync(filePath, "utf-8");
       const testScripts: TestScript[] = JSON.parse(jsonString).scripts;

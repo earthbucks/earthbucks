@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { HashNum } from "../src/hash-num.ts";
+import { HashNum } from "../src/hash-num";
 
 describe("TargetNum", () => {
   test("fromTarget", () => {

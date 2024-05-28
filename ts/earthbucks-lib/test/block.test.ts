@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Header } from "../src/header.ts";
-import { Block } from "../src/block.ts";
-import { Tx } from "../src/tx.ts";
-import { IsoBufWriter } from "../src/iso-buf-writer.ts";
-import { IsoBufReader } from "../src/iso-buf-reader.ts";
+import { Header } from "../src/header";
+import { Block } from "../src/block";
+import { Tx } from "../src/tx";
+import { IsoBufWriter } from "../src/iso-buf-writer";
+import { IsoBufReader } from "../src/iso-buf-reader";
 import { Buffer } from "buffer";
 
 describe("Block", () => {

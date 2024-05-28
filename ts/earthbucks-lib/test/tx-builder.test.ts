@@ -1,13 +1,13 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { TxBuilder } from "../src/tx-builder.ts";
-import { TxOutBnMap } from "../src/tx-out-bn-map.ts";
-import { TxOut } from "../src/tx-out.ts";
-import { Script } from "../src/script.ts";
-import { KeyPair } from "../src/key-pair.ts";
-import { Pkh } from "../src/pkh.ts";
-import { PkhKeyMap } from "../src/pkh-key-map.ts";
+import { TxBuilder } from "../src/tx-builder";
+import { TxOutBnMap } from "../src/tx-out-bn-map";
+import { TxOut } from "../src/tx-out";
+import { Script } from "../src/script";
+import { KeyPair } from "../src/key-pair";
+import { Pkh } from "../src/pkh";
+import { PkhKeyMap } from "../src/pkh-key-map";
 import { Buffer } from "buffer";
-import { TxOutBn } from "../src/tx-out-bn.ts";
+import { TxOutBn } from "../src/tx-out-bn";
 
 describe("TxBuilder", () => {
   let txBuilder: TxBuilder;
