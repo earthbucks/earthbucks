@@ -1,9 +1,9 @@
+export * as Hash from "./src/hash.js";
 export * from "./src/block-builder.js";
 export * from "./src/block.js";
 export * from "./src/domain.js";
 export * from "./src/ebx-error.js";
 export * from "./src/hash-num.js";
-export * from "./src/hash.js";
 export * from "./src/header-mine.js";
 export * from "./src/header.js";
 export * from "./src/iso-buf-reader.js";
