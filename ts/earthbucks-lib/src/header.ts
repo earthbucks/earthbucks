@@ -10,16 +10,16 @@ export class Header {
   static readonly BLOCK_HEADER_SIZE = 220;
   static readonly INITIAL_TARGET = Buffer.alloc(32, 0xff);
 
-  version: number; // uint32
-  prevBlockId: Buffer; // 256 bits
-  merkleRoot: Buffer; // 256 bits
-  timestamp: bigint; // uint64
-  blockNum: bigint; // uint64
-  target: Buffer; // 256 bits
-  nonce: Buffer; // 256 bits
-  workAlgo: bigint; // uint64
-  workSer: Buffer; // 256 bits
-  workPar: Buffer; // 256 bits
+  version: number;
+  prevBlockId: Buffer;
+  merkleRoot: Buffer;
+  timestamp: bigint;
+  blockNum: bigint;
+  target: Buffer;
+  nonce: Buffer;
+  workAlgo: bigint;
+  workSer: Buffer;
+  workPar: Buffer;
 
   constructor(
     version: number,
