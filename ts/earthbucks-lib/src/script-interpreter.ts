@@ -1,11 +1,11 @@
-import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
-import { Script } from "./script.js";
-import { Tx, HashCache } from "./tx.js";
-import { ScriptNum } from "./script-num.js";
-import * as Hash from "./hash.js";
-import { TxSignature } from "./tx-signature.js";
+import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.ts";
+import { Script } from "./script.ts";
+import { Tx, HashCache } from "./tx.ts";
+import { ScriptNum } from "./script-num.ts";
+import * as Hash from "./hash.ts";
+import { TxSignature } from "./tx-signature.ts";
 import { Buffer } from "buffer";
-import { PubKey } from "./pub-key.js";
+import { PubKey } from "./pub-key.ts";
 
 export class ScriptInterpreter {
   public script: Script;

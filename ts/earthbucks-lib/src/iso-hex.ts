@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import { EbxError, InvalidHexError } from "./ebx-error.js";
+import { EbxError, InvalidHexError } from "./ebx-error.ts";
 import { Option, Some, None } from "earthbucks-opt-res";
 
 export class IsoHex {

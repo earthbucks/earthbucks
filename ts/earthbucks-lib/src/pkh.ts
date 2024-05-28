@@ -1,8 +1,8 @@
-import * as Hash from "./hash.js";
+import * as Hash from "./hash.ts";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
-import { IsoHex } from "./iso-hex.js";
-import { PubKey } from "./pub-key.js";
+import { IsoHex } from "./iso-hex.ts";
+import { PubKey } from "./pub-key.ts";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // public key hash

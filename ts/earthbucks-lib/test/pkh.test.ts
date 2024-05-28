@@ -39,9 +39,9 @@ describe("Pkh", () => {
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 
-  describe("standard test vectors: pkh.json", () => {
+  describe("standard test vectors: pkh.tson", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../test-vectors/pkh.json"),
+      path.resolve(__dirname, "../test-vectors/pkh.tson"),
       "utf-8",
     );
 

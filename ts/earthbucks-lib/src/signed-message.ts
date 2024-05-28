@@ -1,11 +1,11 @@
 import { Buffer } from "buffer";
-import * as Hash from "./hash.js";
+import * as Hash from "./hash.ts";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import { PrivKey } from "./priv-key.js";
-import { PubKey } from "./pub-key.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { PrivKey } from "./priv-key.ts";
+import { PubKey } from "./pub-key.ts";
+import { IsoBufReader } from "./iso-buf-reader.ts";
+import { IsoBufWriter } from "./iso-buf-writer.ts";
 
 export class SignedMessage {
   sig: Buffer;

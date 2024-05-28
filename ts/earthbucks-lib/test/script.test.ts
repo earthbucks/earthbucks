@@ -103,7 +103,7 @@ describe("Script", () => {
       error: string;
     }
 
-    const filePath = path.resolve(__dirname, "../test-vectors/script.json");
+    const filePath = path.resolve(__dirname, "../test-vectors/script.tson");
     const jsonString = fs.readFileSync(filePath, "utf-8");
     const testVectors: TestVectorScript = JSON.parse(jsonString);
 

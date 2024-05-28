@@ -1,17 +1,17 @@
-import { TxIn } from "./tx-in.js";
-import { TxOut } from "./tx-out.js";
-import { VarInt } from "./var-int.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
-import * as Hash from "./hash.js";
+import { TxIn } from "./tx-in.ts";
+import { TxOut } from "./tx-out.ts";
+import { VarInt } from "./var-int.ts";
+import { IsoBufReader } from "./iso-buf-reader.ts";
+import { IsoBufWriter } from "./iso-buf-writer.ts";
+import * as Hash from "./hash.ts";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import { TxSignature } from "./tx-signature.js";
-import { Script } from "./script.js";
+import { TxSignature } from "./tx-signature.ts";
+import { Script } from "./script.ts";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import { IsoHex } from "./iso-hex.js";
-import { EbxError } from "./ebx-error.js";
+import { IsoHex } from "./iso-hex.ts";
+import { EbxError } from "./ebx-error.ts";
 
 export class HashCache {
   public hashPrevouts?: Buffer;

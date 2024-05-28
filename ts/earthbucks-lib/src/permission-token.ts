@@ -1,5 +1,5 @@
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.ts";
+import { IsoBufWriter } from "./iso-buf-writer.ts";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 

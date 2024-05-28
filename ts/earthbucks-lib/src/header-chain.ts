@@ -1,7 +1,7 @@
-import { Header } from "./header.js";
-import { Pkh } from "./pkh.js";
-import { Script } from "./script.js";
-import { ScriptChunk } from "./script-chunk.js";
+import { Header } from "./header.ts";
+import { Pkh } from "./pkh.ts";
+import { Script } from "./script.ts";
+import { ScriptChunk } from "./script-chunk.ts";
 import { Option, Some, None } from "earthbucks-opt-res";
 
 export class HeaderChain {

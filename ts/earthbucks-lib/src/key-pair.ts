@@ -1,5 +1,5 @@
-import { PrivKey } from "./priv-key.js";
-import { PubKey } from "./pub-key.js";
+import { PrivKey } from "./priv-key.ts";
+import { PubKey } from "./pub-key.ts";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 

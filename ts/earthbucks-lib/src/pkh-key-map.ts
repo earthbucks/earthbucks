@@ -1,4 +1,4 @@
-import { KeyPair } from "./key-pair.js";
+import { KeyPair } from "./key-pair.ts";
 import { Buffer } from "buffer";
 
 export class PkhKeyMap {

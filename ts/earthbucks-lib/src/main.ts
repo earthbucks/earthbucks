@@ -1,5 +1,5 @@
-import { KeyPair } from "./key-pair.js";
-import { Pkh } from "./pkh.js";
+import { KeyPair } from "./key-pair.ts";
+import { Pkh } from "./pkh.ts";
 import { Buffer } from "buffer";
 
 function main() {
