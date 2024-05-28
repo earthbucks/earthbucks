@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Header } from "../src/header";
+import { Header } from "../src/header.ts";
 import { Buffer } from "buffer";
 
 describe("BlockHeader", () => {

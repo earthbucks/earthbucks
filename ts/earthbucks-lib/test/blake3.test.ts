@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import * as Hash from "../src/hash";
+import * as Hash from "../src/hash.ts";
 import { Buffer } from "buffer";
 
 describe("blake3", () => {

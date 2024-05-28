@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { TxOutBnMap } from "../src/tx-out-bn-map";
-import { TxOut } from "../src/tx-out";
-import { Script } from "../src/script";
+import { TxOutBnMap } from "../src/tx-out-bn-map.ts";
+import { TxOut } from "../src/tx-out.ts";
+import { Script } from "../src/script.ts";
 import { Buffer } from "buffer";
-import { TxOutBn } from "../src/tx-out-bn";
+import { TxOutBn } from "../src/tx-out-bn.ts";
 
 describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;

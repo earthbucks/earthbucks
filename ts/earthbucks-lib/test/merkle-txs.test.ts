@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { MerkleTxs } from "../src/merkle-txs";
-import { Tx } from "../src/tx";
+import { MerkleTxs } from "../src/merkle-txs.ts";
+import { Tx } from "../src/tx.ts";
 import { Buffer } from "buffer";
 
 describe("MerkleTxs", () => {

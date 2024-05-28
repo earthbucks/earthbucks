@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { SignedMessage } from "../src/signed-message";
-import { PubKey } from "../src/pub-key";
-import { PrivKey } from "../src/priv-key";
+import { SignedMessage } from "../src/signed-message.ts";
+import { PubKey } from "../src/pub-key.ts";
+import { PrivKey } from "../src/priv-key.ts";
 
 describe("SignedMessage", () => {
   test("sign and verify", async () => {

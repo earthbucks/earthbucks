@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { MerkleNode } from "../src/merkle-node";
-import * as Hash from "../src/hash";
+import { MerkleNode } from "../src/merkle-node.ts";
+import * as Hash from "../src/hash.ts";
 import { Buffer } from "buffer";
 
 describe("MerkleNode", () => {

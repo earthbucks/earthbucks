@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Script } from "../src/script";
+import { Script } from "../src/script.ts";
 import { Buffer } from "buffer";
 import fs from "fs";
 import path from "path";
@@ -103,7 +103,7 @@ describe("Script", () => {
       error: string;
     }
 
-    const filePath = path.resolve(__dirname, "../test-vectors/script.tson");
+    const filePath = path.resolve(__dirname, "../test-vectors/script.json");
     const jsonString = fs.readFileSync(filePath, "utf-8");
     const testVectors: TestVectorScript = JSON.parse(jsonString);
 

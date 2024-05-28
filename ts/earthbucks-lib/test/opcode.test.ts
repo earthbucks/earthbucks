@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { OP, OPCODE_TO_NAME } from "../src/opcode";
+import { OP, OPCODE_TO_NAME } from "../src/opcode.ts";
 import { Buffer } from "buffer";
 
 describe("opcode", () => {

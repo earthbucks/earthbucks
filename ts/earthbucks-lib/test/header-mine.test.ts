@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { HeaderMine } from "../src/header-mine";
-import { Header } from "../src/header";
+import { HeaderMine } from "../src/header-mine.ts";
+import { Header } from "../src/header.ts";
 
 describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {

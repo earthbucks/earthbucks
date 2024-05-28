@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { KeyPair } from "../src/key-pair";
+import { KeyPair } from "../src/key-pair.ts";
 import fs from "fs";
 import path from "path";
-import { Pkh } from "../src/pkh";
+import { Pkh } from "../src/pkh.ts";
 import { Buffer } from "buffer";
-import { PubKey } from "../src/pub-key";
+import { PubKey } from "../src/pub-key.ts";
 
 describe("Pkh", () => {
   test("Pkh", () => {
@@ -39,9 +39,9 @@ describe("Pkh", () => {
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 
-  describe("standard test vectors: pkh.tson", () => {
+  describe("standard test vectors: pkh.json", () => {
     const data = fs.readFileSync(
-      path.resolve(__dirname, "../test-vectors/pkh.tson"),
+      path.resolve(__dirname, "../test-vectors/pkh.json"),
       "utf-8",
     );
 
