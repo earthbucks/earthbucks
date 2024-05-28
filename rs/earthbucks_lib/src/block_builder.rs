@@ -58,9 +58,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         let tx = Tx::new(1, vec![], vec![], 0);
         let block = Block::new(bh.clone(), vec![tx]);

@@ -14,9 +14,10 @@ pub struct Header {
     pub merkle_root: [u8; 32],
     pub target: [u8; 32],
     pub nonce: [u8; 32],
-    pub work_algo: u64,
-    pub work_ser: [u8; 32],
-    pub work_par: [u8; 32],
+    pub work_ser_algo: u32,
+    pub work_ser_hash: [u8; 32],
+    pub work_par_algo: u32,
+    pub work_par_hash: [u8; 32],
 }
 
 impl Header {
@@ -34,9 +35,10 @@ impl Header {
         bw.write_u64_be(self.block_num);
         bw.write_iso_buf(self.target.to_vec());
         bw.write_iso_buf(self.nonce.to_vec());
-        bw.write_u64_be(self.work_algo);
-        bw.write_iso_buf(self.work_ser.to_vec());
-        bw.write_iso_buf(self.work_par.to_vec());
+        bw.write_u32_be(self.work_ser_algo);
+        bw.write_iso_buf(self.work_ser_hash.to_vec());
+        bw.write_u32_be(self.work_par_algo);
+        bw.write_iso_buf(self.work_par_hash.to_vec());
         bw.to_iso_buf()
     }
 
@@ -52,9 +54,10 @@ impl Header {
         let block_num = br.read_u64_be().map_err(|e| e.to_string())?;
         let target: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         let nonce: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
-        let work_algo = br.read_u64_be().map_err(|e| e.to_string())?;
-        let work_ser: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_ser_algo = br.read_u32_be().map_err(|e| e.to_string())?;
+        let work_ser_hash: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_par_algo = br.read_u32_be().map_err(|e| e.to_string())?;
+        let work_par_hash: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -63,9 +66,10 @@ impl Header {
             block_num,
             target,
             nonce,
-            work_algo,
-            work_ser,
-            work_par,
+            work_ser_algo,
+            work_ser_hash,
+            work_par_algo,
+            work_par_hash,
         })
     }
 
@@ -80,9 +84,10 @@ impl Header {
         let block_num = br.read_u64_be().map_err(|e| e.to_string())?;
         let target: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         let nonce: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
-        let work_algo = br.read_u64_be().map_err(|e| e.to_string())?;
-        let work_ser: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
-        let work_par: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_ser_algo: u32 = br.read_u32_be().map_err(|e| e.to_string())?;
+        let work_ser_hash: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
+        let work_par_algo: u32 = br.read_u32_be().map_err(|e| e.to_string())?;
+        let work_par_hash: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         Ok(Self {
             version,
             prev_block_id,
@@ -91,9 +96,10 @@ impl Header {
             block_num,
             target,
             nonce,
-            work_algo,
-            work_ser,
-            work_par,
+            work_ser_algo,
+            work_ser_hash,
+            work_par_algo,
+            work_par_hash,
         })
     }
 
@@ -106,9 +112,10 @@ impl Header {
         bw.write_u64_be(self.block_num);
         bw.write_iso_buf(self.target.to_vec());
         bw.write_iso_buf(self.nonce.to_vec());
-        bw.write_u64_be(self.work_algo);
-        bw.write_iso_buf(self.work_ser.to_vec());
-        bw.write_iso_buf(self.work_par.to_vec());
+        bw.write_u32_be(self.work_ser_algo);
+        bw.write_iso_buf(self.work_ser_hash.to_vec());
+        bw.write_u32_be(self.work_par_algo);
+        bw.write_iso_buf(self.work_par_hash.to_vec());
         bw
     }
 
@@ -218,9 +225,10 @@ impl Header {
             block_num: 0,
             target: initial_target,
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         }
     }
 
@@ -253,9 +261,10 @@ impl Header {
         let block_num = lch.len() as u64;
         let timestamp = new_timestamp;
         let nonce = [0u8; 32];
-        let work_algo = prev_block.work_algo;
-        let work_ser = [0u8; 32];
-        let work_par = [0u8; 32];
+        let work_ser_algo = prev_block.work_ser_algo;
+        let work_ser_hash = [0u8; 32];
+        let work_par_algo = prev_block.work_par_algo;
+        let work_par_hash = [0u8; 32];
         Ok(Self {
             version: 1,
             prev_block_id,
@@ -264,9 +273,10 @@ impl Header {
             block_num,
             target: new_target,
             nonce,
-            work_algo,
-            work_ser,
-            work_par,
+            work_ser_algo,
+            work_ser_hash,
+            work_par_algo,
+            work_par_hash,
         })
     }
 
@@ -349,9 +359,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         let buf = bh1.to_iso_buf();
         let bh2 = Header::from_iso_buf(buf).unwrap();
@@ -374,9 +385,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         let buf = bh1.to_iso_buf();
         let bh2 = Header::from_iso_buf(buf).unwrap();
@@ -399,9 +411,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         assert!(bh1.is_valid_in_isolation());
     }
@@ -416,9 +429,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         assert!(bh1.is_genesis());
     }
@@ -433,9 +447,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         let hash = bh1.hash();
         let hex = hex::encode(hash);
@@ -455,9 +470,10 @@ mod tests {
             block_num: 0,
             target: [0; 32],
             nonce: [0; 32],
-            work_algo: 0,
-            work_ser: [0; 32],
-            work_par: [0; 32],
+            work_ser_algo: 0,
+            work_ser_hash: [0; 32],
+            work_par_algo: 0,
+            work_par_hash: [0; 32],
         };
         let id = bh1.id();
         let hex = hex::encode(id);

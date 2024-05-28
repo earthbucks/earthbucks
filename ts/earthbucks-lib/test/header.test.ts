@@ -12,8 +12,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const buf = bh1.toIsoBuf();
@@ -36,8 +37,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const buf = bh1.toIsoBuf();
@@ -60,8 +62,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     expect(bh1.isValid()).toBe(true);
@@ -76,8 +79,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     expect(bh1.isGenesis()).toBe(true);
@@ -92,8 +96,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     expect(Buffer.from(bh1.hash()).toString("hex")).toBe(
@@ -110,8 +115,9 @@ describe("BlockHeader", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     expect(Buffer.from(bh1.id()).toString("hex")).toBe(
@@ -129,8 +135,9 @@ describe("BlockHeader", () => {
         0n,
         Buffer.alloc(32),
         Buffer.alloc(32),
-        0n,
+        0,
         Buffer.alloc(32),
+        0,
         Buffer.alloc(32),
       );
       const prevAdjustmentBlockHeader = null;
@@ -154,8 +161,9 @@ describe("BlockHeader", () => {
         Header.BLOCKS_PER_ADJUSTMENT - 1n,
         Buffer.alloc(32),
         Buffer.alloc(32),
-        0n,
+        0,
         Buffer.alloc(32),
+        0,
         Buffer.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
@@ -166,8 +174,9 @@ describe("BlockHeader", () => {
         0n,
         Buffer.alloc(32),
         Buffer.alloc(32),
-        0n,
+        0,
         Buffer.alloc(32),
+        0,
         Buffer.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
@@ -192,8 +201,9 @@ describe("BlockHeader", () => {
         Header.BLOCKS_PER_ADJUSTMENT - 1n,
         initialTarget,
         Buffer.alloc(32),
-        0n,
+        0,
         Buffer.alloc(32),
+        0,
         Buffer.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
@@ -204,8 +214,9 @@ describe("BlockHeader", () => {
         0n,
         initialTarget,
         Buffer.alloc(32),
-        0n,
+        0,
         Buffer.alloc(32),
+        0,
         Buffer.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(

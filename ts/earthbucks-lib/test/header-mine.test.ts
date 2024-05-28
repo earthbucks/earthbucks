@@ -12,8 +12,9 @@ describe("HeaderMine", () => {
       BigInt(0),
       Buffer.alloc(32),
       Buffer.alloc(32),
-      BigInt(0),
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const headerMine = new HeaderMine(header);
@@ -31,8 +32,9 @@ describe("HeaderMine", () => {
       BigInt(0),
       Buffer.alloc(32),
       Buffer.alloc(32),
-      BigInt(0),
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const headerMine = new HeaderMine(header);

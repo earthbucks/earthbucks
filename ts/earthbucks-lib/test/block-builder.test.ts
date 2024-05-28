@@ -18,8 +18,9 @@ describe("BlockBuilder", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
@@ -58,8 +59,9 @@ describe("BlockBuilder", () => {
       0n,
       target,
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
@@ -86,8 +88,9 @@ describe("BlockBuilder", () => {
       0n,
       Buffer.alloc(32),
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);

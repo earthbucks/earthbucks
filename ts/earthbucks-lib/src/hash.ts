@@ -36,4 +36,4 @@ if (typeof document === "undefined") {
   };
 }
 
-export { blake3Hash, doubleBlake3Hash, blake3Mac}
+export { blake3Hash, doubleBlake3Hash, blake3Mac };

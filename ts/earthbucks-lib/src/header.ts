@@ -17,9 +17,10 @@ export class Header {
   blockNum: bigint;
   target: Buffer;
   nonce: Buffer;
-  workAlgo: bigint;
-  workSer: Buffer;
-  workPar: Buffer;
+  workSerAlgo: number;
+  workSerHash: Buffer;
+  workParAlgo: number;
+  workParHash: Buffer;
 
   constructor(
     version: number,
@@ -29,9 +30,10 @@ export class Header {
     blockNum: bigint,
     target: Buffer,
     nonce: Buffer,
-    workAlgo: bigint,
-    workSer: Buffer,
-    workPar: Buffer,
+    workSerAlgo: number,
+    workSerHash: Buffer,
+    workParAlgo: number,
+    workParHash: Buffer,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -40,9 +42,10 @@ export class Header {
     this.blockNum = blockNum;
     this.target = target;
     this.nonce = nonce;
-    this.workAlgo = workAlgo;
-    this.workSer = workSer;
-    this.workPar = workPar;
+    this.workSerAlgo = workSerAlgo;
+    this.workSerHash = workSerHash;
+    this.workParAlgo = workSerAlgo;
+    this.workParHash = workParHash;
   }
 
   toIsoBuf(): Buffer {
@@ -54,9 +57,10 @@ export class Header {
     bw.writeUInt64BE(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BE(this.workAlgo);
-    bw.writeBuffer(this.workSer);
-    bw.writeBuffer(this.workPar);
+    bw.writeUInt32BE(this.workSerAlgo);
+    bw.writeBuffer(this.workSerHash);
+    bw.writeUInt32BE(this.workParAlgo);
+    bw.writeBuffer(this.workParHash);
     return bw.toIsoBuf();
   }
 
@@ -114,27 +118,34 @@ export class Header {
       return nonceRes;
     }
     const nonce = nonceRes.unwrap();
-    const workAlgoRes = br
-      .readU64BE()
+    const workSerAlgoRes = br
+      .readU32BE()
       .mapErr((err) => `Could not read work algorithm: ${err}`);
-    if (workAlgoRes.err) {
-      return workAlgoRes;
+    if (workSerAlgoRes.err) {
+      return workSerAlgoRes;
     }
-    const workAlgo = workAlgoRes.unwrap();
-    const workSerRes = br
+    const workSerAlgo = workSerAlgoRes.unwrap();
+    const workSerHashRes = br
       .read(32)
       .mapErr((err) => `Could not read serial work: ${err}`);
-    if (workSerRes.err) {
-      return workSerRes;
+    if (workSerHashRes.err) {
+      return workSerHashRes;
     }
-    const workSer = workSerRes.unwrap();
-    const workParRes = br
+    const workSerHash = workSerHashRes.unwrap();
+    const workParAlgoRes = br
+      .readU32BE()
+      .mapErr((err) => `Could not read work algorithm: ${err}`);
+    if (workParAlgoRes.err) {
+      return workParAlgoRes;
+    }
+    const workParAlgo = workParAlgoRes.unwrap();
+    const workParHashRes = br
       .read(32)
       .mapErr((err) => `Could not read parallel work: ${err}`);
-    if (workParRes.err) {
-      return workParRes;
+    if (workParHashRes.err) {
+      return workParHashRes;
     }
-    const workPar = workParRes.unwrap();
+    const workParHash = workParHashRes.unwrap();
     return Ok(
       new Header(
         version,
@@ -144,9 +155,10 @@ export class Header {
         blockNum,
         target,
         nonce,
-        workAlgo,
-        workSer,
-        workPar,
+        workSerAlgo,
+        workSerHash,
+        workParAlgo,
+        workParHash,
       ),
     );
   }
@@ -159,9 +171,10 @@ export class Header {
     bw.writeUInt64BE(this.blockNum);
     bw.writeBuffer(this.target);
     bw.writeBuffer(this.nonce);
-    bw.writeUInt64BE(this.workAlgo);
-    bw.writeBuffer(this.workSer);
-    bw.writeBuffer(this.workPar);
+    bw.writeUInt32BE(this.workSerAlgo);
+    bw.writeBuffer(this.workSerHash);
+    bw.writeUInt32BE(this.workParAlgo);
+    bw.writeBuffer(this.workParHash);
     return bw;
   }
 
@@ -183,8 +196,9 @@ export class Header {
       0n,
       initialTarget,
       Buffer.alloc(32),
-      0n,
+      0,
       Buffer.alloc(32),
+      0,
       Buffer.alloc(32),
     );
   }
@@ -215,9 +229,10 @@ export class Header {
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     const nonce = Buffer.alloc(32);
-    const workAlgo = prevBlockHeader.workAlgo;
-    const workSer = Buffer.alloc(32);
-    const workPar = Buffer.alloc(32);
+    const workSerAlgo = prevBlockHeader.workSerAlgo;
+    const workSerHash = Buffer.alloc(32);
+    const workParAlgo = prevBlockHeader.workParAlgo;
+    const workParHash = Buffer.alloc(32);
     return Ok(
       new Header(
         1,
@@ -227,9 +242,10 @@ export class Header {
         blockNum,
         target,
         nonce,
-        workAlgo,
-        workSer,
-        workPar,
+        workSerAlgo,
+        workSerHash,
+        workParAlgo,
+        workParHash,
       ),
     );
   }
