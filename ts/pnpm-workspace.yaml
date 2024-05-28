@@ -1,2 +1,3 @@
 packages:
   - 'earthbucks-lib'
+  - 'earthbucks-opt-res'

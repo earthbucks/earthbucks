@@ -6,7 +6,6 @@
   "types": "dist/lib.d.js",
   "scripts": {
     "clean": "rimraf dist",
-    "main": "tsx src/main.ts",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
@@ -27,8 +26,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "rimraf": "^5.0.7",
-    "tsx": "^4.7.1"
+    "rimraf": "^5.0.7"
   },
   "prettier": {
     "semi": true,
