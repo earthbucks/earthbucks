@@ -29,7 +29,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       earthbucks-opt-res:
-        specifier: ^0.1.5
+        specifier: workspace:^
         version: link:../earthbucks-opt-res
       mathjs:
         specifier: ^12.4.2
