@@ -21,7 +21,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub const BLOCKS_PER_TARGET_ADJ: u64 = 2016; // exactly two weeks if block interval is 10 minutes
+    pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
     pub const BLOCK_HEADER_SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
@@ -103,7 +103,7 @@ impl Header {
         })
     }
 
-    pub fn to_buffer_writer(&self) -> IsoBufWriter {
+    pub fn to_iso_buf_writer(&self) -> IsoBufWriter {
         let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
         bw.write_iso_buf(self.prev_block_id.to_vec());
@@ -282,8 +282,8 @@ impl Header {
 
     pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<[u8; 32], String> {
         // get slice of max length BLOCKS_PER_TARGET_ADJ
-        let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ as usize {
-            lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ as usize..].to_vec()
+        let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize {
+            lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize..].to_vec()
         } else {
             lch.to_vec().clone()
         };

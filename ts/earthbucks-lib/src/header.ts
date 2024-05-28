@@ -5,7 +5,7 @@ import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class Header {
-  static readonly BLOCKS_PER_ADJUSTMENT = 2016n;
+  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
   static readonly INITIAL_TARGET = Buffer.alloc(32, 0xff);
@@ -186,6 +186,14 @@ export class Header {
     return Header.fromIsoBuf(Buffer.from(str, "hex"));
   }
 
+  toIsoString(): string {
+    return this.toIsoHex();
+  }
+
+  static fromIsoString(str: string): Result<Header, string> {
+    return Header.fromIsoHex(str);
+  }
+
   static fromGenesis(initialTarget: Buffer): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
@@ -209,10 +217,11 @@ export class Header {
   ): Result<Header, string> {
     let target = null;
     const blockNum = prevBlockHeader.blockNum + 1n;
-    if (blockNum % Header.BLOCKS_PER_ADJUSTMENT === 0n) {
+    if (blockNum % Header.BLOCKS_PER_TARGET_ADJ_PERIOD === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.blockNum + Header.BLOCKS_PER_ADJUSTMENT !==
+        prevAdjustmentBlockHeader.blockNum +
+          Header.BLOCKS_PER_TARGET_ADJ_PERIOD !==
           blockNum
       ) {
         return Err(
@@ -298,7 +307,8 @@ export class Header {
 
   static adjustTarget(targetBuf: Buffer, timeDiff: bigint): Buffer {
     const target = BigInt("0x" + Buffer.from(targetBuf).toString("hex"));
-    const twoWeeks = Header.BLOCKS_PER_ADJUSTMENT * Header.BLOCK_INTERVAL;
+    const twoWeeks =
+      Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
 
     // To prevent extreme difficulty adjustments, if it took less than 1 week or
     // more than 8 weeks, we still consider it as 1 week or 8 weeks

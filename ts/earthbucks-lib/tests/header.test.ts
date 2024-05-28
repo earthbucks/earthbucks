@@ -157,8 +157,8 @@ describe("BlockHeader", () => {
         1,
         Buffer.alloc(32),
         Buffer.alloc(32),
-        Header.BLOCKS_PER_ADJUSTMENT - 1n,
-        Header.BLOCKS_PER_ADJUSTMENT - 1n,
+        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
+        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
         Buffer.alloc(32),
         Buffer.alloc(32),
         0,
@@ -183,7 +183,7 @@ describe("BlockHeader", () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       ).unwrap();
-      expect(bh.blockNum).toBe(Header.BLOCKS_PER_ADJUSTMENT);
+      expect(bh.blockNum).toBe(Header.BLOCKS_PER_TARGET_ADJ_PERIOD);
       expect(bh.target).toEqual(Header.adjustTarget(Buffer.alloc(32), 0n));
     });
 
@@ -198,7 +198,7 @@ describe("BlockHeader", () => {
         Buffer.alloc(32),
         Buffer.alloc(32),
         timeDiff - 1n,
-        Header.BLOCKS_PER_ADJUSTMENT - 1n,
+        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
         initialTarget,
         Buffer.alloc(32),
         0,
@@ -223,7 +223,7 @@ describe("BlockHeader", () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       ).unwrap();
-      expect(bh.blockNum).toBe(Header.BLOCKS_PER_ADJUSTMENT);
+      expect(bh.blockNum).toBe(Header.BLOCKS_PER_TARGET_ADJ_PERIOD);
       expect(Buffer.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );

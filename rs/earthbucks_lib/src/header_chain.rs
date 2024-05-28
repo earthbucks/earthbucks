@@ -7,7 +7,7 @@ pub struct HeaderChain {
 }
 
 impl HeaderChain {
-    pub const LENGTH_TARGET_ADJ_PERIOD: u64 = Header::BLOCKS_PER_TARGET_ADJ;
+    pub const LENGTH_TARGET_ADJ_PERIOD: u64 = Header::BLOCKS_PER_TARGET_ADJ_PERIOD;
     pub const LENGTH_EXPIRY_PERIOD: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64;
     pub const LENGTH_SAFETY_PERIOD: u64 = HeaderChain::LENGTH_EXPIRY_PERIOD * 2;
 
