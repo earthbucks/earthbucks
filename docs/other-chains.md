@@ -1,5 +1,6 @@
 # Other Chains
 
+- [ampleforth](https://www.ampleforth.org/paper/)
 - [saito](https://saito.io/saito-whitepaper.pdf)
 - [solana](https://solana.com/solana-whitepaper.pdf)
 - [terra](https://terra.money/Terra_White_paper.pdf)
