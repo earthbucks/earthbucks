@@ -2,7 +2,7 @@ import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
 import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
-import { blake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,
@@ -76,7 +76,7 @@ export class PrivKey {
   }
 
   toIsoStr(): string {
-    const hashBuf = blake3Hash(this.buf);
+    const hashBuf = Hash.blake3Hash(this.buf);
     const checkBuf = hashBuf.subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return "ebxprv" + checkHex + bs58.encode(this.buf);
@@ -98,7 +98,7 @@ export class PrivKey {
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }
-    const hashBuf = blake3Hash(decoded);
+    const hashBuf = Hash.blake3Hash(decoded);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
       return Err(new InvalidEncodingError(None));

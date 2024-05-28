@@ -1,6 +1,6 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
@@ -273,11 +273,11 @@ export class Header {
   }
 
   hash(): Buffer {
-    return blake3Hash(this.toIsoBuf());
+    return Hash.blake3Hash(this.toIsoBuf());
   }
 
   id(): Buffer {
-    return doubleBlake3Hash(this.toIsoBuf());
+    return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
   static adjustTarget(targetBuf: Buffer, timeDiff: bigint): Buffer {

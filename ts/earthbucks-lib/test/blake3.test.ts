@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { blake3Hash, doubleBlake3Hash, blake3Mac } from "../src/blake3";
+import { Hash } from "../src/hash";
 import { Buffer } from "buffer";
 
 describe("blake3", () => {
@@ -14,7 +14,7 @@ describe("blake3", () => {
     const expected_pkh = Buffer.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = Buffer.from(blake3Hash(pub_key));
+    const pkh = Buffer.from(Hash.blake3Hash(pub_key));
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
@@ -31,16 +31,16 @@ describe("blake3", () => {
     const expected_pkh = Buffer.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = Buffer.from(doubleBlake3Hash(pub_key));
+    const pkh = Buffer.from(Hash.doubleBlake3Hash(pub_key));
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
   });
 
   test("blake3Mac", () => {
-    const key = blake3Hash(Buffer.from("key"));
+    const key = Hash.blake3Hash(Buffer.from("key"));
     const data = Buffer.from("data");
-    const mac = Buffer.from(blake3Mac(key, data));
+    const mac = Buffer.from(Hash.blake3Mac(key, data));
     expect(mac.toString("hex")).toEqual(
       "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27",
     );

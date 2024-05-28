@@ -5,7 +5,7 @@ import { TxOut } from "../src/tx-out";
 import { Script } from "../src/script";
 import { IsoBufReader } from "../src/iso-buf-reader";
 import { IsoBufWriter } from "../src/iso-buf-writer";
-import { blake3Hash } from "../src/blake3";
+import { Hash } from "../src/hash";
 import { TxSignature } from "../src/tx-signature";
 import { KeyPair } from "../src/key-pair";
 import { Buffer } from "buffer";
@@ -146,7 +146,7 @@ describe("Tx", () => {
       const lockAbs = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
-      const expectedHash = blake3Hash(tx.toIsoBuf());
+      const expectedHash = Hash.blake3Hash(tx.toIsoBuf());
       expect(tx.blake3Hash()).toEqual(expectedHash);
     });
   });
@@ -159,7 +159,7 @@ describe("Tx", () => {
       const lockAbs = BigInt(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
-      const expectedHash = blake3Hash(blake3Hash(tx.toIsoBuf()));
+      const expectedHash = Hash.blake3Hash(Hash.blake3Hash(tx.toIsoBuf()));
       expect(tx.id()).toEqual(expectedHash);
     });
   });

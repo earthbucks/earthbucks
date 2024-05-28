@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
-import { blake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,
@@ -58,7 +58,7 @@ export class PubKey {
   }
 
   toIsoStr(): string {
-    const checkHash = blake3Hash(this.buf);
+    const checkHash = Hash.blake3Hash(this.buf);
     const checkSum = checkHash.subarray(0, 4);
     const checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + bs58.encode(this.buf);
@@ -80,7 +80,7 @@ export class PubKey {
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }
-    const checkHash = blake3Hash(decoded);
+    const checkHash = Hash.blake3Hash(decoded);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
       return Err(new InvalidEncodingError(None));

@@ -1,4 +1,4 @@
-import { doubleBlake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
@@ -21,7 +21,7 @@ export class MerkleNode {
     if (this.left || this.right) {
       const leftData = this.left ? this.left.hash() : Buffer.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
-      return doubleBlake3Hash(Buffer.concat([leftData, rightData]));
+      return Hash.doubleBlake3Hash(Buffer.concat([leftData, rightData]));
     } else {
       return this.hashedData;
     }
@@ -41,7 +41,7 @@ export class MerkleNode {
         new MerkleNode(
           left,
           right,
-          doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+          Hash.doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
         ),
       );
     }
@@ -60,7 +60,7 @@ export class MerkleNode {
       new MerkleNode(
         left,
         right,
-        doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
+        Hash.doubleBlake3Hash(Buffer.concat([left.hash(), right.hash()])),
       ),
     );
   }

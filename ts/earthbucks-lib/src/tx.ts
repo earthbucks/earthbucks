@@ -3,7 +3,7 @@ import { TxOut } from "./tx-out.js";
 import { VarInt } from "./var-int.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
@@ -128,11 +128,11 @@ export class Tx {
   }
 
   blake3Hash(): Buffer {
-    return blake3Hash(this.toIsoBuf());
+    return Hash.blake3Hash(this.toIsoBuf());
   }
 
   id(): Buffer {
-    return doubleBlake3Hash(this.toIsoBuf());
+    return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
   hashPrevouts(): Buffer {
@@ -141,7 +141,7 @@ export class Tx {
       writer.writeBuffer(input.inputTxId);
       writer.writeUInt32BE(input.inputTxNOut);
     }
-    return doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
   hashLockRel(): Buffer {
@@ -149,7 +149,7 @@ export class Tx {
     for (const input of this.inputs) {
       writer.writeUInt32BE(input.lockRel);
     }
-    return doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
   hashOutputs(): Buffer {
@@ -157,7 +157,7 @@ export class Tx {
     for (const output of this.outputs) {
       writer.writeBuffer(output.toIsoBuf());
     }
-    return doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
   sighashPreimage(
@@ -205,7 +205,7 @@ export class Tx {
       (hashType & 0x1f) === SIGHASH_SINGLE &&
       inputIndex < this.outputs.length
     ) {
-      outputsHash = doubleBlake3Hash(this.outputs[inputIndex].toIsoBuf());
+      outputsHash = Hash.doubleBlake3Hash(this.outputs[inputIndex].toIsoBuf());
     }
 
     const writer = new IsoBufWriter();
@@ -238,7 +238,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const hash = doubleBlake3Hash(preimage);
+    const hash = Hash.doubleBlake3Hash(preimage);
     return hash;
   }
 
@@ -256,7 +256,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const hash = doubleBlake3Hash(preimage);
+    const hash = Hash.doubleBlake3Hash(preimage);
     return hash;
   }
 

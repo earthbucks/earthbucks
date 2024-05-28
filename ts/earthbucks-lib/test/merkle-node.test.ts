@@ -1,11 +1,11 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleNode } from "../src/merkle-node";
-import { doubleBlake3Hash } from "../src/blake3";
+import { Hash } from "../src/hash";
 import { Buffer } from "buffer";
 
 describe("MerkleNode", () => {
   test("fromU8Vecs with 1 data", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
 
     const data = [data1];
     const root = MerkleNode.fromIsoBufs(data).unwrap();
@@ -16,8 +16,8 @@ describe("MerkleNode", () => {
   });
 
   test("fromU8Vecs with 2 datas", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
 
     const data = [data1, data2];
     const root = MerkleNode.fromIsoBufs(data).unwrap();
@@ -28,10 +28,10 @@ describe("MerkleNode", () => {
   });
 
   test("fromU8Vecs with 4 datas", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
-    const data3 = doubleBlake3Hash(Buffer.from("data3"));
-    const data4 = doubleBlake3Hash(Buffer.from("data4"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
+    const data3 = Hash.doubleBlake3Hash(Buffer.from("data3"));
+    const data4 = Hash.doubleBlake3Hash(Buffer.from("data4"));
 
     const data = [data1, data2, data3, data4];
     const root = MerkleNode.fromIsoBufs(data).unwrap();

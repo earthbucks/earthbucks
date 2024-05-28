@@ -1,4 +1,4 @@
-import { doubleBlake3Hash, blake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
 import { IsoHex } from "./iso-hex.js";
@@ -14,7 +14,7 @@ export class Pkh {
   }
 
   static fromPubKeyBuf(pubKeyBuf: Buffer): Pkh {
-    const pkhBuf = doubleBlake3Hash(pubKeyBuf);
+    const pkhBuf = Hash.doubleBlake3Hash(pubKeyBuf);
     return new Pkh(pkhBuf);
   }
 
@@ -30,7 +30,7 @@ export class Pkh {
   }
 
   toIsoStr(): string {
-    const checkHash = blake3Hash(this.buf).subarray(0, 4);
+    const checkHash = Hash.blake3Hash(this.buf).subarray(0, 4);
     const checkHex = checkHash.toString("hex");
     return "ebxpkh" + checkHex + bs58.encode(this.buf);
   }
@@ -42,7 +42,7 @@ export class Pkh {
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = IsoHex.decode(checkHex).unwrap();
     const buf = Buffer.from(bs58.decode(pkhStr.slice(14)));
-    const hashBuf = blake3Hash(buf);
+    const hashBuf = Hash.blake3Hash(buf);
     const checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {
       return Err("Invalid pkh checksum");

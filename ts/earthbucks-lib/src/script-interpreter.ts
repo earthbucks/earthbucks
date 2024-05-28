@@ -2,7 +2,7 @@ import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
 import { Script } from "./script.js";
 import { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
-import { blake3Hash, doubleBlake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
 import { Buffer } from "buffer";
 import { PubKey } from "./pub-key.js";
@@ -1036,7 +1036,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const buf = this.stack.pop() as Buffer;
-            this.stack.push(blake3Hash(buf));
+            this.stack.push(Hash.blake3Hash(buf));
           }
           break;
         case Opcode.OP_DOUBLEBLAKE3:
@@ -1046,7 +1046,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const buf = this.stack.pop() as Buffer;
-            this.stack.push(doubleBlake3Hash(buf));
+            this.stack.push(Hash.doubleBlake3Hash(buf));
           }
           break;
         case Opcode.OP_CHECKSIG:

@@ -1,4 +1,4 @@
-import { doubleBlake3Hash } from "./blake3.js";
+import { Hash } from "./hash.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
@@ -17,8 +17,8 @@ export class MerkleProof {
     let hash = hashedData;
     for (const [sibling, isLeft] of this.proof) {
       hash = isLeft
-        ? doubleBlake3Hash(Buffer.concat([sibling, hash]))
-        : doubleBlake3Hash(Buffer.concat([hash, sibling]));
+        ? Hash.doubleBlake3Hash(Buffer.concat([sibling, hash]))
+        : Hash.doubleBlake3Hash(Buffer.concat([hash, sibling]));
     }
     return Buffer.compare(hash, this.root) === 0;
   }
@@ -39,7 +39,7 @@ export class MerkleProof {
       return Ok([root, [proof]]);
     }
     if (hashedDatas.length === 2) {
-      const root = doubleBlake3Hash(
+      const root = Hash.doubleBlake3Hash(
         Buffer.concat([hashedDatas[0], hashedDatas[1]]),
       );
       const proofs = [
@@ -58,7 +58,7 @@ export class MerkleProof {
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(hashedDatas.length / 2),
     ).unwrap();
-    const root = doubleBlake3Hash(Buffer.concat([leftRoot, rightRoot]));
+    const root = Hash.doubleBlake3Hash(Buffer.concat([leftRoot, rightRoot]));
     const proofs = [
       ...leftProofs.map(
         (proof) => new MerkleProof(root, [[rightRoot, true], ...proof.proof]),

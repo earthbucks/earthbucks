@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { blake3Hash, blake3Mac } from "./blake3.js";
+import { Hash } from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { PrivKey } from "./priv-key.js";
@@ -29,8 +29,8 @@ export class SignedMessage {
   }
 
   static createMac(message: Buffer, keyStr: string) {
-    const key = blake3Hash(Buffer.from(keyStr));
-    return blake3Mac(key, message);
+    const key = Hash.blake3Hash(Buffer.from(keyStr));
+    return Hash.blake3Mac(key, message);
   }
 
   static fromSignMessage(

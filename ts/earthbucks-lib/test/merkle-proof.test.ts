@@ -1,11 +1,11 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleProof } from "../src/merkle-proof";
-import { doubleBlake3Hash } from "../src/blake3";
+import { Hash } from "../src/hash";
 import { Buffer } from "buffer";
 
 describe("MerkleProof", () => {
   test("generateProofsAndRoot with 1 data", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
 
     const data = [data1];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -20,8 +20,8 @@ describe("MerkleProof", () => {
   });
 
   test("generateProofsAndRoot with 2 datas", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
 
     const data = [data1, data2];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -40,9 +40,9 @@ describe("MerkleProof", () => {
   });
 
   test("generateProofsAndRoot with 3 datas", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
-    const data3 = doubleBlake3Hash(Buffer.from("data3"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
+    const data3 = Hash.doubleBlake3Hash(Buffer.from("data3"));
 
     const data = [data1, data2, data3];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -65,10 +65,10 @@ describe("MerkleProof", () => {
   });
 
   test("generateProofsAndRoot with 4 datas", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
-    const data3 = doubleBlake3Hash(Buffer.from("data3"));
-    const data4 = doubleBlake3Hash(Buffer.from("data4"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
+    const data3 = Hash.doubleBlake3Hash(Buffer.from("data3"));
+    const data4 = Hash.doubleBlake3Hash(Buffer.from("data4"));
 
     const data = [data1, data2, data3, data4];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -95,7 +95,7 @@ describe("MerkleProof", () => {
   });
 
   test("generate proofs and root with non-unique data", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
 
     const data = [data1, Buffer.from(data1)];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -114,8 +114,8 @@ describe("MerkleProof", () => {
   });
 
   test("to/from Buf", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
 
     const data = [data1, data2];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
@@ -128,8 +128,8 @@ describe("MerkleProof", () => {
   });
 
   test("to/from string", () => {
-    const data1 = doubleBlake3Hash(Buffer.from("data1"));
-    const data2 = doubleBlake3Hash(Buffer.from("data2"));
+    const data1 = Hash.doubleBlake3Hash(Buffer.from("data1"));
+    const data2 = Hash.doubleBlake3Hash(Buffer.from("data2"));
 
     const data = [data1, data2];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
