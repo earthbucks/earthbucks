@@ -1,4 +1,4 @@
-import * as Hash from "./hash.ts";
+import * as Hash from "./hash.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 

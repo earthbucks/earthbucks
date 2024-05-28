@@ -1,6 +1,6 @@
-import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.ts";
-import { IsoBufWriter } from "./iso-buf-writer.ts";
-import { IsoBufReader } from "./iso-buf-reader.ts";
+import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
@@ -9,7 +9,7 @@ import {
   NonMinimalEncodingError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error.ts";
+} from "./ebx-error.js";
 import { Option, Some, None } from "earthbucks-opt-res";
 
 export class ScriptChunk {

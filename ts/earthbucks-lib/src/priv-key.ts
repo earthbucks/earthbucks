@@ -1,8 +1,8 @@
 import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
-import { IsoHex } from "./iso-hex.ts";
+import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
-import * as Hash from "./hash.ts";
+import * as Hash from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,
@@ -11,7 +11,7 @@ import {
   InvalidKeyError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error.ts";
+} from "./ebx-error.js";
 import { Option, None, Some } from "earthbucks-opt-res";
 
 export class PrivKey {

@@ -6,7 +6,7 @@ import {
   NotEnoughDataError,
   NonMinimalEncodingError,
   InsufficientPrecisionError,
-} from "./ebx-error.ts";
+} from "./ebx-error.js";
 
 export class IsoBufReader {
   buf: Buffer;

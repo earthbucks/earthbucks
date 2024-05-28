@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern dist --cache --cache-location ./node_modules/.cache/eslint .",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "build": "swc lib.ts src --out-dir dist && tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
@@ -45,9 +45,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.3.0",
-    "@swc/cli": "^0.3.12",
-    "@swc/core": "^1.5.7",
-    "@swc/plugin-transform-imports": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",
     "eslint": "^9.3.0",

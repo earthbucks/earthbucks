@@ -1,4 +1,4 @@
-import { TxOutBn } from "./tx-out-bn.ts";
+import { TxOutBn } from "./tx-out-bn.js";
 import { Buffer } from "buffer";
 
 export class TxOutBnMap {

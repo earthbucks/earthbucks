@@ -47,15 +47,6 @@ importers:
       '@eslint/js':
         specifier: ^9.3.0
         version: 9.3.0
-      '@swc/cli':
-        specifier: ^0.3.12
-        version: 0.3.12(@swc/core@1.5.7)
-      '@swc/core':
-        specifier: ^1.5.7
-        version: 1.5.7
-      '@swc/plugin-transform-imports':
-        specifier: ^2.0.4
-        version: 2.0.4
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.11.0
         version: 7.11.0(@typescript-eslint/parser@7.11.0)(eslint@9.3.0)(typescript@5.4.5)

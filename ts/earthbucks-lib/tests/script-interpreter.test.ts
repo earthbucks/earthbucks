@@ -260,7 +260,7 @@ describe("ScriptInterpreter", () => {
     describe("script interpreter scripts", () => {
       const filePath = path.resolve(
         __dirname,
-        "../test-vectors/script_interpreter.tson",
+        "../test-vectors/script_interpreter.json",
       );
       const jsonString = fs.readFileSync(filePath, "utf-8");
       const testScripts: TestScript[] = JSON.parse(jsonString).scripts;

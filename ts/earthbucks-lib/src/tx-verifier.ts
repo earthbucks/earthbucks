@@ -1,6 +1,6 @@
-import { Tx, HashCache } from "./tx.ts";
-import { TxOutBnMap } from "./tx-out-bn-map.ts";
-import { ScriptInterpreter } from "./script-interpreter.ts";
+import { Tx, HashCache } from "./tx.js";
+import { TxOutBnMap } from "./tx-out-bn-map.js";
+import { ScriptInterpreter } from "./script-interpreter.js";
 import { Buffer } from "buffer";
 
 export class TxVerifier {

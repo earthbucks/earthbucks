@@ -1,7 +1,7 @@
-import { Header } from "./header.ts";
-import { Tx } from "./tx.ts";
-import { IsoBufWriter } from "./iso-buf-writer.ts";
-import { IsoBufReader } from "./iso-buf-reader.ts";
+import { Header } from "./header.js";
+import { Tx } from "./tx.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 

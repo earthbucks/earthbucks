@@ -1,6 +1,6 @@
-import { Header } from "./header.ts";
-import { IsoBufReader } from "./iso-buf-reader.ts";
-import { HashNum } from "./hash-num.ts";
+import { Header } from "./header.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
+import { HashNum } from "./hash-num.js";
 import { Buffer } from "buffer";
 
 export class HeaderMine {

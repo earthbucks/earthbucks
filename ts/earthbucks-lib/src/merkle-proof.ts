@@ -1,6 +1,6 @@
-import * as Hash from "./hash.ts";
-import { IsoBufWriter } from "./iso-buf-writer.ts";
-import { IsoBufReader } from "./iso-buf-reader.ts";
+import * as Hash from "./hash.js";
+import { IsoBufWriter } from "./iso-buf-writer.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
