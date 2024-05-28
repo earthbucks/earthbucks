@@ -1,6 +1,6 @@
 {
   "name": "earthbucks-opt-res",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "description": "Rust's Option and Result enums for TypeScript.",
   "main": "dist/lib.js",
   "types": "dist/lib.d.js",
