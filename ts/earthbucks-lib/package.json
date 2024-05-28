@@ -9,7 +9,7 @@
     "main": "tsx src/main.ts",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint": "eslint --ignore-pattern dist --cache --cache-location ./node_modules/.cache/eslint .",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
@@ -34,24 +34,23 @@
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "earthbucks-opt-res": "^0.1.5",
-    "mathjs": "^12.4.1",
+    "mathjs": "^12.4.2",
     "rimraf": "^5.0.7",
     "secp256k1": "^5.0.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.11.0"
   },
   "prettier": {
     "semi": true,
     "singleQuote": false
   },
   "devDependencies": {
-    "@eslint/js": "^9.2.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "eslint": "^9.2.0",
-    "globals": "^15.2.0",
+    "@eslint/js": "^9.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
     "prettier": "^3.2.5",
-    "ts-jest": "^29.1.2",
-    "typescript-eslint": "^7.9.0",
+    "typescript-eslint": "^7.11.0",
     "vitest": "^1.6.0"
   }
 }
