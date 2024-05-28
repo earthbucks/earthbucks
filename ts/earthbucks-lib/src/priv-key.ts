@@ -2,7 +2,7 @@ import secp256k1 from "secp256k1";
 import { Buffer } from "buffer";
 import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,

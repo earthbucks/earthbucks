@@ -1,4 +1,4 @@
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import { Buffer } from "buffer";
 import bs58 from "bs58";
 import { IsoHex } from "./iso-hex.js";

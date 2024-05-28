@@ -3,7 +3,7 @@ import { TxOut } from "./tx-out.js";
 import { VarInt } from "./var-int.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";

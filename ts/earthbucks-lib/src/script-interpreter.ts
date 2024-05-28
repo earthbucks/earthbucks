@@ -2,7 +2,7 @@ import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
 import { Script } from "./script.js";
 import { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
 import { Buffer } from "buffer";
 import { PubKey } from "./pub-key.js";

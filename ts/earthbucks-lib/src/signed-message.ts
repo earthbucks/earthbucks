@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { PrivKey } from "./priv-key.js";

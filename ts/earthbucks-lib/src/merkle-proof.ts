@@ -1,4 +1,4 @@
-import { Hash } from "./hash.js";
+import * as Hash from "./hash.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { Buffer } from "buffer";

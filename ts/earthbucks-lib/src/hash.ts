@@ -36,8 +36,4 @@ if (typeof document === "undefined") {
   };
 }
 
-export class Hash {
-  static blake3Hash = blake3Hash;
-  static doubleBlake3Hash = doubleBlake3Hash;
-  static blake3Mac = blake3Mac;
-}
+export { blake3Hash, doubleBlake3Hash, blake3Mac}
