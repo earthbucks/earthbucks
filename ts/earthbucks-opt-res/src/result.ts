@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace */
-import { toString } from "./utils.js";
-import { Option, None, Some } from "./option.js";
+import { toString } from "./utils.ts";
+import { Option, None, Some } from "./option.ts";
 
 /*
  * Missing Rust Result type methods:

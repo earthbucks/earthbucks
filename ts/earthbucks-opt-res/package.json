@@ -1,6 +1,6 @@
 {
   "name": "earthbucks-opt-res",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Rust's Option and Result enums for TypeScript.",
   "main": "dist/lib.js",
   "types": "dist/lib.d.js",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "swc lib.ts src --out-dir dist && tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
@@ -34,6 +34,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.2.0",
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.5.7",
+    "@swc/plugin-transform-imports": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^9.2.0",

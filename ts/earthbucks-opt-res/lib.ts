@@ -1,3 +1,3 @@
-export * from "./src/result.js";
-export * from "./src/option.js";
-export * from "./src/utils.js";
+export * from "./src/result.ts";
+export * from "./src/option.ts";
+export * from "./src/utils.ts";

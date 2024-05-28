@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "exclude": ["test"],
   "compilerOptions": {
-    "noEmit": false
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
   }
 }
