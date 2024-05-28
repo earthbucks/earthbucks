@@ -33,7 +33,7 @@
     "blake3-wasm": "2.1.5",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
-    "earthbucks-opt-res": "workspace:^",
+    "earthbucks-opt-res": "^0.1.5",
     "mathjs": "^12.4.2",
     "rimraf": "^5.0.7",
     "secp256k1": "^5.0.0",
