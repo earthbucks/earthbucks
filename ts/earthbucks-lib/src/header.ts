@@ -44,7 +44,7 @@ export class Header {
     this.nonce = nonce;
     this.workSerAlgo = workSerAlgo;
     this.workSerHash = workSerHash;
-    this.workParAlgo = workSerAlgo;
+    this.workParAlgo = workParAlgo;
     this.workParHash = workParHash;
   }
 
