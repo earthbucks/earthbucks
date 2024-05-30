@@ -12,3 +12,4 @@
 - [cosmos](https://cosmos.network/resources/whitepaper)
 - [algorand](https://www.algorand.com/resources/white-papers/)
 - [hyper ledger](https://hyperledger-fabric.readthedocs.io/en/latest/whatis.html)
+- [kaspa](https://wiki.kaspa.org/en/kaspa)
