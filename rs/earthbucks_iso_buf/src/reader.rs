@@ -1,4 +1,4 @@
-use crate::isobuf_error::IsobufError;
+use crate::iso_buf_error::IsoBufError;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 
@@ -21,10 +21,10 @@ impl Reader {
         self.buf.get_ref().len() - self.buf.position() as usize
     }
 
-    pub fn read(&mut self, len: usize) -> Result<Vec<u8>, IsobufError> {
+    pub fn read(&mut self, len: usize) -> Result<Vec<u8>, IsoBufError> {
         let pos = self.buf.position() as usize;
         if pos + len > self.buf.get_ref().len() {
-            return Err(IsobufError::NotEnoughDataError { source: None });
+            return Err(IsoBufError::NotEnoughDataError { source: None });
         }
         let buf = self.buf.get_ref()[pos..pos + len].to_vec();
         self.buf.set_position((pos + len) as u64);
@@ -38,71 +38,71 @@ impl Reader {
         buf
     }
 
-    pub fn read_u8(&mut self) -> Result<u8, IsobufError> {
+    pub fn read_u8(&mut self) -> Result<u8, IsoBufError> {
         self.buf
             .read_u8()
-            .map_err(|_| IsobufError::NotEnoughDataError { source: None })
+            .map_err(|_| IsoBufError::NotEnoughDataError { source: None })
     }
 
-    pub fn read_u16_be(&mut self) -> Result<u16, IsobufError> {
+    pub fn read_u16_be(&mut self) -> Result<u16, IsoBufError> {
         self.buf
             .read_u16::<BigEndian>()
-            .map_err(|_| IsobufError::NotEnoughDataError { source: None })
+            .map_err(|_| IsoBufError::NotEnoughDataError { source: None })
     }
 
-    pub fn read_u32_be(&mut self) -> Result<u32, IsobufError> {
+    pub fn read_u32_be(&mut self) -> Result<u32, IsoBufError> {
         self.buf
             .read_u32::<BigEndian>()
-            .map_err(|_| IsobufError::NotEnoughDataError { source: None })
+            .map_err(|_| IsoBufError::NotEnoughDataError { source: None })
     }
 
-    pub fn read_u64_be(&mut self) -> Result<u64, IsobufError> {
+    pub fn read_u64_be(&mut self) -> Result<u64, IsoBufError> {
         self.buf
             .read_u64::<BigEndian>()
-            .map_err(|_| IsobufError::NotEnoughDataError { source: None })
+            .map_err(|_| IsoBufError::NotEnoughDataError { source: None })
     }
 
-    pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, IsobufError> {
+    pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, IsoBufError> {
         let first = self
             .read_u8()
-            .map_err(|e| IsobufError::NotEnoughDataError {
+            .map_err(|e| IsoBufError::NotEnoughDataError {
                 source: Some(Box::new(e)),
             })?;
         match first {
             0xfd => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(2).map_err(|e| {
-                    IsobufError::NotEnoughDataError {
+                    IsoBufError::NotEnoughDataError {
                         source: Some(Box::new(e)),
                     }
                 })?);
                 if Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() < 0xfd {
-                    return Err(IsobufError::NonMinimalEncodingError { source: None });
+                    return Err(IsoBufError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
             0xfe => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(4).map_err(|e| {
-                    IsobufError::NotEnoughDataError {
+                    IsoBufError::NotEnoughDataError {
                         source: Some(Box::new(e)),
                     }
                 })?);
 
                 if Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() < 0x10000 {
-                    return Err(IsobufError::NonMinimalEncodingError { source: None });
+                    return Err(IsoBufError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
             0xff => {
                 let mut buf = vec![first];
                 buf.extend_from_slice(&self.read(8).map_err(|e| {
-                    IsobufError::NotEnoughDataError {
+                    IsoBufError::NotEnoughDataError {
                         source: Some(Box::new(e)),
                     }
                 })?);
                 if Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap() < 0x100000000 {
-                    return Err(IsobufError::NonMinimalEncodingError { source: None });
+                    return Err(IsoBufError::NonMinimalEncodingError { source: None });
                 }
                 Ok(buf)
             }
@@ -110,7 +110,7 @@ impl Reader {
         }
     }
 
-    pub fn read_var_int(&mut self) -> Result<u64, IsobufError> {
+    pub fn read_var_int(&mut self) -> Result<u64, IsoBufError> {
         let buf = self.read_var_int_buf()?;
         let first = buf[0];
         match first {

@@ -5,7 +5,9 @@ describe("IsoBuf", () => {
   test("it should make an iso buf of size 32", () => {
     const isoBuf: FixedIsoBuf<32> = new FixedIsoBuf<32>(new Uint8Array(32), 32);
     const isoBuf2: IsoBuf32 = new IsoBuf32(new Uint8Array(32));
-    const isoBuf3: IsoBuf32 = IsoBuf32.fromUint8Array(new Uint8Array(32)).unwrap();
+    const isoBuf3: IsoBuf32 = IsoBuf32.fromUint8Array(
+      new Uint8Array(32),
+    ).unwrap();
     const isoBuf4: FixedIsoBuf<32> = FixedIsoBuf.fromUint8Array(
       new Uint8Array(32),
       32,

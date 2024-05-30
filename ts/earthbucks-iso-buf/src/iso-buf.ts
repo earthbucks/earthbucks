@@ -1,4 +1,19 @@
 import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Option, Some, None } from "earthbucks-opt-res";
+import {
+  InvalidEncodingError,
+  InvalidHexError,
+  IsoBufError,
+  NotEnoughDataError,
+  TooMuchDataError,
+} from "./iso-buf-error";
+
+export function isValidHex(hex: string) {
+  if (!/^[0-9a-f]*$/.test(hex) || hex.length % 2 !== 0) {
+    return false;
+  }
+  return true;
+}
 
 export class IsoBuf {
   public arr: Uint8Array;
@@ -16,9 +31,9 @@ export class IsoBuf {
     return this.arr;
   }
 
-  static fromHex(hex: string): Result<IsoBuf, string> {
-    if (!/^[0-9a-f]*$/.test(hex) || hex.length % 2 !== 0) {
-      return Err("Invalid hex string");
+  static fromHex(hex: string): Result<IsoBuf, IsoBufError> {
+    if (!isValidHex(hex)) {
+      return Err(new InvalidHexError(None));
     }
     const buf = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
@@ -49,13 +64,18 @@ export class FixedIsoBuf<N extends number> extends IsoBuf {
   static fromUint8Array<N extends number>(
     buf: Uint8Array,
     size: N,
-  ): Result<FixedIsoBuf<N>, string> {
-    if (buf.length !== size) {
-      return Err(`Expected buffer of length ${size}, got ${buf.length}`);
+  ): Result<FixedIsoBuf<N>, IsoBufError> {
+    if (buf.length > size) {
+      return Err(new TooMuchDataError(None));
+    }
+    if (buf.length < size) {
+      return Err(new NotEnoughDataError(None));
     }
     return Ok(new FixedIsoBuf(buf, size));
   }
 }
+
+// export class IsoBuf32 extends FixedIsoBuf<32> {};
 
 export class IsoBuf32 extends IsoBuf {
   public size: 32 = 32;
@@ -69,9 +89,12 @@ export class IsoBuf32 extends IsoBuf {
     super(buf, size);
   }
 
-  static fromUint8Array(buf: Uint8Array): Result<IsoBuf32, string> {
-    if (buf.length !== 32) {
-      return Err(`Expected buffer of length 32, got ${buf.length}`);
+  static fromUint8Array(buf: Uint8Array): Result<IsoBuf32, IsoBufError> {
+    if (buf.length > 32) {
+      return Err(new TooMuchDataError(None));
+    }
+    if (buf.length < 32) {
+      return Err(new NotEnoughDataError(None));
     }
     return Ok(new IsoBuf32(buf));
   }

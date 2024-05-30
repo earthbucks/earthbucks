@@ -2,49 +2,49 @@ use hex;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use crate::isobuf_error::IsobufError;
+use crate::iso_buf_error::IsoBufError;
 
 lazy_static! {
     static ref RE: Regex = Regex::new(r"^[0-9a-f]*$").unwrap();
 }
 
-pub fn is_valid(hex: &str) -> bool {
+pub fn is_valid_hex(hex: &str) -> bool {
     RE.is_match(hex) && hex.len() % 2 == 0
 }
 
-pub fn encode(data: &[u8]) -> String {
+pub fn encode_hex(data: &[u8]) -> String {
     hex::encode(data)
 }
 
-pub fn decode(hex: &str) -> Result<Vec<u8>, IsobufError> {
-    if !is_valid(hex) {
-        return Err(IsobufError::InvalidHexError { source: None });
+pub fn decode_hex(hex: &str) -> Result<Vec<u8>, IsoBufError> {
+    if !is_valid_hex(hex) {
+        return Err(IsoBufError::InvalidHexError { source: None });
     }
     let res = hex::decode(hex);
     if res.is_err() {
-        return Err(IsobufError::InvalidHexError { source: None });
+        return Err(IsoBufError::InvalidHexError { source: None });
     }
     Ok(res.unwrap())
 }
 
-pub fn from_hex<T: StrictHex>(hex: &str) -> Result<T, IsobufError> {
+pub fn from_hex<T: StrictHex>(hex: &str) -> Result<T, IsoBufError> {
     T::from_hex(hex)
 }
 
 pub trait StrictHex {
     fn to_hex(&self) -> String;
-    fn from_hex(hex: &str) -> Result<Self, IsobufError>
+    fn from_hex(hex: &str) -> Result<Self, IsoBufError>
     where
         Self: Sized;
 }
 
 impl StrictHex for Vec<u8> {
     fn to_hex(&self) -> String {
-        encode(self)
+        encode_hex(self)
     }
 
-    fn from_hex(hex: &str) -> Result<Self, IsobufError> {
-        decode(hex)
+    fn from_hex(hex: &str) -> Result<Self, IsoBufError> {
+        decode_hex(hex)
     }
 }
 
@@ -56,13 +56,13 @@ impl<const N: usize> StrictHex for [u8; N] {
         })
     }
 
-    fn from_hex(hex: &str) -> Result<Self, IsobufError> {
+    fn from_hex(hex: &str) -> Result<Self, IsoBufError> {
         if hex.len() != N * 2 {
-            return Err(IsobufError::InvalidHexError { source: None });
+            return Err(IsoBufError::InvalidHexError { source: None });
         }
-        decode(hex).and_then(|vec| {
+        decode_hex(hex).and_then(|vec| {
             vec.try_into()
-                .map_err(|_| IsobufError::InvalidHexError { source: None })
+                .map_err(|_| IsoBufError::InvalidHexError { source: None })
         })
     }
 }
@@ -73,19 +73,19 @@ mod tests {
 
     #[test]
     fn test_is_valid() {
-        assert!(is_valid("00"));
-        assert!(is_valid("1234567890abcdef"));
-        assert!(!is_valid("1234567890abcde"));
-        assert!(!is_valid("0"));
-        assert!(!is_valid("0g"));
-        assert!(!is_valid("1234567890abcdeF"));
+        assert!(is_valid_hex("00"));
+        assert!(is_valid_hex("1234567890abcdef"));
+        assert!(!is_valid_hex("1234567890abcde"));
+        assert!(!is_valid_hex("0"));
+        assert!(!is_valid_hex("0g"));
+        assert!(!is_valid_hex("1234567890abcdeF"));
     }
 
     #[test]
     fn test_encode_decode() {
         let buffer = hex::decode("1234567890abcdef").unwrap();
-        let hex = encode(&buffer);
-        let decoded_buffer = decode(&hex).unwrap();
+        let hex = encode_hex(&buffer);
+        let decoded_buffer = decode_hex(&hex).unwrap();
         assert_eq!(decoded_buffer, buffer);
     }
 
