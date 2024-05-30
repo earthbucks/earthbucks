@@ -124,6 +124,10 @@ export class IsoBuf extends Uint8Array {
   static fromNumbers(numbers: number[]) {
     return new IsoBuf(new Uint8Array(numbers));
   }
+
+  toNumbers(): number[] {
+    return Array.from(this);
+  }
 }
 
 export class FixedIsoBuf<N extends number> extends IsoBuf {
