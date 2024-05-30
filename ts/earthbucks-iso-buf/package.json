@@ -26,6 +26,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "earthbucks-opt-res": "workspace:^",
     "rimraf": "^5.0.7"
   },
   "prettier": {

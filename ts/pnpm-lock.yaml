@@ -10,6 +10,9 @@ importers:
 
   earthbucks-iso-buf:
     dependencies:
+      earthbucks-opt-res:
+        specifier: workspace:^
+        version: link:../earthbucks-opt-res
       rimraf:
         specifier: ^5.0.7
         version: 5.0.7
