@@ -1,6 +1,6 @@
 import { IsoBuf } from "./iso-buf.js";
 
-export class IsoBufWriter {
+export class Writer {
   bufs: IsoBuf[];
 
   constructor(bufs?: IsoBuf[]) {
@@ -53,13 +53,13 @@ export class IsoBufWriter {
   }
 
   writeVarIntNum(n: number): this {
-    const buf = IsoBufWriter.varIntBufNum(n);
+    const buf = Writer.varIntBufNum(n);
     this.writeIsoBuf(buf);
     return this;
   }
 
   writeVarInt(bn: bigint): this {
-    const buf = IsoBufWriter.varIntBuf(bn);
+    const buf = Writer.varIntBuf(bn);
     this.writeIsoBuf(buf);
     return this;
   }

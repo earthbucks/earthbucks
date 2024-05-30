@@ -9,7 +9,7 @@ import {
   IsoBufError,
 } from "./iso-buf-error.js";
 
-export class IsoBufReader {
+export class Reader {
   buf: IsoBuf;
   pos: number;
 
@@ -96,7 +96,9 @@ export class IsoBufReader {
       if (buf.readU16BE(0).unwrap() < 0xfd) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(IsoBuf.concat([IsoBuf.from(new Uint8Array([first])), buf]));
+      return Ok(
+        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
+      );
     } else if (first === 0xfe) {
       const res = this.read(4);
       if (res.err) {
@@ -106,7 +108,9 @@ export class IsoBufReader {
       if (buf.readU32BE(0).unwrap() < 0x10000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(IsoBuf.concat([IsoBuf.from(new Uint8Array([first])), buf]));
+      return Ok(
+        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
+      );
     } else if (first === 0xff) {
       const res = this.read(8);
       if (res.err) {
@@ -117,9 +121,11 @@ export class IsoBufReader {
       if (bn < 0x100000000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(IsoBuf.concat([IsoBuf.from(new Uint8Array([first])), buf]));
+      return Ok(
+        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
+      );
     } else {
-      return Ok(IsoBuf.from(new Uint8Array([first])));
+      return Ok(IsoBuf.from(new Uint8Array([first])).unwrap());
     }
   }
 

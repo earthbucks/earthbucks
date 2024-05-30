@@ -62,15 +62,16 @@ export class IsoBuf {
     if (offset + 1 >= this.arr.length) {
       return Err(new NotEnoughDataError(None));
     }
-    return Ok((this.arr[offset] << 8) | this.arr[offset + 1]);
+    const view = new DataView(this.arr.buffer);
+    return Ok(view.getUint16(offset, false));
   }
 
   writeU16BE(n: number, offset: number): Result<void, IsoBufError> {
     if (offset + 1 >= this.arr.length) {
       return Err(new NotEnoughDataError(None));
     }
-    this.arr[offset] = n >> 8;
-    this.arr[offset + 1] = n & 0xff;
+    const view = new DataView(this.arr.buffer);
+    view.setUint16(offset, n, false);
     return Ok(undefined);
   }
 
@@ -78,22 +79,16 @@ export class IsoBuf {
     if (offset + 3 >= this.arr.length) {
       return Err(new NotEnoughDataError(None));
     }
-    return Ok(
-      (this.arr[offset] << 24) |
-        (this.arr[offset + 1] << 16) |
-        (this.arr[offset + 2] << 8) |
-        this.arr[offset + 3],
-    );
+    const view = new DataView(this.arr.buffer);
+    return Ok(view.getUint32(offset, false));
   }
 
   writeU32BE(n: number, offset: number): Result<void, IsoBufError> {
     if (offset + 3 >= this.arr.length) {
       return Err(new NotEnoughDataError(None));
     }
-    this.arr[offset] = n >> 24;
-    this.arr[offset + 1] = (n >> 16) & 0xff;
-    this.arr[offset + 2] = (n >> 8) & 0xff;
-    this.arr[offset + 3] = n & 0xff;
+    const view = new DataView(this.arr.buffer);
+    view.setUint32(offset, n, false);
     return Ok(undefined);
   }
 
@@ -101,16 +96,8 @@ export class IsoBuf {
     if (offset + 7 >= this.arr.length) {
       return Err(new NotEnoughDataError(None));
     }
-    return Ok(
-      (BigInt(this.arr[offset]) << 56n) |
-        (BigInt(this.arr[offset + 1]) << 48n) |
-        (BigInt(this.arr[offset + 2]) << 40n) |
-        (BigInt(this.arr[offset + 3]) << 32n) |
-        (BigInt(this.arr[offset + 4]) << 24n) |
-        (BigInt(this.arr[offset + 5]) << 16n) |
-        (BigInt(this.arr[offset + 6]) << 8n) |
-        BigInt(this.arr[offset + 7]),
-    );
+    const view = new DataView(this.arr.buffer);
+    return Ok(view.getBigUint64(offset, false)); // false for Big-Endian
   }
 
   writeU64BE(n: bigint, offset: number): Result<void, IsoBufError> {
@@ -120,14 +107,8 @@ export class IsoBuf {
     if (n < 0n || n > 0xffffffffffffffffn) {
       return Err(new InvalidEncodingError(None));
     }
-    this.arr[offset] = Number(n >> 56n);
-    this.arr[offset + 1] = Number((n >> 48n) & 0xffn);
-    this.arr[offset + 2] = Number((n >> 40n) & 0xffn);
-    this.arr[offset + 3] = Number((n >> 32n) & 0xffn);
-    this.arr[offset + 4] = Number((n >> 24n) & 0xffn);
-    this.arr[offset + 5] = Number((n >> 16n) & 0xffn);
-    this.arr[offset + 6] = Number((n >> 8n) & 0xffn);
-    this.arr[offset + 7] = Number(n & 0xffn);
+    const view = new DataView(this.arr.buffer);
+    view.setBigUint64(offset, n, false); // false for Big-Endian
     return Ok(undefined);
   }
 
@@ -142,8 +123,27 @@ export class IsoBuf {
     return new IsoBuf(arr);
   }
 
-  static from(buf: Uint8Array): IsoBuf {
-    return new IsoBuf(buf);
+  // mimic node.js buffer class Buffer.from method
+  static from(
+    buf: Uint8Array | number[] | string,
+    type?: "hex",
+  ): Result<IsoBuf, IsoBufError> {
+    if (type === "hex") {
+      const hex = buf as string;
+      if (!isValidHex(hex)) {
+        return Err(new InvalidHexError(None));
+      }
+      const arr = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        arr[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+      }
+      return Ok(new IsoBuf(arr));
+    } else if (buf instanceof Uint8Array) {
+      return Ok(new IsoBuf(buf));
+    } else if (Array.isArray(buf)) {
+      return Ok(new IsoBuf(new Uint8Array(buf)));
+    }
+    return Err(new InvalidEncodingError(None));
   }
 
   toUint8Array(): Uint8Array {
