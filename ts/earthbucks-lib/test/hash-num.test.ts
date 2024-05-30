@@ -1,10 +1,10 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { HashNum } from "../src/hash-num";
-import { EbxBuffer } from "../src/ebx-buffer.js";
+import { EbxBuf } from "../src/ebx-buf.js";
 
 describe("TargetNum", () => {
   test("fromTarget", () => {
-    const hash = EbxBuffer.from(
+    const hash = EbxBuf.from(
       "a2aec69152c0e428871b5782ddd643e1e5c3f305c27e69142939e614958462cc",
       "hex",
     );

@@ -1,7 +1,7 @@
 import { Header } from "./header.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { HashNum } from "./hash-num.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 
 export class HeaderMine {
   header: Header;
@@ -11,12 +11,12 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = crypto.getRandomValues(EbxBuffer.alloc(32));
+    this.header.nonce = crypto.getRandomValues(EbxBuf.alloc(32));
   }
 
   getIdHashNum(): HashNum {
     const headerId = this.header.id();
-    const hashNum = HashNum.fromIsoBuf(EbxBuffer.from(headerId)).unwrap();
+    const hashNum = HashNum.fromIsoBuf(EbxBuf.from(headerId)).unwrap();
     return hashNum;
   }
 
@@ -32,7 +32,7 @@ export class HeaderMine {
     return lowest;
   }
 
-  getLowestNonceForNTimes(n: number): EbxBuffer {
+  getLowestNonceForNTimes(n: number): EbxBuf {
     let lowest = this.getIdHashNum();
     let nonce = this.header.nonce;
     for (let i = 0; i < n; i++) {

@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script";
-import { EbxBuffer } from "../src/ebx-buffer";
+import { EbxBuf } from "../src/ebx-buf";
 import fs from "fs";
 import path from "path";
 
@@ -46,14 +46,14 @@ describe("Script", () => {
     expect(script.toIsoStr().unwrap()).toBe("0xff 0xff");
   });
 
-  it("should correctly convert between string and EbxBuffer for two PUSHDATA2 operations", () => {
+  it("should correctly convert between string and IsoBuf for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
     const initialScript = Script.fromIsoStr("0xffff 0xffff").unwrap();
 
-    // Convert the Script to a EbxBuffer
+    // Convert the Script to a IsoBuf
     const arr = initialScript.toIsoBuf();
 
-    // Create a new Script from the EbxBuffer
+    // Create a new Script from the IsoBuf
     const finalScript = Script.fromIsoBuf(arr).unwrap();
 
     // Convert the final Script back to a string
@@ -65,18 +65,14 @@ describe("Script", () => {
 
   describe("pubkeyhash", () => {
     test("fromAddressOutput", () => {
-      const script = Script.fromPkhOutput(
-        EbxBuffer.from("01".repeat(32), "hex"),
-      );
+      const script = Script.fromPkhOutput(EbxBuf.from("01".repeat(32), "hex"));
       expect(script.toIsoStr().unwrap()).toBe(
         "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
       );
     });
 
     test("isAddressOutput", () => {
-      const script = Script.fromPkhOutput(
-        EbxBuffer.from("01".repeat(32), "hex"),
-      );
+      const script = Script.fromPkhOutput(EbxBuf.from("01".repeat(32), "hex"));
       expect(script.isPkhOutput()).toBe(true);
     });
 
@@ -113,7 +109,7 @@ describe("Script", () => {
 
     test("test vectors: iso buf reader", () => {
       for (const testVector of testVectors.from_iso_buf.errors) {
-        const arr = EbxBuffer.from(testVector.hex, "hex");
+        const arr = EbxBuf.from(testVector.hex, "hex");
         const result = Script.fromIsoBuf(arr);
         expect(result.err).toBeTruthy();
         expect(result.val.toString()).toMatch(

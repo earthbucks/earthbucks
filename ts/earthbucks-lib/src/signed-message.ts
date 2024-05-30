@@ -1,4 +1,4 @@
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
@@ -8,17 +8,17 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 
 export class SignedMessage {
-  sig: EbxBuffer;
-  pubKey: EbxBuffer;
-  mac: EbxBuffer;
-  message: EbxBuffer;
+  sig: EbxBuf;
+  pubKey: EbxBuf;
+  mac: EbxBuf;
+  message: EbxBuf;
   keyStr: string;
 
   constructor(
-    sig: EbxBuffer,
-    pubKey: EbxBuffer,
-    mac: EbxBuffer,
-    message: EbxBuffer,
+    sig: EbxBuf,
+    pubKey: EbxBuf,
+    mac: EbxBuf,
+    message: EbxBuf,
     keyStr: string,
   ) {
     this.sig = sig;
@@ -28,20 +28,20 @@ export class SignedMessage {
     this.keyStr = keyStr;
   }
 
-  static createMac(message: EbxBuffer, keyStr: string) {
-    const key = Hash.blake3Hash(EbxBuffer.from(keyStr));
+  static createMac(message: EbxBuf, keyStr: string) {
+    const key = Hash.blake3Hash(EbxBuf.from(keyStr));
     return Hash.blake3Mac(key, message);
   }
 
   static fromSignMessage(
     privKey: PrivKey,
-    message: EbxBuffer,
+    message: EbxBuf,
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
-    const sigBuf = EbxBuffer.from(sigObj.signature);
-    const pubKey = privKey.toPubKeyEbxBuffer().unwrap();
+    const sigBuf = EbxBuf.from(sigObj.signature);
+    const pubKey = privKey.toPubKeyIsoBuf().unwrap();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
@@ -62,7 +62,7 @@ export class SignedMessage {
     return true;
   }
 
-  static fromIsoBuf(buf: EbxBuffer, keyStr: string): SignedMessage {
+  static fromIsoBuf(buf: EbxBuf, keyStr: string): SignedMessage {
     const reader = new IsoBufReader(buf);
     const sig = reader.read(64).unwrap();
     const pubKey = reader.read(PubKey.SIZE).unwrap();
@@ -71,12 +71,12 @@ export class SignedMessage {
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     const writer = new IsoBufWriter();
-    writer.writeEbxBuffer(this.sig);
-    writer.writeEbxBuffer(this.pubKey);
-    writer.writeEbxBuffer(this.mac);
-    writer.writeEbxBuffer(this.message);
+    writer.writeIsoBuf(this.sig);
+    writer.writeIsoBuf(this.pubKey);
+    writer.writeIsoBuf(this.mac);
+    writer.writeIsoBuf(this.message);
     return writer.toIsoBuf();
   }
 }

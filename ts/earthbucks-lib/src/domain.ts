@@ -1,4 +1,4 @@
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf";
 
 export class Domain {
   public domainStr: string;

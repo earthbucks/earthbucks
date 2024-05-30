@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair";
 import { PrivKey } from "../src/priv-key";
 import fs from "fs";
 import path from "path";
-import { EbxBuffer } from "../src/ebx-buffer";
+import { EbxBuf } from "../src/ebx-buf";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {
@@ -26,7 +26,7 @@ describe("KeyPair", () => {
       const keyPairs: KeyPairJSON[] = JSON.parse(data).key_pair;
 
       for (const pair of keyPairs) {
-        const privKeyBuf = EbxBuffer.from(pair.priv_key, "hex");
+        const privKeyBuf = EbxBuf.from(pair.priv_key, "hex");
         const privKey = PrivKey.fromIsoStr(pair.priv_key).unwrap();
         const key = KeyPair.fromPrivKey(privKey);
         expect(key.pubKey.toIsoStr()).toBe(pair.pub_key);

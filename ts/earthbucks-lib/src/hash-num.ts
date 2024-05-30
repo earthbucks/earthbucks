@@ -1,4 +1,4 @@
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class HashNum {
@@ -8,7 +8,7 @@ export class HashNum {
     this.num = num;
   }
 
-  static fromIsoBuf(target: EbxBuffer): Result<HashNum, string> {
+  static fromIsoBuf(target: EbxBuf): Result<HashNum, string> {
     if (target.length !== 32) {
       return Err("Invalid target length");
     }
@@ -17,7 +17,7 @@ export class HashNum {
     return Ok(new HashNum(num));
   }
 
-  toIsoBuf(): Result<EbxBuffer, string> {
+  toIsoBuf(): Result<EbxBuf, string> {
     let hex = this.num.toString(16);
     // ensure length is 64 characters
     if (hex.length > 64) {
@@ -26,6 +26,6 @@ export class HashNum {
     while (hex.length < 64) {
       hex = "0" + hex;
     }
-    return Ok(EbxBuffer.from(hex, "hex"));
+    return Ok(EbxBuf.from(hex, "hex"));
   }
 }

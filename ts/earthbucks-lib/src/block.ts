@@ -2,7 +2,7 @@ import { Header } from "./header.js";
 import { Tx } from "./tx.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class Block {
@@ -46,19 +46,19 @@ export class Block {
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
-    bw.writeEbxBuffer(this.header.toIsoBuf());
+    bw.writeIsoBuf(this.header.toIsoBuf());
     bw.writeVarIntNum(this.txs.length);
     this.txs.forEach((tx) => {
-      bw.writeEbxBuffer(tx.toIsoBuf());
+      bw.writeIsoBuf(tx.toIsoBuf());
     });
     return bw;
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     return this.toIsoBufWriter(new IsoBufWriter()).toIsoBuf();
   }
 
-  static fromIsoBuf(buf: EbxBuffer): Result<Block, string> {
+  static fromIsoBuf(buf: EbxBuf): Result<Block, string> {
     return Block.fromIsoBufReader(new IsoBufReader(buf));
   }
 

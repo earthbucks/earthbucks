@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import * as Hash from "../src/hash";
-import { EbxBuffer } from "../src/ebx-buffer";
+import { EbxBuf } from "../src/ebx-buf";
 
 describe("blake3", () => {
   test("hash", () => {
@@ -10,11 +10,11 @@ describe("blake3", () => {
       "38a12c6cf034632042b3b9deb2aabfdc798fac879d2f833638d59cf58549bc2d";
 
     // Convert hex to bytes
-    const pub_key = EbxBuffer.from(pub_key_hex, "hex");
-    const expected_pkh = EbxBuffer.from(expected_pkh_hex, "hex");
+    const pub_key = EbxBuf.from(pub_key_hex, "hex");
+    const expected_pkh = EbxBuf.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = EbxBuffer.from(Hash.blake3Hash(pub_key));
+    const pkh = EbxBuf.from(Hash.blake3Hash(pub_key));
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
@@ -27,20 +27,20 @@ describe("blake3", () => {
       "51544e51d07a92f41854bd2a14d0f33dcbc936b8910eb9c699b656cd89308132";
 
     // Convert hex to bytes
-    const pub_key = EbxBuffer.from(pub_key_hex, "hex");
-    const expected_pkh = EbxBuffer.from(expected_pkh_hex, "hex");
+    const pub_key = EbxBuf.from(pub_key_hex, "hex");
+    const expected_pkh = EbxBuf.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = EbxBuffer.from(Hash.doubleBlake3Hash(pub_key));
+    const pkh = EbxBuf.from(Hash.doubleBlake3Hash(pub_key));
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
   });
 
   test("blake3Mac", () => {
-    const key = Hash.blake3Hash(EbxBuffer.from("key"));
-    const data = EbxBuffer.from("data");
-    const mac = EbxBuffer.from(Hash.blake3Mac(key, data));
+    const key = Hash.blake3Hash(EbxBuf.from("key"));
+    const data = EbxBuf.from("data");
+    const mac = EbxBuf.from(Hash.blake3Mac(key, data));
     expect(mac.toString("hex")).toEqual(
       "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27",
     );

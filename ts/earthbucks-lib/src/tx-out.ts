@@ -2,7 +2,7 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { EbxError } from "./ebx-error.js";
 
@@ -15,7 +15,7 @@ export class TxOut {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: EbxBuffer): Result<TxOut, EbxError> {
+  static fromIsoBuf(buf: EbxBuf): Result<TxOut, EbxError> {
     const reader = new IsoBufReader(buf);
     return TxOut.fromIsoBufReader(reader);
   }
@@ -44,12 +44,12 @@ export class TxOut {
     return Ok(new TxOut(value, script));
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     const writer = new IsoBufWriter();
     writer.writeUInt64BE(this.value);
     const scriptBuf = this.script.toIsoBuf();
-    writer.writeEbxBuffer(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
-    writer.writeEbxBuffer(scriptBuf);
+    writer.writeIsoBuf(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
+    writer.writeIsoBuf(scriptBuf);
     return writer.toIsoBuf();
   }
 }

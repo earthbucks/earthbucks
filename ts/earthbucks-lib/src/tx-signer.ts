@@ -2,7 +2,7 @@ import { Tx } from "./tx.js";
 import { PkhKeyMap } from "./pkh-key-map.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { Script } from "./script.js";
@@ -38,7 +38,7 @@ export class TxSigner {
     const prevBlockNum = txOutBn.blockNum;
 
     if (txOut.script.isPkhOutput()) {
-      const pkh_buf = txOut.script.chunks[2].buf as EbxBuffer;
+      const pkh_buf = txOut.script.chunks[2].buf as EbxBuf;
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
         return Err("expected pkh input placeholder");
@@ -60,10 +60,10 @@ export class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
 
-      inputScript.chunks[0].buf = EbxBuffer.from(sigBuf);
-      inputScript.chunks[1].buf = EbxBuffer.from(pubKeyBuf);
+      inputScript.chunks[0].buf = EbxBuf.from(sigBuf);
+      inputScript.chunks[1].buf = EbxBuf.from(pubKeyBuf);
     } else if (txOut.script.isPkhx90dOutput()) {
-      const pkh_buf = txOut.script.chunks[3].buf as EbxBuffer;
+      const pkh_buf = txOut.script.chunks[3].buf as EbxBuf;
       const expired = Script.isPkhx90dExpired(
         this.workingBlockNum,
         prevBlockNum,
@@ -97,10 +97,10 @@ export class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
 
-      inputScript.chunks[0].buf = EbxBuffer.from(sigBuf);
-      inputScript.chunks[1].buf = EbxBuffer.from(pubKeyBuf);
+      inputScript.chunks[0].buf = EbxBuf.from(sigBuf);
+      inputScript.chunks[1].buf = EbxBuf.from(pubKeyBuf);
     } else if (txOut.script.isPkhx1hOutput()) {
-      const pkh_buf = txOut.script.chunks[3].buf as EbxBuffer;
+      const pkh_buf = txOut.script.chunks[3].buf as EbxBuf;
       const expired = Script.isPkhx1hExpired(
         this.workingBlockNum,
         prevBlockNum,
@@ -134,11 +134,11 @@ export class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
 
-      inputScript.chunks[0].buf = EbxBuffer.from(sigBuf);
-      inputScript.chunks[1].buf = EbxBuffer.from(pubKeyBuf);
+      inputScript.chunks[0].buf = EbxBuf.from(sigBuf);
+      inputScript.chunks[1].buf = EbxBuf.from(pubKeyBuf);
     } else if (txOut.script.isPkhxr1h40mOutput()) {
-      const pkh_buf = txOut.script.chunks[3].buf as EbxBuffer;
-      const rpkh_buf = txOut.script.chunks[13].buf as EbxBuffer;
+      const pkh_buf = txOut.script.chunks[3].buf as EbxBuf;
+      const rpkh_buf = txOut.script.chunks[13].buf as EbxBuf;
       const expired = Script.isPkhxr1h40mExpired(
         this.workingBlockNum,
         prevBlockNum,
@@ -191,11 +191,11 @@ export class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
 
-      inputScript.chunks[0].buf = EbxBuffer.from(sigBuf);
-      inputScript.chunks[1].buf = EbxBuffer.from(pubKeyBuf);
+      inputScript.chunks[0].buf = EbxBuf.from(sigBuf);
+      inputScript.chunks[1].buf = EbxBuf.from(pubKeyBuf);
     } else if (txOut.script.isPkhxr90d60dOutput()) {
-      const pkh_buf = txOut.script.chunks[3].buf as EbxBuffer;
-      const rpkh_buf = txOut.script.chunks[13].buf as EbxBuffer;
+      const pkh_buf = txOut.script.chunks[3].buf as EbxBuf;
+      const rpkh_buf = txOut.script.chunks[13].buf as EbxBuf;
       const expired = Script.isPkhxr90d60dExpired(
         this.workingBlockNum,
         prevBlockNum,
@@ -248,8 +248,8 @@ export class TxSigner {
       );
       const sigBuf = sig.toIsoBuf();
 
-      inputScript.chunks[0].buf = EbxBuffer.from(sigBuf);
-      inputScript.chunks[1].buf = EbxBuffer.from(pubKeyBuf);
+      inputScript.chunks[0].buf = EbxBuf.from(sigBuf);
+      inputScript.chunks[1].buf = EbxBuf.from(pubKeyBuf);
     } else {
       return Err("unsupported script type");
     }

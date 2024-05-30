@@ -8,15 +8,15 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { IsoHex } from "./iso-hex.js";
 import { EbxError } from "./ebx-error.js";
 
 export class HashCache {
-  public hashPrevouts?: EbxBuffer;
-  public hashLockRel?: EbxBuffer;
-  public hashOutputs?: EbxBuffer;
+  public hashPrevouts?: EbxBuf;
+  public hashLockRel?: EbxBuf;
+  public hashOutputs?: EbxBuf;
 }
 
 export class Tx {
@@ -37,7 +37,7 @@ export class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromIsoBuf(buf: EbxBuffer): Result<Tx, EbxError> {
+  static fromIsoBuf(buf: EbxBuf): Result<Tx, EbxError> {
     return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
@@ -83,16 +83,16 @@ export class Tx {
     return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
-    writer.writeEbxBuffer(VarInt.fromNumber(this.inputs.length).toIsoBuf());
+    writer.writeIsoBuf(VarInt.fromNumber(this.inputs.length).toIsoBuf());
     for (const input of this.inputs) {
-      writer.writeEbxBuffer(input.toIsoBuf());
+      writer.writeIsoBuf(input.toIsoBuf());
     }
-    writer.writeEbxBuffer(VarInt.fromNumber(this.outputs.length).toIsoBuf());
+    writer.writeIsoBuf(VarInt.fromNumber(this.outputs.length).toIsoBuf());
     for (const output of this.outputs) {
-      writer.writeEbxBuffer(output.toIsoBuf());
+      writer.writeIsoBuf(output.toIsoBuf());
     }
     writer.writeUInt64BE(this.lockAbs);
     return writer.toIsoBuf();
@@ -127,24 +127,24 @@ export class Tx {
     return this.inputs.length === 1 && this.inputs[0].isCoinbase();
   }
 
-  blake3Hash(): EbxBuffer {
+  blake3Hash(): EbxBuf {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): EbxBuffer {
+  id(): EbxBuf {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  hashPrevouts(): EbxBuffer {
+  hashPrevouts(): EbxBuf {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
-      writer.writeEbxBuffer(input.inputTxId);
+      writer.writeIsoBuf(input.inputTxId);
       writer.writeUInt32BE(input.inputTxNOut);
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashLockRel(): EbxBuffer {
+  hashLockRel(): EbxBuf {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeUInt32BE(input.lockRel);
@@ -152,28 +152,28 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashOutputs(): EbxBuffer {
+  hashOutputs(): EbxBuf {
     const writer = new IsoBufWriter();
     for (const output of this.outputs) {
-      writer.writeEbxBuffer(output.toIsoBuf());
+      writer.writeIsoBuf(output.toIsoBuf());
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
   sighashPreimage(
     inputIndex: number,
-    script: EbxBuffer,
+    script: EbxBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
-  ): EbxBuffer {
+  ): EbxBuf {
     const SIGHASH_ANYONECANPAY = 0x80;
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = EbxBuffer.alloc(32);
-    let lockRelHash = EbxBuffer.alloc(32);
-    let outputsHash = EbxBuffer.alloc(32);
+    let prevoutsHash = EbxBuf.alloc(32);
+    let lockRelHash = EbxBuf.alloc(32);
+    let outputsHash = EbxBuf.alloc(32);
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
@@ -210,15 +210,15 @@ export class Tx {
 
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
-    writer.writeEbxBuffer(prevoutsHash);
-    writer.writeEbxBuffer(lockRelHash);
-    writer.writeEbxBuffer(this.inputs[inputIndex].inputTxId);
+    writer.writeIsoBuf(prevoutsHash);
+    writer.writeIsoBuf(lockRelHash);
+    writer.writeIsoBuf(this.inputs[inputIndex].inputTxId);
     writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut);
     writer.writeVarIntNum(script.length);
-    writer.writeEbxBuffer(script);
+    writer.writeIsoBuf(script);
     writer.writeUInt64BE(amount);
     writer.writeUInt32BE(this.inputs[inputIndex].lockRel);
-    writer.writeEbxBuffer(outputsHash);
+    writer.writeIsoBuf(outputsHash);
     writer.writeUInt64BE(this.lockAbs);
     writer.writeUInt8(hashType);
     return writer.toIsoBuf();
@@ -226,10 +226,10 @@ export class Tx {
 
   sighashNoCache(
     inputIndex: number,
-    script: EbxBuffer,
+    script: EbxBuf,
     amount: bigint,
     hashType: number,
-  ): EbxBuffer {
+  ): EbxBuf {
     const hashCache = new HashCache();
     const preimage = this.sighashPreimage(
       inputIndex,
@@ -244,11 +244,11 @@ export class Tx {
 
   sighashWithCache(
     inputIndex: number,
-    script: EbxBuffer,
+    script: EbxBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
-  ): EbxBuffer {
+  ): EbxBuf {
     const preimage = this.sighashPreimage(
       inputIndex,
       script,
@@ -262,21 +262,21 @@ export class Tx {
 
   signNoCache(
     inputIndex: number,
-    privateKey: EbxBuffer,
-    script: EbxBuffer,
+    privateKey: EbxBuf,
+    script: EbxBuf,
     amount: bigint,
     hashType: number,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = EbxBuffer.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = EbxBuf.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
 
   signWithCache(
     inputIndex: number,
-    privateKey: EbxBuffer,
-    script: EbxBuffer,
+    privateKey: EbxBuf,
+    script: EbxBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
@@ -288,16 +288,16 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = EbxBuffer.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = EbxBuf.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
 
   verifyNoCache(
     inputIndex: number,
-    publicKey: EbxBuffer,
+    publicKey: EbxBuf,
     sig: TxSignature,
-    script: EbxBuffer,
+    script: EbxBuf,
     amount: bigint,
   ): boolean {
     const hashType = sig.hashType;
@@ -307,9 +307,9 @@ export class Tx {
 
   verifyWithCache(
     inputIndex: number,
-    publicKey: EbxBuffer,
+    publicKey: EbxBuf,
     sig: TxSignature,
-    script: EbxBuffer,
+    script: EbxBuf,
     amount: bigint,
     hashCache: HashCache,
   ): boolean {

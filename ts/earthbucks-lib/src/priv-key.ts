@@ -1,5 +1,5 @@
 import secp256k1 from "secp256k1";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf";
 import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";
@@ -15,41 +15,41 @@ import {
 import { Option, None, Some } from "earthbucks-opt-res";
 
 export class PrivKey {
-  buf: EbxBuffer;
+  buf: EbxBuf;
 
-  constructor(buf: EbxBuffer) {
+  constructor(buf: EbxBuf) {
     this.buf = buf;
   }
 
   static fromRandom(): PrivKey {
     let privateKey;
     do {
-      privateKey = crypto.getRandomValues(EbxBuffer.alloc(32));
+      privateKey = crypto.getRandomValues(EbxBuf.alloc(32));
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     return this.buf;
   }
 
-  toPubKeyEbxBuffer(): Result<EbxBuffer, EbxError> {
+  toPubKeyIsoBuf(): Result<EbxBuf, EbxError> {
     try {
-      return Ok(EbxBuffer.from(secp256k1.publicKeyCreate(this.buf)));
+      return Ok(EbxBuf.from(secp256k1.publicKeyCreate(this.buf)));
     } catch (err) {
       return Err(new InvalidKeyError(None));
     }
   }
 
   toPubKeyHex(): Result<string, EbxError> {
-    const res = this.toPubKeyEbxBuffer();
+    const res = this.toPubKeyIsoBuf();
     if (res.err) {
       return res;
     }
     return Ok(res.unwrap().toString("hex"));
   }
 
-  static fromIsoBuf(buf: EbxBuffer): Result<PrivKey, EbxError> {
+  static fromIsoBuf(buf: EbxBuf): Result<PrivKey, EbxError> {
     if (buf.length > 32) {
       return Err(new TooMuchDataError(None));
     }
@@ -92,9 +92,9 @@ export class PrivKey {
       return checkBufRes;
     }
     const checkBuf = checkBufRes.unwrap();
-    let decoded: EbxBuffer;
+    let decoded: EbxBuf;
     try {
-      decoded = EbxBuffer.from(bs58.decode(str.slice(14)));
+      decoded = EbxBuf.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

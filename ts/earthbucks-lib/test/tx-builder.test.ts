@@ -6,7 +6,7 @@ import { Script } from "../src/script";
 import { KeyPair } from "../src/key-pair";
 import { Pkh } from "../src/pkh";
 import { PkhKeyMap } from "../src/pkh-key-map";
-import { EbxBuffer } from "../src/ebx-buffer";
+import { EbxBuf } from "../src/ebx-buf";
 import { TxOutBn } from "../src/tx-out-bn";
 
 describe("TxBuilder", () => {
@@ -20,12 +20,12 @@ describe("TxBuilder", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
+      const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
       const txOut = new TxOut(BigInt(100), script);
       const txOutBn = new TxOutBn(txOut, 0n);
-      txOutBnMap.add(txOutBn, EbxBuffer.from("00".repeat(32), "hex"), i);
+      txOutBnMap.add(txOutBn, EbxBuf.from("00".repeat(32), "hex"), i);
     }
 
     const changeScript = Script.fromEmpty();
@@ -34,7 +34,7 @@ describe("TxBuilder", () => {
 
   test("should build a valid tx when input is enough to cover the output", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(BigInt(50), script);
     txBuilder.addOutput(output);

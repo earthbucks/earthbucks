@@ -1,4 +1,4 @@
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 // big integers, positive or negative, encoded as big endian, two's complement
@@ -15,7 +15,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  static fromIsoBuf(buffer: EbxBuffer): ScriptNum {
+  static fromIsoBuf(buffer: EbxBuf): ScriptNum {
     const scriptNum = new ScriptNum();
     if (buffer.length === 0) {
       scriptNum.num = 0n;
@@ -24,11 +24,11 @@ export class ScriptNum {
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
-      const invertedEbxBuffer = EbxBuffer.alloc(buffer.length);
+      const invertedIsoBuf = EbxBuf.alloc(buffer.length);
       for (let i = 0; i < buffer.length; i++) {
-        invertedEbxBuffer[i] = ~buffer[i]; // Invert all bits
+        invertedIsoBuf[i] = ~buffer[i]; // Invert all bits
       }
-      const invertedBigInt = BigInt("0x" + invertedEbxBuffer.toString("hex"));
+      const invertedBigInt = BigInt("0x" + invertedIsoBuf.toString("hex"));
       scriptNum.num = -(invertedBigInt + 1n); // Add one and negate to get the original number
     } else {
       // If the number is positive
@@ -37,10 +37,10 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     const num = this.num;
     if (num === 0n) {
-      return EbxBuffer.alloc(0);
+      return EbxBuf.alloc(0);
     } else if (num > 0n) {
       let hex = num.toString(16);
       if (hex.length % 2 !== 0) {
@@ -50,7 +50,7 @@ export class ScriptNum {
       if (parseInt(hex[0], 16) >= 8) {
         hex = "00" + hex;
       }
-      return EbxBuffer.from(hex, "hex");
+      return EbxBuf.from(hex, "hex");
     } else {
       const bitLength = num.toString(2).length; // Get bit length of number
       const byteLength = Math.ceil(bitLength / 8); // Calculate byte length, rounding up to nearest byte
@@ -59,7 +59,7 @@ export class ScriptNum {
       if (hex.length % 2 !== 0) {
         hex = "0" + hex; // Pad with zero to make length even
       }
-      return EbxBuffer.from(hex, "hex");
+      return EbxBuf.from(hex, "hex");
     }
   }
 

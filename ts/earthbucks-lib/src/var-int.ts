@@ -1,34 +1,26 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class VarInt {
-  private buf: EbxBuffer;
+  private buf: EbxBuf;
 
-  constructor(buf: EbxBuffer = EbxBuffer.alloc(0)) {
+  constructor(buf: EbxBuf = EbxBuf.alloc(0)) {
     this.buf = buf;
   }
 
-  fromBigInt(bn: bigint) {
-    this.buf = new IsoBufWriter().writeVarInt(bn).toIsoBuf();
-    return this;
-  }
-
   static fromBigInt(bn: bigint) {
-    return new this().fromBigInt(bn);
-  }
-
-  fromNumber(num: number) {
-    this.buf = new IsoBufWriter().writeVarIntNum(num).toIsoBuf();
-    return this;
+    const buf = new IsoBufWriter().writeVarInt(bn).toIsoBuf();
+    return new VarInt(buf);
   }
 
   static fromNumber(num: number) {
-    return new this().fromNumber(num);
+    const buf = new IsoBufWriter().writeVarIntNum(num).toIsoBuf();
+    return new VarInt(buf);
   }
 
-  toIsoBuf() {
+  toIsoBuf(): EbxBuf {
     return this.buf;
   }
 
@@ -55,7 +47,7 @@ export class VarInt {
       return false;
     }
     const bn = res.unwrap();
-    const varint = new VarInt().fromBigInt(bn);
-    return EbxBuffer.compare(this.buf, varint.toIsoBuf()) === 0;
+    const varint = VarInt.fromBigInt(bn);
+    return EbxBuf.compare(this.buf, varint.toIsoBuf()) === 0;
   }
 }

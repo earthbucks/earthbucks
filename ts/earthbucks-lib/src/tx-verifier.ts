@@ -1,7 +1,7 @@
 import { Tx, HashCache } from "./tx.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 
 export class TxVerifier {
   public tx: Tx;

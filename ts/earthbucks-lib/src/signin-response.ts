@@ -3,7 +3,7 @@ import { PubKey } from "./pub-key.js";
 import { IsoHex } from "./iso-hex.js";
 import { SignedMessage } from "./signed-message.js";
 import { SigninChallenge } from "./signin-challenge.js";
-import { EbxBuffer } from "./ebx-buffer.js";
+import { EbxBuf } from "./ebx-buf.js";
 
 export class SigninResponse {
   signedMessage: SignedMessage;
@@ -36,7 +36,7 @@ export class SigninResponse {
     return new SigninResponse(signedMessage);
   }
 
-  static toIsoBuf(buf: EbxBuffer, domain: string): SigninResponse {
+  static toIsoBuf(buf: EbxBuf, domain: string): SigninResponse {
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
     const signedMessage = SignedMessage.fromIsoBuf(buf, signInResponseStr);
     return new SigninResponse(signedMessage);
@@ -47,7 +47,7 @@ export class SigninResponse {
     return SigninResponse.toIsoBuf(buf, domain);
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     return this.signedMessage.toIsoBuf();
   }
 

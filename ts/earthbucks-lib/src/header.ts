@@ -1,39 +1,39 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
-import { EbxBuffer } from "./ebx-buffer";
+import { EbxBuf } from "./ebx-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = EbxBuffer.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = EbxBuf.alloc(32, 0xff);
 
   version: number;
-  prevBlockId: EbxBuffer;
-  merkleRoot: EbxBuffer;
+  prevBlockId: EbxBuf;
+  merkleRoot: EbxBuf;
   timestamp: bigint;
   blockNum: bigint;
-  target: EbxBuffer;
-  nonce: EbxBuffer;
+  target: EbxBuf;
+  nonce: EbxBuf;
   workSerAlgo: number;
-  workSerHash: EbxBuffer;
+  workSerHash: EbxBuf;
   workParAlgo: number;
-  workParHash: EbxBuffer;
+  workParHash: EbxBuf;
 
   constructor(
     version: number,
-    prevBlockId: EbxBuffer,
-    merkleRoot: EbxBuffer,
+    prevBlockId: EbxBuf,
+    merkleRoot: EbxBuf,
     timestamp: bigint,
     blockNum: bigint,
-    target: EbxBuffer,
-    nonce: EbxBuffer,
+    target: EbxBuf,
+    nonce: EbxBuf,
     workSerAlgo: number,
-    workSerHash: EbxBuffer,
+    workSerHash: EbxBuf,
     workParAlgo: number,
-    workParHash: EbxBuffer,
+    workParHash: EbxBuf,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -48,23 +48,23 @@ export class Header {
     this.workParHash = workParHash;
   }
 
-  toIsoBuf(): EbxBuffer {
+  toIsoBuf(): EbxBuf {
     const bw = new IsoBufWriter();
     bw.writeUInt32BE(this.version);
-    bw.writeEbxBuffer(this.prevBlockId);
-    bw.writeEbxBuffer(this.merkleRoot);
+    bw.writeIsoBuf(this.prevBlockId);
+    bw.writeIsoBuf(this.merkleRoot);
     bw.writeUInt64BE(this.timestamp);
     bw.writeUInt64BE(this.blockNum);
-    bw.writeEbxBuffer(this.target);
-    bw.writeEbxBuffer(this.nonce);
+    bw.writeIsoBuf(this.target);
+    bw.writeIsoBuf(this.nonce);
     bw.writeUInt32BE(this.workSerAlgo);
-    bw.writeEbxBuffer(this.workSerHash);
+    bw.writeIsoBuf(this.workSerHash);
     bw.writeUInt32BE(this.workParAlgo);
-    bw.writeEbxBuffer(this.workParHash);
+    bw.writeIsoBuf(this.workParHash);
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: EbxBuffer): Result<Header, string> {
+  static fromIsoBuf(buf: EbxBuf): Result<Header, string> {
     return Header.fromIsoBufReader(new IsoBufReader(buf));
   }
 
@@ -165,16 +165,16 @@ export class Header {
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
     bw.writeUInt32BE(this.version);
-    bw.writeEbxBuffer(this.prevBlockId);
-    bw.writeEbxBuffer(this.merkleRoot);
+    bw.writeIsoBuf(this.prevBlockId);
+    bw.writeIsoBuf(this.merkleRoot);
     bw.writeUInt64BE(this.timestamp);
     bw.writeUInt64BE(this.blockNum);
-    bw.writeEbxBuffer(this.target);
-    bw.writeEbxBuffer(this.nonce);
+    bw.writeIsoBuf(this.target);
+    bw.writeIsoBuf(this.nonce);
     bw.writeUInt32BE(this.workSerAlgo);
-    bw.writeEbxBuffer(this.workSerHash);
+    bw.writeIsoBuf(this.workSerHash);
     bw.writeUInt32BE(this.workParAlgo);
-    bw.writeEbxBuffer(this.workParHash);
+    bw.writeIsoBuf(this.workParHash);
     return bw;
   }
 
@@ -183,7 +183,7 @@ export class Header {
   }
 
   static fromIsoHex(str: string): Result<Header, string> {
-    return Header.fromIsoBuf(EbxBuffer.from(str, "hex"));
+    return Header.fromIsoBuf(EbxBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
@@ -194,20 +194,20 @@ export class Header {
     return Header.fromIsoHex(str);
   }
 
-  static fromGenesis(initialTarget: EbxBuffer): Header {
+  static fromGenesis(initialTarget: EbxBuf): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
-      EbxBuffer.alloc(32),
-      EbxBuffer.alloc(32),
+      EbxBuf.alloc(32),
+      EbxBuf.alloc(32),
       timestamp,
       0n,
       initialTarget,
-      EbxBuffer.alloc(32),
+      EbxBuf.alloc(32),
       0,
-      EbxBuffer.alloc(32),
+      EbxBuf.alloc(32),
       0,
-      EbxBuffer.alloc(32),
+      EbxBuf.alloc(32),
     );
   }
 
@@ -237,16 +237,16 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = EbxBuffer.alloc(32);
+    const nonce = EbxBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = EbxBuffer.alloc(32);
+    const workSerHash = EbxBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = EbxBuffer.alloc(32);
+    const workParHash = EbxBuf.alloc(32);
     return Ok(
       new Header(
         1,
         prevBlockId,
-        EbxBuffer.alloc(32),
+        EbxBuf.alloc(32),
         timestamp,
         blockNum,
         target,
@@ -263,19 +263,19 @@ export class Header {
     return version === 1;
   }
 
-  static isValidPreviousBlockHash(previousBlockHash: EbxBuffer): boolean {
+  static isValidPreviousBlockHash(previousBlockHash: EbxBuf): boolean {
     return previousBlockHash.length === 32;
   }
 
-  static isValidMerkleRoot(merkleRoot: EbxBuffer): boolean {
+  static isValidMerkleRoot(merkleRoot: EbxBuf): boolean {
     return merkleRoot.length === 32;
   }
 
-  static isValidNonce(nonce: EbxBuffer): boolean {
+  static isValidNonce(nonce: EbxBuf): boolean {
     return nonce.length === 32;
   }
 
-  static isValidTarget(target: EbxBuffer): boolean {
+  static isValidTarget(target: EbxBuf): boolean {
     return target.length === 32;
   }
 
@@ -297,16 +297,16 @@ export class Header {
     return this.blockNum === 0n && this.prevBlockId.every((byte) => byte === 0);
   }
 
-  hash(): EbxBuffer {
+  hash(): EbxBuf {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): EbxBuffer {
+  id(): EbxBuf {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  static adjustTarget(targetBuf: EbxBuffer, timeDiff: bigint): EbxBuffer {
-    const target = BigInt("0x" + EbxBuffer.from(targetBuf).toString("hex"));
+  static adjustTarget(targetBuf: EbxBuf, timeDiff: bigint): EbxBuf {
+    const target = BigInt("0x" + EbxBuf.from(targetBuf).toString("hex"));
     const twoWeeks =
       Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
 
@@ -322,7 +322,7 @@ export class Header {
 
     const newTarget = (target * timeDiff) / twoWeeks; // seconds
 
-    const newTargetBuf = EbxBuffer.from(
+    const newTargetBuf = EbxBuf.from(
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );

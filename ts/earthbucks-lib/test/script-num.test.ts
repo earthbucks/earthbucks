@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { ScriptNum } from "../src/script-num";
-import { EbxBuffer } from "../src/ebx-buffer";
+import { EbxBuf } from "../src/ebx-buf";
 
 describe("ScriptNum", () => {
   const testCases = [
@@ -24,7 +24,7 @@ describe("ScriptNum", () => {
 
   testCases.forEach(({ hex, dec }) => {
     test(`fromIsoBuf correctly converts ${hex} to ${dec}`, () => {
-      const buffer = EbxBuffer.from(hex, "hex");
+      const buffer = EbxBuf.from(hex, "hex");
       const scriptNum = ScriptNum.fromIsoBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });
