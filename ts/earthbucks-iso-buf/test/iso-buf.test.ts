@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { U8Arr, U8_32, FixedU8 } from "../src/iso-buf";
+import { U8Arr, U8_32, FixedU8 } from "../src/u8-arr";
 
 describe("IsoBuf", () => {
   test("it should make an iso buf of size 32", () => {

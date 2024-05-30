@@ -1,7 +1,7 @@
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class U8Arr {
-  public buf: Uint8Array;
+  public arr: Uint8Array;
   public size: number;
 
   constructor(buf: Uint8Array, size?: number) {
@@ -9,11 +9,29 @@ export class U8Arr {
       throw new Error(`Expected buffer of length ${size}, got ${buf.length}`);
     }
     this.size = size || buf.length;
-    this.buf = buf;
+    this.arr = buf;
   }
 
   toUint8Array(): Uint8Array {
-    return this.buf;
+    return this.arr;
+  }
+
+  static fromHex(hex: string): Result<U8Arr, string> {
+    // make sure hex is valid [0-9a-z] and even in length
+    if (!/^[0-9a-f]*$/.test(hex) || hex.length % 2 !== 0) {
+      return Err("Invalid hex string");
+    }
+    const buf = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      buf[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+    }
+    return Ok(new U8Arr(buf));
+  }
+
+  toHex(): string {
+    return Array.from(this.arr)
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
   }
 }
 
@@ -40,7 +58,7 @@ export class FixedU8<N extends number> extends U8Arr {
   }
 
   toUint8Array(): Uint8Array {
-    return this.buf;
+    return this.arr;
   }
 }
 
