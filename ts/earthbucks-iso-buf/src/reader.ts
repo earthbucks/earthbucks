@@ -96,9 +96,7 @@ export class Reader {
       if (buf.readU16BE(0).unwrap() < 0xfd) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(
-        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
-      );
+      return Ok(IsoBuf.concat([IsoBuf.fromNumbers([first]), buf]));
     } else if (first === 0xfe) {
       const res = this.read(4);
       if (res.err) {
@@ -108,9 +106,7 @@ export class Reader {
       if (buf.readU32BE(0).unwrap() < 0x10000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(
-        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
-      );
+      return Ok(IsoBuf.concat([IsoBuf.fromNumbers([first]), buf]));
     } else if (first === 0xff) {
       const res = this.read(8);
       if (res.err) {
@@ -121,11 +117,9 @@ export class Reader {
       if (bn < 0x100000000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(
-        IsoBuf.concat([IsoBuf.from(new Uint8Array([first])).unwrap(), buf]),
-      );
+      return Ok(IsoBuf.concat([IsoBuf.fromNumbers([first]), buf]));
     } else {
-      return Ok(IsoBuf.from(new Uint8Array([first])).unwrap());
+      return Ok(IsoBuf.fromNumbers([first]));
     }
   }
 

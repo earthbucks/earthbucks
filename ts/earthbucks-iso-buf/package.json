@@ -1,6 +1,6 @@
 {
   "name": "earthbucks-iso-buf",
-  "version": "0.1.7",
+  "version": "0.1.0",
   "description": "Isomorphic Buffer (isobuf): Data structure that is the same between memory and binary representation for hashing and signatures.",
   "main": "dist/lib.js",
   "types": "dist/lib.d.js",
