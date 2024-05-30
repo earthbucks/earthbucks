@@ -26,7 +26,11 @@ export class Reader {
     if (this.pos + len > this.isoBuf.length) {
       return Err(new NotEnoughDataError(None));
     }
-    const buf = this.isoBuf.subarray(this.pos, this.pos + len);
+    const res = this.isoBuf.subIsoBuf(this.pos, this.pos + len);
+    if (res.err) {
+      return Err(res.val);
+    }
+    const buf = res.unwrap();
     const newBuf = IsoBuf.alloc(len);
     newBuf.set(buf);
     this.pos += len;
@@ -81,7 +85,7 @@ export class Reader {
     return Ok(val);
   }
 
-  readVarIntBuf(): Result<IsoBuf, GenericError> {
+  readVarIntBuf(): Result<IsoBuf, IsoBufError> {
     const res = this.readU8();
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
@@ -123,7 +127,7 @@ export class Reader {
     }
   }
 
-  readVarInt(): Result<bigint, GenericError> {
+  readVarInt(): Result<bigint, IsoBufError> {
     const res = this.readVarIntBuf();
     if (res.err) {
       return Err(res.val);
@@ -148,7 +152,7 @@ export class Reader {
     return Ok(value);
   }
 
-  readVarIntNum(): Result<number, GenericError> {
+  readVarIntNum(): Result<number, IsoBufError> {
     const value = this.readVarInt();
     if (value.err) {
       return Err(value.val);

@@ -74,7 +74,7 @@ describe("IsoBufWriter", () => {
 
       // Assert
       const result = bufferWriter.toIsoBuf();
-      expect(result.toHex()).toBe("fd3039");
+      expect(result.toStrictHex()).toBe("fd3039");
     });
   });
 
@@ -88,7 +88,7 @@ describe("IsoBufWriter", () => {
 
       // Assert
       const result = bufferWriter.toIsoBuf();
-      expect(result.toHex()).toBe("ff112210f47de98115");
+      expect(result.toStrictHex()).toBe("ff112210f47de98115");
     });
   });
 
@@ -117,7 +117,7 @@ describe("IsoBufWriter", () => {
       const n = 0x100000000;
       const result = Writer.varIntBufNum(n);
       expect(result[0]).toBe(255);
-      expect(result.toHex()).toBe("ff0000000100000000");
+      expect(result.toStrictHex()).toBe("ff0000000100000000");
     });
   });
 
@@ -139,7 +139,7 @@ describe("IsoBufWriter", () => {
       const bn = BigInt(0xffffffff);
       const result = Writer.varIntBuf(bn);
       expect(result[0]).toBe(254);
-      expect(result.toHex()).toBe("feffffffff");
+      expect(result.toStrictHex()).toBe("feffffffff");
     });
 
     it("should write a bigint greater than or equal to 0x100000000 as a 9-byte integer", () => {

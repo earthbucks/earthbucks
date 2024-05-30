@@ -1,6 +1,7 @@
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { Option, Some, None } from "earthbucks-opt-res";
 import {
+  GenericError,
   InvalidEncodingError,
   InvalidHexError,
   IsoBufError,
@@ -16,6 +17,25 @@ export function isValidHex(hex: string) {
 }
 
 export class IsoBuf extends Uint8Array {
+  size: number;
+
+  constructor(arrayOrSize: Uint8Array | ArrayBuffer | number, size?: number) {
+    if (typeof arrayOrSize !== "number") {
+      super(arrayOrSize);
+      if (size !== undefined && this.length !== size) {
+        throw new Error(
+          `Expected buffer of length ${size}, got ${this.length}`,
+        );
+      }
+      this.size = this.length;
+    } else if (typeof arrayOrSize === "number") {
+      super(arrayOrSize);
+      this.size = arrayOrSize;
+    } else {
+      throw new Error("Invalid argument");
+    }
+  }
+
   static alloc(size: number): IsoBuf {
     return new IsoBuf(size);
   }
@@ -100,11 +120,33 @@ export class IsoBuf extends Uint8Array {
     return arr;
   }
 
+  subIsoBuf(begin: number, end?: number): Result<IsoBuf, IsoBufError> {
+    let res: Uint8Array
+    try {
+      res = super.subarray(begin, end);
+    } catch (err) {
+      return Err(new GenericError(None, "subIsoBuf failed"))
+    }
+    return Ok(new IsoBuf(res));
+  }
+
+  equals(other: IsoBuf): boolean {
+    if (this.length !== other.length) {
+      return false;
+    }
+    for (let i = 0; i < this.length; i++) {
+      if (this[i] !== other[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static from(): never {
     throw new Error("Method 'from' is not supported on IsoBuf");
   }
 
-  static fromHex(hex: string): Result<IsoBuf, IsoBufError> {
+  static fromStrictHex(hex: string): Result<IsoBuf, IsoBufError> {
     if (!isValidHex(hex)) {
       return Err(new InvalidHexError(None));
     }
@@ -112,10 +154,10 @@ export class IsoBuf extends Uint8Array {
     for (let i = 0; i < hex.length; i += 2) {
       buf[i / 2] = parseInt(hex.slice(i, i + 2), 16);
     }
-    return Ok(new IsoBuf(buf));
+    return Ok(new this(buf, buf.length));
   }
 
-  toHex(): string {
+  toStrictHex(): string {
     return Array.from(this)
       .map((byte) => byte.toString(16).padStart(2, "0"))
       .join("");
@@ -128,6 +170,14 @@ export class IsoBuf extends Uint8Array {
   toNumbers(): number[] {
     return Array.from(this);
   }
+
+  static fromUtf8String(str: string): IsoBuf {
+    return new IsoBuf(new TextEncoder().encode(str));
+  }
+
+  toUtf8String(): string {
+    return new TextDecoder().decode(this);
+  }
 }
 
 export class FixedIsoBuf<N extends number> extends IsoBuf {
@@ -137,19 +187,6 @@ export class FixedIsoBuf<N extends number> extends IsoBuf {
       // returning Result is not possible inside a constructor
       throw new Error(`Expected buffer of length ${size}, got ${buf.length}`);
     }
-  }
-
-  static fromUint8Array<N extends number>(
-    buf: Uint8Array,
-    size: N,
-  ): Result<FixedIsoBuf<N>, IsoBufError> {
-    if (buf.length > size) {
-      return Err(new TooMuchDataError(None));
-    }
-    if (buf.length < size) {
-      return Err(new NotEnoughDataError(None));
-    }
-    return Ok(new FixedIsoBuf(buf, size));
   }
 }
 
@@ -163,15 +200,5 @@ export class IsoBuf32 extends IsoBuf {
       throw new Error(`Expected buffer of length 32, got ${size}`);
     }
     super(buf, size);
-  }
-
-  static fromUint8Array(buf: Uint8Array): Result<IsoBuf32, IsoBufError> {
-    if (buf.length > 32) {
-      return Err(new TooMuchDataError(None));
-    }
-    if (buf.length < 32) {
-      return Err(new NotEnoughDataError(None));
-    }
-    return Ok(new IsoBuf32(buf));
   }
 }

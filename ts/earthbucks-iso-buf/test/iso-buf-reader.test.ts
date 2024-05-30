@@ -13,10 +13,10 @@ describe("Reader", () => {
     isoBufReader = new Reader(testBuffer);
   });
 
-  test("read returns correct subarray", () => {
+  test("read returns correct subIsoBuf", () => {
     const len = 4;
     const result = isoBufReader.read(len).unwrap();
-    expect(result).toEqual(testBuffer.subarray(0, len));
+    expect(result).toEqual(testBuffer.subIsoBuf(0, len).unwrap());
   });
 
   test("read updates position", () => {
@@ -200,7 +200,7 @@ describe("Reader", () => {
 
     test("test vectors: read", () => {
       testVector.read.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(bufferReader.read(test.len).val.toString()).toEqual(test.error);
       });
@@ -208,7 +208,7 @@ describe("Reader", () => {
 
     test("test vectors: read_u8", () => {
       testVector.read_u8.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(
           bufferReader.readU8().val.toString().startsWith(test.error),
@@ -218,7 +218,7 @@ describe("Reader", () => {
 
     test("test vectors: read_u16_be", () => {
       testVector.read_u16_be.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(
           bufferReader.readU16BE().val.toString().startsWith(test.error),
@@ -228,7 +228,7 @@ describe("Reader", () => {
 
     test("test vectors: read_u32_be", () => {
       testVector.read_u32_be.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(
           bufferReader.readU32BE().val.toString().startsWith(test.error),
@@ -238,7 +238,7 @@ describe("Reader", () => {
 
     test("test vectors: read_u64_be", () => {
       testVector.read_u64_be.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(
           bufferReader.readU64BE().val.toString().startsWith(test.error),
@@ -248,7 +248,7 @@ describe("Reader", () => {
 
     test("test vectors: read_var_int_buf", () => {
       testVector.read_var_int_buf.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(bufferReader.readVarIntBuf().val.toString()).toMatch(
           new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
@@ -258,7 +258,7 @@ describe("Reader", () => {
 
     test("test vectors: read_var_int", () => {
       testVector.read_var_int.errors.forEach((test) => {
-        const buf = IsoBuf.fromHex(test.hex).unwrap();
+        const buf = IsoBuf.fromStrictHex(test.hex).unwrap();
         const bufferReader = new Reader(buf);
         expect(bufferReader.readVarInt().val.toString()).toMatch(
           new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
