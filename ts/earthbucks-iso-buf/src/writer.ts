@@ -24,28 +24,28 @@ export class Writer {
     return this;
   }
 
-  writeUInt8(n: number): this {
+  writeU8(n: number): this {
     const buf = IsoBuf.alloc(1);
     buf.writeU8(n, 0);
     this.writeIsoBuf(buf);
     return this;
   }
 
-  writeUInt16BE(n: number): this {
+  writeU16BE(n: number): this {
     const buf = IsoBuf.alloc(2);
     buf.writeU16BE(n, 0);
     this.writeIsoBuf(buf);
     return this;
   }
 
-  writeUInt32BE(n: number): this {
+  writeU32BE(n: number): this {
     const buf = IsoBuf.alloc(4);
     buf.writeU32BE(n, 0);
     this.writeIsoBuf(buf);
     return this;
   }
 
-  writeUInt64BE(bn: bigint): this {
+  writeU64BE(bn: bigint): this {
     const buf = IsoBuf.alloc(8);
     buf.writeU64BE(bn, 0);
     this.writeIsoBuf(buf);

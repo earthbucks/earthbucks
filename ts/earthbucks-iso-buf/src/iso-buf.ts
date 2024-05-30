@@ -6,7 +6,7 @@ import {
   IsoBufError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./iso-buf-error";
+} from "./iso-buf-error.js";
 
 export function isValidHex(hex: string) {
   if (!/^[0-9a-f]*$/.test(hex) || hex.length % 2 !== 0) {
