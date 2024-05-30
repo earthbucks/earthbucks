@@ -27,18 +27,18 @@ pub fn decode_hex(hex: &str) -> Result<Vec<u8>, IsoBufError> {
     Ok(res.unwrap())
 }
 
-pub fn from_hex<T: StrictHex>(hex: &str) -> Result<T, IsoBufError> {
+pub fn from_hex<T: IsoBuf>(hex: &str) -> Result<T, IsoBufError> {
     T::from_hex(hex)
 }
 
-pub trait StrictHex {
+pub trait IsoBuf {
     fn to_hex(&self) -> String;
     fn from_hex(hex: &str) -> Result<Self, IsoBufError>
     where
         Self: Sized;
 }
 
-impl StrictHex for Vec<u8> {
+impl IsoBuf for Vec<u8> {
     fn to_hex(&self) -> String {
         encode_hex(self)
     }
@@ -48,7 +48,7 @@ impl StrictHex for Vec<u8> {
     }
 }
 
-impl<const N: usize> StrictHex for [u8; N] {
+impl<const N: usize> IsoBuf for [u8; N] {
     fn to_hex(&self) -> String {
         self.iter().fold(String::new(), |mut acc, &byte| {
             acc.push_str(&format!("{:02x}", byte));
