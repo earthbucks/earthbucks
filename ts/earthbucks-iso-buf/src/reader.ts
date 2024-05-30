@@ -10,23 +10,23 @@ import {
 } from "./iso-buf-error.js";
 
 export class Reader {
-  buf: IsoBuf;
+  isoBuf: IsoBuf;
   pos: number;
 
   constructor(buf: IsoBuf) {
-    this.buf = buf;
+    this.isoBuf = buf;
     this.pos = 0;
   }
 
   eof(): boolean {
-    return this.pos >= this.buf.length;
+    return this.pos >= this.isoBuf.length;
   }
 
   read(len: number): Result<IsoBuf, IsoBufError> {
-    if (this.pos + len > this.buf.length) {
+    if (this.pos + len > this.isoBuf.length) {
       return Err(new NotEnoughDataError(None));
     }
-    const buf = this.buf.subarray(this.pos, this.pos + len);
+    const buf = this.isoBuf.subarray(this.pos, this.pos + len);
     const newBuf = IsoBuf.alloc(len);
     newBuf.set(buf);
     this.pos += len;
@@ -34,12 +34,12 @@ export class Reader {
   }
 
   readRemainder(): IsoBuf {
-    return this.read(this.buf.length - this.pos).unwrap();
+    return this.read(this.isoBuf.length - this.pos).unwrap();
   }
 
   readU8(): Result<number, IsoBufError> {
     let val: number;
-    const res = this.buf.readU8(this.pos);
+    const res = this.isoBuf.readU8(this.pos);
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
     }
@@ -50,7 +50,7 @@ export class Reader {
 
   readU16BE(): Result<number, IsoBufError> {
     let val: number;
-    const res = this.buf.readU16BE(this.pos);
+    const res = this.isoBuf.readU16BE(this.pos);
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
     }
@@ -61,7 +61,7 @@ export class Reader {
 
   readU32BE(): Result<number, IsoBufError> {
     let val: number;
-    const res = this.buf.readU32BE(this.pos);
+    const res = this.isoBuf.readU32BE(this.pos);
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
     }
@@ -72,7 +72,7 @@ export class Reader {
 
   readU64BE(): Result<bigint, IsoBufError> {
     let val: bigint;
-    const res = this.buf.readU64BE(this.pos);
+    const res = this.isoBuf.readU64BE(this.pos);
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
     }

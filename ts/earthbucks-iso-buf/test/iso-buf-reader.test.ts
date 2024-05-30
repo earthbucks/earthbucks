@@ -1,6 +1,5 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { Reader } from "../src/reader.js";
-import { Buffer } from "buffer";
 import { IsoBuf } from "../src/iso-buf.js";
 import fs from "fs";
 import path from "path";

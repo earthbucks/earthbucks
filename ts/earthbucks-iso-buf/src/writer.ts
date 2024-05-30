@@ -1,26 +1,26 @@
 import { IsoBuf } from "./iso-buf.js";
 
 export class Writer {
-  bufs: IsoBuf[];
+  isoBufs: IsoBuf[];
 
   constructor(bufs?: IsoBuf[]) {
-    this.bufs = bufs ? bufs.map((isoBuf) => isoBuf) : [];
+    this.isoBufs = bufs ? bufs.map((isoBuf) => isoBuf) : [];
   }
 
   getLength(): number {
     let len = 0;
-    for (const buf of this.bufs) {
+    for (const buf of this.isoBufs) {
       len += buf.length;
     }
     return len;
   }
 
   toIsoBuf(): IsoBuf {
-    return IsoBuf.concat(this.bufs);
+    return IsoBuf.concat(this.isoBufs);
   }
 
   writeIsoBuf(buf: IsoBuf): this {
-    this.bufs.push(buf);
+    this.isoBufs.push(buf);
     return this;
   }
 

@@ -1,8 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Writer } from "../src/writer.js";
-import { Buffer } from "buffer";
 
-describe("BufferWriter", () => {
+describe("IsoBufWriter", () => {
   let bufferWriter: Writer;
 
   beforeEach(() => {
@@ -104,21 +103,21 @@ describe("BufferWriter", () => {
       const n = 0xffff;
       const result = Writer.varIntBufNum(n);
       expect(result[0]).toBe(253);
-      expect(Buffer.from(result).readUInt16BE(1)).toBe(n);
+      expect(result.readU16BE(1).unwrap()).toBe(n);
     });
 
     it("should write a number less than 0x100000000 as a 5-byte integer", () => {
       const n = 0xffffffff;
       const result = Writer.varIntBufNum(n);
       expect(result[0]).toBe(254);
-      expect(Buffer.from(result).readUInt32BE(1)).toBe(n);
+      expect(result.readU32BE(1).unwrap()).toBe(n);
     });
 
     it("should write a number greater than or equal to 0x100000000 as a 9-byte integer", () => {
       const n = 0x100000000;
       const result = Writer.varIntBufNum(n);
       expect(result[0]).toBe(255);
-      expect(Buffer.from(result).toString("hex")).toBe("ff0000000100000000");
+      expect(result.toHex()).toBe("ff0000000100000000");
     });
   });
 
@@ -140,7 +139,7 @@ describe("BufferWriter", () => {
       const bn = BigInt(0xffffffff);
       const result = Writer.varIntBuf(bn);
       expect(result[0]).toBe(254);
-      expect(Buffer.from(result).toString("hex")).toBe("feffffffff");
+      expect(result.toHex()).toBe("feffffffff");
     });
 
     it("should write a bigint greater than or equal to 0x100000000 as a 9-byte integer", () => {
