@@ -63,14 +63,18 @@ impl Reader {
     }
 
     pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, IsobufError> {
-        let first = self.read_u8().map_err(|e| IsobufError::NotEnoughDataError {
-            source: Some(Box::new(e)),
-        })?;
+        let first = self
+            .read_u8()
+            .map_err(|e| IsobufError::NotEnoughDataError {
+                source: Some(Box::new(e)),
+            })?;
         match first {
             0xfd => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read(2).map_err(|e| IsobufError::NotEnoughDataError {
-                    source: Some(Box::new(e)),
+                buf.extend_from_slice(&self.read(2).map_err(|e| {
+                    IsobufError::NotEnoughDataError {
+                        source: Some(Box::new(e)),
+                    }
                 })?);
                 if Cursor::new(&buf[1..]).read_u16::<BigEndian>().unwrap() < 0xfd {
                     return Err(IsobufError::NonMinimalEncodingError { source: None });
@@ -79,8 +83,10 @@ impl Reader {
             }
             0xfe => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read(4).map_err(|e| IsobufError::NotEnoughDataError {
-                    source: Some(Box::new(e)),
+                buf.extend_from_slice(&self.read(4).map_err(|e| {
+                    IsobufError::NotEnoughDataError {
+                        source: Some(Box::new(e)),
+                    }
                 })?);
 
                 if Cursor::new(&buf[1..]).read_u32::<BigEndian>().unwrap() < 0x10000 {
@@ -90,8 +96,10 @@ impl Reader {
             }
             0xff => {
                 let mut buf = vec![first];
-                buf.extend_from_slice(&self.read(8).map_err(|e| IsobufError::NotEnoughDataError {
-                    source: Some(Box::new(e)),
+                buf.extend_from_slice(&self.read(8).map_err(|e| {
+                    IsobufError::NotEnoughDataError {
+                        source: Some(Box::new(e)),
+                    }
                 })?);
                 if Cursor::new(&buf[1..]).read_u64::<BigEndian>().unwrap() < 0x100000000 {
                     return Err(IsobufError::NonMinimalEncodingError { source: None });
@@ -246,8 +254,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read.errors {
@@ -263,8 +270,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u8() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u8.errors {
@@ -280,8 +286,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u16_be() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u16_be.errors {
@@ -297,8 +302,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u32_be() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u32_be.errors {
@@ -314,8 +318,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_u64_be() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u64_be.errors {
@@ -331,8 +334,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_var_int_buf() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int_buf.errors {
@@ -348,8 +350,7 @@ mod tests {
 
     #[test]
     fn test_vectors_read_var_int() {
-        let data =
-            fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
+        let data = fs::read_to_string("./test_vectors/reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int.errors {
