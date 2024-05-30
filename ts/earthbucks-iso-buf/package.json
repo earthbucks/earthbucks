@@ -1,0 +1,46 @@
+{
+  "name": "earthbucks-isobuf",
+  "version": "0.1.7",
+  "description": "Isomorphic Buffer (isobuf): Data structure that is the same between memory and binary representation for hashing and signatures.",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --ignore-pattern .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=20.8.0",
+    "pnpm": ">=6.0.0"
+  },
+  "keywords": [],
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "rimraf": "^5.0.7"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": false
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "eslint": "^9.2.0",
+    "globals": "^15.2.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.9.0",
+    "vitest": "^1.6.0"
+  }
+}

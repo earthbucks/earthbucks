@@ -1,6 +1,6 @@
 [workspace]
 members = [
     "earthbucks_lib",
-    "isobuf"
+    "earthbucks_iso_buf"
 ]
 resolver = "2"

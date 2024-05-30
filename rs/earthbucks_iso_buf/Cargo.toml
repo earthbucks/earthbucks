@@ -1,6 +1,6 @@
 [package]
-name = "isobuf"
-description = "Isomorphic Buffer (Isobuf): Buffer that is the same between memory and binary representation for hashing and signatures."
+name = "earthbucks_iso_buf"
+description = "Isomorphic Buffer (iso buf): Data structure that is the same between memory and binary representation for hashing and signatures."
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
