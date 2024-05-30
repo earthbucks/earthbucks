@@ -7,6 +7,19 @@ export abstract class IsoBufError extends Error {
   }
 }
 
+export class GenericError extends IsoBufError {
+  constructor(
+    public source: Option<IsoBufError>,
+    public message: string,
+  ) {
+    super();
+  }
+
+  toString(): string {
+    return `isobuf error: ${this.message}`;
+  }
+}
+
 export class NotEnoughDataError extends IsoBufError {
   constructor(public source: Option<IsoBufError>) {
     super();

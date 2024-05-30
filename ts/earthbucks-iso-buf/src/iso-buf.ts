@@ -27,6 +27,125 @@ export class IsoBuf {
     this.arr = buf;
   }
 
+  get length(): number {
+    return this.arr.length;
+  }
+
+  subarray(start: number, end: number): IsoBuf {
+    return new IsoBuf(this.arr.subarray(start, end));
+  }
+
+  static alloc(size: number): IsoBuf {
+    return new IsoBuf(new Uint8Array(size));
+  }
+
+  set(isoBuf: IsoBuf): void {
+    this.arr.set(isoBuf.arr);
+  }
+
+  readU8(offset: number): Result<number, IsoBufError> {
+    if (offset >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    return Ok(this.arr[offset]);
+  }
+
+  writeU8(n: number, offset: number): Result<void, IsoBufError> {
+    if (offset >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    this.arr[offset] = n;
+    return Ok(undefined);
+  }
+
+  readU16BE(offset: number): Result<number, IsoBufError> {
+    if (offset + 1 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    return Ok((this.arr[offset] << 8) | this.arr[offset + 1]);
+  }
+
+  writeU16BE(n: number, offset: number): Result<void, IsoBufError> {
+    if (offset + 1 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    this.arr[offset] = n >> 8;
+    this.arr[offset + 1] = n & 0xff;
+    return Ok(undefined);
+  }
+
+  readU32BE(offset: number): Result<number, IsoBufError> {
+    if (offset + 3 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    return Ok(
+      (this.arr[offset] << 24) |
+        (this.arr[offset + 1] << 16) |
+        (this.arr[offset + 2] << 8) |
+        this.arr[offset + 3],
+    );
+  }
+
+  writeU32BE(n: number, offset: number): Result<void, IsoBufError> {
+    if (offset + 3 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    this.arr[offset] = n >> 24;
+    this.arr[offset + 1] = (n >> 16) & 0xff;
+    this.arr[offset + 2] = (n >> 8) & 0xff;
+    this.arr[offset + 3] = n & 0xff;
+    return Ok(undefined);
+  }
+
+  readU64BE(offset: number): Result<bigint, IsoBufError> {
+    if (offset + 7 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    return Ok(
+      (BigInt(this.arr[offset]) << 56n) |
+        (BigInt(this.arr[offset + 1]) << 48n) |
+        (BigInt(this.arr[offset + 2]) << 40n) |
+        (BigInt(this.arr[offset + 3]) << 32n) |
+        (BigInt(this.arr[offset + 4]) << 24n) |
+        (BigInt(this.arr[offset + 5]) << 16n) |
+        (BigInt(this.arr[offset + 6]) << 8n) |
+        BigInt(this.arr[offset + 7]),
+    );
+  }
+
+  writeU64BE(n: bigint, offset: number): Result<void, IsoBufError> {
+    if (offset + 7 >= this.arr.length) {
+      return Err(new NotEnoughDataError(None));
+    }
+    if (n < 0n || n > 0xffffffffffffffffn) {
+      return Err(new InvalidEncodingError(None));
+    }
+    this.arr[offset] = Number(n >> 56n);
+    this.arr[offset + 1] = Number((n >> 48n) & 0xffn);
+    this.arr[offset + 2] = Number((n >> 40n) & 0xffn);
+    this.arr[offset + 3] = Number((n >> 32n) & 0xffn);
+    this.arr[offset + 4] = Number((n >> 24n) & 0xffn);
+    this.arr[offset + 5] = Number((n >> 16n) & 0xffn);
+    this.arr[offset + 6] = Number((n >> 8n) & 0xffn);
+    this.arr[offset + 7] = Number(n & 0xffn);
+    return Ok(undefined);
+  }
+
+  static concat(bufs: IsoBuf[]): IsoBuf {
+    const totalSize = bufs.reduce((acc, buf) => acc + buf.length, 0);
+    const arr = new Uint8Array(totalSize);
+    let offset = 0;
+    for (const buf of bufs) {
+      arr.set(buf.arr, offset);
+      offset += buf.length;
+    }
+    return new IsoBuf(arr);
+  }
+
+  static from(buf: Uint8Array): IsoBuf {
+    return new IsoBuf(buf);
+  }
+
   toUint8Array(): Uint8Array {
     return this.arr;
   }
