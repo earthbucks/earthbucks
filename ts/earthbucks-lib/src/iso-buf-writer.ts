@@ -65,6 +65,9 @@ export class IsoBufWriter {
   }
 
   static varIntBufNum(n: number): Buffer {
+    if (n < 0) {
+      throw new Error("varInt cannot be negative");
+    }
     let buf: Buffer;
     if (n < 253) {
       buf = Buffer.alloc(1);
@@ -78,15 +81,18 @@ export class IsoBufWriter {
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
+      const bn = BigInt(n);
       buf = Buffer.alloc(1 + 8);
       buf.writeUInt8(255, 0);
-      buf.writeInt32BE(n & -1, 1);
-      buf.writeUInt32BE(Math.floor(n / 0x100000000), 5);
+      buf.writeBigInt64BE(bn, 1);
     }
     return buf;
   }
 
   static varIntBuf(bn: bigint): Buffer {
+    if (bn < 0n) {
+      throw new Error("varInt cannot be negative");
+    }
     let buf: Buffer;
     const n = Number(bn);
     if (n < 253) {
@@ -101,10 +107,9 @@ export class IsoBufWriter {
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
-      const bw = new IsoBufWriter();
-      bw.writeUInt8(255);
-      bw.writeUInt64BE(bn);
-      buf = bw.toIsoBuf();
+      buf = Buffer.alloc(1 + 8);
+      buf.writeUInt8(255, 0);
+      buf.writeBigInt64BE(bn, 1);
     }
     return buf;
   }

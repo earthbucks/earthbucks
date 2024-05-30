@@ -118,10 +118,7 @@ describe("BufferWriter", () => {
       const n = 0x100000000;
       const result = IsoBufWriter.varIntBufNum(n);
       expect(result[0]).toBe(255);
-      expect(Buffer.from(result).readUInt32BE(1)).toBe(n & -1);
-      expect(Buffer.from(result).readUInt32BE(5)).toBe(
-        Math.floor(n / 0x100000000),
-      );
+      expect(Buffer.from(result).toString("hex")).toBe("ff0000000100000000");
     });
   });
 
