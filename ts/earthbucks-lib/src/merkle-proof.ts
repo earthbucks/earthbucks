@@ -1,35 +1,35 @@
 import * as Hash from "./hash.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class MerkleProof {
-  public root: Buffer;
-  public proof: Array<[Buffer, boolean]>;
+  public root: EbxBuffer;
+  public proof: Array<[EbxBuffer, boolean]>;
 
-  constructor(root: Buffer, proof: Array<[Buffer, boolean]>) {
+  constructor(root: EbxBuffer, proof: Array<[EbxBuffer, boolean]>) {
     this.root = root;
     this.proof = proof;
   }
 
-  public verify(hashedData: Buffer): boolean {
+  public verify(hashedData: EbxBuffer): boolean {
     let hash = hashedData;
     for (const [sibling, isLeft] of this.proof) {
       hash = isLeft
-        ? Hash.doubleBlake3Hash(Buffer.concat([sibling, hash]))
-        : Hash.doubleBlake3Hash(Buffer.concat([hash, sibling]));
+        ? Hash.doubleBlake3Hash(EbxBuffer.concat([sibling, hash]))
+        : Hash.doubleBlake3Hash(EbxBuffer.concat([hash, sibling]));
     }
-    return Buffer.compare(hash, this.root) === 0;
+    return EbxBuffer.compare(hash, this.root) === 0;
   }
 
-  static verifyProof(data: Buffer, proof: MerkleProof, root: Buffer) {
-    return Buffer.compare(proof.root, root) === 0 || proof.verify(data);
+  static verifyProof(data: EbxBuffer, proof: MerkleProof, root: EbxBuffer) {
+    return EbxBuffer.compare(proof.root, root) === 0 || proof.verify(data);
   }
 
   static generateProofsAndRoot(
-    hashedDatas: Buffer[],
-  ): Result<[Buffer, MerkleProof[]], string> {
+    hashedDatas: EbxBuffer[],
+  ): Result<[EbxBuffer, MerkleProof[]], string> {
     if (hashedDatas.length === 0) {
       return Err("Cannot create Merkle tree from empty array");
     }
@@ -40,7 +40,7 @@ export class MerkleProof {
     }
     if (hashedDatas.length === 2) {
       const root = Hash.doubleBlake3Hash(
-        Buffer.concat([hashedDatas[0], hashedDatas[1]]),
+        EbxBuffer.concat([hashedDatas[0], hashedDatas[1]]),
       );
       const proofs = [
         new MerkleProof(root, [[hashedDatas[1], true]]),
@@ -58,7 +58,7 @@ export class MerkleProof {
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(hashedDatas.length / 2),
     ).unwrap();
-    const root = Hash.doubleBlake3Hash(Buffer.concat([leftRoot, rightRoot]));
+    const root = Hash.doubleBlake3Hash(EbxBuffer.concat([leftRoot, rightRoot]));
     const proofs = [
       ...leftProofs.map(
         (proof) => new MerkleProof(root, [[rightRoot, true], ...proof.proof]),
@@ -72,19 +72,19 @@ export class MerkleProof {
 
   toIsoBuf() {
     const bw = new IsoBufWriter();
-    bw.writeBuffer(this.root);
+    bw.writeEbxBuffer(this.root);
     bw.writeVarIntNum(this.proof.length);
     for (const [sibling, isLeft] of this.proof) {
-      bw.writeBuffer(sibling);
+      bw.writeEbxBuffer(sibling);
       bw.writeUInt8(isLeft ? 1 : 0);
     }
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: Buffer): MerkleProof {
+  static fromIsoBuf(buf: EbxBuffer): MerkleProof {
     const br = new IsoBufReader(buf);
     const root = br.read(32).unwrap();
-    const proof: Array<[Buffer, boolean]> = [];
+    const proof: Array<[EbxBuffer, boolean]> = [];
     const proofLength = br.readVarIntNum().unwrap();
     for (let i = 0; i < proofLength; i++) {
       const sibling = br.read(32).unwrap();
@@ -96,12 +96,12 @@ export class MerkleProof {
 
   toIsoStr(): string {
     const u8vec = this.toIsoBuf();
-    const hex = Buffer.from(u8vec).toString("hex");
+    const hex = EbxBuffer.from(u8vec).toString("hex");
     return hex;
   }
 
   static fromIsoStr(hex: string): MerkleProof {
-    const u8vec = Buffer.from(hex, "hex");
+    const u8vec = EbxBuffer.from(hex, "hex");
     return MerkleProof.fromIsoBuf(u8vec);
   }
 }

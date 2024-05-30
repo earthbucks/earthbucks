@@ -2,21 +2,21 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map";
 import { TxOut } from "../src/tx-out";
 import { Script } from "../src/script";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 import { TxOutBn } from "../src/tx-out-bn";
 
 describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;
   let txOut: TxOut;
   let txOutBn: TxOutBn;
-  let txIdHash: Buffer;
+  let txIdHash: EbxBuffer;
   let outputIndex: number;
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
     txOut = new TxOut(BigInt(100), Script.fromEmpty());
     txOutBn = new TxOutBn(txOut, 0n);
-    txIdHash = Buffer.from([1, 2, 3, 4]);
+    txIdHash = EbxBuffer.from([1, 2, 3, 4]);
     outputIndex = 0;
   });
 

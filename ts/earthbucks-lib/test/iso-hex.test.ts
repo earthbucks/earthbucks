@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { IsoHex } from "../src/iso-hex";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("strictHex", () => {
   test("should return true for valid hex strings", () => {
@@ -15,9 +16,9 @@ describe("strictHex", () => {
   });
 
   test("encode/decode", () => {
-    const buffer = Buffer.from("1234567890abcdef", "hex");
+    const buffer = EbxBuffer.from("1234567890abcdef", "hex");
     const hex = IsoHex.encode(buffer);
-    const decodedBuffer = IsoHex.decode(hex).unwrap();
-    expect(decodedBuffer).toEqual(buffer);
+    const decodedEbxBuffer = IsoHex.decode(hex).unwrap();
+    expect(decodedEbxBuffer).toEqual(buffer);
   });
 });

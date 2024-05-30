@@ -1,10 +1,10 @@
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 
 export class IsoBufWriter {
-  bufs: Buffer[];
+  bufs: EbxBuffer[];
 
-  constructor(bufs?: Buffer[]) {
-    this.bufs = bufs ? bufs.map((arr) => Buffer.from(arr)) : [];
+  constructor(bufs?: EbxBuffer[]) {
+    this.bufs = bufs ? bufs.map((arr) => EbxBuffer.from(arr)) : [];
   }
 
   getLength(): number {
@@ -15,99 +15,99 @@ export class IsoBufWriter {
     return len;
   }
 
-  toIsoBuf(): Buffer {
-    return Buffer.concat(this.bufs);
+  toIsoBuf(): EbxBuffer {
+    return EbxBuffer.concat(this.bufs);
   }
 
-  writeBuffer(buf: Buffer): this {
+  writeEbxBuffer(buf: EbxBuffer): this {
     this.bufs.push(buf);
     return this;
   }
 
   writeUInt8(n: number): this {
-    const buf = Buffer.alloc(1);
+    const buf = EbxBuffer.alloc(1);
     buf.writeUInt8(n, 0);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
   writeUInt16BE(n: number): this {
-    const buf = Buffer.alloc(2);
+    const buf = EbxBuffer.alloc(2);
     buf.writeUInt16BE(n, 0);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
   writeUInt32BE(n: number): this {
-    const buf = Buffer.alloc(4);
+    const buf = EbxBuffer.alloc(4);
     buf.writeUInt32BE(n, 0);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
   writeUInt64BE(bn: bigint): this {
-    const buf = Buffer.alloc(8);
+    const buf = EbxBuffer.alloc(8);
     buf.writeBigInt64BE(bn);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
   writeVarIntNum(n: number): this {
     const buf = IsoBufWriter.varIntBufNum(n);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
   writeVarInt(bn: bigint): this {
     const buf = IsoBufWriter.varIntBuf(bn);
-    this.writeBuffer(buf);
+    this.writeEbxBuffer(buf);
     return this;
   }
 
-  static varIntBufNum(n: number): Buffer {
+  static varIntBufNum(n: number): EbxBuffer {
     if (n < 0) {
       throw new Error("varInt cannot be negative");
     }
-    let buf: Buffer;
+    let buf: EbxBuffer;
     if (n < 253) {
-      buf = Buffer.alloc(1);
+      buf = EbxBuffer.alloc(1);
       buf.writeUInt8(n, 0);
     } else if (n < 0x10000) {
-      buf = Buffer.alloc(1 + 2);
+      buf = EbxBuffer.alloc(1 + 2);
       buf.writeUInt8(253, 0);
       buf.writeUInt16BE(n, 1);
     } else if (n < 0x100000000) {
-      buf = Buffer.alloc(1 + 4);
+      buf = EbxBuffer.alloc(1 + 4);
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
       const bn = BigInt(n);
-      buf = Buffer.alloc(1 + 8);
+      buf = EbxBuffer.alloc(1 + 8);
       buf.writeUInt8(255, 0);
       buf.writeBigInt64BE(bn, 1);
     }
     return buf;
   }
 
-  static varIntBuf(bn: bigint): Buffer {
+  static varIntBuf(bn: bigint): EbxBuffer {
     if (bn < 0n) {
       throw new Error("varInt cannot be negative");
     }
-    let buf: Buffer;
+    let buf: EbxBuffer;
     const n = Number(bn);
     if (n < 253) {
-      buf = Buffer.alloc(1);
+      buf = EbxBuffer.alloc(1);
       buf.writeUInt8(n, 0);
     } else if (n < 0x10000) {
-      buf = Buffer.alloc(1 + 2);
+      buf = EbxBuffer.alloc(1 + 2);
       buf.writeUInt8(253, 0);
       buf.writeUInt16BE(n, 1);
     } else if (n < 0x100000000) {
-      buf = Buffer.alloc(1 + 4);
+      buf = EbxBuffer.alloc(1 + 4);
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
-      buf = Buffer.alloc(1 + 8);
+      buf = EbxBuffer.alloc(1 + 8);
       buf.writeUInt8(255, 0);
       buf.writeBigInt64BE(bn, 1);
     }

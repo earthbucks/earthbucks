@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { VarInt } from "../src/var-int";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("VarInt", () => {
   let varInt: VarInt;
@@ -75,7 +75,7 @@ describe("VarInt", () => {
   });
 
   describe("toIsoBuf", () => {
-    it("should return a Buffer", () => {
+    it("should return a EbxBuffer", () => {
       // Arrange
       const n: number = 123;
 
@@ -83,12 +83,12 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toIsoBuf()).toBeInstanceOf(Buffer);
+      expect(varInt.toIsoBuf()).toBeInstanceOf(EbxBuffer);
     });
   });
 
   describe("toIsoBuf", () => {
-    it("should return a Buffer", () => {
+    it("should return a EbxBuffer", () => {
       // Arrange
       const n: number = 123;
 
@@ -96,7 +96,7 @@ describe("VarInt", () => {
       varInt.fromNumber(n);
 
       // Assert
-      expect(varInt.toIsoBuf()).toBeInstanceOf(Buffer);
+      expect(varInt.toIsoBuf()).toBeInstanceOf(EbxBuffer);
     });
   });
 
@@ -143,7 +143,7 @@ describe("VarInt", () => {
       const bn: bigint = BigInt(0xff);
 
       // Act
-      varInt = new VarInt(Buffer.from([0xfd, 0x00, 0x00]));
+      varInt = new VarInt(EbxBuffer.from([0xfd, 0x00, 0x00]));
 
       // Assert
       expect(varInt.isMinimal()).toBe(false);

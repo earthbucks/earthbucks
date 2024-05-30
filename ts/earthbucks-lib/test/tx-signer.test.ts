@@ -9,7 +9,7 @@ import { PkhKeyMap } from "../src/pkh-key-map";
 import { TxSigner } from "../src/tx-signer";
 import { ScriptInterpreter } from "../src/script-interpreter";
 import { HashCache } from "../src/tx";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 import { TxOutBn } from "../src/tx-out-bn";
 
 describe("TxSigner", () => {
@@ -24,12 +24,12 @@ describe("TxSigner", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+      const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
       const txOut = new TxOut(BigInt(100), script);
       const txOutBn = new TxOutBn(txOut, 0n);
-      txOutBnMap.add(txOutBn, Buffer.from("00".repeat(32), "hex"), i);
+      txOutBnMap.add(txOutBn, EbxBuffer.from("00".repeat(32), "hex"), i);
     }
 
     const changeScript = Script.fromEmpty();
@@ -38,7 +38,7 @@ describe("TxSigner", () => {
 
   test("should sign a tx", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(BigInt(50), script);
     txBuilder.addOutput(output);
@@ -56,9 +56,9 @@ describe("TxSigner", () => {
     const txInput = tx.inputs[0];
     const txOutBn = txOutBnMap.get(txInput.inputTxId, txInput.inputTxNOut);
     const execScript = txOutBn?.txOut.script as Script;
-    const sigBuf = txInput.script.chunks[0].buf as Buffer;
+    const sigBuf = txInput.script.chunks[0].buf as EbxBuffer;
     expect(sigBuf?.length).toBe(65);
-    const pubKeyBuf = txInput.script.chunks[1].buf as Buffer;
+    const pubKeyBuf = txInput.script.chunks[1].buf as EbxBuffer;
     expect(pubKeyBuf?.length).toBe(33);
 
     const stack = [sigBuf, pubKeyBuf];
@@ -79,7 +79,7 @@ describe("TxSigner", () => {
 
   test("should sign two inputs", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(BigInt(100), script);
     txBuilder.addOutput(output);
@@ -101,9 +101,9 @@ describe("TxSigner", () => {
     const txInput1 = tx.inputs[0];
     const txOutput1 = txOutBnMap.get(txInput1.inputTxId, txInput1.inputTxNOut);
     const execScript1 = txOutput1?.txOut.script as Script;
-    const sigBuf1 = txInput1.script.chunks[0].buf as Buffer;
+    const sigBuf1 = txInput1.script.chunks[0].buf as EbxBuffer;
     expect(sigBuf1?.length).toBe(65);
-    const pubKeyBuf1 = txInput1.script.chunks[1].buf as Buffer;
+    const pubKeyBuf1 = txInput1.script.chunks[1].buf as EbxBuffer;
     expect(pubKeyBuf1?.length).toBe(33);
 
     const stack1 = [sigBuf1, pubKeyBuf1];
@@ -124,9 +124,9 @@ describe("TxSigner", () => {
     const txInput2 = tx.inputs[1];
     const txOutput2 = txOutBnMap.get(txInput2.inputTxId, txInput2.inputTxNOut);
     const execScript2 = txOutput2?.txOut.script as Script;
-    const sigBuf2 = txInput2.script.chunks[0].buf as Buffer;
+    const sigBuf2 = txInput2.script.chunks[0].buf as EbxBuffer;
     expect(sigBuf2?.length).toBe(65);
-    const pubKeyBuf2 = txInput2.script.chunks[1].buf as Buffer;
+    const pubKeyBuf2 = txInput2.script.chunks[1].buf as EbxBuffer;
     expect(pubKeyBuf2?.length).toBe(33);
 
     const stack2 = [sigBuf2, pubKeyBuf2];

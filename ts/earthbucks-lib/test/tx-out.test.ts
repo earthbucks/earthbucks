@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOut } from "../src/tx-out";
 import { Script } from "../src/script";
 import { IsoBufReader } from "../src/iso-buf-reader";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("TxOutput", () => {
   describe("fromIsoBufReader", () => {
@@ -20,7 +20,7 @@ describe("TxOutput", () => {
   });
 
   describe("fromU8Vec and toIsoBuf", () => {
-    test("should create a TxOutput from a Buffer", () => {
+    test("should create a TxOutput from a EbxBuffer", () => {
       const value = BigInt(100);
       const script = Script.fromIsoStr(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",

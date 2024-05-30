@@ -8,7 +8,7 @@ import { IsoBufWriter } from "../src/iso-buf-writer";
 import * as Hash from "../src/hash";
 import { TxSignature } from "../src/tx-signature";
 import { KeyPair } from "../src/key-pair";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("Tx", () => {
   describe("constructor", () => {
@@ -29,7 +29,7 @@ describe("Tx", () => {
 
   test("to/from u8Vec", () => {
     const version = 1;
-    const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+    const inputs: TxIn[] = [new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0)];
     const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
     const lockAbs = BigInt(0);
 
@@ -43,7 +43,9 @@ describe("Tx", () => {
   describe("fromU8Vec", () => {
     test("fromU8Vec", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -61,7 +63,9 @@ describe("Tx", () => {
   describe("fromIsoBufReader", () => {
     test("fromIsoBufReader", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -80,7 +84,9 @@ describe("Tx", () => {
   describe("to/from string", () => {
     test("to/from string", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -111,7 +117,7 @@ describe("Tx", () => {
     test("isCoinbase", () => {
       const version = 1;
       const inputs: TxIn[] = [
-        new TxIn(Buffer.alloc(32), 0xffffffff, new Script(), 0),
+        new TxIn(EbxBuffer.alloc(32), 0xffffffff, new Script(), 0),
       ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
@@ -122,7 +128,9 @@ describe("Tx", () => {
 
     test("is not coinbase", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -141,7 +149,9 @@ describe("Tx", () => {
   describe("hashonce", () => {
     it("should return the hash of the tx", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -154,7 +164,9 @@ describe("Tx", () => {
   describe("hash", () => {
     it("should return the hash of the hash of the tx", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -167,7 +179,9 @@ describe("Tx", () => {
   describe("sighash", () => {
     test("hashPrevouts", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -175,16 +189,18 @@ describe("Tx", () => {
 
       const result = tx.hashPrevouts();
 
-      expect(result).toBeInstanceOf(Buffer);
+      expect(result).toBeInstanceOf(EbxBuffer);
 
-      expect(Buffer.from(result).toString("hex")).toEqual(
+      expect(EbxBuffer.from(result).toString("hex")).toEqual(
         "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
       );
     });
 
     test("hashLockRel", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -192,16 +208,18 @@ describe("Tx", () => {
 
       const result = tx.hashLockRel();
 
-      expect(result).toBeInstanceOf(Buffer);
+      expect(result).toBeInstanceOf(EbxBuffer);
 
-      expect(Buffer.from(result).toString("hex")).toEqual(
+      expect(EbxBuffer.from(result).toString("hex")).toEqual(
         "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
       );
     });
 
     test("hashOutputs", () => {
       const version = 1;
-      const inputs: TxIn[] = [new TxIn(Buffer.alloc(32), 0, new Script(), 0)];
+      const inputs: TxIn[] = [
+        new TxIn(EbxBuffer.alloc(32), 0, new Script(), 0),
+      ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), new Script())];
       const lockAbs = BigInt(0);
 
@@ -209,9 +227,9 @@ describe("Tx", () => {
 
       const result = tx.hashOutputs();
 
-      expect(result).toBeInstanceOf(Buffer);
+      expect(result).toBeInstanceOf(EbxBuffer);
 
-      expect(Buffer.from(result).toString("hex")).toEqual(
+      expect(EbxBuffer.from(result).toString("hex")).toEqual(
         "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
       );
     });
@@ -219,7 +237,7 @@ describe("Tx", () => {
     test("sighash", () => {
       const version = 1;
       const inputs: TxIn[] = [
-        new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
+        new TxIn(EbxBuffer.alloc(32), 0, Script.fromEmpty(), 0),
       ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
       const lockAbs = BigInt(0);
@@ -235,9 +253,9 @@ describe("Tx", () => {
         TxSignature.SIGHASH_ALL,
       );
 
-      expect(result).toBeInstanceOf(Buffer);
+      expect(result).toBeInstanceOf(EbxBuffer);
 
-      expect(Buffer.from(result).toString("hex")).toEqual(
+      expect(EbxBuffer.from(result).toString("hex")).toEqual(
         "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
       );
     });
@@ -245,7 +263,7 @@ describe("Tx", () => {
     test("sighash with cache", () => {
       const version = 1;
       const inputs: TxIn[] = [
-        new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
+        new TxIn(EbxBuffer.alloc(32), 0, Script.fromEmpty(), 0),
       ];
       const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
       const lockAbs = BigInt(0);
@@ -263,9 +281,9 @@ describe("Tx", () => {
         hashCache,
       );
 
-      expect(result).toBeInstanceOf(Buffer);
+      expect(result).toBeInstanceOf(EbxBuffer);
 
-      expect(Buffer.from(result).toString("hex")).toEqual(
+      expect(EbxBuffer.from(result).toString("hex")).toEqual(
         "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
       );
     });
@@ -274,15 +292,15 @@ describe("Tx", () => {
       it("should generate a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = Buffer.from(
+        const privateKey = EbxBuffer.from(
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
           "hex",
         );
-        const script = Buffer.from([]);
+        const script = EbxBuffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
+          new TxIn(EbxBuffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
         const outputs: TxOut[] = [new TxOut(BigInt(100), Script.fromEmpty())];
         const tx = new Tx(1, inputs, outputs, BigInt(0));
@@ -299,7 +317,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(EbxBuffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
       });
@@ -307,15 +325,15 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = Buffer.from(
+        const privateKey = EbxBuffer.from(
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
           "hex",
         );
-        const script = Buffer.from([]);
+        const script = EbxBuffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
+          new TxIn(EbxBuffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
@@ -342,10 +360,10 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(EbxBuffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = KeyPair.fromPrivKeyBuffer(privateKey)
+        const publicKey = KeyPair.fromPrivKeyEbxBuffer(privateKey)
           .unwrap()
           .pubKey.toIsoBuf();
         const result = tx.verifyNoCache(
@@ -361,15 +379,15 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = Buffer.from(
+        const privateKey = EbxBuffer.from(
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
           "hex",
         );
-        const script = Buffer.from([]);
+        const script = EbxBuffer.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
-          new TxIn(Buffer.alloc(32), 0, Script.fromEmpty(), 0),
+          new TxIn(EbxBuffer.alloc(32), 0, Script.fromEmpty(), 0),
         ];
         // expect tx output to equal hext
         expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
@@ -398,10 +416,10 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(Buffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(EbxBuffer.from(signature.toIsoBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = KeyPair.fromPrivKeyBuffer(privateKey)
+        const publicKey = KeyPair.fromPrivKeyEbxBuffer(privateKey)
           .unwrap()
           .pubKey.toIsoBuf();
         const hashCache2 = new HashCache();

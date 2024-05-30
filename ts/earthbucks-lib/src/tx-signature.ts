@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 
 export class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001;
@@ -8,20 +8,20 @@ export class TxSignature {
   static readonly SIZE = 65;
 
   hashType: number;
-  sigBuf: Buffer;
+  sigBuf: EbxBuffer;
 
-  constructor(hashType: number, sigBuf: Buffer) {
+  constructor(hashType: number, sigBuf: EbxBuffer) {
     this.hashType = hashType;
     this.sigBuf = sigBuf;
   }
 
-  toIsoBuf(): Buffer {
-    const hashTypeBuf = Buffer.alloc(1);
+  toIsoBuf(): EbxBuffer {
+    const hashTypeBuf = EbxBuffer.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType);
-    return Buffer.concat([hashTypeBuf, this.sigBuf]);
+    return EbxBuffer.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromIsoBuf(buf: Buffer): TxSignature {
+  static fromIsoBuf(buf: EbxBuffer): TxSignature {
     const hashType = buf[0];
     const sigBuf = buf.subarray(1);
     return new TxSignature(hashType, sigBuf);

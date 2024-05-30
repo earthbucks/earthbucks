@@ -1,7 +1,7 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
@@ -45,12 +45,12 @@ export class Script {
     return Ok(script);
   }
 
-  toIsoBuf(): Buffer {
+  toIsoBuf(): EbxBuffer {
     const bufArray = this.chunks.map((chunk) => chunk.toIsoBuf());
-    return Buffer.concat(bufArray);
+    return EbxBuffer.concat(bufArray);
   }
 
-  static fromIsoBuf(arr: Buffer): Result<Script, EbxError> {
+  static fromIsoBuf(arr: EbxBuffer): Result<Script, EbxError> {
     const reader = new IsoBufReader(arr);
     return Script.fromIsoBufReader(reader);
   }
@@ -67,7 +67,7 @@ export class Script {
     return Ok(script);
   }
 
-  static fromMultiSigOutput(m: number, pubKeys: Buffer[]): Script {
+  static fromMultiSigOutput(m: number, pubKeys: EbxBuffer[]): Script {
     return new Script([
       ScriptChunk.fromSmallNumber(m),
       ...pubKeys.map(ScriptChunk.fromData),
@@ -76,11 +76,11 @@ export class Script {
     ]);
   }
 
-  static fromMultiSigInput(sigBufs: Buffer[]): Script {
+  static fromMultiSigInput(sigBufs: EbxBuffer[]): Script {
     return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
-  static fromPkhOutput(pkh: Buffer): Script {
+  static fromPkhOutput(pkh: EbxBuffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
@@ -102,7 +102,7 @@ export class Script {
     );
   }
 
-  static fromPkhInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+  static fromPkhInput(sigBuf: EbxBuffer, pubKeyBuf: EbxBuffer): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -120,8 +120,8 @@ export class Script {
   }
 
   static fromPkhInputPlaceholder(): Script {
-    const sig = Buffer.alloc(TxSignature.SIZE);
-    const pubKey = Buffer.alloc(PubKey.SIZE);
+    const sig = EbxBuffer.alloc(TxSignature.SIZE);
+    const pubKey = EbxBuffer.alloc(PubKey.SIZE);
     return new Script([
       ScriptChunk.fromData(sig),
       ScriptChunk.fromData(pubKey),
@@ -132,7 +132,7 @@ export class Script {
   // 13104 blocks = 2016 blocks / 14 * 90
   static readonly PKHX_90D_LOCK_REL: number = 12960;
 
-  static fromPkhx90dOutput(pkh: Buffer): Script {
+  static fromPkhx90dOutput(pkh: EbxBuffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
@@ -182,7 +182,7 @@ export class Script {
   static readonly PKHXR_90D_60D_X_LOCK_REL: number = 12960;
   static readonly PKHXR_90D_60D_R_LOCK_REL: number = 8640;
 
-  static fromPkhxr90d60dOutput(pkh: Buffer, rpkh: Buffer): Script {
+  static fromPkhxr90d60dOutput(pkh: EbxBuffer, rpkh: EbxBuffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
@@ -266,7 +266,7 @@ export class Script {
   // 6 blocks = 1 hour for 10 min blocks
   static readonly PKHX_1H_LOCK_REL: number = 6;
 
-  static fromPkhx1hOutput(pkh: Buffer): Script {
+  static fromPkhx1hOutput(pkh: EbxBuffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
@@ -312,7 +312,7 @@ export class Script {
   static readonly PKHXR_1H_40M_X_LOCK_REL: number = 6;
   static readonly PKHXR_1H_40M_R_LOCK_REL: number = 4;
 
-  static fromPkhxr1h40mOutput(pkh: Buffer, rpkh: Buffer): Script {
+  static fromPkhxr1h40mOutput(pkh: EbxBuffer, rpkh: EbxBuffer): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
@@ -387,7 +387,10 @@ export class Script {
     return this.chunks.length === 1 && this.chunks[0].opcode === Opcode.OP_0;
   }
 
-  static fromUnexpiredPkhxInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+  static fromUnexpiredPkhxInput(
+    sigBuf: EbxBuffer,
+    pubKeyBuf: EbxBuffer,
+  ): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -421,7 +424,10 @@ export class Script {
     );
   }
 
-  static fromRecoveryPkhxrInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+  static fromRecoveryPkhxrInput(
+    sigBuf: EbxBuffer,
+    pubKeyBuf: EbxBuffer,
+  ): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -431,8 +437,8 @@ export class Script {
   }
 
   static fromRecoveryPkhxrInputPlaceholder(): Script {
-    const sig = Buffer.alloc(TxSignature.SIZE);
-    const pubKey = Buffer.alloc(PubKey.SIZE);
+    const sig = EbxBuffer.alloc(TxSignature.SIZE);
+    const pubKey = EbxBuffer.alloc(PubKey.SIZE);
     return Script.fromRecoveryPkhxrInput(sig, pubKey);
   }
 
@@ -449,12 +455,15 @@ export class Script {
   }
 
   static fromUnexpiredPkhxInputPlaceholder(): Script {
-    const sig = Buffer.alloc(TxSignature.SIZE);
-    const pubKey = Buffer.alloc(PubKey.SIZE);
+    const sig = EbxBuffer.alloc(TxSignature.SIZE);
+    const pubKey = EbxBuffer.alloc(PubKey.SIZE);
     return Script.fromUnexpiredPkhxInput(sig, pubKey);
   }
 
-  static fromUnexpiredPkhxrInput(sigBuf: Buffer, pubKeyBuf: Buffer): Script {
+  static fromUnexpiredPkhxrInput(
+    sigBuf: EbxBuffer,
+    pubKeyBuf: EbxBuffer,
+  ): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -474,8 +483,8 @@ export class Script {
   }
 
   static fromUnexpiredPkhxrInputPlaceholder(): Script {
-    const sig = Buffer.alloc(TxSignature.SIZE);
-    const pubKey = Buffer.alloc(PubKey.SIZE);
+    const sig = EbxBuffer.alloc(TxSignature.SIZE);
+    const pubKey = EbxBuffer.alloc(PubKey.SIZE);
     return Script.fromUnexpiredPkhxrInput(sig, pubKey);
   }
 

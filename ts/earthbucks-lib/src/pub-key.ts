@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 import { IsoHex } from "./iso-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
@@ -16,21 +16,21 @@ import { Option, None, Some } from "earthbucks-opt-res";
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
 
-  buf: Buffer;
+  buf: EbxBuffer;
 
-  constructor(buf: Buffer) {
+  constructor(buf: EbxBuffer) {
     this.buf = buf;
   }
 
   static fromPrivKey(privKey: PrivKey): Result<PubKey, EbxError> {
-    const res = privKey.toPubKeyBuffer();
+    const res = privKey.toPubKeyEbxBuffer();
     if (res.err) {
       return Err(res.val);
     }
     return Ok(new PubKey(res.unwrap()));
   }
 
-  static fromIsoBuf(buf: Buffer): Result<PubKey, EbxError> {
+  static fromIsoBuf(buf: EbxBuffer): Result<PubKey, EbxError> {
     if (buf.length > PubKey.SIZE) {
       return Err(new TooMuchDataError(None));
     }
@@ -40,7 +40,7 @@ export class PubKey {
     return Ok(new PubKey(buf));
   }
 
-  toIsoBuf(): Buffer {
+  toIsoBuf(): EbxBuffer {
     return this.buf;
   }
 
@@ -74,9 +74,9 @@ export class PubKey {
       return Err(res.val);
     }
     const checkBuf = res.unwrap();
-    let decoded: Buffer;
+    let decoded: EbxBuffer;
     try {
-      decoded = Buffer.from(bs58.decode(str.slice(14)));
+      decoded = EbxBuffer.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

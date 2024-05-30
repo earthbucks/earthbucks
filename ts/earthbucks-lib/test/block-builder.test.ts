@@ -6,22 +6,22 @@ import { IsoBufWriter } from "../src/iso-buf-writer";
 import { IsoBufReader } from "../src/iso-buf-reader";
 import { BlockBuilder } from "../src/block-builder";
 import { Script } from "../src/script";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
       1,
-      Buffer.alloc(32),
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
+      EbxBuffer.alloc(32),
       0n,
       0n,
-      Buffer.alloc(32),
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -34,12 +34,12 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = Buffer.alloc(32);
+    const target = EbxBuffer.alloc(32);
     const outputScript = new Script();
     const outputAmount = 0n;
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version).toBe(1);
-    expect(bb.header.prevBlockId).toEqual(Buffer.alloc(32));
+    expect(bb.header.prevBlockId).toEqual(EbxBuffer.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
@@ -50,19 +50,19 @@ describe("BlockBuilder", () => {
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
     const outputAmount = 0n;
-    const target = Buffer.alloc(32);
+    const target = EbxBuffer.alloc(32);
     const prevBlockHeader = new Header(
       1,
-      Buffer.alloc(32),
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
+      EbxBuffer.alloc(32),
       0n,
       0n,
       target,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
       prevBlockHeader,
@@ -82,16 +82,16 @@ describe("BlockBuilder", () => {
   test("toBlock", () => {
     const bh = new Header(
       1,
-      Buffer.alloc(32),
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
+      EbxBuffer.alloc(32),
       0n,
       0n,
-      Buffer.alloc(32),
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
       0,
-      Buffer.alloc(32),
+      EbxBuffer.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);

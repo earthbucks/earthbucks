@@ -1,6 +1,6 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class KeyPair {
@@ -17,8 +17,8 @@ export class KeyPair {
     return new KeyPair(privKey, pubKey);
   }
 
-  static fromPrivKeyBuffer(privKeyBuf: Buffer): Result<KeyPair, string> {
-    const privKeyRes = PrivKey.fromIsoBuf(Buffer.from(privKeyBuf)).mapErr(
+  static fromPrivKeyEbxBuffer(privKeyBuf: EbxBuffer): Result<KeyPair, string> {
+    const privKeyRes = PrivKey.fromIsoBuf(EbxBuffer.from(privKeyBuf)).mapErr(
       (err) => "Error parsing private key: " + err,
     );
     if (privKeyRes.err) {

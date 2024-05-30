@@ -1,6 +1,6 @@
 import { KeyPair } from "./key-pair.js";
 import { Pkh } from "./pkh.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 
 function main() {
   const args = process.argv.slice(2);
@@ -14,10 +14,12 @@ function main() {
     case "key":
       {
         const key = KeyPair.fromRandom();
-        const privateKeyHex = Buffer.from(key.privKey.toIsoBuf()).toString(
+        const privateKeyHex = EbxBuffer.from(key.privKey.toIsoBuf()).toString(
           "hex",
         );
-        const publicKeyHex = Buffer.from(key.pubKey.toIsoBuf()).toString("hex");
+        const publicKeyHex = EbxBuffer.from(key.pubKey.toIsoBuf()).toString(
+          "hex",
+        );
 
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
@@ -33,11 +35,11 @@ function main() {
         const pkh = Pkh.fromPubKeyBuf(publicKey);
 
         // Print them out
-        const privateKeyHex = Buffer.from(key.privKey.toIsoBuf()).toString(
+        const privateKeyHex = EbxBuffer.from(key.privKey.toIsoBuf()).toString(
           "hex",
         );
-        const publicKeyHex = Buffer.from(publicKey).toString("hex");
-        const pkhHex = Buffer.from(pkh.buf).toString("hex");
+        const publicKeyHex = EbxBuffer.from(publicKey).toString("hex");
+        const pkhHex = EbxBuffer.from(pkh.buf).toString("hex");
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
         console.log(`Address: ${pkhHex}`);

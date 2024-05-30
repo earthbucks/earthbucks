@@ -1,5 +1,5 @@
 import { KeyPair } from "./key-pair.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 
 export class PkhKeyMap {
   public map: Map<string, KeyPair>;
@@ -8,17 +8,17 @@ export class PkhKeyMap {
     this.map = new Map<string, KeyPair>();
   }
 
-  add(key: KeyPair, pkhBuf: Buffer): void {
+  add(key: KeyPair, pkhBuf: EbxBuffer): void {
     const pkhHex = pkhBuf.toString("hex");
     this.map.set(pkhHex, key);
   }
 
-  remove(pkhIsoBuf: Buffer): void {
+  remove(pkhIsoBuf: EbxBuffer): void {
     const pkhHex = pkhIsoBuf.toString("hex");
     this.map.delete(pkhHex);
   }
 
-  get(pkhIsoBuf: Buffer): KeyPair | undefined {
+  get(pkhIsoBuf: EbxBuffer): KeyPair | undefined {
     const pkhHex = pkhIsoBuf.toString("hex");
     return this.map.get(pkhHex);
   }

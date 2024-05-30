@@ -3,13 +3,13 @@ import { KeyPair } from "../src/key-pair";
 import fs from "fs";
 import path from "path";
 import { Pkh } from "../src/pkh";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 import { PubKey } from "../src/pub-key";
 
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(Buffer.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(EbxBuffer.from(key.pubKey.toIsoBuf()));
     expect(pkh.buf).toBeDefined();
   });
 

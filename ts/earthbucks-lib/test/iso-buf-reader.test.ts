@@ -1,24 +1,24 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { IsoBufReader } from "../src/iso-buf-reader";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 import fs from "fs";
 import path from "path";
 
 describe("IsoBufReader", () => {
   let bufferReader: IsoBufReader;
-  let testBuffer: Buffer;
+  let testEbxBuffer: EbxBuffer;
 
   beforeEach(() => {
-    testBuffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
-    bufferReader = new IsoBufReader(testBuffer);
+    testEbxBuffer = EbxBuffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
+    bufferReader = new IsoBufReader(testEbxBuffer);
   });
 
   test("constructor sets buffer and position", () => {
     expect(bufferReader["buf"]).toEqual(
-      Buffer.from(
-        testBuffer.buffer,
-        testBuffer.byteOffset,
-        testBuffer.byteLength,
+      EbxBuffer.from(
+        testEbxBuffer.buffer,
+        testEbxBuffer.byteOffset,
+        testEbxBuffer.byteLength,
       ),
     );
     expect(bufferReader["pos"]).toBe(0);
@@ -27,7 +27,7 @@ describe("IsoBufReader", () => {
   test("read returns correct subarray", () => {
     const len = 4;
     const result = bufferReader.read(len).unwrap();
-    expect(result).toEqual(testBuffer.subarray(0, len));
+    expect(result).toEqual(testEbxBuffer.subarray(0, len));
   });
 
   test("read updates position", () => {
@@ -44,20 +44,20 @@ describe("IsoBufReader", () => {
 
   test("readUInt16BE returns correct value and updates position", () => {
     const result = bufferReader.readU16BE().unwrap();
-    expect(result).toBe(Buffer.from([1, 2]).readUInt16BE());
+    expect(result).toBe(EbxBuffer.from([1, 2]).readUInt16BE());
     expect(bufferReader["pos"]).toBe(2);
   });
 
   test("readUInt32BE returns correct value and updates position", () => {
     const result = bufferReader.readU32BE().unwrap();
-    expect(result).toBe(Buffer.from([1, 2, 3, 4]).readUInt32BE());
+    expect(result).toBe(EbxBuffer.from([1, 2, 3, 4]).readUInt32BE());
     expect(bufferReader["pos"]).toBe(4);
   });
 
   test("readUInt64BEBigInt returns correct value and updates position", () => {
-    // Create a BufferReader with a buffer that contains the 64-bit unsigned integer 0x0123456789ABCDEF
+    // Create a EbxBufferReader with a buffer that contains the 64-bit unsigned integer 0x0123456789ABCDEF
     bufferReader = new IsoBufReader(
-      Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
+      EbxBuffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
     );
 
     const result = bufferReader.readU64BE().unwrap();
@@ -76,7 +76,7 @@ describe("IsoBufReader", () => {
   });
 
   test("readVarIntNum returns correct value and updates position for 16 bit numbers", () => {
-    const buf = Buffer.from([0xfd, 0, 0, 0, 0]);
+    const buf = EbxBuffer.from([0xfd, 0, 0, 0, 0]);
     buf.writeUInt16BE(500, 1);
     bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum().unwrap();
@@ -85,7 +85,7 @@ describe("IsoBufReader", () => {
   });
 
   test("readVarIntNum returns correct value and updates position for 32 bit numbers", () => {
-    const buf = Buffer.from([254, 0, 0, 0, 0]);
+    const buf = EbxBuffer.from([254, 0, 0, 0, 0]);
     buf.writeUInt32BE(2000000000, 1);
     bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
     const result = bufferReader.readVarIntNum().unwrap();
@@ -94,74 +94,76 @@ describe("IsoBufReader", () => {
   });
 
   test("readVarIntNum", () => {
-    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(EbxBuffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntNum().val.toString()).toBe(
       "non-minimal encoding",
     );
 
-    bufferReader = new IsoBufReader(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(EbxBuffer.from([0x01]));
     expect(bufferReader.readVarIntNum().unwrap()).toBe(1);
   });
 
   test("readVarIntBuf", () => {
-    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(EbxBuffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarIntBuf().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
-    bufferReader = new IsoBufReader(Buffer.from([0x01]));
-    expect(bufferReader.readVarIntBuf().unwrap()).toEqual(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(EbxBuffer.from([0x01]));
+    expect(bufferReader.readVarIntBuf().unwrap()).toEqual(
+      EbxBuffer.from([0x01]),
+    );
   });
 
   test("readVarInt", () => {
-    let bufferReader = new IsoBufReader(Buffer.from([0xfd, 0x00, 0x01]));
+    let bufferReader = new IsoBufReader(EbxBuffer.from([0xfd, 0x00, 0x01]));
     expect(bufferReader.readVarInt().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
     bufferReader = new IsoBufReader(
-      Buffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+      EbxBuffer.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
     expect(bufferReader.readVarInt().val.toString()).toEqual(
       "non-minimal encoding",
     );
 
-    bufferReader = new IsoBufReader(Buffer.from([0x01]));
+    bufferReader = new IsoBufReader(EbxBuffer.from([0x01]));
     expect(bufferReader.readVarInt().unwrap()).toEqual(BigInt(1));
   });
 
@@ -204,7 +206,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read", () => {
       testVector.read.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(bufferReader.read(test.len).val.toString()).toEqual(test.error);
       });
@@ -212,7 +214,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_u8", () => {
       testVector.read_u8.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(
           bufferReader.readU8().val.toString().startsWith(test.error),
@@ -222,7 +224,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_u16_be", () => {
       testVector.read_u16_be.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(
           bufferReader.readU16BE().val.toString().startsWith(test.error),
@@ -232,7 +234,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_u32_be", () => {
       testVector.read_u32_be.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(
           bufferReader.readU32BE().val.toString().startsWith(test.error),
@@ -242,7 +244,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_u64_be", () => {
       testVector.read_u64_be.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(
           bufferReader.readU64BE().val.toString().startsWith(test.error),
@@ -252,7 +254,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_var_int_buf", () => {
       testVector.read_var_int_buf.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(bufferReader.readVarIntBuf().val.toString()).toMatch(
           new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
@@ -262,7 +264,7 @@ describe("IsoBufReader", () => {
 
     test("test vectors: read_var_int", () => {
       testVector.read_var_int.errors.forEach((test) => {
-        const buf = Buffer.from(test.hex, "hex");
+        const buf = EbxBuffer.from(test.hex, "hex");
         const bufferReader = new IsoBufReader(buf);
         expect(bufferReader.readVarInt().val.toString()).toMatch(
           new RegExp("^" + test.error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),

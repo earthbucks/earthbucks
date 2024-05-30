@@ -1,10 +1,10 @@
 import { MerkleProof } from "./merkle-proof.js";
 import { Tx } from "./tx.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 
 export class MerkleTxs {
   public txs: Tx[];
-  public root: Buffer;
+  public root: EbxBuffer;
   public proofs: MerkleProof[];
 
   constructor(txs: Tx[]) {

@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair";
 import { Pkh } from "../src/pkh";
 import { TxSignature } from "../src/tx-signature";
 import { PrivKey } from "../src/priv-key";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "../src/ebx-buffer";
 
 describe("ScriptInterpreter", () => {
   let tx: Tx;
@@ -18,7 +18,7 @@ describe("ScriptInterpreter", () => {
   beforeEach(() => {
     tx = new Tx(
       1,
-      [new TxIn(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
+      [new TxIn(EbxBuffer.alloc(0), 0, new Script(), 0xffffffff)],
       [new TxOut(BigInt(0), new Script())],
       BigInt(0),
     );
@@ -38,7 +38,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnSuccess).toBe(false);
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("");
     });
 
@@ -56,7 +56,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
@@ -74,7 +74,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ffff");
     });
 
@@ -92,7 +92,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(256));
     });
 
@@ -110,7 +110,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(65536));
     });
 
@@ -128,23 +128,23 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+          EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = Buffer.from(outputPrivKeyHex, "hex");
-      const outputKey = KeyPair.fromPrivKeyBuffer(outputPrivKeyBuf).unwrap();
+      const outputPrivKeyBuf = EbxBuffer.from(outputPrivKeyHex, "hex");
+      const outputKey = KeyPair.fromPrivKeyEbxBuffer(outputPrivKeyBuf).unwrap();
       const outputPubKey = outputKey.pubKey.toIsoBuf();
-      expect(Buffer.from(outputPubKey).toString("hex")).toEqual(
+      expect(EbxBuffer.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
-      const outputAddress = Pkh.fromPubKeyBuf(Buffer.from(outputPubKey));
+      const outputAddress = Pkh.fromPubKeyBuf(EbxBuffer.from(outputPubKey));
       const outputScript = Script.fromPkhOutput(outputAddress.buf);
       const outputAmount = BigInt(100);
-      const outputTxId = Buffer.from("00".repeat(32), "hex");
+      const outputTxId = EbxBuffer.from("00".repeat(32), "hex");
       const outputTxIndex = 0;
 
       const tx = new Tx(
@@ -188,12 +188,14 @@ describe("ScriptInterpreter", () => {
         "b78467b0ea6afa6c42c94333dcece978829bdb7ba7b97a2273b72cdc6be8c553",
       ];
 
-      // Convert private keys to Buffer format
-      const privKeysU8Vec = privKeysHex.map((hex) => Buffer.from(hex, "hex"));
+      // Convert private keys to EbxBuffer format
+      const privKeysU8Vec = privKeysHex.map((hex) =>
+        EbxBuffer.from(hex, "hex"),
+      );
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map((privKey) =>
-        PrivKey.fromIsoBuf(privKey).unwrap().toPubKeyBuffer().unwrap(),
+        PrivKey.fromIsoBuf(privKey).unwrap().toPubKeyEbxBuffer().unwrap(),
       );
 
       // Create a multisig output script
@@ -201,7 +203,7 @@ describe("ScriptInterpreter", () => {
 
       // Other tx parameters
       const outputAmount = BigInt(100);
-      const outputTxId = Buffer.from("00".repeat(32), "hex");
+      const outputTxId = EbxBuffer.from("00".repeat(32), "hex");
       const outputTxIndex = 0;
 
       // Create a tx
@@ -269,7 +271,7 @@ describe("ScriptInterpreter", () => {
       beforeEach(() => {
         tx = new Tx(
           1,
-          [new TxIn(Buffer.alloc(0), 0, new Script(), 0xffffffff)],
+          [new TxIn(EbxBuffer.alloc(0), 0, new Script(), 0xffffffff)],
           [new TxOut(BigInt(0), new Script())],
           BigInt(0),
         );
@@ -290,7 +292,7 @@ describe("ScriptInterpreter", () => {
           expect(scriptInterpreter.errStr).toEqual(testScript.expected_error);
           expect(
             scriptInterpreter.returnValue &&
-              Buffer.from(scriptInterpreter.returnValue).toString("hex"),
+              EbxBuffer.from(scriptInterpreter.returnValue).toString("hex"),
           ).toBe(testScript.expected_return_value);
           expect(scriptInterpreter.returnSuccess).toBe(
             testScript.expected_success,

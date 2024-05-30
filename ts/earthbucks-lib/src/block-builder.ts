@@ -5,7 +5,7 @@ import { MerkleTxs } from "./merkle-txs.js";
 import { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import { Buffer } from "buffer";
+import { EbxBuffer } from "./ebx-buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class BlockBuilder {
@@ -27,7 +27,7 @@ export class BlockBuilder {
   }
 
   static fromGenesis(
-    initialTarget: Buffer,
+    initialTarget: EbxBuffer,
     outputScript: Script,
     outputAmount: bigint,
   ): BlockBuilder {
