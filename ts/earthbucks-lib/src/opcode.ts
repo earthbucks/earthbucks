@@ -1,4 +1,4 @@
-import { EbxBuf } from "./ebx-buf";
+import { IsoBuf } from "./iso-buf";
 
 export type OpcodeName =
   | "0"

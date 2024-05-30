@@ -1,4 +1,4 @@
-use crate::{ebx_error::EbxError, iso_hex};
+use crate::{ebx_error::EbxError, strict_hex};
 use bs58;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
@@ -36,7 +36,7 @@ impl PrivKey {
 
     pub fn to_pub_key_hex(&self) -> Result<String, EbxError> {
         let pub_key_buf = self.to_pub_key_buffer()?;
-        Ok(iso_hex::encode(&pub_key_buf))
+        Ok(strict_hex::encode(&pub_key_buf))
     }
 
     pub fn from_buffer(buffer: &[u8; 32]) -> Self {
@@ -58,18 +58,18 @@ impl PrivKey {
     }
 
     pub fn to_iso_hex(&self) -> String {
-        iso_hex::encode(&self.buf)
+        strict_hex::encode(&self.buf)
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
-        let priv_key_vec: Vec<u8> = iso_hex::decode(hex)?;
+        let priv_key_vec: Vec<u8> = strict_hex::decode(hex)?;
         PrivKey::from_iso_buf(priv_key_vec)
     }
 
     pub fn to_iso_str(&self) -> String {
         let check_buf = blake3::hash(&self.buf);
         let check_sum = &check_buf.as_bytes()[0..4];
-        let check_hex = iso_hex::encode(check_sum);
+        let check_hex = strict_hex::encode(check_sum);
         "ebxprv".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
@@ -77,7 +77,7 @@ impl PrivKey {
         if !s.starts_with("ebxprv") {
             return Err(EbxError::InvalidEncodingError { source: None });
         }
-        let check_sum = iso_hex::decode(&s[6..14])?;
+        let check_sum = strict_hex::decode(&s[6..14])?;
         let buf = bs58::decode(&s[14..])
             .into_vec()
             .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
@@ -164,7 +164,7 @@ mod tests {
         )
         .unwrap();
         let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
-        let pub_key_hex = iso_hex::encode(&pub_key_buf);
+        let pub_key_hex = strict_hex::encode(&pub_key_buf);
         assert_eq!(
             pub_key_hex,
             "03f9bd9639017196c2558c96272d0ea9511cd61157185c98ae3109a28af058db7b"

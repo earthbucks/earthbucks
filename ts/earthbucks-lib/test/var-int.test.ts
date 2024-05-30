@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { VarInt } from "../src/var-int";
-import { EbxBuf } from "../src/ebx-buf.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("VarInt", () => {
   let varInt: VarInt;
@@ -66,7 +66,7 @@ describe("VarInt", () => {
 
     it("should return false if the VarInt is not minimal", () => {
       const bn: bigint = BigInt(0xff);
-      varInt = new VarInt(EbxBuf.from([0xfd, 0x00, 0x00]));
+      varInt = new VarInt(IsoBuf.from([0xfd, 0x00, 0x00]));
       expect(varInt.isMinimal()).toBe(false);
     });
   });

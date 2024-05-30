@@ -3,9 +3,9 @@ use crate::hash::blake3_hash;
 use crate::hash::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
-use crate::iso_hex;
 use crate::pub_key::PubKey;
 use crate::script::Script;
+use crate::strict_hex;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
 use crate::tx_signature::TxSignature;
@@ -94,7 +94,7 @@ impl Tx {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
-        Self::from_iso_buf(iso_hex::decode(hex)?)
+        Self::from_iso_buf(strict_hex::decode(hex)?)
     }
 
     pub fn to_iso_str(&self) -> String {

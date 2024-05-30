@@ -8,15 +8,15 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
-import { IsoHex } from "./iso-hex.js";
+import { StrictHex } from "./strict-hex.js";
 import { EbxError } from "./ebx-error.js";
 
 export class HashCache {
-  public hashPrevouts?: EbxBuf;
-  public hashLockRel?: EbxBuf;
-  public hashOutputs?: EbxBuf;
+  public hashPrevouts?: IsoBuf;
+  public hashLockRel?: IsoBuf;
+  public hashOutputs?: IsoBuf;
 }
 
 export class Tx {
@@ -37,7 +37,7 @@ export class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<Tx, EbxError> {
+  static fromIsoBuf(buf: IsoBuf): Result<Tx, EbxError> {
     return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
@@ -83,7 +83,7 @@ export class Tx {
     return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
     writer.writeIsoBuf(VarInt.fromNumber(this.inputs.length).toIsoBuf());
@@ -103,7 +103,7 @@ export class Tx {
   }
 
   static fromIsoHex(hex: string): Result<Tx, EbxError> {
-    const bufRes = IsoHex.decode(hex);
+    const bufRes = StrictHex.decode(hex);
     if (bufRes.err) {
       return bufRes;
     }
@@ -127,15 +127,15 @@ export class Tx {
     return this.inputs.length === 1 && this.inputs[0].isCoinbase();
   }
 
-  blake3Hash(): EbxBuf {
+  blake3Hash(): IsoBuf {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): EbxBuf {
+  id(): IsoBuf {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  hashPrevouts(): EbxBuf {
+  hashPrevouts(): IsoBuf {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeIsoBuf(input.inputTxId);
@@ -144,7 +144,7 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashLockRel(): EbxBuf {
+  hashLockRel(): IsoBuf {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeUInt32BE(input.lockRel);
@@ -152,7 +152,7 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashOutputs(): EbxBuf {
+  hashOutputs(): IsoBuf {
     const writer = new IsoBufWriter();
     for (const output of this.outputs) {
       writer.writeIsoBuf(output.toIsoBuf());
@@ -162,18 +162,18 @@ export class Tx {
 
   sighashPreimage(
     inputIndex: number,
-    script: EbxBuf,
+    script: IsoBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
-  ): EbxBuf {
+  ): IsoBuf {
     const SIGHASH_ANYONECANPAY = 0x80;
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = EbxBuf.alloc(32);
-    let lockRelHash = EbxBuf.alloc(32);
-    let outputsHash = EbxBuf.alloc(32);
+    let prevoutsHash = IsoBuf.alloc(32);
+    let lockRelHash = IsoBuf.alloc(32);
+    let outputsHash = IsoBuf.alloc(32);
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
@@ -226,10 +226,10 @@ export class Tx {
 
   sighashNoCache(
     inputIndex: number,
-    script: EbxBuf,
+    script: IsoBuf,
     amount: bigint,
     hashType: number,
-  ): EbxBuf {
+  ): IsoBuf {
     const hashCache = new HashCache();
     const preimage = this.sighashPreimage(
       inputIndex,
@@ -244,11 +244,11 @@ export class Tx {
 
   sighashWithCache(
     inputIndex: number,
-    script: EbxBuf,
+    script: IsoBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
-  ): EbxBuf {
+  ): IsoBuf {
     const preimage = this.sighashPreimage(
       inputIndex,
       script,
@@ -262,21 +262,21 @@ export class Tx {
 
   signNoCache(
     inputIndex: number,
-    privateKey: EbxBuf,
-    script: EbxBuf,
+    privateKey: IsoBuf,
+    script: IsoBuf,
     amount: bigint,
     hashType: number,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = EbxBuf.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = IsoBuf.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
 
   signWithCache(
     inputIndex: number,
-    privateKey: EbxBuf,
-    script: EbxBuf,
+    privateKey: IsoBuf,
+    script: IsoBuf,
     amount: bigint,
     hashType: number,
     hashCache: HashCache,
@@ -288,16 +288,16 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = EbxBuf.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = IsoBuf.from(ecdsaSign(hash, privateKey).signature);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
 
   verifyNoCache(
     inputIndex: number,
-    publicKey: EbxBuf,
+    publicKey: IsoBuf,
     sig: TxSignature,
-    script: EbxBuf,
+    script: IsoBuf,
     amount: bigint,
   ): boolean {
     const hashType = sig.hashType;
@@ -307,9 +307,9 @@ export class Tx {
 
   verifyWithCache(
     inputIndex: number,
-    publicKey: EbxBuf,
+    publicKey: IsoBuf,
     sig: TxSignature,
-    script: EbxBuf,
+    script: IsoBuf,
     amount: bigint,
     hashCache: HashCache,
   ): boolean {

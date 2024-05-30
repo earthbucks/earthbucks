@@ -6,11 +6,9 @@
 // Throughout the TypeScript code, the only type of buffer we ever use should be
 // IsoBuf, and it should be compatible with all uses of Uint8Array or node's
 // buffer in case we need that with some external dependencies.
-
 import { Buffer } from "buffer";
 
-class EbxBuf extends Buffer {}
-// const IsoBuf = Buffer;
-// type IsoBuf = Buffer;
+const IsoBuf = Buffer;
+type IsoBuf = Buffer;
 
-export { EbxBuf };
+export { IsoBuf as IsoBuf };

@@ -1,4 +1,4 @@
-import { EbxBuf } from "./ebx-buf";
+import { IsoBuf } from "./iso-buf";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
@@ -8,17 +8,17 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 
 export class SignedMessage {
-  sig: EbxBuf;
-  pubKey: EbxBuf;
-  mac: EbxBuf;
-  message: EbxBuf;
+  sig: IsoBuf;
+  pubKey: IsoBuf;
+  mac: IsoBuf;
+  message: IsoBuf;
   keyStr: string;
 
   constructor(
-    sig: EbxBuf,
-    pubKey: EbxBuf,
-    mac: EbxBuf,
-    message: EbxBuf,
+    sig: IsoBuf,
+    pubKey: IsoBuf,
+    mac: IsoBuf,
+    message: IsoBuf,
     keyStr: string,
   ) {
     this.sig = sig;
@@ -28,19 +28,19 @@ export class SignedMessage {
     this.keyStr = keyStr;
   }
 
-  static createMac(message: EbxBuf, keyStr: string) {
-    const key = Hash.blake3Hash(EbxBuf.from(keyStr));
+  static createMac(message: IsoBuf, keyStr: string) {
+    const key = Hash.blake3Hash(IsoBuf.from(keyStr));
     return Hash.blake3Mac(key, message);
   }
 
   static fromSignMessage(
     privKey: PrivKey,
-    message: EbxBuf,
+    message: IsoBuf,
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
-    const sigBuf = EbxBuf.from(sigObj.signature);
+    const sigBuf = IsoBuf.from(sigObj.signature);
     const pubKey = privKey.toPubKeyIsoBuf().unwrap();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
@@ -62,7 +62,7 @@ export class SignedMessage {
     return true;
   }
 
-  static fromIsoBuf(buf: EbxBuf, keyStr: string): SignedMessage {
+  static fromIsoBuf(buf: IsoBuf, keyStr: string): SignedMessage {
     const reader = new IsoBufReader(buf);
     const sig = reader.read(64).unwrap();
     const pubKey = reader.read(PubKey.SIZE).unwrap();
@@ -71,7 +71,7 @@ export class SignedMessage {
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
     writer.writeIsoBuf(this.sig);
     writer.writeIsoBuf(this.pubKey);

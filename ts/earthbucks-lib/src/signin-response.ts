@@ -1,9 +1,9 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { IsoHex } from "./iso-hex.js";
+import { StrictHex } from "./strict-hex.js";
 import { SignedMessage } from "./signed-message.js";
 import { SigninChallenge } from "./signin-challenge.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 
 export class SigninResponse {
   signedMessage: SignedMessage;
@@ -36,18 +36,18 @@ export class SigninResponse {
     return new SigninResponse(signedMessage);
   }
 
-  static toIsoBuf(buf: EbxBuf, domain: string): SigninResponse {
+  static toIsoBuf(buf: IsoBuf, domain: string): SigninResponse {
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
     const signedMessage = SignedMessage.fromIsoBuf(buf, signInResponseStr);
     return new SigninResponse(signedMessage);
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const buf = IsoHex.decode(hex).unwrap();
+    const buf = StrictHex.decode(hex).unwrap();
     return SigninResponse.toIsoBuf(buf, domain);
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     return this.signedMessage.toIsoBuf();
   }
 

@@ -1,4 +1,4 @@
-import { EbxBuf } from "./ebx-buf";
+import { IsoBuf } from "./iso-buf";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { Option, Some, None } from "earthbucks-opt-res";
 import {
@@ -9,10 +9,10 @@ import {
 } from "./ebx-error.js";
 
 export class IsoBufReader {
-  buf: EbxBuf;
+  buf: IsoBuf;
   pos: number;
 
-  constructor(buf: EbxBuf) {
+  constructor(buf: IsoBuf) {
     this.buf = buf;
     this.pos = 0;
   }
@@ -21,18 +21,18 @@ export class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  read(len: number): Result<EbxBuf, EbxError> {
+  read(len: number): Result<IsoBuf, EbxError> {
     if (this.pos + len > this.buf.length) {
       return Err(new NotEnoughDataError(None));
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
-    const newBuf = EbxBuf.alloc(len);
+    const newBuf = IsoBuf.alloc(len);
     newBuf.set(buf);
     this.pos += len;
     return Ok(newBuf);
   }
 
-  readRemainder(): EbxBuf {
+  readRemainder(): IsoBuf {
     return this.read(this.buf.length - this.pos).unwrap();
   }
 
@@ -80,7 +80,7 @@ export class IsoBufReader {
     return Ok(val);
   }
 
-  readVarIntBuf(): Result<EbxBuf, EbxError> {
+  readVarIntBuf(): Result<IsoBuf, EbxError> {
     const res = this.readU8();
     if (res.err) {
       return Err(new NotEnoughDataError(Some(res.val)));
@@ -95,7 +95,7 @@ export class IsoBufReader {
       if (buf.readUInt16BE(0) < 0xfd) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(EbxBuf.concat([EbxBuf.from([first]), buf]));
+      return Ok(IsoBuf.concat([IsoBuf.from([first]), buf]));
     } else if (first === 0xfe) {
       const res = this.read(4);
       if (res.err) {
@@ -105,7 +105,7 @@ export class IsoBufReader {
       if (buf.readUInt32BE(0) < 0x10000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(EbxBuf.concat([EbxBuf.from([first]), buf]));
+      return Ok(IsoBuf.concat([IsoBuf.from([first]), buf]));
     } else if (first === 0xff) {
       const res = this.read(8);
       if (res.err) {
@@ -116,9 +116,9 @@ export class IsoBufReader {
       if (bn < 0x100000000) {
         return Err(new NonMinimalEncodingError(None));
       }
-      return Ok(EbxBuf.concat([EbxBuf.from([first]), buf]));
+      return Ok(IsoBuf.concat([IsoBuf.from([first]), buf]));
     } else {
-      return Ok(EbxBuf.from([first]));
+      return Ok(IsoBuf.from([first]));
     }
   }
 

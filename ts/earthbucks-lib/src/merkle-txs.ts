@@ -1,10 +1,10 @@
 import { MerkleProof } from "./merkle-proof.js";
 import { Tx } from "./tx.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 
 export class MerkleTxs {
   public txs: Tx[];
-  public root: EbxBuf;
+  public root: IsoBuf;
   public proofs: MerkleProof[];
 
   constructor(txs: Tx[]) {

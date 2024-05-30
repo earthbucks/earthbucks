@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script";
-import { EbxBuf } from "../src/ebx-buf";
+import { IsoBuf } from "../src/iso-buf";
 import fs from "fs";
 import path from "path";
 
@@ -65,14 +65,14 @@ describe("Script", () => {
 
   describe("pubkeyhash", () => {
     test("fromAddressOutput", () => {
-      const script = Script.fromPkhOutput(EbxBuf.from("01".repeat(32), "hex"));
+      const script = Script.fromPkhOutput(IsoBuf.from("01".repeat(32), "hex"));
       expect(script.toIsoStr().unwrap()).toBe(
         "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
       );
     });
 
     test("isAddressOutput", () => {
-      const script = Script.fromPkhOutput(EbxBuf.from("01".repeat(32), "hex"));
+      const script = Script.fromPkhOutput(IsoBuf.from("01".repeat(32), "hex"));
       expect(script.isPkhOutput()).toBe(true);
     });
 
@@ -109,7 +109,7 @@ describe("Script", () => {
 
     test("test vectors: iso buf reader", () => {
       for (const testVector of testVectors.from_iso_buf.errors) {
-        const arr = EbxBuf.from(testVector.hex, "hex");
+        const arr = IsoBuf.from(testVector.hex, "hex");
         const result = Script.fromIsoBuf(arr);
         expect(result.err).toBeTruthy();
         expect(result.val.toString()).toMatch(

@@ -1,5 +1,5 @@
-import { EbxBuf } from "./ebx-buf";
-import { IsoHex } from "./iso-hex.js";
+import { IsoBuf } from "./iso-buf";
+import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
 import * as Hash from "./hash.js";
@@ -16,9 +16,9 @@ import { Option, None, Some } from "earthbucks-opt-res";
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
 
-  buf: EbxBuf;
+  buf: IsoBuf;
 
-  constructor(buf: EbxBuf) {
+  constructor(buf: IsoBuf) {
     this.buf = buf;
   }
 
@@ -30,7 +30,7 @@ export class PubKey {
     return Ok(new PubKey(res.unwrap()));
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<PubKey, EbxError> {
+  static fromIsoBuf(buf: IsoBuf): Result<PubKey, EbxError> {
     if (buf.length > PubKey.SIZE) {
       return Err(new TooMuchDataError(None));
     }
@@ -40,7 +40,7 @@ export class PubKey {
     return Ok(new PubKey(buf));
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     return this.buf;
   }
 
@@ -49,7 +49,7 @@ export class PubKey {
   }
 
   static fromIsoHex(hex: string): Result<PubKey, EbxError> {
-    const res = IsoHex.decode(hex);
+    const res = StrictHex.decode(hex);
     if (res.err) {
       return Err(res.val);
     }
@@ -69,14 +69,14 @@ export class PubKey {
       return Err(new InvalidEncodingError(None));
     }
     const checkHex = str.slice(6, 14);
-    const res = IsoHex.decode(checkHex);
+    const res = StrictHex.decode(checkHex);
     if (res.err) {
       return Err(res.val);
     }
     const checkBuf = res.unwrap();
-    let decoded: EbxBuf;
+    let decoded: IsoBuf;
     try {
-      decoded = EbxBuf.from(bs58.decode(str.slice(14)));
+      decoded = IsoBuf.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

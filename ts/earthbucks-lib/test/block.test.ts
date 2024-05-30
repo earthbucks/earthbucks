@@ -4,22 +4,22 @@ import { Block } from "../src/block";
 import { Tx } from "../src/tx";
 import { IsoBufWriter } from "../src/iso-buf-writer";
 import { IsoBufReader } from "../src/iso-buf-reader";
-import { EbxBuf } from "../src/ebx-buf";
+import { IsoBuf } from "../src/iso-buf";
 
 describe("Block", () => {
   test("toIsoBufWriter", () => {
     const bh = new Header(
       1,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0n,
       0n,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -30,16 +30,16 @@ describe("Block", () => {
   test("toIsoBuf", () => {
     const bh = new Header(
       1,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0n,
       0n,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -50,16 +50,16 @@ describe("Block", () => {
   test("fromIsoBufReader", () => {
     const bh = new Header(
       1,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0n,
       0n,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -79,16 +79,16 @@ describe("Block", () => {
   test("isGenesis", () => {
     const bh = new Header(
       1,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0n,
       0n,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);

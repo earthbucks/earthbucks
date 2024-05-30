@@ -8,7 +8,7 @@ import { Pkh } from "../src/pkh";
 import { PkhKeyMap } from "../src/pkh-key-map";
 import { TxSigner } from "../src/tx-signer";
 import { TxVerifier } from "../src/tx-verifier";
-import { EbxBuf } from "../src/ebx-buf";
+import { IsoBuf } from "../src/iso-buf";
 import { TxOutBn } from "../src/tx-out-bn";
 import { TxIn } from "../src/tx-in";
 
@@ -25,12 +25,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -107,12 +107,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -160,12 +160,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -175,7 +175,7 @@ describe("TxVerifier", () => {
     test("should sign and verify expired pkhx 1h", () => {
       const expiredInputScript = Script.fromExpiredPkhxInput();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         expiredInputScript,
         Script.PKHX_1H_LOCK_REL,
@@ -231,12 +231,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -284,12 +284,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -299,7 +299,7 @@ describe("TxVerifier", () => {
     test("should sign and verify expired pkhx 90d", () => {
       const expiredInputScript = Script.fromExpiredPkhxInput();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         expiredInputScript,
         Script.PKHX_90D_LOCK_REL,
@@ -355,12 +355,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -408,12 +408,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr1h40mOutput(EbxBuf.alloc(32), pkh.buf);
+        const script = Script.fromPkhxr1h40mOutput(IsoBuf.alloc(32), pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -423,7 +423,7 @@ describe("TxVerifier", () => {
     test("should sign and verify recoverable pkhxr 1h", () => {
       const recoveryInputScript = Script.fromRecoveryPkhxrInputPlaceholder();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         recoveryInputScript,
         Script.PKHXR_1H_40M_R_LOCK_REL,
@@ -479,12 +479,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -494,7 +494,7 @@ describe("TxVerifier", () => {
     test("should sign and verify expired pkhxr 1h 40m", () => {
       const expiredInputScript = Script.fromExpiredPkhxrInput();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         expiredInputScript,
         Script.PKHXR_1H_40M_X_LOCK_REL,
@@ -550,12 +550,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -603,12 +603,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr90d60dOutput(EbxBuf.alloc(32), pkh.buf);
+        const script = Script.fromPkhxr90d60dOutput(IsoBuf.alloc(32), pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -618,7 +618,7 @@ describe("TxVerifier", () => {
     test("should sign and verify recovery pkhxr 90d 60d", () => {
       const recoveryInputScript = Script.fromRecoveryPkhxrInputPlaceholder();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         recoveryInputScript,
         Script.PKHXR_90D_60D_R_LOCK_REL,
@@ -674,12 +674,12 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(EbxBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
         const txOutBn = new TxOutBn(txOut, 0n);
-        txOutBnMap.add(txOutBn, EbxBuf.alloc(32), i);
+        txOutBnMap.add(txOutBn, IsoBuf.alloc(32), i);
       }
 
       const changeScript = Script.fromEmpty();
@@ -689,7 +689,7 @@ describe("TxVerifier", () => {
     test("should sign and verify expired pkhxr 90d 60d", () => {
       const expiredInputScript = Script.fromExpiredPkhxrInput();
       const txIn = new TxIn(
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         0,
         expiredInputScript,
         Script.PKHXR_90D_60D_X_LOCK_REL,

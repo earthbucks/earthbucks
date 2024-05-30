@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleTxs } from "../src/merkle-txs";
 import { Tx } from "../src/tx";
-import { EbxBuf } from "../src/ebx-buf";
+import { IsoBuf } from "../src/iso-buf";
 
 describe("MerkleTxs", () => {
   test("verify with 1 tx", () => {

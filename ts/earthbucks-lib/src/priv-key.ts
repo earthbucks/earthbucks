@@ -1,6 +1,6 @@
 import secp256k1 from "secp256k1";
-import { EbxBuf } from "./ebx-buf";
-import { IsoHex } from "./iso-hex.js";
+import { IsoBuf } from "./iso-buf";
+import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
@@ -15,27 +15,27 @@ import {
 import { Option, None, Some } from "earthbucks-opt-res";
 
 export class PrivKey {
-  buf: EbxBuf;
+  buf: IsoBuf;
 
-  constructor(buf: EbxBuf) {
+  constructor(buf: IsoBuf) {
     this.buf = buf;
   }
 
   static fromRandom(): PrivKey {
     let privateKey;
     do {
-      privateKey = crypto.getRandomValues(EbxBuf.alloc(32));
+      privateKey = crypto.getRandomValues(IsoBuf.alloc(32));
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     return this.buf;
   }
 
-  toPubKeyIsoBuf(): Result<EbxBuf, EbxError> {
+  toPubKeyIsoBuf(): Result<IsoBuf, EbxError> {
     try {
-      return Ok(EbxBuf.from(secp256k1.publicKeyCreate(this.buf)));
+      return Ok(IsoBuf.from(secp256k1.publicKeyCreate(this.buf)));
     } catch (err) {
       return Err(new InvalidKeyError(None));
     }
@@ -49,7 +49,7 @@ export class PrivKey {
     return Ok(res.unwrap().toString("hex"));
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<PrivKey, EbxError> {
+  static fromIsoBuf(buf: IsoBuf): Result<PrivKey, EbxError> {
     if (buf.length > 32) {
       return Err(new TooMuchDataError(None));
     }
@@ -67,7 +67,7 @@ export class PrivKey {
   }
 
   static fromIsoHex(hex: string): Result<PrivKey, EbxError> {
-    const bufRes = IsoHex.decode(hex);
+    const bufRes = StrictHex.decode(hex);
     if (bufRes.err) {
       return bufRes;
     }
@@ -87,14 +87,14 @@ export class PrivKey {
       return Err(new InvalidEncodingError(None));
     }
     const hexStr = str.slice(6, 14);
-    const checkBufRes = IsoHex.decode(hexStr);
+    const checkBufRes = StrictHex.decode(hexStr);
     if (checkBufRes.err) {
       return checkBufRes;
     }
     const checkBuf = checkBufRes.unwrap();
-    let decoded: EbxBuf;
+    let decoded: IsoBuf;
     try {
-      decoded = EbxBuf.from(bs58.decode(str.slice(14)));
+      decoded = IsoBuf.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

@@ -2,18 +2,18 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import { EbxError } from "./ebx-error.js";
 
 export class TxIn {
-  public inputTxId: EbxBuf;
+  public inputTxId: IsoBuf;
   public inputTxNOut: number;
   public script: Script;
   public lockRel: number;
 
   constructor(
-    inputTxId: EbxBuf,
+    inputTxId: IsoBuf,
     inputTxNOut: number,
     script: Script,
     lockRel: number,
@@ -24,7 +24,7 @@ export class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<TxIn, EbxError> {
+  static fromIsoBuf(buf: IsoBuf): Result<TxIn, EbxError> {
     const reader = new IsoBufReader(buf);
     return TxIn.fromIsoBufReader(reader);
   }
@@ -63,7 +63,7 @@ export class TxIn {
     return Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
     writer.writeIsoBuf(this.inputTxId);
     writer.writeUInt32BE(this.inputTxNOut);
@@ -90,6 +90,6 @@ export class TxIn {
   }
 
   static fromCoinbase(script: Script): TxIn {
-    return new TxIn(EbxBuf.alloc(32), 0xffffffff, script, 0);
+    return new TxIn(IsoBuf.alloc(32), 0xffffffff, script, 0);
   }
 }

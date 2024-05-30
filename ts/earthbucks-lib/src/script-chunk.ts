@@ -1,7 +1,7 @@
 import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 import {
   EbxError,
@@ -14,20 +14,20 @@ import { Option, Some, None } from "earthbucks-opt-res";
 
 export class ScriptChunk {
   opcode: number;
-  buf?: EbxBuf;
+  buf?: IsoBuf;
 
-  constructor(opcode: number = 0, buf?: EbxBuf) {
+  constructor(opcode: number = 0, buf?: IsoBuf) {
     this.opcode = opcode;
     this.buf = buf;
   }
 
-  getData(): Result<EbxBuf, EbxError> {
+  getData(): Result<IsoBuf, EbxError> {
     if (this.opcode === Opcode.OP_1NEGATE) {
-      return Ok(EbxBuf.from([0x80]));
+      return Ok(IsoBuf.from([0x80]));
     } else if (this.opcode === Opcode.OP_0) {
-      return Ok(EbxBuf.from([]));
+      return Ok(IsoBuf.from([]));
     } else if (this.opcode >= Opcode.OP_1 && this.opcode <= Opcode.OP_16) {
-      return Ok(EbxBuf.from([this.opcode - Opcode.OP_1 + 1]));
+      return Ok(IsoBuf.from([this.opcode - Opcode.OP_1 + 1]));
     }
     if (this.buf) {
       return Ok(this.buf);
@@ -52,7 +52,7 @@ export class ScriptChunk {
   static fromIsoStr(str: string): Result<ScriptChunk, EbxError> {
     const scriptChunk = new ScriptChunk();
     if (str.startsWith("0x")) {
-      scriptChunk.buf = EbxBuf.from(str.slice(2), "hex");
+      scriptChunk.buf = IsoBuf.from(str.slice(2), "hex");
       const len = scriptChunk.buf.length;
       const onebytelen = len <= 0xff;
       const twobytelen = len <= 0xffff;
@@ -82,31 +82,31 @@ export class ScriptChunk {
     return Ok(scriptChunk);
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const opcode = this.opcode;
     if (opcode === OP.PUSHDATA1 && this.buf) {
-      return EbxBuf.concat([
-        EbxBuf.from([opcode]),
+      return IsoBuf.concat([
+        IsoBuf.from([opcode]),
         new IsoBufWriter().writeUInt8(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
-      return EbxBuf.concat([
-        EbxBuf.from([opcode]),
+      return IsoBuf.concat([
+        IsoBuf.from([opcode]),
         new IsoBufWriter().writeUInt16BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
-      return EbxBuf.concat([
-        EbxBuf.from([opcode]),
+      return IsoBuf.concat([
+        IsoBuf.from([opcode]),
         new IsoBufWriter().writeUInt32BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     }
-    return EbxBuf.from([opcode]);
+    return IsoBuf.from([opcode]);
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<ScriptChunk, EbxError> {
+  static fromIsoBuf(buf: IsoBuf): Result<ScriptChunk, EbxError> {
     const reader = new IsoBufReader(buf);
     return ScriptChunk.fromIsoBufReader(reader);
   }
@@ -167,7 +167,7 @@ export class ScriptChunk {
     return Ok(chunk);
   }
 
-  static fromData(data: EbxBuf): ScriptChunk {
+  static fromData(data: IsoBuf): ScriptChunk {
     const len = data.length;
     if (len === 0) {
       return new ScriptChunk(Opcode.OP_0);

@@ -1,25 +1,25 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class PermissionToken {
-  randValue: EbxBuf;
+  randValue: IsoBuf;
   timestamp: bigint; // milliseconds
 
-  constructor(randValue: EbxBuf, timestamp: bigint) {
+  constructor(randValue: IsoBuf, timestamp: bigint) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
     writer.writeIsoBuf(this.randValue);
     writer.writeUInt64BE(this.timestamp);
     return writer.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<PermissionToken, string> {
+  static fromIsoBuf(buf: IsoBuf): Result<PermissionToken, string> {
     try {
       if (buf.length !== 32 + 8) {
         return Err("invalid buffer length");
@@ -42,7 +42,7 @@ export class PermissionToken {
   static fromRandom(): PermissionToken {
     const randValue = crypto.getRandomValues(new Uint8Array(32));
     const timestamp = BigInt(Date.now()); // milliseconds
-    return new PermissionToken(EbxBuf.from(randValue), timestamp);
+    return new PermissionToken(IsoBuf.from(randValue), timestamp);
   }
 
   isValid(): boolean {

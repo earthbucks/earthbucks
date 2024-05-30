@@ -1,39 +1,39 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = EbxBuf.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = IsoBuf.alloc(32, 0xff);
 
   version: number;
-  prevBlockId: EbxBuf;
-  merkleRoot: EbxBuf;
+  prevBlockId: IsoBuf;
+  merkleRoot: IsoBuf;
   timestamp: bigint;
   blockNum: bigint;
-  target: EbxBuf;
-  nonce: EbxBuf;
+  target: IsoBuf;
+  nonce: IsoBuf;
   workSerAlgo: number;
-  workSerHash: EbxBuf;
+  workSerHash: IsoBuf;
   workParAlgo: number;
-  workParHash: EbxBuf;
+  workParHash: IsoBuf;
 
   constructor(
     version: number,
-    prevBlockId: EbxBuf,
-    merkleRoot: EbxBuf,
+    prevBlockId: IsoBuf,
+    merkleRoot: IsoBuf,
     timestamp: bigint,
     blockNum: bigint,
-    target: EbxBuf,
-    nonce: EbxBuf,
+    target: IsoBuf,
+    nonce: IsoBuf,
     workSerAlgo: number,
-    workSerHash: EbxBuf,
+    workSerHash: IsoBuf,
     workParAlgo: number,
-    workParHash: EbxBuf,
+    workParHash: IsoBuf,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -48,7 +48,7 @@ export class Header {
     this.workParHash = workParHash;
   }
 
-  toIsoBuf(): EbxBuf {
+  toIsoBuf(): IsoBuf {
     const bw = new IsoBufWriter();
     bw.writeUInt32BE(this.version);
     bw.writeIsoBuf(this.prevBlockId);
@@ -64,7 +64,7 @@ export class Header {
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: EbxBuf): Result<Header, string> {
+  static fromIsoBuf(buf: IsoBuf): Result<Header, string> {
     return Header.fromIsoBufReader(new IsoBufReader(buf));
   }
 
@@ -183,7 +183,7 @@ export class Header {
   }
 
   static fromIsoHex(str: string): Result<Header, string> {
-    return Header.fromIsoBuf(EbxBuf.from(str, "hex"));
+    return Header.fromIsoBuf(IsoBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
@@ -194,20 +194,20 @@ export class Header {
     return Header.fromIsoHex(str);
   }
 
-  static fromGenesis(initialTarget: EbxBuf): Header {
+  static fromGenesis(initialTarget: IsoBuf): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
-      EbxBuf.alloc(32),
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
+      IsoBuf.alloc(32),
       timestamp,
       0n,
       initialTarget,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
       0,
-      EbxBuf.alloc(32),
+      IsoBuf.alloc(32),
     );
   }
 
@@ -237,16 +237,16 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = EbxBuf.alloc(32);
+    const nonce = IsoBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = EbxBuf.alloc(32);
+    const workSerHash = IsoBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = EbxBuf.alloc(32);
+    const workParHash = IsoBuf.alloc(32);
     return Ok(
       new Header(
         1,
         prevBlockId,
-        EbxBuf.alloc(32),
+        IsoBuf.alloc(32),
         timestamp,
         blockNum,
         target,
@@ -263,19 +263,19 @@ export class Header {
     return version === 1;
   }
 
-  static isValidPreviousBlockHash(previousBlockHash: EbxBuf): boolean {
+  static isValidPreviousBlockHash(previousBlockHash: IsoBuf): boolean {
     return previousBlockHash.length === 32;
   }
 
-  static isValidMerkleRoot(merkleRoot: EbxBuf): boolean {
+  static isValidMerkleRoot(merkleRoot: IsoBuf): boolean {
     return merkleRoot.length === 32;
   }
 
-  static isValidNonce(nonce: EbxBuf): boolean {
+  static isValidNonce(nonce: IsoBuf): boolean {
     return nonce.length === 32;
   }
 
-  static isValidTarget(target: EbxBuf): boolean {
+  static isValidTarget(target: IsoBuf): boolean {
     return target.length === 32;
   }
 
@@ -297,16 +297,16 @@ export class Header {
     return this.blockNum === 0n && this.prevBlockId.every((byte) => byte === 0);
   }
 
-  hash(): EbxBuf {
+  hash(): IsoBuf {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): EbxBuf {
+  id(): IsoBuf {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  static adjustTarget(targetBuf: EbxBuf, timeDiff: bigint): EbxBuf {
-    const target = BigInt("0x" + EbxBuf.from(targetBuf).toString("hex"));
+  static adjustTarget(targetBuf: IsoBuf, timeDiff: bigint): IsoBuf {
+    const target = BigInt("0x" + IsoBuf.from(targetBuf).toString("hex"));
     const twoWeeks =
       Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
 
@@ -322,7 +322,7 @@ export class Header {
 
     const newTarget = (target * timeDiff) / twoWeeks; // seconds
 
-    const newTargetBuf = EbxBuf.from(
+    const newTargetBuf = IsoBuf.from(
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );

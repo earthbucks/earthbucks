@@ -1,33 +1,33 @@
 import * as Hash from "./hash.js";
-import { EbxBuf } from "./ebx-buf.js";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res";
 
 export class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
-  public hashedData: EbxBuf;
+  public hashedData: IsoBuf;
 
   constructor(
     left: MerkleNode | null,
     right: MerkleNode | null,
-    hashedData: EbxBuf,
+    hashedData: IsoBuf,
   ) {
     this.left = left;
     this.right = right;
     this.hashedData = hashedData;
   }
 
-  public hash(): EbxBuf {
+  public hash(): IsoBuf {
     if (this.left || this.right) {
-      const leftData = this.left ? this.left.hash() : EbxBuf.alloc(0);
+      const leftData = this.left ? this.left.hash() : IsoBuf.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
-      return Hash.doubleBlake3Hash(EbxBuf.concat([leftData, rightData]));
+      return Hash.doubleBlake3Hash(IsoBuf.concat([leftData, rightData]));
     } else {
       return this.hashedData;
     }
   }
 
-  static fromIsoBufs(hashedDatas: EbxBuf[]): Result<MerkleNode, string> {
+  static fromIsoBufs(hashedDatas: IsoBuf[]): Result<MerkleNode, string> {
     if (hashedDatas.length === 0) {
       return Err("Cannot create MerkleNode from empty array");
     }
@@ -41,7 +41,7 @@ export class MerkleNode {
         new MerkleNode(
           left,
           right,
-          Hash.doubleBlake3Hash(EbxBuf.concat([left.hash(), right.hash()])),
+          Hash.doubleBlake3Hash(IsoBuf.concat([left.hash(), right.hash()])),
         ),
       );
     }
@@ -60,7 +60,7 @@ export class MerkleNode {
       new MerkleNode(
         left,
         right,
-        Hash.doubleBlake3Hash(EbxBuf.concat([left.hash(), right.hash()])),
+        Hash.doubleBlake3Hash(IsoBuf.concat([left.hash(), right.hash()])),
       ),
     );
   }
