@@ -127,15 +127,12 @@ export class IsoBuf extends Uint8Array {
 }
 
 export class FixedIsoBuf<N extends number> extends IsoBuf {
-  public size: N;
-
   constructor(buf: Uint8Array, size: N) {
     super(buf, size);
     if (buf.length !== size) {
       // returning Result is not possible inside a constructor
       throw new Error(`Expected buffer of length ${size}, got ${buf.length}`);
     }
-    this.size = size;
   }
 
   static fromUint8Array<N extends number>(
@@ -155,8 +152,6 @@ export class FixedIsoBuf<N extends number> extends IsoBuf {
 // export class IsoBuf32 extends FixedIsoBuf<32> {};
 
 export class IsoBuf32 extends IsoBuf {
-  public size: 32 = 32;
-
   constructor(buf: Uint8Array) {
     const size = buf.length;
     if (size !== 32) {
