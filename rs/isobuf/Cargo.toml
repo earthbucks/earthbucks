@@ -1,0 +1,15 @@
+[package]
+name = "isobuf"
+description = "Isomorphic Buffer (Isobuf): Buffer that is the same between memory and binary representation for hashing and signatures."
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
+repository = "https://github.com/earthbucks/earthbucks"
+
+[dependencies]
+hex = "0.4.3"
+byteorder = "1.4.3"
+num-bigint = "0.4.4"
+num-traits = "0.2.14"
+num-integer = "0.1"
