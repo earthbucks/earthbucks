@@ -65,6 +65,9 @@ export class IsoBufWriter {
   }
 
   static varIntBufNum(n: number): IsoBuf {
+    if (n < 0) {
+      throw new Error("varInt cannot be negative");
+    }
     let buf: IsoBuf;
     if (n < 253) {
       buf = IsoBuf.alloc(1);
@@ -87,6 +90,9 @@ export class IsoBufWriter {
   }
 
   static varIntBuf(bn: bigint): IsoBuf {
+    if (bn < 0) {
+      throw new Error("varInt cannot be negative");
+    }
     let buf: IsoBuf;
     const n = Number(bn);
     if (n < 253) {
