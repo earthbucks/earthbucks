@@ -1,10 +1,10 @@
 {
   "files.exclude": {
-    "**/.cache": true,
-    "**/build": true,
-    "**/dist": true,
-    "**/node_modules": true,
-    "**/target": true
+    "ts/**/.cache": true,
+    "ts/**/build": true,
+    "ts/**/dist": true,
+    "ts/**/node_modules": true,
+    "rs/**/target": true
   },
   "files.associations": {
     ".env": "dotenv",
