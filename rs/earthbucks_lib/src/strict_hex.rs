@@ -28,28 +28,28 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, EbxError> {
 }
 
 pub trait StrictHex {
-    fn to_hex(&self) -> String;
-    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError>
+    fn to_strict_hex(&self) -> String;
+    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError>
     where
         Self: Sized;
 }
 
 impl StrictHex for Vec<u8> {
-    fn to_hex(&self) -> String {
+    fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }
 
-    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError> {
+    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError> {
         hex::decode(hex)
     }
 }
 
 impl<const N: usize> StrictHex for [u8; N] {
-    fn to_hex(&self) -> String {
+    fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }
 
-    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError> {
+    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError> {
         let vec = hex::decode(hex)?;
         let array: [u8; N] = vec[..]
             .try_into()

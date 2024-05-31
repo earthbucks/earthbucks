@@ -11,4 +11,4 @@ import { Buffer } from "buffer";
 const IsoBuf = Buffer;
 type IsoBuf = Buffer;
 
-export { IsoBuf as IsoBuf };
+export { IsoBuf };

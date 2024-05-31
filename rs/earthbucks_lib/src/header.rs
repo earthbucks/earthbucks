@@ -120,11 +120,11 @@ impl Header {
     }
 
     pub fn to_iso_hex(&self) -> String {
-        self.to_iso_buf().to_hex()
+        self.to_iso_buf().to_strict_hex()
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Header, String> {
-        let buf: Vec<u8> = Vec::<u8>::from_hex(hex).map_err(|e| e.to_string())?;
+        let buf: Vec<u8> = Vec::<u8>::from_strict_hex(hex).map_err(|e| e.to_string())?;
         Header::from_iso_buf(buf)
     }
 

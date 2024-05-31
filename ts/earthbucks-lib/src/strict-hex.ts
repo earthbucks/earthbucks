@@ -4,6 +4,12 @@ import { EbxError, InvalidHexError } from "./ebx-error.js";
 import { Option, Some, None } from "earthbucks-opt-res";
 
 export class StrictHex {
+  public buf: IsoBuf;
+
+  constructor(buf: IsoBuf) {
+    this.buf = buf;
+  }
+
   static isValid(hex: string): boolean {
     return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
   }
@@ -18,5 +24,13 @@ export class StrictHex {
     }
     const buffer = IsoBuf.from(hex, "hex");
     return Ok(buffer);
+  }
+
+  static fromStrictHex(hex: string): Result<StrictHex, EbxError> {
+    return StrictHex.decode(hex).map((buf) => new StrictHex(buf));
+  }
+
+  toStrictHex(): string {
+    return StrictHex.encode(this.buf);
   }
 }
