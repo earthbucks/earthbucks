@@ -6,7 +6,7 @@ import { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class BlockBuilder {
   public header: Header;

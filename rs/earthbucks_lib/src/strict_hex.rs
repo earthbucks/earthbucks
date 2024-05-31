@@ -1,7 +1,6 @@
 use hex;
 use lazy_static::lazy_static;
 use regex::Regex;
-
 use crate::ebx_error::EbxError;
 
 lazy_static! {

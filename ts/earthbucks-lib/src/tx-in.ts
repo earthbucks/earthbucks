@@ -3,7 +3,7 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 
 export class TxIn {

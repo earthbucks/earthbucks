@@ -2,7 +2,7 @@ import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidOpcodeError,
@@ -10,7 +10,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, Some, None } from "earthbucks-opt-res";
+import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export class ScriptChunk {
   opcode: number;

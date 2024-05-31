@@ -2,7 +2,7 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;

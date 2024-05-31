@@ -4,7 +4,7 @@ import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
 import { IsoBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Script } from "./script.js";
 import { KeyPair } from "./key-pair.js";
 

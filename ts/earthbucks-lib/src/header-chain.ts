@@ -2,7 +2,7 @@ import { Header } from "./header.js";
 import { Pkh } from "./pkh.js";
 import { Script } from "./script.js";
 import { ScriptChunk } from "./script-chunk.js";
-import { Option, Some, None } from "earthbucks-opt-res";
+import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export class HeaderChain {
   headers: Header[];

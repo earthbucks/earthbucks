@@ -1,5 +1,5 @@
-import { Result, Ok, Err } from "earthbucks-opt-res";
-import { Option, Some, None } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export abstract class EbxError extends Error {
   constructor() {

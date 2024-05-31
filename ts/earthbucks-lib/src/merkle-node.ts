@@ -1,6 +1,6 @@
 import * as Hash from "./hash.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;

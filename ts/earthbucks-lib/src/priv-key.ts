@@ -3,7 +3,7 @@ import { IsoBuf } from "./iso-buf";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidChecksumError,
@@ -12,7 +12,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, None, Some } from "earthbucks-opt-res";
+import { Option, None, Some } from "earthbucks-opt-res/src/lib.js";
 
 export class PrivKey {
   buf: IsoBuf;

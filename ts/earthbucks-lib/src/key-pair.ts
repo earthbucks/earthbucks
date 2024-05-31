@@ -1,7 +1,7 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class KeyPair {
   privKey: PrivKey;

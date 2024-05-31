@@ -4,8 +4,8 @@ import { TxOut } from "./tx-out.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
 import { IsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res";
-import { Option, Some, None } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, GenericError } from "./ebx-error.js";
 
 export class TxBuilder {

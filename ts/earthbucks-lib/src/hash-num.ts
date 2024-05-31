@@ -1,5 +1,5 @@
 import { IsoBuf } from "./iso-buf";
-import { Result, Ok, Err } from "earthbucks-opt-res";
+import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class HashNum {
   num: bigint;
