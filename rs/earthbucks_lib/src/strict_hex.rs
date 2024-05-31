@@ -1,7 +1,7 @@
+use crate::ebx_error::EbxError;
 use hex;
 use lazy_static::lazy_static;
 use regex::Regex;
-use crate::ebx_error::EbxError;
 
 lazy_static! {
     static ref RE: Regex = Regex::new(r"^[0-9a-f]*$").unwrap();
@@ -28,7 +28,7 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, EbxError> {
 
 pub trait StrictHex {
     fn to_strict_hex(&self) -> String;
-    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError>
+    fn from_strict_hex(hex: &str) -> Result<Self, EbxError>
     where
         Self: Sized;
 }
@@ -38,8 +38,8 @@ impl StrictHex for Vec<u8> {
         hex::encode(self)
     }
 
-    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError> {
-        hex::decode(hex)
+    fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
+        hex::decode(hex).map_err(|_| EbxError::InvalidHexError { source: None })
     }
 }
 
@@ -48,11 +48,11 @@ impl<const N: usize> StrictHex for [u8; N] {
         hex::encode(self)
     }
 
-    fn from_strict_hex(hex: &str) -> Result<Self, hex::FromHexError> {
-        let vec = hex::decode(hex)?;
+    fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
+        let vec = hex::decode(hex).map_err(|_| EbxError::InvalidHexError { source: None })?;
         let array: [u8; N] = vec[..]
             .try_into()
-            .map_err(|_| hex::FromHexError::InvalidStringLength)?;
+            .map_err(|_| EbxError::InvalidHexError { source: None })?;
         Ok(array)
     }
 }
