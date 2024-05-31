@@ -19,7 +19,7 @@ pub fn blake3_mac(key: &[u8; 32], data: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use hex;
+    use crate::strict_hex::StrictHex;
 
     #[test]
     fn test_hash() {
@@ -38,10 +38,10 @@ mod tests {
         let pkh = blake3_hash(&pub_key);
 
         // Convert the pkh to hex
-        let pkh_hex = hex::encode(pkh);
+        let pkh_hex = pkh.to_strict_hex();
 
         // Convert the expected pkh to hex
-        let expected_pkh_hex = hex::encode(expected_pkh);
+        let expected_pkh_hex = expected_pkh.to_strict_hex();
 
         // Check that the computed pkh matches the expected pkh
         assert_eq!(pkh_hex, expected_pkh_hex);
@@ -64,10 +64,10 @@ mod tests {
         let pkh = double_blake3_hash(&pub_key);
 
         // Convert the pkh to hex
-        let pkh_hex = hex::encode(pkh);
+        let pkh_hex = pkh.to_strict_hex();
 
         // Convert the expected pkh to hex
-        let expected_pkh_hex = hex::encode(expected_pkh);
+        let expected_pkh_hex = expected_pkh.to_strict_hex();
 
         // Check that the computed pkh matches the expected pkh
         assert_eq!(pkh_hex, expected_pkh_hex);
@@ -89,6 +89,6 @@ mod tests {
         let data = data_str.as_bytes();
         let mac = blake3_mac(&key, data);
         let expected_mac_hex = "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27";
-        assert_eq!(hex::encode(mac), expected_mac_hex);
+        assert_eq!(mac.to_strict_hex(), expected_mac_hex);
     }
 }
