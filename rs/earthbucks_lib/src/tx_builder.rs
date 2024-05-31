@@ -58,7 +58,7 @@ impl TxBuilder {
                 break;
             }
             let tx_out = &tx_out_bn.tx_out;
-            let tx_id = TxOutBnMap::name_to_tx_id(tx_out_id);
+            let tx_id: [u8; 32] = TxOutBnMap::name_to_tx_id(tx_out_id).try_into().unwrap();
             let tx_out_num = TxOutBnMap::name_to_tx_out_num(tx_out_id);
 
             let input_script: Script = if tx_out.script.is_pkh_output() {

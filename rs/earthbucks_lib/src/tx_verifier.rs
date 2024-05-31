@@ -22,7 +22,7 @@ impl<'a> TxVerifier<'a> {
 
     pub fn verify_input_script(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
-        let tx_out_hash: &[u8; 32] = &tx_input.input_tx_id.clone().try_into().unwrap();
+        let tx_out_hash: &[u8; 32] = &tx_input.input_tx_id.clone();
         let output_index = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_bn_map.get(tx_out_hash, output_index);
         match tx_out {
@@ -53,7 +53,7 @@ impl<'a> TxVerifier<'a> {
 
     pub fn verify_input_lock_rel(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
-        let tx_id: &[u8; 32] = &tx_input.input_tx_id.clone().try_into().unwrap();
+        let tx_id: &[u8; 32] = &tx_input.input_tx_id.clone();
         let tx_out_num = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_bn_map.get(tx_id, tx_out_num);
         match tx_out {
@@ -81,10 +81,9 @@ impl<'a> TxVerifier<'a> {
     pub fn verify_no_double_spend(&self) -> bool {
         let mut spent_outputs = Vec::new();
         for input in &self.tx.inputs {
-            let tx_out = self.tx_out_bn_map.get(
-                &input.input_tx_id.clone().try_into().unwrap(),
-                input.input_tx_out_num,
-            );
+            let tx_out = self
+                .tx_out_bn_map
+                .get(&input.input_tx_id.clone(), input.input_tx_out_num);
             match tx_out {
                 None => return false,
                 Some(tx_out) => {
@@ -105,10 +104,9 @@ impl<'a> TxVerifier<'a> {
         }
         let mut total_input_value = 0;
         for input in &self.tx.inputs {
-            let tx_out_bn = self.tx_out_bn_map.get(
-                &input.input_tx_id.clone().try_into().unwrap(),
-                input.input_tx_out_num,
-            );
+            let tx_out_bn = self
+                .tx_out_bn_map
+                .get(&input.input_tx_id.clone(), input.input_tx_out_num);
             match tx_out_bn {
                 None => return false,
                 Some(tx_out_bn) => total_input_value += tx_out_bn.tx_out.value,
@@ -387,12 +385,7 @@ mod tests {
         let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let expired_input_script = Script::from_expired_pkhx_input();
-        let tx_in = TxIn::new(
-            [0; 32].to_vec(),
-            0,
-            expired_input_script,
-            Script::PKHX_1H_LOCK_REL,
-        );
+        let tx_in = TxIn::new([0; 32], 0, expired_input_script, Script::PKHX_1H_LOCK_REL);
         tx_builder.add_input(tx_in, 100);
 
         let tx_out = TxOut::new(50, Script::from_empty());
@@ -502,12 +495,7 @@ mod tests {
         let mut tx_builder = TxBuilder::new(&tx_out_bn_map, change_script, 0);
 
         let expired_input_script = Script::from_expired_pkhx_input();
-        let tx_in = TxIn::new(
-            [0; 32].to_vec(),
-            0,
-            expired_input_script,
-            Script::PKHX_90D_LOCK_REL,
-        );
+        let tx_in = TxIn::new([0; 32], 0, expired_input_script, Script::PKHX_90D_LOCK_REL);
         tx_builder.add_input(tx_in, 100);
 
         let tx_out = TxOut::new(50, Script::from_empty());
@@ -618,7 +606,7 @@ mod tests {
 
         let recovery_input_script = Script::from_recovery_pkhxr_input_placeholder();
         let tx_in = TxIn::new(
-            [0; 32].to_vec(),
+            [0; 32],
             0,
             recovery_input_script,
             Script::PKHXR_1H_40M_R_LOCK_REL,
@@ -680,7 +668,7 @@ mod tests {
 
         let recovery_input_script = Script::from_expired_pkhxr_input();
         let tx_in = TxIn::new(
-            [0; 32].to_vec(),
+            [0; 32],
             0,
             recovery_input_script,
             Script::PKHXR_1H_40M_X_LOCK_REL,
@@ -793,7 +781,7 @@ mod tests {
 
         let recovery_input_script = Script::from_recovery_pkhxr_input_placeholder();
         let tx_in = TxIn::new(
-            [0; 32].to_vec(),
+            [0; 32],
             0,
             recovery_input_script,
             Script::PKHXR_90D_60D_R_LOCK_REL,
@@ -855,7 +843,7 @@ mod tests {
 
         let recovery_input_script = Script::from_expired_pkhxr_input();
         let tx_in = TxIn::new(
-            [0; 32].to_vec(),
+            [0; 32],
             0,
             recovery_input_script,
             Script::PKHXR_90D_60D_X_LOCK_REL,

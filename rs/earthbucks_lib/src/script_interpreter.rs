@@ -1195,13 +1195,13 @@ mod tests {
             let output_pkh = Pkh::from_pub_key_buffer(output_pub_key.to_vec());
             let output_script = Script::from_pkh_output(output_pkh.to_iso_buf());
             let output_amount = 100;
-            let output_tx_id = vec![0; 32];
+            let output_tx_id = [0; 32];
             let output_tx_index = 0;
 
             let mut tx = Tx::new(
                 1,
                 vec![TxIn::new(
-                    output_tx_id.clone(),
+                    output_tx_id,
                     output_tx_index,
                     Script::from_empty(),
                     0xffffffff,
@@ -1269,14 +1269,14 @@ mod tests {
 
             // Other tx parameters
             let output_amount = 100;
-            let output_tx_id = vec![0; 32];
+            let output_tx_id = [0; 32];
             let output_tx_index = 0;
 
             // Create a tx
             let mut tx = Tx::new(
                 1,
                 vec![TxIn::new(
-                    output_tx_id.clone(),
+                    output_tx_id,
                     output_tx_index,
                     Script::from_empty(),
                     0xffffffff,
@@ -1357,7 +1357,7 @@ mod tests {
                 let script = Script::from_iso_str(&test_script.script).unwrap();
                 let tx = Tx::new(
                     1,
-                    vec![TxIn::new(vec![], 0, Script::from_empty(), 0xffffffff)],
+                    vec![TxIn::new([0; 32], 0, Script::from_empty(), 0xffffffff)],
                     vec![TxOut::new(0, Script::from_empty())],
                     0,
                 );
