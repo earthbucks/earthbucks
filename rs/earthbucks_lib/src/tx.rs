@@ -15,9 +15,9 @@ use secp256k1::{Message, PublicKey, Secp256k1};
 
 #[derive(Debug, Default)]
 pub struct HashCache {
-    pub prevouts_hash: Option<Vec<u8>>,
-    pub lock_rel_hash: Option<Vec<u8>>,
-    pub outputs_hash: Option<Vec<u8>>,
+    pub prevouts_hash: Option<[u8; 32]>,
+    pub lock_rel_hash: Option<[u8; 32]>,
+    pub outputs_hash: Option<[u8; 32]>,
 }
 
 impl HashCache {
@@ -130,29 +130,29 @@ impl Tx {
         double_blake3_hash(&self.to_iso_buf())
     }
 
-    pub fn hash_prevouts(&self) -> Vec<u8> {
+    pub fn hash_prevouts(&self) -> [u8; 32] {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.input_tx_id);
             data.extend(&input.input_tx_out_num.to_be_bytes());
         }
-        double_blake3_hash(&data).to_vec()
+        double_blake3_hash(&data)
     }
 
-    pub fn hash_lock_rel(&self) -> Vec<u8> {
+    pub fn hash_lock_rel(&self) -> [u8; 32] {
         let mut data = Vec::new();
         for input in &self.inputs {
             data.extend(&input.lock_rel.to_be_bytes());
         }
-        double_blake3_hash(&data).to_vec()
+        double_blake3_hash(&data)
     }
 
-    pub fn hash_outputs(&self) -> Vec<u8> {
+    pub fn hash_outputs(&self) -> [u8; 32] {
         let mut data = Vec::new();
         for output in &self.outputs {
             data.extend(&output.to_iso_buf());
         }
-        double_blake3_hash(&data).to_vec()
+        double_blake3_hash(&data)
     }
 
     pub fn sighash_preimage(
@@ -167,9 +167,9 @@ impl Tx {
         const SIGHASH_SINGLE: u8 = 0x03;
         const SIGHASH_NONE: u8 = 0x02;
 
-        let mut prevouts_hash = vec![0; 32];
-        let mut lock_rel_hash = vec![0; 32];
-        let mut outputs_hash = vec![0; 32];
+        let mut prevouts_hash = [0; 32];
+        let mut lock_rel_hash = [0; 32];
+        let mut outputs_hash = [0; 32];
 
         if hash_type & SIGHASH_ANYONECANPAY == 0 {
             // prevouts_hash = self.hash_prevouts();
@@ -178,7 +178,7 @@ impl Tx {
                 hash_cache.prevouts_hash = Some(hash);
             }
 
-            prevouts_hash = hash_cache.prevouts_hash.as_ref().unwrap().clone();
+            prevouts_hash = hash_cache.prevouts_hash.unwrap();
         }
 
         if hash_type & SIGHASH_ANYONECANPAY == 0
@@ -191,7 +191,7 @@ impl Tx {
                 hash_cache.lock_rel_hash = Some(hash);
             }
 
-            lock_rel_hash = hash_cache.lock_rel_hash.as_ref().unwrap().clone();
+            lock_rel_hash = hash_cache.lock_rel_hash.unwrap();
         }
 
         if hash_type & 0x1f != SIGHASH_SINGLE && hash_type & 0x1f != SIGHASH_NONE {
@@ -201,22 +201,22 @@ impl Tx {
                 hash_cache.outputs_hash = Some(hash);
             }
 
-            outputs_hash = hash_cache.outputs_hash.as_ref().unwrap().clone();
+            outputs_hash = hash_cache.outputs_hash.unwrap();
         } else if hash_type & 0x1f == SIGHASH_SINGLE && input_index < self.outputs.len() {
-            outputs_hash = double_blake3_hash(&self.outputs[input_index].to_iso_buf()).to_vec();
+            outputs_hash = double_blake3_hash(&self.outputs[input_index].to_iso_buf());
         }
 
         let mut bw = IsoBufWriter::new();
         bw.write_u8(self.version);
-        bw.write_iso_buf(prevouts_hash);
-        bw.write_iso_buf(lock_rel_hash);
+        bw.write_iso_buf(prevouts_hash.to_vec());
+        bw.write_iso_buf(lock_rel_hash.to_vec());
         bw.write_iso_buf(self.inputs[input_index].input_tx_id.clone().to_vec());
         bw.write_u32_be(self.inputs[input_index].input_tx_out_num);
         bw.write_var_int(script_iso_buf.len() as u64);
         bw.write_iso_buf(script_iso_buf);
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].lock_rel);
-        bw.write_iso_buf(outputs_hash);
+        bw.write_iso_buf(outputs_hash.to_vec());
         bw.write_u64_be(self.lock_abs);
         bw.write_u8(hash_type);
         bw.to_iso_buf()
@@ -228,7 +228,7 @@ impl Tx {
         script_iso_buf: Vec<u8>,
         amount: u64,
         hash_type: u8,
-    ) -> Vec<u8> {
+    ) -> [u8; 32] {
         let mut hash_cache = HashCache {
             prevouts_hash: None,
             lock_rel_hash: None,
@@ -241,7 +241,7 @@ impl Tx {
             hash_type,
             &mut hash_cache,
         );
-        double_blake3_hash(&preimage).to_vec()
+        double_blake3_hash(&preimage)
     }
 
     pub fn sighash_with_cache(
@@ -251,10 +251,10 @@ impl Tx {
         amount: u64,
         hash_type: u8,
         hash_cache: &mut HashCache,
-    ) -> Vec<u8> {
+    ) -> [u8; 32] {
         let preimage =
             self.sighash_preimage(input_index, script_iso_buf, amount, hash_type, hash_cache);
-        double_blake3_hash(&preimage).to_vec()
+        double_blake3_hash(&preimage)
     }
 
     pub fn sign_no_cache(
@@ -530,7 +530,7 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected = Vec::<u8>::from_strict_hex(
+        let expected = <[u8; 32]>::from_strict_hex(
             "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
         )
         .unwrap();
@@ -549,7 +549,7 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected = Vec::<u8>::from_strict_hex(
+        let expected = <[u8; 32]>::from_strict_hex(
             "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
         )
         .unwrap();
@@ -568,7 +568,7 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected = Vec::<u8>::from_strict_hex(
+        let expected = <[u8; 32]>::from_strict_hex(
             "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
         )
         .unwrap();
@@ -586,13 +586,13 @@ mod tests {
         let script = Script::from_empty();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let preimage = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
+        let sighash = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
 
-        let expected = Vec::<u8>::from_strict_hex(
+        let expected = <[u8; 32]>::from_strict_hex(
             "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
         )
         .unwrap();
-        assert_eq!(preimage, expected);
+        assert_eq!(sighash, expected);
     }
 
     #[test]
@@ -607,13 +607,13 @@ mod tests {
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let hash_cache = &mut HashCache::new();
-        let preimage = tx.sighash_with_cache(0, script.to_iso_buf(), amount, hash_type, hash_cache);
+        let sighash = tx.sighash_with_cache(0, script.to_iso_buf(), amount, hash_type, hash_cache);
 
-        let expected = Vec::<u8>::from_strict_hex(
+        let expected = <[u8; 32]>::from_strict_hex(
             "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
         )
         .unwrap();
-        assert_eq!(preimage, expected);
+        assert_eq!(sighash, expected);
     }
 
     #[test]
