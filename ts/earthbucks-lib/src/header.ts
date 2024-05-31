@@ -13,7 +13,7 @@ export class Header {
   version: number;
   prevBlockId: IsoBuf;
   merkleRoot: IsoBuf;
-  timestamp: bigint;
+  timestamp: bigint; // seconds
   blockNum: bigint;
   target: IsoBuf;
   nonce: IsoBuf;

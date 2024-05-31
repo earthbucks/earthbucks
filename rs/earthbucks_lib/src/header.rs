@@ -10,7 +10,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 pub struct Header {
     pub version: u32,
     pub prev_block_id: [u8; 32],
-    pub timestamp: u64,
+    pub timestamp: u64, // seconds
     pub block_num: u64,
     pub merkle_root: [u8; 32],
     pub target: [u8; 32],
@@ -24,10 +24,10 @@ pub struct Header {
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
-    pub const BLOCK_HEADER_SIZE: usize = 220;
+    pub const SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
-    pub fn to_iso_buf(&self) -> [u8; Header::BLOCK_HEADER_SIZE] {
+    pub fn to_iso_buf(&self) -> [u8; Header::SIZE] {
         let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
         bw.write(self.prev_block_id.to_vec());
@@ -43,7 +43,7 @@ impl Header {
         bw.to_iso_buf().try_into().unwrap()
     }
 
-    pub fn from_iso_buf(buf: [u8; Header::BLOCK_HEADER_SIZE]) -> Result<Header, EbxError> {
+    pub fn from_iso_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
         let mut br = IsoBufReader::new(buf.to_vec());
         let version = br.read_u32_be()?;
         let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
@@ -72,7 +72,7 @@ impl Header {
     }
 
     pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Header, EbxError> {
-        if br.remainder_len() < Header::BLOCK_HEADER_SIZE {
+        if br.remainder_len() < Header::SIZE {
             panic!("Invalid block header size");
         }
         let version = br.read_u32_be()?;
@@ -122,7 +122,7 @@ impl Header {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Header, EbxError> {
-        let buf: [u8; Header::BLOCK_HEADER_SIZE] = Vec::<u8>::from_strict_hex(hex)
+        let buf: [u8; Header::SIZE] = Vec::<u8>::from_strict_hex(hex)
             .map_err(|_| EbxError::InvalidHexError { source: None })?
             .try_into()
             .map_err(|_| EbxError::InvalidHexError { source: None })?;
@@ -161,7 +161,7 @@ impl Header {
 
     pub fn is_valid_in_isolation(&self) -> bool {
         let len = self.to_iso_buf().len();
-        if len != Header::BLOCK_HEADER_SIZE {
+        if len != Header::SIZE {
             return false;
         }
         Header::is_valid_version(self.version)
