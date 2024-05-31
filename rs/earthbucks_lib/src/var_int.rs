@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 
@@ -27,14 +28,12 @@ impl VarInt {
         self.buf.clone()
     }
 
-    pub fn to_u64(&self) -> Result<u64, String> {
-        IsoBufReader::new(self.buf.clone())
-            .read_var_int()
-            .map_err(|e| e.to_string())
+    pub fn to_u64(&self) -> Result<u64, EbxError> {
+        IsoBufReader::new(self.buf.clone()).read_var_int()
     }
 
-    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, String> {
-        let buf = br.read_var_int_buf().map_err(|e| e.to_string())?;
+    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, EbxError> {
+        let buf = br.read_var_int_buf()?;
         Ok(VarInt { buf })
     }
 

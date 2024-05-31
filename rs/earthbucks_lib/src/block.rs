@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::header::Header;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
@@ -14,16 +15,16 @@ impl Block {
         Self { header, txs }
     }
 
-    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, String> {
+    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, EbxError> {
         let header = Header::from_iso_buf_reader(br)?;
         let tx_count_varint = VarInt::from_iso_buf_reader(br)?;
         if !tx_count_varint.is_minimal() {
-            return Err("non-minimally encoded varint".into());
+            return Err(EbxError::NonMinimalEncodingError { source: None });
         }
         let tx_count = tx_count_varint.to_u64()? as usize;
         let mut txs = vec![];
         for _ in 0..tx_count {
-            let tx = Tx::from_iso_buf_reader(br).map_err(|_| "unable to parse transactions")?;
+            let tx = Tx::from_iso_buf_reader(br)?;
             txs.push(tx);
         }
         Ok(Self { header, txs })
@@ -31,7 +32,7 @@ impl Block {
 
     pub fn to_buffer_writer(&self) -> IsoBufWriter {
         let mut bw = IsoBufWriter::new();
-        bw.write(self.header.to_iso_buf());
+        bw.write(self.header.to_iso_buf().to_vec());
         bw.write(VarInt::from_u64(self.txs.len() as u64).to_iso_buf());
         for tx in &self.txs {
             bw.write(tx.to_buffer_writer().to_iso_buf());
@@ -43,7 +44,7 @@ impl Block {
         self.to_buffer_writer().to_iso_buf()
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, String> {
+    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut br = IsoBufReader::new(buf);
         Self::from_iso_buf_reader(&mut br)
     }
