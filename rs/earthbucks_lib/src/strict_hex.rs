@@ -27,6 +27,37 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, EbxError> {
     Ok(res.unwrap())
 }
 
+pub trait StrictHex {
+    fn to_hex(&self) -> String;
+    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError>
+    where
+        Self: Sized;
+}
+
+impl StrictHex for Vec<u8> {
+    fn to_hex(&self) -> String {
+        hex::encode(self)
+    }
+
+    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError> {
+        hex::decode(hex)
+    }
+}
+
+impl<const N: usize> StrictHex for [u8; N] {
+    fn to_hex(&self) -> String {
+        hex::encode(self)
+    }
+
+    fn from_hex(hex: &str) -> Result<Self, hex::FromHexError> {
+        let vec = hex::decode(hex)?;
+        let array: [u8; N] = vec[..]
+            .try_into()
+            .map_err(|_| hex::FromHexError::InvalidStringLength)?;
+        Ok(array)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

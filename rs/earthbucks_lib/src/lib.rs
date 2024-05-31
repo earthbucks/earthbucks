@@ -1,7 +1,6 @@
 pub mod block;
 pub mod block_builder;
 pub mod block_verifier;
-pub mod buffer;
 pub mod domain;
 pub mod ebx_error;
 pub mod hash;

@@ -1,7 +1,7 @@
-use crate::buffer::Buffer;
 use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
+use crate::strict_hex::StrictHex;
 use num_bigint::BigUint;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -120,11 +120,11 @@ impl Header {
     }
 
     pub fn to_iso_hex(&self) -> String {
-        Buffer::from(self.to_iso_buf()).to_iso_hex()
+        self.to_iso_buf().to_hex()
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Header, String> {
-        let buf = Buffer::from_iso_hex(hex).data;
+        let buf: Vec<u8> = Vec::<u8>::from_hex(hex).map_err(|e| e.to_string())?;
         Header::from_iso_buf(buf)
     }
 
