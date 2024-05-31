@@ -116,11 +116,11 @@ impl IsoBufReader {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-
     use super::*;
+    use crate::strict_hex::StrictHex;
     use byteorder::{BigEndian, WriteBytesExt};
     use serde::Deserialize;
+    use std::fs;
 
     #[test]
     fn test_read() {
@@ -251,7 +251,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read(test_vector.len);
             match result {
@@ -268,7 +268,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u8.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_u8();
             match result {
@@ -285,7 +285,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u16_be.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_u16_be();
             match result {
@@ -302,7 +302,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u32_be.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_u32_be();
             match result {
@@ -319,7 +319,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u64_be.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_u64_be();
             match result {
@@ -336,7 +336,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int_buf.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_var_int_buf();
             match result {
@@ -353,7 +353,7 @@ mod tests {
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int.errors {
-            let buf = hex::decode(&test_vector.hex).expect("Failed to decode hex");
+            let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
             let mut reader = IsoBufReader::new(buf);
             let result = reader.read_var_int();
             match result {

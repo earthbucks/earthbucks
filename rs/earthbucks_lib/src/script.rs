@@ -533,10 +533,10 @@ impl Script {
 
 #[cfg(test)]
 mod tests {
-    use serde::Deserialize;
-
     use super::*;
     use crate::script_chunk::ScriptChunk;
+    use crate::strict_hex::StrictHex;
+    use serde::Deserialize;
 
     #[test]
     fn test_new() {
@@ -669,7 +669,7 @@ mod tests {
         let test_vectors: TestVectorScript = serde_json::from_reader(file).unwrap();
 
         for test_vector in test_vectors.from_iso_buf.errors {
-            let arr = hex::decode(test_vector.hex).unwrap();
+            let arr = Vec::<u8>::from_strict_hex(&test_vector.hex).unwrap();
             let result = Script::from_iso_buf(&arr);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),

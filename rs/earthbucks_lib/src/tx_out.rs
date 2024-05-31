@@ -52,6 +52,7 @@ impl TxOut {
 mod tests {
     use super::*;
     use crate::script::Script;
+    use crate::strict_hex::StrictHex;
 
     #[test]
     fn test_tx_output_from_iso_buf_and_to_iso_buf() {
@@ -74,7 +75,7 @@ mod tests {
         let data = vec![0u8; 0xffff];
         let value = 100;
         let script =
-            Script::from_iso_str(&format!("0x{} DOUBLEBLAKE3", hex::encode(data))).unwrap();
+            Script::from_iso_str(&format!("0x{} DOUBLEBLAKE3", data.to_strict_hex())).unwrap();
         let tx_output = TxOut::new(value, script);
         let result = TxOut::from_iso_buf(tx_output.to_iso_buf()).unwrap();
         assert_eq!(

@@ -453,7 +453,7 @@ mod tests {
             work_par_hash: [0; 32],
         };
         let hash = bh1.hash();
-        let hex = hex::encode(hash);
+        let hex = hash.to_strict_hex();
         assert_eq!(
             hex,
             "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00"
@@ -476,7 +476,7 @@ mod tests {
             work_par_hash: [0; 32],
         };
         let id = bh1.id();
-        let hex = hex::encode(id);
+        let hex = id.to_strict_hex();
         assert_eq!(
             hex,
             "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e"
@@ -503,7 +503,8 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_1() {
         let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
         let real_time_diff: u64 = 600;
@@ -518,7 +519,8 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_1_2() {
         let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
         let real_time_diff: u64 = 300;
@@ -533,7 +535,8 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_1_3() {
         let target_1_hex = "8000000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
         let real_time_diff: u64 = 600;
@@ -548,7 +551,8 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_1_4() {
         let target_1_hex = "8000000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
         let real_time_diff: u64 = 300;
@@ -563,7 +567,8 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_1_5() {
         let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
         let real_time_diff: u64 = 1200;
@@ -578,9 +583,11 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_2() {
         let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 600;
         let len: usize = 2;
@@ -594,9 +601,11 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_2_2() {
         let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 300;
         let len: usize = 2;
@@ -610,9 +619,11 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_2_3() {
         let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 1200;
         let len: usize = 2;
@@ -626,11 +637,14 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_3() {
         let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_3_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_3: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 600;
         let len: usize = 3;
@@ -644,11 +658,14 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_3_2() {
         let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_3_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_3: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 601;
         let len: usize = 3;
@@ -662,11 +679,14 @@ mod tests {
     #[test]
     fn test_new_target_from_old_targets_3_3() {
         let target_1_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_1: BigUint = BigUint::from_bytes_be(&hex::decode(target_1_hex).unwrap());
+        let target_1: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
         let target_2_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_2: BigUint = BigUint::from_bytes_be(&hex::decode(target_2_hex).unwrap());
+        let target_2: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_3_hex = "0080000000000000000000000000000000000000000000000000000000000000";
-        let target_3: BigUint = BigUint::from_bytes_be(&hex::decode(target_3_hex).unwrap());
+        let target_3: BigUint =
+            BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 599;
         let len: usize = 3;

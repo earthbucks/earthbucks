@@ -31,7 +31,7 @@ impl TxSigner {
         let mut tx_clone = self.tx.clone();
 
         let tx_input = &mut self.tx.inputs[n_in];
-        let tx_out_hash = &tx_input.input_tx_id;
+        let tx_out_hash: &[u8; 32] = &tx_input.input_tx_id.clone().try_into().unwrap();
         let output_index = tx_input.input_tx_out_num;
         let tx_out_bn = match self.tx_out_bn_map.get(tx_out_hash, output_index) {
             Some(tx_out_bn) => tx_out_bn.clone(),
@@ -46,10 +46,12 @@ impl TxSigner {
         let prev_block_num = tx_out_bn.block_num;
 
         if tx_out.script.is_pkh_output() {
-            let pkh_buf = tx_out.script.chunks[2]
+            let pkh_buf: [u8; 32] = tx_out.script.chunks[2]
                 .buffer
                 .clone()
-                .expect("pkh not found");
+                .expect("pkh not found")
+                .try_into()
+                .unwrap();
             let input_script = &mut tx_input.script;
             if !input_script.is_pkh_input() {
                 return Err(EbxError::GenericError {
@@ -82,10 +84,12 @@ impl TxSigner {
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
             input_script.chunks[1].buffer = Some(pub_key_buf.clone());
         } else if tx_out.script.is_pkhx_1h_output() {
-            let pkh_buf = tx_out.script.chunks[3]
+            let pkh_buf: [u8; 32] = tx_out.script.chunks[3]
                 .buffer
                 .clone()
-                .expect("pkh not found");
+                .expect("pkh not found")
+                .try_into()
+                .unwrap();
             let expired = Script::is_pkhx_1h_expired(self.working_block_num, prev_block_num);
             let input_script = &mut tx_input.script;
             if expired {
@@ -130,10 +134,12 @@ impl TxSigner {
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
             input_script.chunks[1].buffer = Some(pub_key_buf.clone());
         } else if tx_out.script.is_pkhx_90d_output() {
-            let pkh_buf = tx_out.script.chunks[3]
+            let pkh_buf: [u8; 32] = tx_out.script.chunks[3]
                 .buffer
                 .clone()
-                .expect("pkh not found");
+                .expect("pkh not found")
+                .try_into()
+                .unwrap();
             let expired = Script::is_pkhx_90d_expired(self.working_block_num, prev_block_num);
             let input_script = &mut tx_input.script;
             if expired {
@@ -178,14 +184,18 @@ impl TxSigner {
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
             input_script.chunks[1].buffer = Some(pub_key_buf.clone());
         } else if tx_out.script.is_pkhxr_1h_40m_output() {
-            let pkh_buf = tx_out.script.chunks[3]
+            let pkh_buf: [u8; 32] = tx_out.script.chunks[3]
                 .buffer
                 .clone()
-                .expect("pkh not found");
-            let rpkh_buf = tx_out.script.chunks[13]
+                .expect("pkh not found")
+                .try_into()
+                .unwrap();
+            let rpkh_buf: [u8; 32] = tx_out.script.chunks[13]
                 .buffer
                 .clone()
-                .expect("rpkh not found");
+                .expect("rpkh not found")
+                .try_into()
+                .unwrap();
             let expired = Script::is_pkhxr_1h_40m_expired(self.working_block_num, prev_block_num);
             let input_script = &mut tx_input.script;
             if expired {
@@ -251,14 +261,18 @@ impl TxSigner {
             input_script.chunks[0].buffer = Some(sig_buf.to_vec());
             input_script.chunks[1].buffer = Some(pub_key_buf.clone());
         } else if tx_out.script.is_pkhxr_90d_60d_output() {
-            let pkh_buf = tx_out.script.chunks[3]
+            let pkh_buf: [u8; 32] = tx_out.script.chunks[3]
                 .buffer
                 .clone()
-                .expect("pkh not found");
-            let rpkh_buf = tx_out.script.chunks[13]
+                .expect("pkh not found")
+                .try_into()
+                .unwrap();
+            let rpkh_buf: [u8; 32] = tx_out.script.chunks[13]
                 .buffer
                 .clone()
-                .expect("rpkh not found");
+                .expect("rpkh not found")
+                .try_into()
+                .unwrap();
             let expired = Script::is_pkhxr_90d_60d_expired(self.working_block_num, prev_block_num);
             let input_script = &mut tx_input.script;
             if expired {
@@ -368,7 +382,7 @@ mod tests {
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
             let block_num = 0;
-            tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
+            tx_out_bn_map.add(&[0; 32], i, output, block_num);
         }
 
         let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
@@ -388,7 +402,10 @@ mod tests {
 
         let tx_input = &signed_tx.inputs[0];
         let tx_out_bn = tx_out_bn_map
-            .get(&tx_input.input_tx_id.clone(), tx_input.input_tx_out_num)
+            .get(
+                &tx_input.input_tx_id.clone().try_into().unwrap(),
+                tx_input.input_tx_out_num,
+            )
             .unwrap();
         let exec_script = tx_out_bn.tx_out.script.clone();
         let sig_buf = tx_input.script.chunks[0].buffer.clone().unwrap();
@@ -425,7 +442,7 @@ mod tests {
             let script = Script::from_pkh_output(&pkh.buf.clone());
             let output = TxOut::new(100, script);
             let block_num = 0;
-            tx_out_bn_map.add(vec![0; 32].as_slice(), i, output, block_num);
+            tx_out_bn_map.add(&[0; 32], i, output, block_num);
         }
 
         let mut tx_builder = TxBuilder::new(&tx_out_bn_map, Script::from_empty(), 0);
@@ -449,7 +466,10 @@ mod tests {
 
         let tx_input_1 = &signed_tx.inputs[0];
         let tx_out_bn_1 = tx_out_bn_map
-            .get(&tx_input_1.input_tx_id.clone(), tx_input_1.input_tx_out_num)
+            .get(
+                &tx_input_1.input_tx_id.clone().try_into().unwrap(),
+                tx_input_1.input_tx_out_num,
+            )
             .unwrap();
         let tx_out_1 = tx_out_bn_1.tx_out.clone();
         let exec_script_1 = tx_out_1.script.clone();
@@ -475,7 +495,10 @@ mod tests {
 
         let tx_input_2 = &signed_tx.inputs[1];
         let tx_out_bn_2 = tx_out_bn_map
-            .get(&tx_input_2.input_tx_id.clone(), tx_input_2.input_tx_out_num)
+            .get(
+                &tx_input_2.input_tx_id.clone().try_into().unwrap(),
+                tx_input_2.input_tx_out_num,
+            )
             .unwrap();
         let tx_out_2 = tx_out_bn_2.tx_out.clone();
         let exec_script_2 = tx_out_2.script.clone();

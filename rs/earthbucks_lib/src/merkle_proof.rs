@@ -1,6 +1,7 @@
 use crate::hash::double_blake3_hash;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
+use crate::strict_hex::StrictHex;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
@@ -135,13 +136,14 @@ impl MerkleProof {
     }
 
     pub fn from_iso_str(hex: &str) -> Result<MerkleProof, String> {
-        MerkleProof::from_iso_buf(&hex::decode(hex).unwrap())
+        MerkleProof::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::strict_hex::StrictHex;
 
     #[test]
     fn generate_proofs_and_root_with_1_data() {
@@ -149,7 +151,7 @@ mod tests {
 
         let data = vec![data1];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244"
@@ -167,7 +169,7 @@ mod tests {
 
         let data = vec![data1, data2];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde"
@@ -190,7 +192,7 @@ mod tests {
 
         let data = vec![data1, data2, data3];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf"
@@ -217,7 +219,7 @@ mod tests {
 
         let data = vec![data1, data2, data3];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf"
@@ -251,7 +253,7 @@ mod tests {
 
         let data = vec![data1, data2, data3, data4];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187"
@@ -283,7 +285,7 @@ mod tests {
 
         let data = vec![data1, data2, data3, data4];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187"
@@ -327,7 +329,7 @@ mod tests {
 
         let data = vec![data1, data2, data3, data4, data5, data6, data7, data8];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "fc4b21e6bdd266c1808fe1f511d0da1eaf7a589ba581b580bb8cb6bb1d8663d6"
@@ -398,7 +400,7 @@ mod tests {
             data1, data2, data3, data4, data5, data6, data7, data8, data9,
         ];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "11be5d17fee5f6858e594524337f5e39511c78f668f2a8bdf1efbb33921aaaa0"
@@ -464,7 +466,7 @@ mod tests {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data = vec![data1, data1];
         let (root, proofs) = MerkleProof::generate_proofs_and_root(data);
-        let hex = hex::encode(root);
+        let hex = root.to_strict_hex();
         assert_eq!(
             hex,
             "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3"

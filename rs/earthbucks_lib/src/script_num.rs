@@ -2,6 +2,7 @@
 
 extern crate num_bigint;
 extern crate num_traits;
+use crate::strict_hex::StrictHex;
 use num_bigint::BigInt;
 use num_traits::ToPrimitive;
 use num_traits::Zero;
@@ -71,7 +72,7 @@ impl ScriptNum {
     }
 
     pub fn from_iso_hex(hex: &str) -> Self {
-        ScriptNum::from_iso_buf(&hex::decode(hex).unwrap())
+        ScriptNum::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 
     pub fn to_iso_hex(&self) -> String {
@@ -132,7 +133,8 @@ mod tests {
         ];
 
         for (hex, dec) in test_cases {
-            let num_from_iso_hex = ScriptNum::from_iso_buf(&hex::decode(hex).unwrap());
+            let num_from_iso_hex =
+                ScriptNum::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
             let num_from_dec = ScriptNum::from_iso_str(dec);
             assert_eq!(num_from_iso_hex.num, num_from_dec.num);
 

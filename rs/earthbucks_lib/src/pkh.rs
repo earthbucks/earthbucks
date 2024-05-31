@@ -1,7 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::pub_key;
-use crate::strict_hex;
+use crate::strict_hex::StrictHex;
 use bs58;
 
 #[derive(Debug, Clone)]
@@ -20,7 +20,7 @@ impl Pkh {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
-        let pkh_buf = strict_hex::decode(hex)?.to_vec();
+        let pkh_buf = <[u8; 32]>::from_strict_hex(hex)?.to_vec();
         if pkh_buf.len() != 32 {
             return Err(EbxError::InvalidKeyError { source: None });
         }
@@ -39,8 +39,8 @@ impl Pkh {
 
     pub fn to_iso_str(&self) -> String {
         let check_buf = blake3_hash(&self.buf);
-        let check_sum = &check_buf[0..4];
-        let check_hex = strict_hex::encode(check_sum);
+        let check_sum: [u8; 4] = check_buf[0..4].try_into().unwrap();
+        let check_hex = check_sum.to_strict_hex();
         "ebxpkh".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
     }
 
@@ -48,7 +48,8 @@ impl Pkh {
         if !s.starts_with("ebxpkh") {
             return Err("Invalid pkh prefix".to_string());
         }
-        let check_sum = strict_hex::decode(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
+        let check_sum =
+            <[u8; 4]>::from_strict_hex(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
 
         let buf = bs58::decode(&s[14..])
             .into_vec()
@@ -76,7 +77,6 @@ mod tests {
     use crate::pub_key::PubKey;
 
     use super::*;
-    use hex;
     use serde::Deserialize;
     use std::fs;
 
@@ -86,8 +86,9 @@ mod tests {
         let expected_pkh_hex = "601c2893ab7febcf1b3b43e91d98360966f52c98d8f98f29be52ece37b1cff84";
 
         // Convert hex to bytes
-        let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_pkh_vec = hex::decode(expected_pkh_hex).expect("Decoding failed");
+        let pub_key = Vec::<u8>::from_strict_hex(pub_key_hex).expect("Decoding failed");
+        let expected_pkh_vec =
+            Vec::<u8>::from_strict_hex(expected_pkh_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_pkh = [0; 32];

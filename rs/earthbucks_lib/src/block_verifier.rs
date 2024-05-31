@@ -112,8 +112,10 @@ impl<'a> BlockVerifier<'a> {
             self.tx_out_bn_map.add_tx_outputs(tx, block_num);
             // remove used outputs to prevent double spending
             for tx_input in &tx.inputs {
-                self.tx_out_bn_map
-                    .remove(&tx_input.input_tx_id, tx_input.input_tx_out_num);
+                self.tx_out_bn_map.remove(
+                    &tx_input.input_tx_id.clone().try_into().unwrap(),
+                    tx_input.input_tx_out_num,
+                );
             }
         }
         true

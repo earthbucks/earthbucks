@@ -1,4 +1,5 @@
 use crate::key_pair::KeyPair;
+use crate::strict_hex::StrictHex;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Default)]
@@ -13,18 +14,18 @@ impl PkhKeyMap {
         }
     }
 
-    pub fn add(&mut self, key: KeyPair, pkh_iso_buf: &[u8]) {
-        let pkh_hex = hex::encode(pkh_iso_buf);
+    pub fn add(&mut self, key: KeyPair, pkh_iso_buf: &[u8; 32]) {
+        let pkh_hex = pkh_iso_buf.to_strict_hex();
         self.map.insert(pkh_hex, key);
     }
 
-    pub fn remove(&mut self, pkh_iso_buf: &[u8]) {
-        let pkh_hex = hex::encode(pkh_iso_buf);
+    pub fn remove(&mut self, pkh_iso_buf: &[u8; 32]) {
+        let pkh_hex = pkh_iso_buf.to_strict_hex();
         self.map.remove(&pkh_hex);
     }
 
-    pub fn get(&self, pkh_iso_buf: &[u8]) -> Option<&KeyPair> {
-        let pkh_hex = hex::encode(pkh_iso_buf);
+    pub fn get(&self, pkh_iso_buf: &[u8; 32]) -> Option<&KeyPair> {
+        let pkh_hex = pkh_iso_buf.to_strict_hex();
         self.map.get(&pkh_hex)
     }
 

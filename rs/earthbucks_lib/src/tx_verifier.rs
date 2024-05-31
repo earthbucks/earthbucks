@@ -22,7 +22,7 @@ impl<'a> TxVerifier<'a> {
 
     pub fn verify_input_script(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
-        let tx_out_hash = &tx_input.input_tx_id;
+        let tx_out_hash: &[u8; 32] = &tx_input.input_tx_id.clone().try_into().unwrap();
         let output_index = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_bn_map.get(tx_out_hash, output_index);
         match tx_out {
@@ -53,7 +53,7 @@ impl<'a> TxVerifier<'a> {
 
     pub fn verify_input_lock_rel(&mut self, n_in: usize) -> bool {
         let tx_input = &self.tx.inputs[n_in];
-        let tx_id = &tx_input.input_tx_id;
+        let tx_id: &[u8; 32] = &tx_input.input_tx_id.clone().try_into().unwrap();
         let tx_out_num = tx_input.input_tx_out_num;
         let tx_out = self.tx_out_bn_map.get(tx_id, tx_out_num);
         match tx_out {
@@ -81,9 +81,10 @@ impl<'a> TxVerifier<'a> {
     pub fn verify_no_double_spend(&self) -> bool {
         let mut spent_outputs = Vec::new();
         for input in &self.tx.inputs {
-            let tx_out = self
-                .tx_out_bn_map
-                .get(&input.input_tx_id, input.input_tx_out_num);
+            let tx_out = self.tx_out_bn_map.get(
+                &input.input_tx_id.clone().try_into().unwrap(),
+                input.input_tx_out_num,
+            );
             match tx_out {
                 None => return false,
                 Some(tx_out) => {
@@ -104,9 +105,10 @@ impl<'a> TxVerifier<'a> {
         }
         let mut total_input_value = 0;
         for input in &self.tx.inputs {
-            let tx_out_bn = self
-                .tx_out_bn_map
-                .get(&input.input_tx_id, input.input_tx_out_num);
+            let tx_out_bn = self.tx_out_bn_map.get(
+                &input.input_tx_id.clone().try_into().unwrap(),
+                input.input_tx_out_num,
+            );
             match tx_out_bn {
                 None => return false,
                 Some(tx_out_bn) => total_input_value += tx_out_bn.tx_out.value,

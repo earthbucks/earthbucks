@@ -1098,9 +1098,9 @@ impl<'a> ScriptInterpreter<'a> {
 mod tests {
     use super::*;
     use crate::pkh::Pkh;
+    use crate::strict_hex::StrictHex;
     use crate::tx_in::TxIn;
     use crate::tx_out::TxOut;
-    use hex;
 
     mod sanity_tests {
         use crate::{priv_key::PrivKey, pub_key::PubKey};
@@ -1189,7 +1189,7 @@ mod tests {
                     .unwrap()
                     .buf;
             assert_eq!(
-                hex::encode(output_pub_key),
+                output_pub_key.to_strict_hex(),
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
             let output_pkh = Pkh::from_pub_key_buffer(output_pub_key.to_vec());
@@ -1248,7 +1248,7 @@ mod tests {
             // Convert private keys to Vec<u8> format
             let priv_keys_iso_buf: Vec<Vec<u8>> = priv_keys_hex
                 .iter()
-                .map(|hex| hex::decode(hex).unwrap())
+                .map(|hex| Vec::<u8>::from_strict_hex(hex).unwrap())
                 .collect();
 
             // Generate public keys

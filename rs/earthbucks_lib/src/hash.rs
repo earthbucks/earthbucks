@@ -27,8 +27,9 @@ mod tests {
         let expected_pkh_hex = "38a12c6cf034632042b3b9deb2aabfdc798fac879d2f833638d59cf58549bc2d";
 
         // Convert hex to bytes
-        let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_pkh_vec = hex::decode(expected_pkh_hex).expect("Decoding failed");
+        let pub_key = Vec::<u8>::from_strict_hex(pub_key_hex).expect("Decoding failed");
+        let expected_pkh_vec =
+            Vec::<u8>::from_strict_hex(expected_pkh_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_pkh = [0; 32];
@@ -53,8 +54,9 @@ mod tests {
         let expected_pkh_hex = "51544e51d07a92f41854bd2a14d0f33dcbc936b8910eb9c699b656cd89308132";
 
         // Convert hex to bytes
-        let pub_key = hex::decode(pub_key_hex).expect("Decoding failed");
-        let expected_pkh_vec = hex::decode(expected_pkh_hex).expect("Decoding failed");
+        let pub_key = Vec::<u8>::from_strict_hex(pub_key_hex).expect("Decoding failed");
+        let expected_pkh_vec =
+            Vec::<u8>::from_strict_hex(expected_pkh_hex).expect("Decoding failed");
 
         // Convert Vec<u8> to [u8; 32]
         let mut expected_pkh = [0; 32];

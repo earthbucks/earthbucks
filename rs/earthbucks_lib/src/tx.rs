@@ -5,7 +5,7 @@ use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::pub_key::PubKey;
 use crate::script::Script;
-use crate::strict_hex;
+use crate::strict_hex::StrictHex;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
 use crate::tx_signature::TxSignature;
@@ -94,7 +94,7 @@ impl Tx {
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
-        Self::from_iso_buf(strict_hex::decode(hex)?)
+        Self::from_iso_buf(Vec::<u8>::from_strict_hex(hex)?)
     }
 
     pub fn to_iso_str(&self) -> String {
@@ -530,9 +530,10 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected =
-            hex::decode("2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba")
-                .unwrap();
+        let expected = Vec::<u8>::from_strict_hex(
+            "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
+        )
+        .unwrap();
         assert_eq!(result, expected);
     }
 
@@ -548,9 +549,10 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected =
-            hex::decode("406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931")
-                .unwrap();
+        let expected = Vec::<u8>::from_strict_hex(
+            "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
+        )
+        .unwrap();
         assert_eq!(result, expected);
     }
 
@@ -566,9 +568,10 @@ mod tests {
 
         assert_eq!(result.len(), 32);
 
-        let expected =
-            hex::decode("8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5")
-                .unwrap();
+        let expected = Vec::<u8>::from_strict_hex(
+            "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
+        )
+        .unwrap();
         assert_eq!(result, expected);
     }
 
@@ -585,9 +588,10 @@ mod tests {
         let hash_type = TxSignature::SIGHASH_ALL;
         let preimage = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
 
-        let expected =
-            hex::decode("a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51")
-                .unwrap();
+        let expected = Vec::<u8>::from_strict_hex(
+            "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
+        )
+        .unwrap();
         assert_eq!(preimage, expected);
     }
 
@@ -605,9 +609,10 @@ mod tests {
         let hash_cache = &mut HashCache::new();
         let preimage = tx.sighash_with_cache(0, script.to_iso_buf(), amount, hash_type, hash_cache);
 
-        let expected =
-            hex::decode("a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51")
-                .unwrap();
+        let expected = Vec::<u8>::from_strict_hex(
+            "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
+        )
+        .unwrap();
         assert_eq!(preimage, expected);
     }
 
@@ -615,9 +620,10 @@ mod tests {
     fn sign_and_verify() {
         // Arrange
         let input_index = 0;
-        let private_key =
-            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
-                .unwrap();
+        let private_key = Vec::<u8>::from_strict_hex(
+            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+        )
+        .unwrap();
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;
@@ -663,9 +669,10 @@ mod tests {
     fn sign_and_verify_with_cache() {
         // Arrange
         let input_index = 0;
-        let private_key =
-            hex::decode("7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad")
-                .unwrap();
+        let private_key = Vec::<u8>::from_strict_hex(
+            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+        )
+        .unwrap();
         let script = vec![];
         let amount = 100;
         let hash_type = TxSignature::SIGHASH_ALL;

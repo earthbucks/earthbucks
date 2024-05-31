@@ -1,3 +1,4 @@
+use crate::strict_hex::StrictHex;
 use crate::tx::Tx;
 use crate::tx_out::TxOut;
 use crate::tx_out_bn::TxOutBn;
@@ -15,19 +16,19 @@ impl TxOutBnMap {
         }
     }
 
-    pub fn name_from_output(tx_id: &[u8], tx_out_num: u32) -> String {
-        format!("{}:{}", hex::encode(tx_id), tx_out_num)
+    pub fn name_from_output(tx_id: &[u8; 32], tx_out_num: u32) -> String {
+        format!("{}:{}", tx_id.to_strict_hex(), tx_out_num)
     }
 
     pub fn name_to_tx_id(name: &str) -> Vec<u8> {
-        hex::decode(name.split(':').next().unwrap()).unwrap()
+        Vec::<u8>::from_strict_hex(name.split(':').next().unwrap()).unwrap()
     }
 
     pub fn name_to_tx_out_num(name: &str) -> u32 {
         name.split(':').nth(1).unwrap().parse().unwrap()
     }
 
-    pub fn add(&mut self, tx_id: &[u8], tx_out_num: u32, tx_out: TxOut, block_num: u64) {
+    pub fn add(&mut self, tx_id: &[u8; 32], tx_out_num: u32, tx_out: TxOut, block_num: u64) {
         let name = Self::name_from_output(tx_id, tx_out_num);
         let tx_out_bn = TxOutBn {
             tx_out: tx_out.clone(),
@@ -36,12 +37,12 @@ impl TxOutBnMap {
         self.map.insert(name, tx_out_bn);
     }
 
-    pub fn remove(&mut self, tx_id: &[u8], tx_out_num: u32) {
+    pub fn remove(&mut self, tx_id: &[u8; 32], tx_out_num: u32) {
         let name = Self::name_from_output(tx_id, tx_out_num);
         self.map.remove(&name);
     }
 
-    pub fn get(&self, tx_id: &[u8], tx_out_num: u32) -> Option<&TxOutBn> {
+    pub fn get(&self, tx_id: &[u8; 32], tx_out_num: u32) -> Option<&TxOutBn> {
         let name = Self::name_from_output(tx_id, tx_out_num);
         self.map.get(&name)
     }
@@ -64,17 +65,26 @@ mod tests {
 
     #[test]
     fn name_from_output() {
-        let tx_id_hash = [1, 2, 3, 4];
+        let tx_id_hash = [
+            1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
         let output_index = 0;
         let name = TxOutBnMap::name_from_output(&tx_id_hash, output_index);
-        assert_eq!(name, "01020304:0");
+        assert_eq!(
+            name,
+            "0102030400000000000000000000000000000000000000000000000000000000:0"
+        );
     }
 
     #[test]
     fn add() {
         let mut tx_out_map = TxOutBnMap::new();
         let tx_output = TxOut::new(100, Script::from_empty());
-        let tx_id_hash = [1, 2, 3, 4];
+        let tx_id_hash = [
+            1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
         let output_index = 0;
         let block_num: u64 = 0;
         let tx_out_bn = TxOutBn {
@@ -92,7 +102,10 @@ mod tests {
     fn remove() {
         let mut tx_out_map = TxOutBnMap::new();
         let tx_output = TxOut::new(100, Script::from_empty());
-        let tx_id_hash = [1, 2, 3, 4];
+        let tx_id_hash = [
+            1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
         let output_index = 0;
         let block_num = 0;
         tx_out_map.add(&tx_id_hash, output_index, tx_output, block_num);
@@ -104,7 +117,10 @@ mod tests {
     fn get() {
         let mut tx_out_map = TxOutBnMap::new();
         let tx_output = TxOut::new(100, Script::from_empty());
-        let tx_id_hash = [1, 2, 3, 4];
+        let tx_id_hash = [
+            1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
         let output_index = 0;
         let block_num = 0;
         let tx_out_bn = TxOutBn {
@@ -121,8 +137,14 @@ mod tests {
         let mut tx_out_map = TxOutBnMap::new();
         let tx_out1 = TxOut::new(100, Script::from_empty());
         let tx_out2 = TxOut::new(200, Script::from_empty());
-        let tx_id_hash1 = [1, 2, 3, 4];
-        let tx_id_hash2 = [5, 6, 7, 8];
+        let tx_id_hash1 = [
+            1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
+        let tx_id_hash2 = [
+            5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
         let output_index = 0;
         let block_num = 0;
         let tx_out_bn1 = TxOutBn {
