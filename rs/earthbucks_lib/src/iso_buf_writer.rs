@@ -27,7 +27,7 @@ impl IsoBufWriter {
         result
     }
 
-    pub fn write_iso_buf(&mut self, buf: Vec<u8>) {
+    pub fn write(&mut self, buf: Vec<u8>) {
         self.bufs.push(buf);
     }
 
@@ -80,7 +80,7 @@ impl IsoBufWriter {
 
     pub fn write_var_int(&mut self, n: u64) -> &mut Self {
         let buf = IsoBufWriter::var_int_buf(n);
-        self.write_iso_buf(buf);
+        self.write(buf);
         self
     }
 }
@@ -97,15 +97,15 @@ mod tests {
         writer.write_u8(1);
         assert_eq!(writer.get_length(), 1);
 
-        writer.write_iso_buf(vec![2, 3, 4]);
+        writer.write(vec![2, 3, 4]);
         assert_eq!(writer.get_length(), 4);
     }
 
     #[test]
     fn test_to_iso_buf() {
         let mut writer = IsoBufWriter::new();
-        writer.write_iso_buf(vec![1, 2, 3]);
-        writer.write_iso_buf(vec![4, 5, 6]);
+        writer.write(vec![1, 2, 3]);
+        writer.write(vec![4, 5, 6]);
 
         let result = writer.to_iso_buf();
         assert_eq!(result, vec![1, 2, 3, 4, 5, 6]);
@@ -114,7 +114,7 @@ mod tests {
     #[test]
     fn test_write_iso_buf() {
         let mut writer = IsoBufWriter::new();
-        writer.write_iso_buf(vec![1, 2, 3]);
+        writer.write(vec![1, 2, 3]);
 
         assert_eq!(writer.bufs.len(), 1);
         assert_eq!(writer.bufs[0], vec![1, 2, 3]);

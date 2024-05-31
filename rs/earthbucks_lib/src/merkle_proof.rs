@@ -109,10 +109,10 @@ impl MerkleProof {
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut bw = IsoBufWriter::new();
-        bw.write_iso_buf(self.root.to_vec());
+        bw.write(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
         for (sibling, is_left) in &self.proof {
-            bw.write_iso_buf(sibling.to_vec());
+            bw.write(sibling.to_vec());
             bw.write_u8(if *is_left { 1 } else { 0 });
         }
         bw.to_iso_buf()

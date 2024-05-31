@@ -49,11 +49,11 @@ impl TxIn {
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut writer = IsoBufWriter::new();
-        writer.write_iso_buf(self.input_tx_id.clone().to_vec());
+        writer.write(self.input_tx_id.clone().to_vec());
         writer.write_u32_be(self.input_tx_out_num);
         let script_buf = self.script.to_iso_buf();
-        writer.write_iso_buf(VarInt::from_u64(script_buf.len() as u64).to_iso_buf());
-        writer.write_iso_buf(script_buf);
+        writer.write(VarInt::from_u64(script_buf.len() as u64).to_iso_buf());
+        writer.write(script_buf);
         writer.write_u32_be(self.lock_rel);
         writer.to_iso_buf()
     }
@@ -130,10 +130,10 @@ mod tests {
         };
 
         let mut writer = IsoBufWriter::new();
-        writer.write_iso_buf(input_tx_id.clone().to_vec());
+        writer.write(input_tx_id.clone().to_vec());
         writer.write_u32_be(input_tx_index);
         writer.write_var_int(script_v8_vec.len() as u64);
-        writer.write_iso_buf(script_v8_vec);
+        writer.write(script_v8_vec);
         writer.write_u32_be(lock_rel);
 
         let mut reader = IsoBufReader::new(writer.to_iso_buf());

@@ -77,13 +77,13 @@ impl Tx {
     pub fn to_buffer_writer(&self) -> IsoBufWriter {
         let mut writer = IsoBufWriter::new();
         writer.write_u8(self.version);
-        writer.write_iso_buf(VarInt::from_u64(self.inputs.len() as u64).to_iso_buf());
+        writer.write(VarInt::from_u64(self.inputs.len() as u64).to_iso_buf());
         for input in &self.inputs {
-            writer.write_iso_buf(input.to_iso_buf());
+            writer.write(input.to_iso_buf());
         }
-        writer.write_iso_buf(VarInt::from_u64(self.outputs.len() as u64).to_iso_buf());
+        writer.write(VarInt::from_u64(self.outputs.len() as u64).to_iso_buf());
         for output in &self.outputs {
-            writer.write_iso_buf(output.to_iso_buf());
+            writer.write(output.to_iso_buf());
         }
         writer.write_u64_be(self.lock_abs);
         writer
@@ -208,15 +208,15 @@ impl Tx {
 
         let mut bw = IsoBufWriter::new();
         bw.write_u8(self.version);
-        bw.write_iso_buf(prevouts_hash.to_vec());
-        bw.write_iso_buf(lock_rel_hash.to_vec());
-        bw.write_iso_buf(self.inputs[input_index].input_tx_id.clone().to_vec());
+        bw.write(prevouts_hash.to_vec());
+        bw.write(lock_rel_hash.to_vec());
+        bw.write(self.inputs[input_index].input_tx_id.clone().to_vec());
         bw.write_u32_be(self.inputs[input_index].input_tx_out_num);
         bw.write_var_int(script_iso_buf.len() as u64);
-        bw.write_iso_buf(script_iso_buf);
+        bw.write(script_iso_buf);
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].lock_rel);
-        bw.write_iso_buf(outputs_hash.to_vec());
+        bw.write(outputs_hash.to_vec());
         bw.write_u64_be(self.lock_abs);
         bw.write_u8(hash_type);
         bw.to_iso_buf()

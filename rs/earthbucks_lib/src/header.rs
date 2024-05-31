@@ -29,16 +29,16 @@ impl Header {
     pub fn to_iso_buf(&self) -> Vec<u8> {
         let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_iso_buf(self.prev_block_id.to_vec());
-        bw.write_iso_buf(self.merkle_root.to_vec());
+        bw.write(self.prev_block_id.to_vec());
+        bw.write(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
         bw.write_u64_be(self.block_num);
-        bw.write_iso_buf(self.target.to_vec());
-        bw.write_iso_buf(self.nonce.to_vec());
+        bw.write(self.target.to_vec());
+        bw.write(self.nonce.to_vec());
         bw.write_u32_be(self.work_ser_algo);
-        bw.write_iso_buf(self.work_ser_hash.to_vec());
+        bw.write(self.work_ser_hash.to_vec());
         bw.write_u32_be(self.work_par_algo);
-        bw.write_iso_buf(self.work_par_hash.to_vec());
+        bw.write(self.work_par_hash.to_vec());
         bw.to_iso_buf()
     }
 
@@ -106,16 +106,16 @@ impl Header {
     pub fn to_iso_buf_writer(&self) -> IsoBufWriter {
         let mut bw = IsoBufWriter::new();
         bw.write_u32_be(self.version);
-        bw.write_iso_buf(self.prev_block_id.to_vec());
-        bw.write_iso_buf(self.merkle_root.to_vec());
+        bw.write(self.prev_block_id.to_vec());
+        bw.write(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
         bw.write_u64_be(self.block_num);
-        bw.write_iso_buf(self.target.to_vec());
-        bw.write_iso_buf(self.nonce.to_vec());
+        bw.write(self.target.to_vec());
+        bw.write(self.nonce.to_vec());
         bw.write_u32_be(self.work_ser_algo);
-        bw.write_iso_buf(self.work_ser_hash.to_vec());
+        bw.write(self.work_ser_hash.to_vec());
         bw.write_u32_be(self.work_par_algo);
-        bw.write_iso_buf(self.work_par_hash.to_vec());
+        bw.write(self.work_par_hash.to_vec());
         bw
     }
 

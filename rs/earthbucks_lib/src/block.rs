@@ -31,10 +31,10 @@ impl Block {
 
     pub fn to_buffer_writer(&self) -> IsoBufWriter {
         let mut bw = IsoBufWriter::new();
-        bw.write_iso_buf(self.header.to_iso_buf());
-        bw.write_iso_buf(VarInt::from_u64(self.txs.len() as u64).to_iso_buf());
+        bw.write(self.header.to_iso_buf());
+        bw.write(VarInt::from_u64(self.txs.len() as u64).to_iso_buf());
         for tx in &self.txs {
-            bw.write_iso_buf(tx.to_buffer_writer().to_iso_buf());
+            bw.write(tx.to_buffer_writer().to_iso_buf());
         }
         bw
     }
