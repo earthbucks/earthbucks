@@ -33,4 +33,12 @@ export class StrictHex {
   toStrictHex(): string {
     return StrictHex.encode(this.buf);
   }
+
+  static fromIsoBuf(buf: IsoBuf): StrictHex {
+    return new StrictHex(buf);
+  }
+
+  toIsoBuf(): IsoBuf {
+    return this.buf;
+  }
 }
