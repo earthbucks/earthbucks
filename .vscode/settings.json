@@ -1,11 +1,10 @@
 {
   "files.exclude": {
     "**/.cache": true,
-    "**/.yarn": true,
     "**/build": true,
     "**/dist": true,
     "**/node_modules": true,
-    "archive": true
+    "**/target": true
   },
   "files.associations": {
     ".env": "dotenv",
