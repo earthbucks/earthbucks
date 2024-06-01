@@ -1,6 +1,6 @@
 import { hash, createKeyed } from "blake3";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { blake3 as blake3browser } from "@noble/hashes/blake3";
+import { blake3 as blake3browser } from "@noble/hashes/blake3"; // eslint-disable-line
 
 type IsoBufFunction = (input: SysBuf) => FixedIsoBuf<32>;
 type MacFunction = (key: SysBuf, data: SysBuf) => FixedIsoBuf<32>;
