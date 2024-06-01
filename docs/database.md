@@ -1,3 +1,0 @@
-- the future of mysql is postgres https://nextgres.com/res/20240419-The-Future-of-MySQL-is-Postgres.pdf
-- postgres: dynamic table partitioning https://supabase.com/blog/postgres-dynamic-table-partitioning
-- postgres sharding: an overview https://www.percona.com/blog/an-overview-of-sharding-in-postgresql-and-how-it-relates-to-mongodbs/

@@ -1,4 +1,0 @@
-- mike heard on inability to use CODESEPARATOR https://bitcointalk.org/index.php?topic=52949.0
-- more information on OP_CODESEPARATOR https://bitcoinops.org/en/topics/op_codeseparator/
-- andrew stone has blog posts on new opcodes https://g-andrew-stone.medium.com/
-- bitcoin cash may 2018 upgrade (and other changes) https://docs.givelotus.org/specs/bitcoincash/may-2018-reenabled-opcodes/#op_num2bin

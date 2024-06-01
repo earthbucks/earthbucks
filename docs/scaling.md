@@ -1,2 +1,0 @@
-- ecash new tx format https://ecashbuilders.notion.site/eCash-Mitra-Transaction-Format-a5985d9bc3ec469da7ab46756218ef3b
-- Amaury Sechet on scaling to big blocks. https://www.youtube.com/watch?v=9PygO-B1o6w

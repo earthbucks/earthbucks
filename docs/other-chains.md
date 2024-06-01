@@ -21,6 +21,8 @@
   However, it does have some similar philosophy, e.g. no pre-mine.
 - [x] [nano](https://docs.nano.org): Designed to work with no mining.
   "Block-lattice architecture". Not like EarthBucks.
+- [x] [Radiant](https://radiantblockchain.org/radiant.pdf): "Assets" and Proof
+  of Stake. Not like EarthBucks.
 - [ ] [near](https://near.org/papers/the-rainbow-bridge/)
 - [ ] [polkadot](https://polkadot.network/PolkaDotPaper.pdf)
 - [ ] [cosmos](https://cosmos.network/resources/whitepaper)
