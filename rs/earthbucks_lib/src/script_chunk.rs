@@ -1,5 +1,5 @@
 use crate::ebx_error::EbxError;
-use crate::iso_buf::StrictHex;
+use crate::iso_buf::IsoBuf;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};

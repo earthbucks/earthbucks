@@ -1,7 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::blake3_hash;
 use crate::hash::double_blake3_hash;
-use crate::iso_buf::StrictHex;
+use crate::iso_buf::IsoBuf;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::pub_key::PubKey;

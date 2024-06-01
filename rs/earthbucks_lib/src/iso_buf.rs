@@ -1,4 +1,5 @@
 use crate::ebx_error::EbxError;
+use bs58;
 use hex;
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -26,14 +27,18 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, EbxError> {
     Ok(res.unwrap())
 }
 
-pub trait StrictHex {
+pub trait IsoBuf {
     fn to_strict_hex(&self) -> String;
     fn from_strict_hex(hex: &str) -> Result<Self, EbxError>
     where
         Self: Sized;
+    fn to_base58(&self) -> String;
+    fn from_base58(base58: &str) -> Result<Self, EbxError>
+    where
+        Self: Sized;
 }
 
-impl StrictHex for Vec<u8> {
+impl IsoBuf for Vec<u8> {
     fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }
@@ -41,9 +46,19 @@ impl StrictHex for Vec<u8> {
     fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
         hex::decode(hex).map_err(|_| EbxError::InvalidHexError { source: None })
     }
+
+    fn to_base58(&self) -> String {
+        bs58::encode(self).into_string()
+    }
+
+    fn from_base58(base58: &str) -> Result<Self, EbxError> {
+        bs58::decode(base58)
+            .into_vec()
+            .map_err(|_| EbxError::InvalidEncodingError { source: None })
+    }
 }
 
-impl<const N: usize> StrictHex for [u8; N] {
+impl<const N: usize> IsoBuf for [u8; N] {
     fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }
@@ -53,6 +68,20 @@ impl<const N: usize> StrictHex for [u8; N] {
         let array: [u8; N] = vec[..]
             .try_into()
             .map_err(|_| EbxError::InvalidHexError { source: None })?;
+        Ok(array)
+    }
+
+    fn to_base58(&self) -> String {
+        bs58::encode(self).into_string()
+    }
+
+    fn from_base58(base58: &str) -> Result<Self, EbxError> {
+        let vec = bs58::decode(base58)
+            .into_vec()
+            .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
+        let array: [u8; N] = vec[..]
+            .try_into()
+            .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         Ok(array)
     }
 }

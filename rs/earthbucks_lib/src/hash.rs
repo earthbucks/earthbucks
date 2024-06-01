@@ -19,7 +19,7 @@ pub fn blake3_mac(key: &[u8; 32], data: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::iso_buf::StrictHex;
+    use crate::iso_buf::IsoBuf;
 
     #[test]
     fn test_hash() {

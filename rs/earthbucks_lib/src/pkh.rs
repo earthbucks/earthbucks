@@ -1,8 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::{blake3_hash, double_blake3_hash};
-use crate::iso_buf::StrictHex;
+use crate::iso_buf::IsoBuf;
 use crate::pub_key;
-use bs58;
 
 #[derive(Debug, Clone)]
 pub struct Pkh {
@@ -41,7 +40,7 @@ impl Pkh {
         let check_buf = blake3_hash(&self.buf);
         let check_sum: [u8; 4] = check_buf[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
-        "ebxpkh".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
+        "ebxpkh".to_string() + &check_hex + &self.buf.to_base58()
     }
 
     pub fn from_iso_str(s: &str) -> Result<Self, String> {
@@ -51,9 +50,7 @@ impl Pkh {
         let check_sum =
             <[u8; 4]>::from_strict_hex(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
 
-        let buf = bs58::decode(&s[14..])
-            .into_vec()
-            .map_err(|_| "Invalid pkh base58")?;
+        let buf = Vec::<u8>::from_base58(&s[14..]).map_err(|_| "Invalid pkh base58")?;
         let check_buf = blake3_hash(&buf);
         let expected_check_sum = &check_buf[0..4];
         if check_sum != expected_check_sum {

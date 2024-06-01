@@ -1,8 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::blake3_hash;
-use crate::iso_buf::StrictHex;
+use crate::iso_buf::IsoBuf;
 use crate::priv_key::PrivKey;
-use bs58;
 use secp256k1::PublicKey;
 
 #[derive(Debug, Clone)]
@@ -54,7 +53,7 @@ impl PubKey {
         let check_hash = blake3_hash(&self.buf);
         let check_sum: [u8; 4] = check_hash[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
-        "ebxpub".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
+        "ebxpub".to_string() + &check_hex + &self.buf.to_base58()
     }
 
     pub fn from_iso_str(s: &str) -> Result<PubKey, EbxError> {
@@ -63,8 +62,7 @@ impl PubKey {
         }
         let check_str = &s[6..14];
         let check_buf: [u8; 4] = <[u8; 4]>::from_strict_hex(check_str)?;
-        let buf = bs58::decode(&s[14..])
-            .into_vec()
+        let buf = Vec::<u8>::from_base58(&s[14..])
             .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         let check_hash = blake3_hash(&buf);
         let check_sum = &check_hash[0..4];

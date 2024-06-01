@@ -1,6 +1,5 @@
 use crate::ebx_error::EbxError;
-use crate::iso_buf::StrictHex;
-use bs58;
+use crate::iso_buf::IsoBuf;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 
@@ -71,7 +70,7 @@ impl PrivKey {
         let check_buf = blake3::hash(&self.buf);
         let check_sum: [u8; 4] = check_buf.as_bytes()[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
-        "ebxprv".to_string() + &check_hex + &bs58::encode(&self.buf).into_string()
+        "ebxprv".to_string() + &check_hex + &self.buf.to_base58()
     }
 
     pub fn from_iso_str(s: &str) -> Result<Self, EbxError> {
@@ -79,8 +78,7 @@ impl PrivKey {
             return Err(EbxError::InvalidEncodingError { source: None });
         }
         let check_sum: [u8; 4] = <[u8; 4]>::from_strict_hex(&s[6..14])?;
-        let buf = bs58::decode(&s[14..])
-            .into_vec()
+        let buf = Vec::<u8>::from_base58(&s[14..])
             .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         let check_buf = blake3::hash(&buf);
         let expected_check_sum = &check_buf.as_bytes()[0..4];
