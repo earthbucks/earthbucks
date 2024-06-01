@@ -7,27 +7,28 @@ import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, InvalidSizeError, InvalidHexError } from "./ebx-error.js";
+import bs58 from "bs58";
 
 const SysBuf = Buffer;
 type SysBuf = Buffer;
 
+function isValidHex(hex: string): boolean {
+  return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
+}
+
+function encodeHex(buffer: SysBuf): string {
+  return buffer.toString("hex");
+}
+
+function decodeHex(hex: string): Result<SysBuf, EbxError> {
+  if (!isValidHex(hex)) {
+    return Err(new InvalidHexError(None));
+  }
+  const buffer = SysBuf.from(hex, "hex");
+  return Ok(buffer);
+}
+
 class IsoBuf extends SysBuf {
-  private static isValidHex(hex: string): boolean {
-    return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
-  }
-
-  private static encodeHex(buffer: SysBuf): string {
-    return buffer.toString("hex");
-  }
-
-  private static decodeHex(hex: string): Result<SysBuf, EbxError> {
-    if (!IsoBuf.isValidHex(hex)) {
-      return Err(new InvalidHexError(None));
-    }
-    const buffer = SysBuf.from(hex, "hex");
-    return Ok(buffer);
-  }
-
   static fromBuf<N extends number>(
     size: N,
     buf: SysBuf,
@@ -44,20 +45,21 @@ class IsoBuf extends SysBuf {
     return Ok(isoBuf);
   }
 
-  static fromStrictHex<N extends number>(
-    size: N,
-    hex: string,
-  ): Result<FixedIsoBuf<N>, EbxError> {
-    const bufRes = IsoBuf.decodeHex(hex);
+  static alloc(size: number, fill?: number): IsoBuf {
+    return IsoBuf.fromBuf(size, SysBuf.alloc(size, fill)).unwrap();
+  }
+
+  static fromStrictHex(size: number, hex: string): Result<IsoBuf, EbxError> {
+    const bufRes = decodeHex(hex);
     if (bufRes.err) {
       return Err(bufRes.val);
     }
     const buf = bufRes.unwrap();
-    return FixedIsoBuf.fromBuf(size, buf);
+    return IsoBuf.fromBuf(size, buf);
   }
 
   toStrictHex(): string {
-    return IsoBuf.encodeHex(this);
+    return encodeHex(this);
   }
 }
 
@@ -93,6 +95,22 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
 
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
     return FixedIsoBuf.fromBuf(size, SysBuf.alloc(size, fill)).unwrap();
+  }
+
+  static fromStrictHex<N extends number>(
+    size: N,
+    hex: string,
+  ): Result<FixedIsoBuf<N>, EbxError> {
+    const bufRes = decodeHex(hex);
+    if (bufRes.err) {
+      return Err(bufRes.val);
+    }
+    const buf = bufRes.unwrap();
+    return FixedIsoBuf.fromBuf(size, buf);
+  }
+
+  toStrictHex(): string {
+    return encodeHex(this);
   }
 }
 
