@@ -25,6 +25,6 @@ export class HashNum {
     while (hex.length < 64) {
       hex = "0" + hex;
     }
-    return Ok(FixedIsoBuf.fromHex(32, hex).unwrap());
+    return Ok(FixedIsoBuf.fromStrictHex(32, hex).unwrap());
   }
 }

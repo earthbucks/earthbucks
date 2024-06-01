@@ -6,21 +6,57 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
-import { EbxError, InvalidSizeError } from "./ebx-error.js";
+import { EbxError, InvalidSizeError, InvalidHexError } from "./ebx-error.js";
 
 const SysBuf = Buffer;
 type SysBuf = Buffer;
 
 class IsoBuf extends SysBuf {
-  static fromHex<N extends number>(
+  static isValidHex(hex: string): boolean {
+    return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
+  }
+
+  static encodeHex(buffer: SysBuf): string {
+    return buffer.toString("hex");
+  }
+
+  static decodeHex(hex: string): Result<SysBuf, EbxError> {
+    if (!IsoBuf.isValidHex(hex)) {
+      return Err(new InvalidHexError(None));
+    }
+    const buffer = SysBuf.from(hex, "hex");
+    return Ok(buffer);
+  }
+
+  static fromBuf<N extends number>(
+    size: N,
+    buf: SysBuf,
+  ): Result<IsoBuf, EbxError> {
+    if (buf.length !== size) {
+      return Err(new InvalidSizeError(None));
+    }
+    // weird roundabout prototype code to avoid calling "new" because on Buffer
+    // that is actually deprecated
+    const newBuf = SysBuf.alloc(size);
+    newBuf.set(buf);
+    Object.setPrototypeOf(newBuf, IsoBuf.prototype);
+    const isoBuf = newBuf as IsoBuf;
+    return Ok(isoBuf);
+  }
+
+  static fromStrictHex<N extends number>(
     size: N,
     hex: string,
   ): Result<FixedIsoBuf<N>, EbxError> {
-    const buf = SysBuf.from(hex, "hex");
-    return FixedIsoBuf.fromIsoBuf(size, buf);
+    const bufRes = IsoBuf.decodeHex(hex);
+    if (bufRes.err) {
+      return Err(bufRes.val);
+    }
+    const buf = bufRes.unwrap();
+    return FixedIsoBuf.fromBuf(size, buf);
   }
 
-  toHex(): string {
+  toStrictHex(): string {
     return this.toString("hex");
   }
 }
@@ -38,7 +74,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     this[sizeSymbol] = size;
   }
 
-  static fromIsoBuf<N extends number>(
+  static fromBuf<N extends number>(
     size: N,
     buf: SysBuf,
   ): Result<FixedIsoBuf<N>, EbxError> {
@@ -56,7 +92,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
   }
 
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
-    return (FixedIsoBuf<N>).fromIsoBuf(size, SysBuf.alloc(size, fill)).unwrap();
+    return FixedIsoBuf.fromBuf(size, SysBuf.alloc(size, fill)).unwrap();
   }
 }
 

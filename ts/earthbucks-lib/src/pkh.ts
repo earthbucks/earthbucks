@@ -41,7 +41,7 @@ export class Pkh {
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = StrictHex.decode(checkHex).unwrap();
-    const bufRes = (FixedIsoBuf<32>).fromIsoBuf(
+    const bufRes = (FixedIsoBuf<32>).fromBuf(
       32,
       SysBuf.from(bs58.decode(pkhStr.slice(14))),
     );

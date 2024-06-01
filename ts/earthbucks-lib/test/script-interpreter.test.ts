@@ -135,7 +135,7 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = FixedIsoBuf.fromHex(
+      const outputPrivKeyBuf = FixedIsoBuf.fromStrictHex(
         32,
         outputPrivKeyHex,
       ).unwrap();
@@ -193,7 +193,7 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to IsoBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedIsoBuf.fromIsoBuf(32, SysBuf.from(hex, "hex")).unwrap(),
+        FixedIsoBuf.fromBuf(32, SysBuf.from(hex, "hex")).unwrap(),
       );
 
       // Generate public keys

@@ -25,7 +25,7 @@ export class PrivKey {
     let privateKey;
     do {
       privateKey = (FixedIsoBuf<32>)
-        .fromIsoBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
+        .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
         .unwrap();
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
@@ -39,7 +39,7 @@ export class PrivKey {
     try {
       return Ok(
         (FixedIsoBuf<33>)
-          .fromIsoBuf(33, SysBuf.from(secp256k1.publicKeyCreate(this.buf)))
+          .fromBuf(33, SysBuf.from(secp256k1.publicKeyCreate(this.buf)))
           .unwrap(),
       );
     } catch (err) {
@@ -78,9 +78,7 @@ export class PrivKey {
       return bufRes;
     }
     const buf = bufRes.unwrap();
-    const buf32: FixedIsoBuf<32> = (FixedIsoBuf<32>)
-      .fromIsoBuf(32, buf)
-      .unwrap();
+    const buf32: FixedIsoBuf<32> = (FixedIsoBuf<32>).fromBuf(32, buf).unwrap();
     return PrivKey.fromIsoBuf(buf32);
   }
 
@@ -107,7 +105,7 @@ export class PrivKey {
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }
-    const decoded32Res = (FixedIsoBuf<32>).fromIsoBuf(32, decoded);
+    const decoded32Res = (FixedIsoBuf<32>).fromBuf(32, decoded);
     if (decoded32Res.err) {
       return decoded32Res;
     }

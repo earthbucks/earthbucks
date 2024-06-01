@@ -16,7 +16,7 @@ describe("TxOutBnMap", () => {
     txOutBnMap = new TxOutBnMap();
     txOut = new TxOut(BigInt(100), Script.fromEmpty());
     txOutBn = new TxOutBn(txOut, 0n);
-    txIdHash = FixedIsoBuf.fromHex(
+    txIdHash = FixedIsoBuf.fromStrictHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
     ).unwrap();

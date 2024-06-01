@@ -15,7 +15,7 @@ export class TxOutBnMap {
   }
 
   static nameToTxId(name: string): FixedIsoBuf<32> {
-    return FixedIsoBuf.fromHex(32, name.split(":")[0]).unwrap();
+    return FixedIsoBuf.fromStrictHex(32, name.split(":")[0]).unwrap();
   }
 
   static nameToOutputIndex(name: string): number {

@@ -12,7 +12,7 @@ export class HeaderMine {
 
   randomizeNonce(): void {
     this.header.nonce = (FixedIsoBuf<32>)
-      .fromIsoBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
+      .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
       .unwrap();
   }
 

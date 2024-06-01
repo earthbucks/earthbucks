@@ -41,7 +41,7 @@ export class SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
     const sigBuf = (FixedIsoBuf<64>)
-      .fromIsoBuf(64, SysBuf.from(sigObj.signature))
+      .fromBuf(64, SysBuf.from(sigObj.signature))
       .unwrap();
     const pubKey = privKey.toPubKeyIsoBuf().unwrap();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);

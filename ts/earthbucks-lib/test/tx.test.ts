@@ -312,7 +312,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = FixedIsoBuf.fromHex(
+        const privateKey = FixedIsoBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         ).unwrap();
@@ -366,7 +366,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = FixedIsoBuf.fromHex(
+        const privateKey = FixedIsoBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         ).unwrap();

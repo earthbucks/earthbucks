@@ -12,36 +12,32 @@ let blake3Mac: MacFunction;
 if (typeof document === "undefined") {
   // running in a server environment
   blake3Hash = function blake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromIsoBuf(32, hash(data) as SysBuf).unwrap();
+    return (FixedIsoBuf<32>).fromBuf(32, hash(data) as SysBuf).unwrap();
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>)
-      .fromIsoBuf(32, blake3Hash(blake3Hash(data)))
-      .unwrap();
+    return (FixedIsoBuf<32>).fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {
     return (FixedIsoBuf<32>)
-      .fromIsoBuf(32, createKeyed(key).update(data).digest() as SysBuf)
+      .fromBuf(32, createKeyed(key).update(data).digest() as SysBuf)
       .unwrap();
   };
 } else {
   blake3Hash = function blake3Hash(data: SysBuf): FixedIsoBuf<32> {
     return (FixedIsoBuf<32>)
-      .fromIsoBuf(32, SysBuf.from(blake3browser(data)))
+      .fromBuf(32, SysBuf.from(blake3browser(data)))
       .unwrap();
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>)
-      .fromIsoBuf(32, blake3Hash(blake3Hash(data)))
-      .unwrap();
+    return (FixedIsoBuf<32>).fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {
     return (FixedIsoBuf<32>)
-      .fromIsoBuf(32, SysBuf.from(blake3browser(data, { key: key })))
+      .fromBuf(32, SysBuf.from(blake3browser(data, { key: key })))
       .unwrap();
   };
 }

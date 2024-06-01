@@ -37,7 +37,7 @@ export class IsoBufReader {
     if (res.err) {
       return Err(res.val);
     }
-    return FixedIsoBuf.fromIsoBuf(len, res.unwrap()) as Result<
+    return FixedIsoBuf.fromBuf(len, res.unwrap()) as Result<
       FixedIsoBuf<N>,
       EbxError
     >;

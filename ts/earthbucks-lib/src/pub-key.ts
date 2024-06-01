@@ -27,7 +27,7 @@ export class PubKey {
       return Err(res.val);
     }
     const buf = res.unwrap();
-    const isoBuf33 = (FixedIsoBuf<33>).fromIsoBuf(33, buf).unwrap();
+    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf).unwrap();
     return Ok(new PubKey(isoBuf33));
   }
 
@@ -55,7 +55,7 @@ export class PubKey {
       return Err(res.val);
     }
     const buf = res.unwrap();
-    const isoBuf33 = (FixedIsoBuf<33>).fromIsoBuf(33, buf).unwrap();
+    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf).unwrap();
     return PubKey.fromIsoBuf(isoBuf33);
   }
 
@@ -82,7 +82,7 @@ export class PubKey {
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }
-    const decoded33Res = (FixedIsoBuf<33>).fromIsoBuf(33, decoded);
+    const decoded33Res = (FixedIsoBuf<33>).fromBuf(33, decoded);
     if (decoded33Res.err) {
       return Err(new InvalidEncodingError(None));
     }

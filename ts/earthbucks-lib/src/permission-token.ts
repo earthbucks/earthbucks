@@ -41,7 +41,7 @@ export class PermissionToken {
 
   static fromRandom(): PermissionToken {
     const randValue: FixedIsoBuf<32> = (FixedIsoBuf<32>)
-      .fromIsoBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
+      .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
       .unwrap();
     const timestamp = BigInt(Date.now()); // milliseconds
     return new PermissionToken(randValue, timestamp);

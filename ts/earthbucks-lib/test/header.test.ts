@@ -192,7 +192,7 @@ describe("BlockHeader", () => {
     });
 
     test("should correctly adjust the target for non-trivial adjustment", () => {
-      const initialTarget = FixedIsoBuf.fromHex(
+      const initialTarget = FixedIsoBuf.fromStrictHex(
         32,
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       ).unwrap();
