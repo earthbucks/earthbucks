@@ -43,21 +43,20 @@ impl Pkh {
         "ebxpkh".to_string() + &check_hex + &self.buf.to_base58()
     }
 
-    pub fn from_iso_str(s: &str) -> Result<Self, String> {
+    pub fn from_iso_str(s: &str) -> Result<Self, EbxError> {
         if !s.starts_with("ebxpkh") {
-            return Err("Invalid pkh prefix".to_string());
+            return Err(EbxError::InvalidEncodingError { source: None });
         }
-        let check_sum =
-            <[u8; 4]>::from_strict_hex(&s[6..14]).map_err(|_| "Invalid pkh checksum")?;
+        let check_sum = <[u8; 4]>::from_strict_hex(&s[6..14])?;
 
-        let buf = Vec::<u8>::from_base58(&s[14..]).map_err(|_| "Invalid pkh base58")?;
+        let buf = Vec::<u8>::from_base58(&s[14..])?;
         let check_buf = blake3_hash(&buf);
         let expected_check_sum = &check_buf[0..4];
         if check_sum != expected_check_sum {
-            return Err("Invalid pkh checksum".to_string());
+            return Err(EbxError::InvalidChecksumError { source: None });
         }
         if buf.len() != 32 {
-            return Err("Invalid pkh length".to_string());
+            return Err(EbxError::InvalidSizeError { source: None });
         }
         Ok(Self {
             buf: buf.try_into().unwrap(),

@@ -1,7 +1,14 @@
+import {
+  EbxError,
+  InvalidChecksumError,
+  InvalidEncodingError,
+} from "dist/ebx-error.js";
 import * as Hash from "./hash.js";
 import { SysBuf, IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { Option, None, Some } from "earthbucks-opt-res/src/option.js";
+import { InvalidSizeError } from "./ebx-error.js";
 
 // public key hash
 export class Pkh {
@@ -20,9 +27,9 @@ export class Pkh {
     return Pkh.fromPubKeyBuf(pubKey.toIsoBuf());
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<32>): Result<Pkh, string> {
+  static fromIsoBuf(buf: FixedIsoBuf<32>): Result<Pkh, EbxError> {
     if (buf.length !== 32) {
-      return Err("Invalid public key hash length");
+      return Err(new InvalidSizeError(None));
     }
     return Ok(new Pkh(buf));
   }
@@ -33,25 +40,25 @@ export class Pkh {
     return "ebxpkh" + checkHex + this.buf.toBase58();
   }
 
-  static fromIsoStr(pkhStr: string): Result<Pkh, string> {
+  static fromIsoStr(pkhStr: string): Result<Pkh, EbxError> {
     if (!pkhStr.startsWith("ebxpkh")) {
-      return Err("Invalid pkh format");
+      return Err(new InvalidEncodingError(None));
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBufRes = FixedIsoBuf.fromStrictHex(4, checkHex);
     if (checkBufRes.err) {
-      return Err("Invalid pkh checksum");
+      return Err(new InvalidChecksumError(None));
     }
     const checkBuf = checkBufRes.unwrap();
     const bufRes = (FixedIsoBuf<32>).fromBase58(32, pkhStr.slice(14));
     if (bufRes.err) {
-      return Err("Invalid pkh length");
+      return Err(new InvalidSizeError(None));
     }
     const buf = bufRes.unwrap();
     const hashBuf = Hash.blake3Hash(buf);
     const checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {
-      return Err("Invalid pkh checksum");
+      return Err(new InvalidChecksumError(None));
     }
     return Pkh.fromIsoBuf(buf);
   }
