@@ -76,7 +76,7 @@ export class MerkleProof {
     bw.writeVarIntNum(this.proof.length);
     for (const [sibling, isLeft] of this.proof) {
       bw.write(sibling);
-      bw.writeUInt8(isLeft ? 1 : 0);
+      bw.writeU8(isLeft ? 1 : 0);
     }
     return bw.toIsoBuf();
   }

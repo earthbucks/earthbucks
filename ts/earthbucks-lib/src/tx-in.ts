@@ -66,11 +66,11 @@ export class TxIn {
   toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
     writer.write(this.inputTxId);
-    writer.writeUInt32BE(this.inputTxNOut);
+    writer.writeU32BE(this.inputTxNOut);
     const scriptBuf = this.script.toIsoBuf();
     writer.write(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.write(scriptBuf);
-    writer.writeUInt32BE(this.lockRel);
+    writer.writeU32BE(this.lockRel);
     return writer.toIsoBuf();
   }
 

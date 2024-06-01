@@ -87,19 +87,19 @@ export class ScriptChunk {
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeUInt8(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU8(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeUInt16BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU16BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeUInt32BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU32BE(this.buf.length).toIsoBuf(),
         this.buf,
       ]);
     }

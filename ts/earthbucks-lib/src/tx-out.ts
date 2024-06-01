@@ -46,7 +46,7 @@ export class TxOut {
 
   toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
-    writer.writeUInt64BE(this.value);
+    writer.writeU64BE(this.value);
     const scriptBuf = this.script.toIsoBuf();
     writer.write(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
     writer.write(scriptBuf);

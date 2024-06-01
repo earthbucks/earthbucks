@@ -50,16 +50,16 @@ export class Header {
 
   toIsoBuf(): SysBuf {
     const bw = new IsoBufWriter();
-    bw.writeUInt32BE(this.version);
+    bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
-    bw.writeUInt64BE(this.timestamp);
-    bw.writeUInt64BE(this.blockNum);
+    bw.writeU64BE(this.timestamp);
+    bw.writeU64BE(this.blockNum);
     bw.write(this.target);
     bw.write(this.nonce);
-    bw.writeUInt32BE(this.workSerAlgo);
+    bw.writeU32BE(this.workSerAlgo);
     bw.write(this.workSerHash);
-    bw.writeUInt32BE(this.workParAlgo);
+    bw.writeU32BE(this.workParAlgo);
     bw.write(this.workParHash);
     return bw.toIsoBuf();
   }
@@ -164,16 +164,16 @@ export class Header {
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
-    bw.writeUInt32BE(this.version);
+    bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
-    bw.writeUInt64BE(this.timestamp);
-    bw.writeUInt64BE(this.blockNum);
+    bw.writeU64BE(this.timestamp);
+    bw.writeU64BE(this.blockNum);
     bw.write(this.target);
     bw.write(this.nonce);
-    bw.writeUInt32BE(this.workSerAlgo);
+    bw.writeU32BE(this.workSerAlgo);
     bw.write(this.workSerHash);
-    bw.writeUInt32BE(this.workParAlgo);
+    bw.writeU32BE(this.workParAlgo);
     bw.write(this.workParHash);
     return bw;
   }

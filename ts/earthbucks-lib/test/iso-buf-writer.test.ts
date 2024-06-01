@@ -15,7 +15,7 @@ describe("IsoBufWriter", () => {
       const n: number = 123;
 
       // Act
-      bufferWriter.writeUInt8(n);
+      bufferWriter.writeU8(n);
 
       // Assert
       const result = bufferWriter.toIsoBuf();
@@ -29,7 +29,7 @@ describe("IsoBufWriter", () => {
       const n: number = 12345;
 
       // Act
-      bufferWriter.writeUInt16BE(n);
+      bufferWriter.writeU16BE(n);
 
       // Assert
       const result = bufferWriter.toIsoBuf();
@@ -43,7 +43,7 @@ describe("IsoBufWriter", () => {
       const n: number = 1234567890;
 
       // Act
-      bufferWriter.writeUInt32BE(n);
+      bufferWriter.writeU32BE(n);
 
       // Assert
       const result = bufferWriter.toIsoBuf();
@@ -57,7 +57,7 @@ describe("IsoBufWriter", () => {
       const bn: bigint = BigInt("1234567890123456789");
 
       // Act
-      bufferWriter.writeUInt64BE(bn);
+      bufferWriter.writeU64BE(bn);
 
       // Assert
       const result = bufferWriter.toIsoBuf();

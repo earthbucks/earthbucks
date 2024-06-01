@@ -15,7 +15,7 @@ export class PermissionToken {
   toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
     writer.write(this.randValue);
-    writer.writeUInt64BE(this.timestamp);
+    writer.writeU64BE(this.timestamp);
     return writer.toIsoBuf();
   }
 

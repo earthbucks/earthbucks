@@ -84,7 +84,7 @@ export class Tx {
 
   toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
-    writer.writeUInt8(this.version);
+    writer.writeU8(this.version);
     writer.write(VarInt.fromNumber(this.inputs.length).toIsoBuf());
     for (const input of this.inputs) {
       writer.write(input.toIsoBuf());
@@ -93,7 +93,7 @@ export class Tx {
     for (const output of this.outputs) {
       writer.write(output.toIsoBuf());
     }
-    writer.writeUInt64BE(this.lockAbs);
+    writer.writeU64BE(this.lockAbs);
     return writer.toIsoBuf();
   }
 
@@ -138,7 +138,7 @@ export class Tx {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.write(input.inputTxId);
-      writer.writeUInt32BE(input.inputTxNOut);
+      writer.writeU32BE(input.inputTxNOut);
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
@@ -146,7 +146,7 @@ export class Tx {
   hashLockRel(): FixedIsoBuf<32> {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
-      writer.writeUInt32BE(input.lockRel);
+      writer.writeU32BE(input.lockRel);
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
@@ -208,18 +208,18 @@ export class Tx {
     }
 
     const writer = new IsoBufWriter();
-    writer.writeUInt8(this.version);
+    writer.writeU8(this.version);
     writer.write(prevoutsHash);
     writer.write(lockRelHash);
     writer.write(this.inputs[inputIndex].inputTxId);
-    writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut);
+    writer.writeU32BE(this.inputs[inputIndex].inputTxNOut);
     writer.writeVarIntNum(script.length);
     writer.write(script);
-    writer.writeUInt64BE(amount);
-    writer.writeUInt32BE(this.inputs[inputIndex].lockRel);
+    writer.writeU64BE(amount);
+    writer.writeU32BE(this.inputs[inputIndex].lockRel);
     writer.write(outputsHash);
-    writer.writeUInt64BE(this.lockAbs);
-    writer.writeUInt8(hashType);
+    writer.writeU64BE(this.lockAbs);
+    writer.writeU8(hashType);
     return writer.toIsoBuf();
   }
 
