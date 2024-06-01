@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf.js";
+import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 // big integers, positive or negative, encoded as big endian, two's complement
@@ -15,7 +15,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  static fromIsoBuf(buffer: IsoBuf): ScriptNum {
+  static fromIsoBuf(buffer: SysBuf): ScriptNum {
     const scriptNum = new ScriptNum();
     if (buffer.length === 0) {
       scriptNum.num = 0n;
@@ -24,7 +24,7 @@ export class ScriptNum {
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
-      const invertedIsoBuf = IsoBuf.alloc(buffer.length);
+      const invertedIsoBuf = SysBuf.alloc(buffer.length);
       for (let i = 0; i < buffer.length; i++) {
         invertedIsoBuf[i] = ~buffer[i]; // Invert all bits
       }
@@ -37,10 +37,10 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): SysBuf {
     const num = this.num;
     if (num === 0n) {
-      return IsoBuf.alloc(0);
+      return SysBuf.alloc(0);
     } else if (num > 0n) {
       let hex = num.toString(16);
       if (hex.length % 2 !== 0) {
@@ -50,7 +50,7 @@ export class ScriptNum {
       if (parseInt(hex[0], 16) >= 8) {
         hex = "00" + hex;
       }
-      return IsoBuf.from(hex, "hex");
+      return SysBuf.from(hex, "hex");
     } else {
       const bitLength = num.toString(2).length; // Get bit length of number
       const byteLength = Math.ceil(bitLength / 8); // Calculate byte length, rounding up to nearest byte
@@ -59,7 +59,7 @@ export class ScriptNum {
       if (hex.length % 2 !== 0) {
         hex = "0" + hex; // Pad with zero to make length even
       }
-      return IsoBuf.from(hex, "hex");
+      return SysBuf.from(hex, "hex");
     }
   }
 

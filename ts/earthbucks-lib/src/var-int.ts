@@ -1,12 +1,12 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { IsoBuf } from "./iso-buf.js";
+import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class VarInt {
-  private buf: IsoBuf;
+  private buf: SysBuf;
 
-  constructor(buf: IsoBuf = IsoBuf.alloc(0)) {
+  constructor(buf: SysBuf = SysBuf.alloc(0)) {
     this.buf = buf;
   }
 
@@ -20,7 +20,7 @@ export class VarInt {
     return new VarInt(buf);
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): SysBuf {
     return this.buf;
   }
 
@@ -48,6 +48,6 @@ export class VarInt {
     }
     const bn = res.unwrap();
     const varint = VarInt.fromBigInt(bn);
-    return IsoBuf.compare(this.buf, varint.toIsoBuf()) === 0;
+    return SysBuf.compare(this.buf, varint.toIsoBuf()) === 0;
   }
 }

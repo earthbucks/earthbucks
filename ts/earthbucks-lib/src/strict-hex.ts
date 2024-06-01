@@ -1,12 +1,12 @@
-import { IsoBuf } from "./iso-buf.js";
+import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, InvalidHexError } from "./ebx-error.js";
 import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export class StrictHex {
-  public buf: IsoBuf;
+  public buf: SysBuf;
 
-  constructor(buf: IsoBuf) {
+  constructor(buf: SysBuf) {
     this.buf = buf;
   }
 
@@ -14,15 +14,15 @@ export class StrictHex {
     return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
   }
 
-  static encode(buffer: IsoBuf): string {
+  static encode(buffer: SysBuf): string {
     return buffer.toString("hex");
   }
 
-  static decode(hex: string): Result<IsoBuf, EbxError> {
+  static decode(hex: string): Result<SysBuf, EbxError> {
     if (!StrictHex.isValid(hex)) {
       return Err(new InvalidHexError(None));
     }
-    const buffer = IsoBuf.from(hex, "hex");
+    const buffer = SysBuf.from(hex, "hex");
     return Ok(buffer);
   }
 
@@ -34,11 +34,11 @@ export class StrictHex {
     return StrictHex.encode(this.buf);
   }
 
-  static fromIsoBuf(buf: IsoBuf): StrictHex {
+  static fromIsoBuf(buf: SysBuf): StrictHex {
     return new StrictHex(buf);
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): SysBuf {
     return this.buf;
   }
 }

@@ -1,4 +1,4 @@
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
@@ -76,9 +76,9 @@ export class PubKey {
       return Err(res.val);
     }
     const checkBuf = res.unwrap();
-    let decoded: IsoBuf;
+    let decoded: SysBuf;
     try {
-      decoded = IsoBuf.from(bs58.decode(str.slice(14)));
+      decoded = SysBuf.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

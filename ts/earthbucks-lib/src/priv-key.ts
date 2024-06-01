@@ -1,5 +1,5 @@
 import secp256k1 from "secp256k1";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";
@@ -25,7 +25,7 @@ export class PrivKey {
     let privateKey;
     do {
       privateKey = (FixedIsoBuf<32>)
-        .fromIsoBuf(32, crypto.getRandomValues(IsoBuf.alloc(32)))
+        .fromIsoBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
         .unwrap();
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
@@ -39,7 +39,7 @@ export class PrivKey {
     try {
       return Ok(
         (FixedIsoBuf<33>)
-          .fromIsoBuf(33, IsoBuf.from(secp256k1.publicKeyCreate(this.buf)))
+          .fromIsoBuf(33, SysBuf.from(secp256k1.publicKeyCreate(this.buf)))
           .unwrap(),
       );
     } catch (err) {
@@ -101,9 +101,9 @@ export class PrivKey {
       return checkBufRes;
     }
     const checkBuf = checkBufRes.unwrap();
-    let decoded: IsoBuf;
+    let decoded: SysBuf;
     try {
-      decoded = IsoBuf.from(bs58.decode(str.slice(14)));
+      decoded = SysBuf.from(bs58.decode(str.slice(14)));
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }

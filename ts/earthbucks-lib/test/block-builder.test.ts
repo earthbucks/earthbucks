@@ -6,7 +6,7 @@ import { IsoBufWriter } from "../src/iso-buf-writer.js";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
 import { BlockBuilder } from "../src/block-builder.js";
 import { Script } from "../src/script.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {

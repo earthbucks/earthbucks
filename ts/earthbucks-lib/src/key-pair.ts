@@ -1,6 +1,6 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
+import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class KeyPair {

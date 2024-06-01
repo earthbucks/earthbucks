@@ -1,5 +1,5 @@
 import * as Hash from "./hash.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import bs58 from "bs58";
 import { StrictHex } from "./strict-hex.js";
 import { PubKey } from "./pub-key.js";
@@ -43,7 +43,7 @@ export class Pkh {
     const checkBuf = StrictHex.decode(checkHex).unwrap();
     const bufRes = (FixedIsoBuf<32>).fromIsoBuf(
       32,
-      IsoBuf.from(bs58.decode(pkhStr.slice(14))),
+      SysBuf.from(bs58.decode(pkhStr.slice(14))),
     );
     if (bufRes.err) {
       return Err("Invalid pkh length");

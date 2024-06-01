@@ -1,7 +1,7 @@
 import { Header } from "./header.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { HashNum } from "./hash-num.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class HeaderMine {
   header: Header;
@@ -12,7 +12,7 @@ export class HeaderMine {
 
   randomizeNonce(): void {
     this.header.nonce = (FixedIsoBuf<32>)
-      .fromIsoBuf(32, crypto.getRandomValues(IsoBuf.alloc(32)))
+      .fromIsoBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
       .unwrap();
   }
 
@@ -34,7 +34,7 @@ export class HeaderMine {
     return lowest;
   }
 
-  getLowestNonceForNTimes(n: number): IsoBuf {
+  getLowestNonceForNTimes(n: number): SysBuf {
     let lowest = this.getIdHashNum();
     let nonce = this.header.nonce;
     for (let i = 0; i < n; i++) {

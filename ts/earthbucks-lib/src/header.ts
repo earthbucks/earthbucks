@@ -1,14 +1,14 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = IsoBuf.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = SysBuf.alloc(32, 0xff);
 
   version: number;
   prevBlockId: FixedIsoBuf<32>;
@@ -48,7 +48,7 @@ export class Header {
     this.workParHash = workParHash;
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): SysBuf {
     const bw = new IsoBufWriter();
     bw.writeUInt32BE(this.version);
     bw.write(this.prevBlockId);
@@ -64,7 +64,7 @@ export class Header {
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: IsoBuf): Result<Header, string> {
+  static fromIsoBuf(buf: SysBuf): Result<Header, string> {
     return Header.fromIsoBufReader(new IsoBufReader(buf));
   }
 
@@ -183,7 +183,7 @@ export class Header {
   }
 
   static fromIsoHex(str: string): Result<Header, string> {
-    return Header.fromIsoBuf(IsoBuf.from(str, "hex"));
+    return Header.fromIsoBuf(SysBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
@@ -263,19 +263,19 @@ export class Header {
     return version === 1;
   }
 
-  static isValidPreviousBlockHash(previousBlockHash: IsoBuf): boolean {
+  static isValidPreviousBlockHash(previousBlockHash: SysBuf): boolean {
     return previousBlockHash.length === 32;
   }
 
-  static isValidMerkleRoot(merkleRoot: IsoBuf): boolean {
+  static isValidMerkleRoot(merkleRoot: SysBuf): boolean {
     return merkleRoot.length === 32;
   }
 
-  static isValidNonce(nonce: IsoBuf): boolean {
+  static isValidNonce(nonce: SysBuf): boolean {
     return nonce.length === 32;
   }
 
-  static isValidTarget(target: IsoBuf): boolean {
+  static isValidTarget(target: SysBuf): boolean {
     return target.length === 32;
   }
 
@@ -305,8 +305,8 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  static adjustTarget(targetBuf: IsoBuf, timeDiff: bigint): FixedIsoBuf<32> {
-    const target = BigInt("0x" + IsoBuf.from(targetBuf).toString("hex"));
+  static adjustTarget(targetBuf: SysBuf, timeDiff: bigint): FixedIsoBuf<32> {
+    const target = BigInt("0x" + SysBuf.from(targetBuf).toString("hex"));
     const twoWeeks =
       Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
 
@@ -322,7 +322,7 @@ export class Header {
 
     const newTarget = (target * timeDiff) / twoWeeks; // seconds
 
-    const newTargetBuf = IsoBuf.from(
+    const newTargetBuf = SysBuf.from(
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );

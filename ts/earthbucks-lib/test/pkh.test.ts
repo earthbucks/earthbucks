@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair.js";
 import fs from "fs";
 import path from "path";
 import { Pkh } from "../src/pkh.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/iso-buf.js";
 import { PubKey } from "../src/pub-key.js";
 
 describe("Pkh", () => {

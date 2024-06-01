@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("BlockHeader", () => {
   test("toIsoBuf and fromIsoBuf", () => {
@@ -105,7 +105,7 @@ describe("BlockHeader", () => {
       0,
       FixedIsoBuf.alloc(32),
     );
-    expect(IsoBuf.from(bh1.hash()).toString("hex")).toBe(
+    expect(SysBuf.from(bh1.hash()).toString("hex")).toBe(
       "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00",
     );
   });
@@ -124,7 +124,7 @@ describe("BlockHeader", () => {
       0,
       FixedIsoBuf.alloc(32),
     );
-    expect(IsoBuf.from(bh1.id()).toString("hex")).toBe(
+    expect(SysBuf.from(bh1.id()).toString("hex")).toBe(
       "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e",
     );
   });
@@ -228,7 +228,7 @@ describe("BlockHeader", () => {
         prevAdjustmentBlockHeader,
       ).unwrap();
       expect(bh.blockNum).toBe(Header.BLOCKS_PER_TARGET_ADJ_PERIOD);
-      expect(IsoBuf.from(bh.target).toString("hex")).toEqual(
+      expect(SysBuf.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
     });
@@ -244,37 +244,37 @@ describe("BlockHeader", () => {
     });
 
     it("should correctly adjust the target if timeDiff is less than one week", () => {
-      const targetBuf = IsoBuf.from(
+      const targetBuf = SysBuf.from(
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
       const timeDiff = 2016n * 200n; // Less than a week
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
-      expect(IsoBuf.from(newTarget).toString("hex")).toBe(
+      expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
     });
 
     it("should correctly adjust the target if timeDiff is more than eight weeks", () => {
-      const targetBuf = IsoBuf.from(
+      const targetBuf = SysBuf.from(
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
       const timeDiff = 2016n * 600n * 3n; // More than four weeks
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
-      expect(IsoBuf.from(newTarget).toString("hex")).toBe(
+      expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "00000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffe",
       );
     });
 
     it("should correctly adjust the target if timeDiff is between one and eight weeks", () => {
-      const targetBuf = IsoBuf.from(
+      const targetBuf = SysBuf.from(
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
       const timeDiff = 2016n * 600n; // Two weeks
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
-      expect(IsoBuf.from(newTarget).toString("hex")).toBe(
+      expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
     });

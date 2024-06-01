@@ -1,4 +1,4 @@
-import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
+import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
 
 export class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001;
@@ -15,13 +15,13 @@ export class TxSignature {
     this.sigBuf = sigBuf;
   }
 
-  toIsoBuf(): IsoBuf {
-    const hashTypeBuf = IsoBuf.alloc(1);
+  toIsoBuf(): SysBuf {
+    const hashTypeBuf = SysBuf.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType);
-    return IsoBuf.concat([hashTypeBuf, this.sigBuf]);
+    return SysBuf.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromIsoBuf(buf: IsoBuf): TxSignature {
+  static fromIsoBuf(buf: SysBuf): TxSignature {
     const hashType = buf[0];
     const sigBuf = buf.subarray(1);
     const sigFixedIsoBuf = FixedIsoBuf.fromIsoBuf(64, sigBuf).unwrap();

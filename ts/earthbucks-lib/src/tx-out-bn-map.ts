@@ -1,5 +1,5 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class TxOutBnMap {
   public map: Map<string, TxOutBn>;
@@ -8,8 +8,8 @@ export class TxOutBnMap {
     this.map = new Map<string, TxOutBn>();
   }
 
-  static nameFromOutput(txIdHash: IsoBuf, outputIndex: number): string {
-    const txIdStr = IsoBuf.from(txIdHash).toString("hex");
+  static nameFromOutput(txIdHash: SysBuf, outputIndex: number): string {
+    const txIdStr = SysBuf.from(txIdHash).toString("hex");
     const outputIndexStr = String(outputIndex);
     return `${txIdStr}:${outputIndexStr}`;
   }

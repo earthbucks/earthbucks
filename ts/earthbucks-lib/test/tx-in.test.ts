@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxIn } from "../src/tx-in.js";
 import { Script } from "../src/script.js";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("TxInput", () => {
   test("should create a TxInput", () => {
@@ -31,8 +31,8 @@ describe("TxInput", () => {
       const reader = new IsoBufReader(txInput.toIsoBuf());
       const result = TxIn.fromIsoBufReader(reader).unwrap();
       expect(result).toBeInstanceOf(TxIn);
-      expect(IsoBuf.from(result.inputTxId).toString("hex")).toEqual(
-        IsoBuf.from(inputTxHash).toString("hex"),
+      expect(SysBuf.from(result.inputTxId).toString("hex")).toEqual(
+        SysBuf.from(inputTxHash).toString("hex"),
       );
       expect(result.inputTxNOut).toEqual(inputTxIndex);
       expect(result.script.toIsoStr()).toEqual(script.toIsoStr());

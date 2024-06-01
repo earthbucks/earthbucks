@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { FixedIsoBuf, IsoBuf } from "../src/iso-buf.js";
+import { FixedIsoBuf, SysBuf } from "../src/iso-buf.js";
 
 describe("ScriptInterpreter", () => {
   let tx: Tx;
@@ -38,7 +38,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnSuccess).toBe(false);
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("");
     });
 
@@ -56,7 +56,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
@@ -74,7 +74,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ffff");
     });
 
@@ -92,7 +92,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(256));
     });
 
@@ -110,7 +110,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(65536));
     });
 
@@ -128,7 +128,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
@@ -141,7 +141,7 @@ describe("ScriptInterpreter", () => {
       ).unwrap();
       const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf).unwrap();
       const outputPubKey = outputKey.pubKey.toIsoBuf();
-      expect(IsoBuf.from(outputPubKey).toString("hex")).toEqual(
+      expect(SysBuf.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
@@ -193,7 +193,7 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to IsoBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedIsoBuf.fromIsoBuf(32, IsoBuf.from(hex, "hex")).unwrap(),
+        FixedIsoBuf.fromIsoBuf(32, SysBuf.from(hex, "hex")).unwrap(),
       );
 
       // Generate public keys
@@ -295,7 +295,7 @@ describe("ScriptInterpreter", () => {
           expect(scriptInterpreter.errStr).toEqual(testScript.expected_error);
           expect(
             scriptInterpreter.returnValue &&
-              IsoBuf.from(scriptInterpreter.returnValue).toString("hex"),
+              SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
           ).toBe(testScript.expected_return_value);
           expect(scriptInterpreter.returnSuccess).toBe(
             testScript.expected_success,

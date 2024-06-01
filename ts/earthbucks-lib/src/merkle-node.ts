@@ -1,5 +1,5 @@
 import * as Hash from "./hash.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class MerkleNode {
@@ -19,9 +19,9 @@ export class MerkleNode {
 
   public hash(): FixedIsoBuf<32> {
     if (this.left || this.right) {
-      const leftData = this.left ? this.left.hash() : IsoBuf.alloc(0);
+      const leftData = this.left ? this.left.hash() : SysBuf.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
-      return Hash.doubleBlake3Hash(IsoBuf.concat([leftData, rightData]));
+      return Hash.doubleBlake3Hash(SysBuf.concat([leftData, rightData]));
     } else {
       return this.hashedData;
     }
@@ -43,7 +43,7 @@ export class MerkleNode {
         new MerkleNode(
           left,
           right,
-          Hash.doubleBlake3Hash(IsoBuf.concat([left.hash(), right.hash()])),
+          Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
         ),
       );
     }
@@ -62,7 +62,7 @@ export class MerkleNode {
       new MerkleNode(
         left,
         right,
-        Hash.doubleBlake3Hash(IsoBuf.concat([left.hash(), right.hash()])),
+        Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
       ),
     );
   }

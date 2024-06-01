@@ -1,6 +1,6 @@
 import { MerkleProof } from "./merkle-proof.js";
 import { Tx } from "./tx.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class MerkleTxs {
   public txs: Tx[];

@@ -1,10 +1,10 @@
-import { IsoBuf } from "./iso-buf.js";
+import { SysBuf } from "./iso-buf.js";
 
 export class IsoBufWriter {
-  bufs: IsoBuf[];
+  bufs: SysBuf[];
 
-  constructor(bufs?: IsoBuf[]) {
-    this.bufs = bufs ? bufs.map((arr) => IsoBuf.from(arr)) : [];
+  constructor(bufs?: SysBuf[]) {
+    this.bufs = bufs ? bufs.map((arr) => SysBuf.from(arr)) : [];
   }
 
   getLength(): number {
@@ -15,38 +15,38 @@ export class IsoBufWriter {
     return len;
   }
 
-  toIsoBuf(): IsoBuf {
-    return IsoBuf.concat(this.bufs);
+  toIsoBuf(): SysBuf {
+    return SysBuf.concat(this.bufs);
   }
 
-  write(buf: IsoBuf): this {
+  write(buf: SysBuf): this {
     this.bufs.push(buf);
     return this;
   }
 
   writeUInt8(n: number): this {
-    const buf = IsoBuf.alloc(1);
+    const buf = SysBuf.alloc(1);
     buf.writeUInt8(n, 0);
     this.write(buf);
     return this;
   }
 
   writeUInt16BE(n: number): this {
-    const buf = IsoBuf.alloc(2);
+    const buf = SysBuf.alloc(2);
     buf.writeUInt16BE(n, 0);
     this.write(buf);
     return this;
   }
 
   writeUInt32BE(n: number): this {
-    const buf = IsoBuf.alloc(4);
+    const buf = SysBuf.alloc(4);
     buf.writeUInt32BE(n, 0);
     this.write(buf);
     return this;
   }
 
   writeUInt64BE(bn: bigint): this {
-    const buf = IsoBuf.alloc(8);
+    const buf = SysBuf.alloc(8);
     buf.writeBigInt64BE(bn);
     this.write(buf);
     return this;
@@ -64,50 +64,50 @@ export class IsoBufWriter {
     return this;
   }
 
-  static varIntBufNum(n: number): IsoBuf {
+  static varIntBufNum(n: number): SysBuf {
     if (n < 0) {
       throw new Error("varInt cannot be negative");
     }
-    let buf: IsoBuf;
+    let buf: SysBuf;
     if (n < 253) {
-      buf = IsoBuf.alloc(1);
+      buf = SysBuf.alloc(1);
       buf.writeUInt8(n, 0);
     } else if (n < 0x10000) {
-      buf = IsoBuf.alloc(1 + 2);
+      buf = SysBuf.alloc(1 + 2);
       buf.writeUInt8(253, 0);
       buf.writeUInt16BE(n, 1);
     } else if (n < 0x100000000) {
-      buf = IsoBuf.alloc(1 + 4);
+      buf = SysBuf.alloc(1 + 4);
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
       const bn = BigInt(n);
-      buf = IsoBuf.alloc(1 + 8);
+      buf = SysBuf.alloc(1 + 8);
       buf.writeUInt8(255, 0);
       buf.writeBigInt64BE(bn, 1);
     }
     return buf;
   }
 
-  static varIntBuf(bn: bigint): IsoBuf {
+  static varIntBuf(bn: bigint): SysBuf {
     if (bn < 0n) {
       throw new Error("varInt cannot be negative");
     }
-    let buf: IsoBuf;
+    let buf: SysBuf;
     const n = Number(bn);
     if (n < 253) {
-      buf = IsoBuf.alloc(1);
+      buf = SysBuf.alloc(1);
       buf.writeUInt8(n, 0);
     } else if (n < 0x10000) {
-      buf = IsoBuf.alloc(1 + 2);
+      buf = SysBuf.alloc(1 + 2);
       buf.writeUInt8(253, 0);
       buf.writeUInt16BE(n, 1);
     } else if (n < 0x100000000) {
-      buf = IsoBuf.alloc(1 + 4);
+      buf = SysBuf.alloc(1 + 4);
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
-      buf = IsoBuf.alloc(1 + 8);
+      buf = SysBuf.alloc(1 + 8);
       buf.writeUInt8(255, 0);
       buf.writeBigInt64BE(bn, 1);
     }

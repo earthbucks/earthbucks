@@ -5,7 +5,7 @@ import { MerkleTxs } from "./merkle-txs.js";
 import { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class BlockBuilder {

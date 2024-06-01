@@ -9,7 +9,7 @@ import { PkhKeyMap } from "../src/pkh-key-map.js";
 import { TxSigner } from "../src/tx-signer.js";
 import { ScriptInterpreter } from "../src/script-interpreter.js";
 import { HashCache } from "../src/tx.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxSigner", () => {
@@ -56,9 +56,9 @@ describe("TxSigner", () => {
     const txInput = tx.inputs[0];
     const txOutBn = txOutBnMap.get(txInput.inputTxId, txInput.inputTxNOut);
     const execScript = txOutBn?.txOut.script as Script;
-    const sigBuf = txInput.script.chunks[0].buf as IsoBuf;
+    const sigBuf = txInput.script.chunks[0].buf as SysBuf;
     expect(sigBuf?.length).toBe(65);
-    const pubKeyBuf = txInput.script.chunks[1].buf as IsoBuf;
+    const pubKeyBuf = txInput.script.chunks[1].buf as SysBuf;
     expect(pubKeyBuf?.length).toBe(33);
 
     const stack = [sigBuf, pubKeyBuf];
@@ -101,9 +101,9 @@ describe("TxSigner", () => {
     const txInput1 = tx.inputs[0];
     const txOutput1 = txOutBnMap.get(txInput1.inputTxId, txInput1.inputTxNOut);
     const execScript1 = txOutput1?.txOut.script as Script;
-    const sigBuf1 = txInput1.script.chunks[0].buf as IsoBuf;
+    const sigBuf1 = txInput1.script.chunks[0].buf as SysBuf;
     expect(sigBuf1?.length).toBe(65);
-    const pubKeyBuf1 = txInput1.script.chunks[1].buf as IsoBuf;
+    const pubKeyBuf1 = txInput1.script.chunks[1].buf as SysBuf;
     expect(pubKeyBuf1?.length).toBe(33);
 
     const stack1 = [sigBuf1, pubKeyBuf1];
@@ -124,9 +124,9 @@ describe("TxSigner", () => {
     const txInput2 = tx.inputs[1];
     const txOutput2 = txOutBnMap.get(txInput2.inputTxId, txInput2.inputTxNOut);
     const execScript2 = txOutput2?.txOut.script as Script;
-    const sigBuf2 = txInput2.script.chunks[0].buf as IsoBuf;
+    const sigBuf2 = txInput2.script.chunks[0].buf as SysBuf;
     expect(sigBuf2?.length).toBe(65);
-    const pubKeyBuf2 = txInput2.script.chunks[1].buf as IsoBuf;
+    const pubKeyBuf2 = txInput2.script.chunks[1].buf as SysBuf;
     expect(pubKeyBuf2?.length).toBe(33);
 
     const stack2 = [sigBuf2, pubKeyBuf2];

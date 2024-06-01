@@ -2,7 +2,7 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
+import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 
@@ -24,7 +24,7 @@ export class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: IsoBuf): Result<TxIn, EbxError> {
+  static fromIsoBuf(buf: SysBuf): Result<TxIn, EbxError> {
     const reader = new IsoBufReader(buf);
     return TxIn.fromIsoBufReader(reader);
   }
@@ -63,7 +63,7 @@ export class TxIn {
     return Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
     writer.write(this.inputTxId);
     writer.writeUInt32BE(this.inputTxNOut);

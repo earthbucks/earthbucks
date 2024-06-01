@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxOutBnMap", () => {

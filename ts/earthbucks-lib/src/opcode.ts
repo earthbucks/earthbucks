@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf.js";
+import { SysBuf } from "./iso-buf.js";
 
 export type OpcodeName =
   | "0"

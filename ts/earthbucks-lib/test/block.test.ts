@@ -4,7 +4,7 @@ import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
 import { IsoBufWriter } from "../src/iso-buf-writer.js";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("Block", () => {
   test("toIsoBufWriter", () => {

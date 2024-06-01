@@ -6,7 +6,7 @@ import { Script } from "../src/script.js";
 import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { PkhKeyMap } from "../src/pkh-key-map.js";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxBuilder", () => {
