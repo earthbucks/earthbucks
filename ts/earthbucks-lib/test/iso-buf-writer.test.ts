@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { IsoBufWriter } from "../src/iso-buf-writer";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBufWriter } from "../src/iso-buf-writer.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("IsoBufWriter", () => {
   let bufferWriter: IsoBufWriter;

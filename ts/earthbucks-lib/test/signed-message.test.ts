@@ -1,8 +1,8 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { SignedMessage } from "../src/signed-message";
-import { PubKey } from "../src/pub-key";
-import { PrivKey } from "../src/priv-key";
-import { IsoBuf } from "../src/iso-buf";
+import { SignedMessage } from "../src/signed-message.js";
+import { PubKey } from "../src/pub-key.js";
+import { PrivKey } from "../src/priv-key.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("SignedMessage", () => {
   test("sign and verify", async () => {

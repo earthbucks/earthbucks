@@ -1,8 +1,8 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { TxIn } from "../src/tx-in";
-import { Script } from "../src/script";
-import { IsoBufReader } from "../src/iso-buf-reader";
-import { IsoBuf } from "../src/iso-buf";
+import { TxIn } from "../src/tx-in.js";
+import { Script } from "../src/script.js";
+import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("TxInput", () => {
   test("should create a TxInput", () => {

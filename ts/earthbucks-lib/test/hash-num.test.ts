@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { HashNum } from "../src/hash-num";
+import { HashNum } from "../src/hash-num.js";
 import { IsoBuf } from "../src/iso-buf.js";
 
 describe("TargetNum", () => {

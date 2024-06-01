@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Header } from "../src/header";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
+import { Header } from "../src/header.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("BlockHeader", () => {
   test("toIsoBuf and fromIsoBuf", () => {

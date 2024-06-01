@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { MerkleProof } from "../src/merkle-proof";
-import * as Hash from "../src/hash";
-import { IsoBuf } from "../src/iso-buf";
+import { MerkleProof } from "../src/merkle-proof.js";
+import * as Hash from "../src/hash.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("MerkleProof", () => {
   test("generateProofsAndRoot with 1 data", () => {

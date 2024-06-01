@@ -1,8 +1,8 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { TxOut } from "../src/tx-out";
-import { Script } from "../src/script";
-import { IsoBufReader } from "../src/iso-buf-reader";
-import { IsoBuf } from "../src/iso-buf";
+import { TxOut } from "../src/tx-out.js";
+import { Script } from "../src/script.js";
+import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("TxOutput", () => {
   describe("fromIsoBufReader", () => {

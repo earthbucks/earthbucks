@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Domain } from "../src/domain";
+import { Domain } from "../src/domain.js";
 
 describe("Domain", () => {
   describe("isValidDomain", () => {

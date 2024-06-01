@@ -1,14 +1,14 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Tx, HashCache } from "../src/tx";
-import { TxIn } from "../src/tx-in";
-import { TxOut } from "../src/tx-out";
-import { Script } from "../src/script";
-import { IsoBufReader } from "../src/iso-buf-reader";
-import { IsoBufWriter } from "../src/iso-buf-writer";
-import * as Hash from "../src/hash";
-import { TxSignature } from "../src/tx-signature";
-import { KeyPair } from "../src/key-pair";
-import { IsoBuf } from "../src/iso-buf";
+import { Tx, HashCache } from "../src/tx.js";
+import { TxIn } from "../src/tx-in.js";
+import { TxOut } from "../src/tx-out.js";
+import { Script } from "../src/script.js";
+import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { IsoBufWriter } from "../src/iso-buf-writer.js";
+import * as Hash from "../src/hash.js";
+import { TxSignature } from "../src/tx-signature.js";
+import { KeyPair } from "../src/key-pair.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("Tx", () => {
   describe("constructor", () => {

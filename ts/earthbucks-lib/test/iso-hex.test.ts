@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { StrictHex } from "../src/strict-hex";
-import { IsoBuf } from "../src/iso-buf";
+import { StrictHex } from "../src/strict-hex.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("strictHex", () => {
   test("should return true for valid hex strings", () => {

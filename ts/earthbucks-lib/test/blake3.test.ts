@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import * as Hash from "../src/hash";
-import { IsoBuf } from "../src/iso-buf";
+import * as Hash from "../src/hash.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("blake3", () => {
   test("hash", () => {

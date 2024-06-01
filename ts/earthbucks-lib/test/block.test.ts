@@ -1,10 +1,10 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Header } from "../src/header";
-import { Block } from "../src/block";
-import { Tx } from "../src/tx";
-import { IsoBufWriter } from "../src/iso-buf-writer";
-import { IsoBufReader } from "../src/iso-buf-reader";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
+import { Header } from "../src/header.js";
+import { Block } from "../src/block.js";
+import { Tx } from "../src/tx.js";
+import { IsoBufWriter } from "../src/iso-buf-writer.js";
+import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("Block", () => {
   test("toIsoBufWriter", () => {

@@ -1,8 +1,8 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { PkhKeyMap } from "../src/pkh-key-map";
-import { Pkh } from "../src/pkh";
-import { KeyPair } from "../src/key-pair";
-import { IsoBuf } from "../src/iso-buf";
+import { PkhKeyMap } from "../src/pkh-key-map.js";
+import { Pkh } from "../src/pkh.js";
+import { KeyPair } from "../src/key-pair.js";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("PkhKeyMap", () => {
   let pkhKeyMap: PkhKeyMap;

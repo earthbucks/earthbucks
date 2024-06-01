@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { KeyPair } from "../src/key-pair";
-import { PrivKey } from "../src/priv-key";
+import { KeyPair } from "../src/key-pair.js";
+import { PrivKey } from "../src/priv-key.js";
 import fs from "fs";
 import path from "path";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBuf } from "../src/iso-buf.js";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {

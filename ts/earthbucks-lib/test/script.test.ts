@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { Script } from "../src/script";
-import { IsoBuf } from "../src/iso-buf";
+import { Script } from "../src/script.js";
+import { IsoBuf } from "../src/iso-buf.js";
 import fs from "fs";
 import path from "path";
 

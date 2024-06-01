@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { HeaderMine } from "../src/header-mine";
-import { Header } from "../src/header";
-import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
+import { HeaderMine } from "../src/header-mine.js";
+import { Header } from "../src/header.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {

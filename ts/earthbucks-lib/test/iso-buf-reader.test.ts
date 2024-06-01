@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from "vitest";
-import { IsoBufReader } from "../src/iso-buf-reader";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { IsoBuf } from "../src/iso-buf.js";
 import fs from "fs";
 import path from "path";
 

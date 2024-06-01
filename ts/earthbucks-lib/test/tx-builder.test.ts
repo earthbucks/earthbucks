@@ -1,13 +1,13 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { TxBuilder } from "../src/tx-builder";
-import { TxOutBnMap } from "../src/tx-out-bn-map";
-import { TxOut } from "../src/tx-out";
-import { Script } from "../src/script";
-import { KeyPair } from "../src/key-pair";
-import { Pkh } from "../src/pkh";
-import { PkhKeyMap } from "../src/pkh-key-map";
-import { IsoBuf } from "../src/iso-buf";
-import { TxOutBn } from "../src/tx-out-bn";
+import { TxBuilder } from "../src/tx-builder.js";
+import { TxOutBnMap } from "../src/tx-out-bn-map.js";
+import { TxOut } from "../src/tx-out.js";
+import { Script } from "../src/script.js";
+import { KeyPair } from "../src/key-pair.js";
+import { Pkh } from "../src/pkh.js";
+import { PkhKeyMap } from "../src/pkh-key-map.js";
+import { IsoBuf } from "../src/iso-buf.js";
+import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxBuilder", () => {
   let txBuilder: TxBuilder;

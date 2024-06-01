@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { VarInt } from "../src/var-int";
+import { VarInt } from "../src/var-int.js";
 import { IsoBuf } from "../src/iso-buf.js";
 
 describe("VarInt", () => {
