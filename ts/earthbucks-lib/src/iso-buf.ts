@@ -61,6 +61,15 @@ class IsoBuf extends SysBuf {
   toStrictHex(): string {
     return encodeHex(this);
   }
+
+  static fromBase58(size: number, base58: string): Result<IsoBuf, EbxError> {
+    const buf = SysBuf.from(bs58.decode(base58));
+    return IsoBuf.fromBuf(size, buf);
+  }
+
+  toBase58(): string {
+    return bs58.encode(this);
+  }
 }
 
 const sizeSymbol = Symbol("size");
@@ -111,6 +120,18 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
 
   toStrictHex(): string {
     return encodeHex(this);
+  }
+
+  static fromBase58<N extends number>(
+    size: N,
+    base58: string,
+  ): Result<FixedIsoBuf<N>, EbxError> {
+    const buf = SysBuf.from(bs58.decode(base58));
+    return FixedIsoBuf.fromBuf(size, buf);
+  }
+
+  toBase58(): string {
+    return bs58.encode(this);
   }
 }
 
