@@ -68,7 +68,9 @@ describe("Block", () => {
     const br = new IsoBufReader(buf);
     const block2 = Block.fromIsoBufReader(br).unwrap();
     expect(block2.header.version).toBe(bh.version);
-    expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);
+    expect(block2.header.prevBlockId.toString("hex")).toEqual(
+      bh.prevBlockId.toString("hex"),
+    );
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
     expect(block2.header.timestamp).toBe(bh.timestamp);
     expect(block2.header.target).toEqual(bh.target);

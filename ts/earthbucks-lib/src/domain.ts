@@ -1,5 +1,3 @@
-import { IsoBuf } from "./iso-buf";
-
 export class Domain {
   public domainStr: string;
 

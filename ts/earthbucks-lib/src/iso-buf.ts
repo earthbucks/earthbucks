@@ -14,21 +14,34 @@ import { EbxError, InvalidSizeError } from "./ebx-error.js";
 const IsoBuf = Buffer;
 type IsoBuf = Buffer;
 
+const sizeSymbol = Symbol("size");
+
 class FixedIsoBuf<N extends number> extends IsoBuf {
-  size: N;
+  [sizeSymbol]: N;
+
   constructor(size: N, ...args: ConstructorParameters<typeof IsoBuf>) {
     super(...args);
     if (this.length !== size) {
       throw new InvalidSizeError(None);
     }
-    this.size = size;
+    this[sizeSymbol] = size;
   }
 
-  static fromBuffer<N extends number>(buf: IsoBuf, size: N): Result<FixedIsoBuf<N>, EbxError> {
+  static fromIsoBuf<N extends number>(
+    size: N,
+    buf: IsoBuf,
+  ): Result<FixedIsoBuf<N>, EbxError> {
     if (buf.length !== size) {
       return Err(new InvalidSizeError(None));
     }
-    return Ok(new FixedIsoBuf<N>(size, buf));
+    // weird roundabout prototype code to avoid calling "new" because on Buffer
+    // that is actually deprecated
+    const newBuf = Buffer.alloc(size);
+    newBuf.set(buf);
+    Object.setPrototypeOf(newBuf, FixedIsoBuf.prototype);
+    const fixedIsoBufN = newBuf as FixedIsoBuf<N>;
+    fixedIsoBufN[sizeSymbol] = size;
+    return Ok(fixedIsoBufN);
   }
 
   // Buffer.alloc

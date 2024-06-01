@@ -1,7 +1,7 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class Header {
@@ -76,13 +76,13 @@ export class Header {
       return versionRes;
     }
     const version = versionRes.unwrap();
-    const previousBlockHashRes = br
-      .read(32)
+    const previousBlockIdRes = br
+      .readFixed<32>(32)
       .mapErr((err) => `Could not read previous block hash: ${err}`);
-    if (previousBlockHashRes.err) {
-      return previousBlockHashRes;
+    if (previousBlockIdRes.err) {
+      return previousBlockIdRes;
     }
-    const previousBlockHash = previousBlockHashRes.unwrap();
+    const previousBlockId = previousBlockIdRes.unwrap();
     const merkleRootRes = br
       .read(32)
       .mapErr((err) => `Could not read merkle root: ${err}`);
@@ -149,7 +149,7 @@ export class Header {
     return Ok(
       new Header(
         version,
-        previousBlockHash,
+        previousBlockId,
         merkleRoot,
         timestamp,
         blockNum,
@@ -297,11 +297,11 @@ export class Header {
     return this.blockNum === 0n && this.prevBlockId.every((byte) => byte === 0);
   }
 
-  hash(): IsoBuf {
+  hash(): FixedIsoBuf<32> {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): IsoBuf {
+  id(): FixedIsoBuf<32> {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 

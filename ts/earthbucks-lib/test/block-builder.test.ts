@@ -98,7 +98,9 @@ describe("BlockBuilder", () => {
     const bb = BlockBuilder.fromBlock(block);
     const block2 = bb.toBlock();
     expect(block2.header.version).toBe(bh.version);
-    expect(block2.header.prevBlockId).toEqual(bh.prevBlockId);
+    expect(block2.header.prevBlockId.toString("hex")).toEqual(
+      bh.prevBlockId.toString("hex"),
+    );
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
     expect(bb.header.timestamp).toEqual(0n);
     expect(block2.header.target).toEqual(bh.target);

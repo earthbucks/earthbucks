@@ -20,7 +20,9 @@ describe("BlockHeader", () => {
     const buf = bh1.toIsoBuf();
     const bh2 = Header.fromIsoBuf(buf).unwrap();
     expect(bh1.version).toBe(bh2.version);
-    expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
+    expect(bh1.prevBlockId.toString("hex")).toEqual(
+      bh2.prevBlockId.toString("hex"),
+    );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
     expect(bh1.timestamp).toBe(bh2.timestamp);
     expect(bh1.target).toEqual(bh2.target);
@@ -45,7 +47,9 @@ describe("BlockHeader", () => {
     const buf = bh1.toIsoBuf();
     const bh2 = Header.fromIsoBuf(buf).unwrap();
     expect(bh1.version).toBe(bh2.version);
-    expect(bh1.prevBlockId).toEqual(bh2.prevBlockId);
+    expect(bh1.prevBlockId.toString("hex")).toEqual(
+      bh2.prevBlockId.toString("hex"),
+    );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
     expect(bh1.timestamp).toBe(bh2.timestamp);
     expect(bh1.target).toEqual(bh2.target);
