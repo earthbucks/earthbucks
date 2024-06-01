@@ -2,7 +2,7 @@ import {
   EbxError,
   InvalidChecksumError,
   InvalidEncodingError,
-} from "dist/ebx-error.js";
+} from "./ebx-error.js";
 import * as Hash from "./hash.js";
 import { SysBuf, IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
@@ -27,11 +27,8 @@ export class Pkh {
     return Pkh.fromPubKeyBuf(pubKey.toIsoBuf());
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<32>): Result<Pkh, EbxError> {
-    if (buf.length !== 32) {
-      return Err(new InvalidSizeError(None));
-    }
-    return Ok(new Pkh(buf));
+  static fromIsoBuf(buf: FixedIsoBuf<32>): Pkh {
+    return new Pkh(buf);
   }
 
   toIsoStr(): string {
@@ -60,7 +57,7 @@ export class Pkh {
     if (!checkHash.equals(checkBuf)) {
       return Err(new InvalidChecksumError(None));
     }
-    return Pkh.fromIsoBuf(buf);
+    return Ok(Pkh.fromIsoBuf(buf));
   }
 
   static isValidStringFmt(pkhStr: string): boolean {
