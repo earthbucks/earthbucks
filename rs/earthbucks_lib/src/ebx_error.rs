@@ -6,6 +6,9 @@ pub enum EbxError {
         source: Option<Box<EbxError>>,
         message: String,
     },
+    InvalidSizeError {
+        source: Option<Box<EbxError>>,
+    },
     NotEnoughDataError {
         source: Option<Box<EbxError>>,
     },
@@ -40,6 +43,9 @@ impl fmt::Display for EbxError {
         match self {
             EbxError::GenericError { message, .. } => {
                 write!(f, "ebx error: {}", message)
+            }
+            EbxError::InvalidSizeError { .. } => {
+                write!(f, "invalid size")
             }
             EbxError::NotEnoughDataError { .. } => {
                 write!(f, "not enough bytes in the buffer to read")

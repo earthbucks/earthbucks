@@ -20,6 +20,16 @@ export class GenericError extends EbxError {
   }
 }
 
+export class InvalidSizeError extends EbxError {
+  constructor(public source: Option<EbxError>) {
+    super();
+  }
+
+  toString(): string {
+    return `invalid size`;
+  }
+}
+
 export class NotEnoughDataError extends EbxError {
   constructor(public source: Option<EbxError>) {
     super();

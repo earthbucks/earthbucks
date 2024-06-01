@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import {
@@ -30,6 +30,14 @@ export class IsoBufReader {
     newBuf.set(buf);
     this.pos += len;
     return Ok(newBuf);
+  }
+
+  readFixed<N extends number>(len: N): Result<FixedIsoBuf<N>, EbxError> {
+    const res = this.read(len);
+    if (res.err) {
+      return Err(res.val);
+    }
+    return FixedIsoBuf.fromBuffer(res.unwrap(), len) as Result<FixedIsoBuf<N>, EbxError>;
   }
 
   readRemainder(): IsoBuf {
