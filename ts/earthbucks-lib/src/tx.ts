@@ -268,7 +268,10 @@ export class Tx {
     hashType: number,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = IsoBuf.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = FixedIsoBuf.fromIsoBuf(
+      64,
+      IsoBuf.from(ecdsaSign(hash, privateKey).signature),
+    ).unwrap();
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
@@ -288,7 +291,10 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = IsoBuf.from(ecdsaSign(hash, privateKey).signature);
+    const sigBuf = FixedIsoBuf.fromIsoBuf(
+      64,
+      IsoBuf.from(ecdsaSign(hash, privateKey).signature),
+    ).unwrap();
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }

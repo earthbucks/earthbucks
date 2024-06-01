@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf.js";
+import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class HashNum {
@@ -8,7 +8,7 @@ export class HashNum {
     this.num = num;
   }
 
-  static fromIsoBuf(target: IsoBuf): Result<HashNum, string> {
+  static fromIsoBuf(target: FixedIsoBuf<32>): Result<HashNum, string> {
     if (target.length !== 32) {
       return Err("Invalid target length");
     }
@@ -17,15 +17,14 @@ export class HashNum {
     return Ok(new HashNum(num));
   }
 
-  toIsoBuf(): Result<IsoBuf, string> {
+  toIsoBuf(): Result<FixedIsoBuf<32>, string> {
     let hex = this.num.toString(16);
-    // ensure length is 64 characters
     if (hex.length > 64) {
       return Err("Target number is too large");
     }
     while (hex.length < 64) {
       hex = "0" + hex;
     }
-    return Ok(IsoBuf.from(hex, "hex"));
+    return Ok(FixedIsoBuf.fromHex(32, hex).unwrap());
   }
 }
