@@ -1,5 +1,7 @@
 # Other Chains
 
+- [x] [Bitcoin](https://bitcoin.org/bitcoin.pdf): EarthBucks is a new chain
+  with a new design, but with some similarities to Bitcoin.
 - [x] [Bitcoin Cash](https://bitcoincash.org): The closest blockchain to
   EarthBucks, but with far more baggage. EarthBucks is new code, new chain, new
   brand, and with a better design (no reorgs).
@@ -23,12 +25,16 @@
   "Block-lattice architecture". Not like EarthBucks.
 - [x] [Radiant](https://radiantblockchain.org/radiant.pdf): "Assets" and Proof
   of Stake. Not like EarthBucks.
-- [ ] [near](https://near.org/papers/the-rainbow-bridge/)
-- [ ] [polkadot](https://polkadot.network/PolkaDotPaper.pdf)
-- [ ] [cosmos](https://cosmos.network/resources/whitepaper)
-- [ ] [algorand](https://www.algorand.com/resources/white-papers/)
 
 ## Detailed Notes
+
+## Bitcoin
+
+It is my opinion that Bitcoin would have worked just fine if it simply hadn't
+had a maximum block size limit. However, in light of that limit, I have decided
+to make a large number of changes that go beyond just increasing the limit.
+EarthBucks is a from-scratch new blockchain with a new design, new code, and a
+new brand. It is not a fork of Bitcoin, but it is inspired by Bitcoin.
 
 ## Bitcoin Cash
 
