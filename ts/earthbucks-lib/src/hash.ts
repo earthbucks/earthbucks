@@ -12,11 +12,11 @@ let blake3Mac: MacFunction;
 if (typeof document === "undefined") {
   // running in a server environment
   blake3Hash = function blake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(32, hash(data) as SysBuf).unwrap();
+    return FixedIsoBuf.fromBuf(32, hash(data) as SysBuf).unwrap();
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
+    return FixedIsoBuf.fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {
@@ -32,7 +32,7 @@ if (typeof document === "undefined") {
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
+    return FixedIsoBuf.fromBuf(32, blake3Hash(blake3Hash(data))).unwrap();
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {

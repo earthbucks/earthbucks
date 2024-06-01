@@ -326,6 +326,6 @@ export class Header {
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );
-    return (FixedIsoBuf<32>).fromBuf(32, newTargetBuf).unwrap();
+    return FixedIsoBuf.fromBuf(32, newTargetBuf).unwrap();
   }
 }

@@ -76,7 +76,7 @@ export class PrivKey {
       return bufRes;
     }
     const buf = bufRes.unwrap();
-    const buf32: FixedIsoBuf<32> = (FixedIsoBuf<32>).fromBuf(32, buf).unwrap();
+    const buf32: FixedIsoBuf<32> = FixedIsoBuf.fromBuf(32, buf).unwrap();
     return PrivKey.fromIsoBuf(buf32);
   }
 
