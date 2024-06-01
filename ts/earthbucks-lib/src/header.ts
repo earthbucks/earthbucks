@@ -11,7 +11,7 @@ export class Header {
   static readonly INITIAL_TARGET = IsoBuf.alloc(32, 0xff);
 
   version: number;
-  prevBlockId: IsoBuf;
+  prevBlockId: FixedIsoBuf<32>;
   merkleRoot: IsoBuf;
   timestamp: bigint; // seconds
   blockNum: bigint;
@@ -24,7 +24,7 @@ export class Header {
 
   constructor(
     version: number,
-    prevBlockId: IsoBuf,
+    prevBlockId: FixedIsoBuf<32>,
     merkleRoot: IsoBuf,
     timestamp: bigint,
     blockNum: bigint,
@@ -198,7 +198,7 @@ export class Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       timestamp,
       0n,

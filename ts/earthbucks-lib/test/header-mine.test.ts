@@ -1,13 +1,13 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { HeaderMine } from "../src/header-mine";
 import { Header } from "../src/header";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
 
 describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {
     const header = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       BigInt(0),
       BigInt(0),
@@ -27,7 +27,7 @@ describe("HeaderMine", () => {
   test("getLowestNonceForNTimes", () => {
     const header = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       BigInt(0),
       BigInt(0),

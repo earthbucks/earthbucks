@@ -6,13 +6,13 @@ import { IsoBufWriter } from "../src/iso-buf-writer";
 import { IsoBufReader } from "../src/iso-buf-reader";
 import { BlockBuilder } from "../src/block-builder";
 import { Script } from "../src/script";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -39,7 +39,7 @@ describe("BlockBuilder", () => {
     const outputAmount = 0n;
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version).toBe(1);
-    expect(bb.header.prevBlockId).toEqual(IsoBuf.alloc(32));
+    expect(bb.header.prevBlockId).toEqual((FixedIsoBuf<32>).alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
@@ -53,7 +53,7 @@ describe("BlockBuilder", () => {
     const target = IsoBuf.alloc(32);
     const prevBlockHeader = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -82,7 +82,7 @@ describe("BlockBuilder", () => {
   test("toBlock", () => {
     const bh = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,

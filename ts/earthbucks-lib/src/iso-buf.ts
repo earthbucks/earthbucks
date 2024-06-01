@@ -46,7 +46,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
 
   // Buffer.alloc
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
-    return new FixedIsoBuf<N>(size, Buffer.alloc(size, fill));
+    return (FixedIsoBuf<N>).fromIsoBuf(size, IsoBuf.alloc(size, fill)).unwrap();
   }
 }
 

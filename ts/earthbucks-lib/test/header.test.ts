@@ -1,12 +1,12 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header";
-import { IsoBuf } from "../src/iso-buf";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf";
 
 describe("BlockHeader", () => {
   test("toIsoBuf and fromIsoBuf", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -33,7 +33,7 @@ describe("BlockHeader", () => {
   test("toIsoBuf", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -60,7 +60,7 @@ describe("BlockHeader", () => {
   test("isValid", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -77,7 +77,7 @@ describe("BlockHeader", () => {
   test("isGenesis", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -94,7 +94,7 @@ describe("BlockHeader", () => {
   test("hash", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -113,7 +113,7 @@ describe("BlockHeader", () => {
   test("id", () => {
     const bh1 = new Header(
       1,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       IsoBuf.alloc(32),
       0n,
       0n,
@@ -133,7 +133,7 @@ describe("BlockHeader", () => {
     test("fromPrevBlockHeader", () => {
       const prevBlockHeader = new Header(
         1,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         IsoBuf.alloc(32),
         0n,
         0n,
@@ -159,7 +159,7 @@ describe("BlockHeader", () => {
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
       const prevBlockHeader = new Header(
         1,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         IsoBuf.alloc(32),
         Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
         Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
@@ -172,7 +172,7 @@ describe("BlockHeader", () => {
       );
       const prevAdjustmentBlockHeader = new Header(
         1,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         IsoBuf.alloc(32),
         0n,
         0n,
@@ -199,7 +199,7 @@ describe("BlockHeader", () => {
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
         1,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         IsoBuf.alloc(32),
         timeDiff - 1n,
         Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
@@ -212,7 +212,7 @@ describe("BlockHeader", () => {
       );
       const prevAdjustmentBlockHeader = new Header(
         1,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         IsoBuf.alloc(32),
         0n,
         0n,
