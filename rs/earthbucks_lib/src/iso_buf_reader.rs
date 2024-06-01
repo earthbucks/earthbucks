@@ -117,7 +117,7 @@ impl IsoBufReader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::strict_hex::StrictHex;
+    use crate::iso_buf::StrictHex;
     use byteorder::{BigEndian, WriteBytesExt};
     use serde::Deserialize;
     use std::fs;

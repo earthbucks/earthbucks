@@ -1,7 +1,6 @@
 import * as Hash from "./hash.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import bs58 from "bs58";
-import { StrictHex } from "./strict-hex.js";
 import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
@@ -40,7 +39,11 @@ export class Pkh {
       return Err("Invalid pkh format");
     }
     const checkHex = pkhStr.slice(6, 14);
-    const checkBuf = StrictHex.decode(checkHex).unwrap();
+    const checkBufRes = FixedIsoBuf.fromStrictHex(4, checkHex);
+    if (checkBufRes.err) {
+      return Err("Invalid pkh checksum");
+    }
+    const checkBuf = checkBufRes.unwrap();
     const bufRes = (FixedIsoBuf<32>).fromBuf(
       32,
       SysBuf.from(bs58.decode(pkhStr.slice(14))),

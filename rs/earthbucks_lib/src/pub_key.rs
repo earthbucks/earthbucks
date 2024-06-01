@@ -1,7 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::blake3_hash;
+use crate::iso_buf::StrictHex;
 use crate::priv_key::PrivKey;
-use crate::strict_hex::StrictHex;
 use bs58;
 use secp256k1::PublicKey;
 

@@ -1,7 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::hash::{blake3_hash, double_blake3_hash};
+use crate::iso_buf::StrictHex;
 use crate::pub_key;
-use crate::strict_hex::StrictHex;
 use bs58;
 
 #[derive(Debug, Clone)]

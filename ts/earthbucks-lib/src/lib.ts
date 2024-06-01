@@ -8,7 +8,6 @@ export * from "./header-mine.js";
 export * from "./header.js";
 export * from "./iso-buf-reader.js";
 export * from "./iso-buf-writer.js";
-export * from "./strict-hex.js";
 export * from "./key-pair.js";
 export * from "./merkle-node.js";
 export * from "./merkle-proof.js";

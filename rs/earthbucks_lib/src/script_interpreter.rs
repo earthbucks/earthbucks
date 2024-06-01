@@ -1097,8 +1097,8 @@ impl<'a> ScriptInterpreter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::iso_buf::StrictHex;
     use crate::pkh::Pkh;
-    use crate::strict_hex::StrictHex;
     use crate::tx_in::TxIn;
     use crate::tx_out::TxOut;
 

@@ -1,5 +1,5 @@
 use crate::ebx_error::EbxError;
-use crate::strict_hex::StrictHex;
+use crate::iso_buf::StrictHex;
 use bs58;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};

@@ -1,8 +1,8 @@
 use crate::ebx_error::EbxError;
+use crate::iso_buf::StrictHex;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
-use crate::strict_hex::StrictHex;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptChunk {

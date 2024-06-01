@@ -12,15 +12,15 @@ const SysBuf = Buffer;
 type SysBuf = Buffer;
 
 class IsoBuf extends SysBuf {
-  static isValidHex(hex: string): boolean {
+  private static isValidHex(hex: string): boolean {
     return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
   }
 
-  static encodeHex(buffer: SysBuf): string {
+  private static encodeHex(buffer: SysBuf): string {
     return buffer.toString("hex");
   }
 
-  static decodeHex(hex: string): Result<SysBuf, EbxError> {
+  private static decodeHex(hex: string): Result<SysBuf, EbxError> {
     if (!IsoBuf.isValidHex(hex)) {
       return Err(new InvalidHexError(None));
     }
@@ -57,7 +57,7 @@ class IsoBuf extends SysBuf {
   }
 
   toStrictHex(): string {
-    return this.toString("hex");
+    return IsoBuf.encodeHex(this);
   }
 }
 

@@ -2,10 +2,6 @@ import { describe, test, expect } from "vitest";
 import { SysBuf, IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("IsoBuf", () => {
-  test("isValidHex", () => {
-    expect(IsoBuf.isValidHex("deadbeef")).toEqual(true);
-  });
-
   test("to/from buf", () => {
     const buf = Buffer.from("deadbeef", "hex");
     const isoBuf = IsoBuf.fromBuf(buf.length, buf).unwrap();

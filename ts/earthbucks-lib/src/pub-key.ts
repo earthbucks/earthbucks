@@ -1,5 +1,4 @@
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
 import * as Hash from "./hash.js";
@@ -50,7 +49,7 @@ export class PubKey {
   }
 
   static fromIsoHex(hex: string): Result<PubKey, EbxError> {
-    const res = StrictHex.decode(hex);
+    const res = FixedIsoBuf.fromStrictHex(PubKey.SIZE, hex);
     if (res.err) {
       return Err(res.val);
     }
@@ -71,7 +70,7 @@ export class PubKey {
       return Err(new InvalidEncodingError(None));
     }
     const checkHex = str.slice(6, 14);
-    const res = StrictHex.decode(checkHex);
+    const res = FixedIsoBuf.fromStrictHex(4, checkHex);
     if (res.err) {
       return Err(res.val);
     }

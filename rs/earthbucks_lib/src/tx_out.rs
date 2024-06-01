@@ -51,8 +51,8 @@ impl TxOut {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::iso_buf::StrictHex;
     use crate::script::Script;
-    use crate::strict_hex::StrictHex;
 
     #[test]
     fn test_tx_output_from_iso_buf_and_to_iso_buf() {

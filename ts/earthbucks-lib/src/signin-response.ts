@@ -1,9 +1,8 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { StrictHex } from "./strict-hex.js";
 import { SignedMessage } from "./signed-message.js";
 import { SigninChallenge } from "./signin-challenge.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf, IsoBuf } from "./iso-buf.js";
 
 export class SigninResponse {
   signedMessage: SignedMessage;
@@ -43,7 +42,11 @@ export class SigninResponse {
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const buf = StrictHex.decode(hex).unwrap();
+    const bufRes = IsoBuf.fromStrictHex(hex.length / 2, hex);
+    if (bufRes.err) {
+      throw new Error("Invalid hex");
+    }
+    const buf = bufRes.unwrap();
     return SigninResponse.toIsoBuf(buf, domain);
   }
 

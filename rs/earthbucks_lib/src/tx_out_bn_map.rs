@@ -1,4 +1,4 @@
-use crate::strict_hex::StrictHex;
+use crate::iso_buf::StrictHex;
 use crate::tx::Tx;
 use crate::tx_out::TxOut;
 use crate::tx_out_bn::TxOutBn;

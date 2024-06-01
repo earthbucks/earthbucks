@@ -1,7 +1,7 @@
 use crate::hash::double_blake3_hash;
+use crate::iso_buf::StrictHex;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
-use crate::strict_hex::StrictHex;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
@@ -143,7 +143,7 @@ impl MerkleProof {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::strict_hex::StrictHex;
+    use crate::iso_buf::StrictHex;
 
     #[test]
     fn generate_proofs_and_root_with_1_data() {

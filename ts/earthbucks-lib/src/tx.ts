@@ -10,7 +10,6 @@ import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
-import { StrictHex } from "./strict-hex.js";
 import { EbxError } from "./ebx-error.js";
 
 export class HashCache {
@@ -103,7 +102,7 @@ export class Tx {
   }
 
   static fromIsoHex(hex: string): Result<Tx, EbxError> {
-    const bufRes = StrictHex.decode(hex);
+    const bufRes = FixedIsoBuf.fromStrictHex(hex.length / 2, hex);
     if (bufRes.err) {
       return bufRes;
     }

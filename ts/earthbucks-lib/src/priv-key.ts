@@ -1,6 +1,5 @@
 import secp256k1 from "secp256k1";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
@@ -73,7 +72,7 @@ export class PrivKey {
   }
 
   static fromIsoHex(hex: string): Result<PrivKey, EbxError> {
-    const bufRes = StrictHex.decode(hex);
+    const bufRes = FixedIsoBuf.fromStrictHex(32, hex);
     if (bufRes.err) {
       return bufRes;
     }
@@ -94,7 +93,7 @@ export class PrivKey {
       return Err(new InvalidEncodingError(None));
     }
     const hexStr = str.slice(6, 14);
-    const checkBufRes = StrictHex.decode(hexStr);
+    const checkBufRes = FixedIsoBuf.fromStrictHex(4, hexStr);
     if (checkBufRes.err) {
       return checkBufRes;
     }

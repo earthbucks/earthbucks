@@ -1,11 +1,11 @@
 use crate::ebx_error::EbxError;
 use crate::hash::blake3_hash;
 use crate::hash::double_blake3_hash;
+use crate::iso_buf::StrictHex;
 use crate::iso_buf_reader::IsoBufReader;
 use crate::iso_buf_writer::IsoBufWriter;
 use crate::pub_key::PubKey;
 use crate::script::Script;
-use crate::strict_hex::StrictHex;
 use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
 use crate::tx_signature::TxSignature;
