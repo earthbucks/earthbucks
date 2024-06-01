@@ -4,30 +4,57 @@
 
 Small casual transactions for everybody on Planet Earth.
 
-## Launch Information
-
 Website: [earthbucks.com](https://earthbucks.com)
 
-## Software Architecture
+## Software Repository Information
+
+This repository hosts open-source software for EarthBucks. See the LICENSE file
+in each project folder for details. The primary software is the library,
+implmented in both Rust and TypeScript, which provides all fundamental data
+structures and algorithms. Other software is provided to run run mines, walles,
+and apps.
+
+## Software Packages
+
+Rust is the reference implementation. A lot of software is also re-implemented
+in TypeScript both as a check on the Rust code and also to make building web
+apps easier. Other code is TypeScript only if it is only for building web apps.
 
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks_tf (tensorflow methods for GPU POW)
-- earthbucks_client (works with API)
-- earthbucks_db (mysql database, works with builder, follower, pool, wallet, apps)
-- earthbucks_builder (build blocks, build merkle trees, validate txs, validate blocks)
-- earthbucks_api (works with builder)
-- earthbucks_follower (follow block headers, validate txs + merkle proofs)
+- earthbucks_mine (build/validate blocks, database, API for mines, API for wallets)
+- earthbucks_archive (archive all blocks / transactions)
+- earthbucks_spv (SPV node, wallet, follows mines)
 
 ### TypeScript (ts)
 
-Libraries/tools:
+Re-implementations:
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks-blake3 (async blake3 in a web worker)
 - earthbucks-tf (tensorflow methods for GPU POW)
-- earthbucks-db (mysql database, works with builder, follower, pool, wallet, apps)
-- earthbucks-api (works with builder and/or follower and/or wallet, via client)
-- earthbucks-wallet (wallet, works with follower)
-- earthbucks-explorer (block explorer, works with builder)
+- earthbucks-mine (build/validate blocks, database, API for mines, API for wallets)
+- earthbucks-archive (archive all blocks / transactions)
+- earthbucks-spv (SPV node, wallet, follows mines)
+
+Web apps:
+
+- earthbucks-blake3 (async blake3 in a web worker)
+- earthbucks-mine-ui
+- earthbucks-archive-ui
+- earthbucks-spv-ui
+
+## Mine API
+
+Custom RPC API based on isomorphic buffers. An **isomorphic buffer** is a buffer
+that encodes/decodes the same each time, suitable for hashing and signatures.
+
+- Authenticate
+- Submit new transaction
+- Submit new block
+- Get transaction
+- Get block header
+- Get block
+- Get tip
+- Get mines
