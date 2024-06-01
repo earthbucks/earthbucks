@@ -12,16 +12,16 @@ describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0n,
       0n,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -34,12 +34,12 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = (FixedIsoBuf<32>).alloc(32);
+    const target = FixedIsoBuf.alloc(32);
     const outputScript = new Script();
     const outputAmount = 0n;
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version).toBe(1);
-    expect(bb.header.prevBlockId).toEqual((FixedIsoBuf<32>).alloc(32));
+    expect(bb.header.prevBlockId).toEqual(FixedIsoBuf.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
@@ -50,19 +50,19 @@ describe("BlockBuilder", () => {
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
     const outputAmount = 0n;
-    const target = (FixedIsoBuf<32>).alloc(32);
+    const target = FixedIsoBuf.alloc(32);
     const prevBlockHeader = new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0n,
       0n,
       target,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
       prevBlockHeader,
@@ -82,16 +82,16 @@ describe("BlockBuilder", () => {
   test("toBlock", () => {
     const bh = new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0n,
       0n,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);

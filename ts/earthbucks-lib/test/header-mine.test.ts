@@ -7,16 +7,16 @@ describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {
     const header = new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       BigInt(0),
       BigInt(0),
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
     const headerMine = new HeaderMine(header);
     const lowest = headerMine.getLowestIdForNTimes(10);
@@ -27,16 +27,16 @@ describe("HeaderMine", () => {
   test("getLowestNonceForNTimes", () => {
     const header = new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       BigInt(0),
       BigInt(0),
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
     const headerMine = new HeaderMine(header);
     const nonce = headerMine.getLowestNonceForNTimes(10);

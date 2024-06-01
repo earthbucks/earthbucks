@@ -2,18 +2,18 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { IsoBuf } from "./iso-buf.js";
+import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 
 export class TxIn {
-  public inputTxId: IsoBuf;
+  public inputTxId: FixedIsoBuf<32>;
   public inputTxNOut: number;
   public script: Script;
   public lockRel: number;
 
   constructor(
-    inputTxId: IsoBuf,
+    inputTxId: FixedIsoBuf<32>,
     inputTxNOut: number,
     script: Script,
     lockRel: number,
@@ -30,7 +30,7 @@ export class TxIn {
   }
 
   static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, EbxError> {
-    const inputTxHashRes = reader.read(32);
+    const inputTxHashRes = reader.readFixed(32);
     if (inputTxHashRes.err) {
       return inputTxHashRes;
     }
@@ -90,6 +90,7 @@ export class TxIn {
   }
 
   static fromCoinbase(script: Script): TxIn {
-    return new TxIn(IsoBuf.alloc(32), 0xffffffff, script, 0);
+    const emptyId = FixedIsoBuf.alloc(32);
+    return new TxIn(emptyId, 0xffffffff, script, 0);
   }
 }
