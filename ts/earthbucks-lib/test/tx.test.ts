@@ -8,7 +8,7 @@ import { IsoBufWriter } from "../src/iso-buf-writer.js";
 import * as Hash from "../src/hash.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { FixedIsoBuf, IsoBuf } from "../src/iso-buf.js";
 
 describe("Tx", () => {
   describe("constructor", () => {
@@ -292,10 +292,12 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = IsoBuf.from(
-          "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-          "hex",
-        );
+        const privateKey = (FixedIsoBuf<32>)
+          .fromHex(
+            32,
+            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+          )
+          .unwrap();
         const script = IsoBuf.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;
@@ -346,10 +348,12 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = 0;
-        const privateKey = IsoBuf.from(
-          "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-          "hex",
-        );
+        const privateKey = (FixedIsoBuf<32>)
+          .fromHex(
+            32,
+            "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
+          )
+          .unwrap();
         const script = IsoBuf.from([]);
         const amount = BigInt(100);
         const hashType = TxSignature.SIGHASH_ALL;

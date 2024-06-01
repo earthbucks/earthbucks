@@ -13,7 +13,7 @@ describe("PkhKeyMap", () => {
   beforeEach(() => {
     pkhKeyMap = new PkhKeyMap();
     key = KeyPair.fromRandom();
-    pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+    pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
     pkhBuf = pkh.buf;
   });
 
@@ -48,7 +48,7 @@ describe("PkhKeyMap", () => {
   test("values method should return all Key values", () => {
     const key1 = key;
     const key2 = KeyPair.fromRandom();
-    const pkh2 = Pkh.fromPubKeyBuf(IsoBuf.from(key2.pubKey.toIsoBuf()));
+    const pkh2 = Pkh.fromPubKeyBuf(key2.pubKey.toIsoBuf());
     const pkhU8Vec2 = pkh2.buf;
     pkhKeyMap.add(key1, pkhBuf);
     pkhKeyMap.add(key2, pkhU8Vec2);

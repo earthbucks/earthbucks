@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { FixedIsoBuf, IsoBuf } from "../src/iso-buf.js";
 
 describe("ScriptInterpreter", () => {
   let tx: Tx;
@@ -135,13 +135,15 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = IsoBuf.from(outputPrivKeyHex, "hex");
+      const outputPrivKeyBuf = (FixedIsoBuf<32>)
+        .fromHex(32, outputPrivKeyHex)
+        .unwrap();
       const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf).unwrap();
       const outputPubKey = outputKey.pubKey.toIsoBuf();
       expect(IsoBuf.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
-      const outputAddress = Pkh.fromPubKeyBuf(IsoBuf.from(outputPubKey));
+      const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
       const outputScript = Script.fromPkhOutput(outputAddress.buf);
       const outputAmount = BigInt(100);
       const outputTxId = IsoBuf.from("00".repeat(32), "hex");
@@ -189,7 +191,9 @@ describe("ScriptInterpreter", () => {
       ];
 
       // Convert private keys to IsoBuf format
-      const privKeysU8Vec = privKeysHex.map((hex) => IsoBuf.from(hex, "hex"));
+      const privKeysU8Vec = privKeysHex.map((hex) =>
+        (FixedIsoBuf<32>).fromIsoBuf(32, IsoBuf.from(hex, "hex")).unwrap(),
+      );
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map((privKey) =>

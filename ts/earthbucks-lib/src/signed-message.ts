@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { FixedIsoBuf, IsoBuf } from "./iso-buf";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
@@ -8,16 +8,16 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 
 export class SignedMessage {
-  sig: IsoBuf;
-  pubKey: IsoBuf;
-  mac: IsoBuf;
+  sig: FixedIsoBuf<64>;
+  pubKey: FixedIsoBuf<33>;
+  mac: FixedIsoBuf<32>;
   message: IsoBuf;
   keyStr: string;
 
   constructor(
-    sig: IsoBuf,
-    pubKey: IsoBuf,
-    mac: IsoBuf,
+    sig: FixedIsoBuf<64>,
+    pubKey: FixedIsoBuf<33>,
+    mac: FixedIsoBuf<32>,
     message: IsoBuf,
     keyStr: string,
   ) {
@@ -40,7 +40,9 @@ export class SignedMessage {
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
-    const sigBuf = IsoBuf.from(sigObj.signature);
+    const sigBuf = (FixedIsoBuf<64>)
+      .fromIsoBuf(64, IsoBuf.from(sigObj.signature))
+      .unwrap();
     const pubKey = privKey.toPubKeyIsoBuf().unwrap();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
@@ -64,9 +66,9 @@ export class SignedMessage {
 
   static fromIsoBuf(buf: IsoBuf, keyStr: string): SignedMessage {
     const reader = new IsoBufReader(buf);
-    const sig = reader.read(64).unwrap();
-    const pubKey = reader.read(PubKey.SIZE).unwrap();
-    const mac = reader.read(32).unwrap();
+    const sig = reader.readFixed(64).unwrap();
+    const pubKey = reader.readFixed(PubKey.SIZE).unwrap();
+    const mac = reader.readFixed(32).unwrap();
     const message = reader.readRemainder();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }

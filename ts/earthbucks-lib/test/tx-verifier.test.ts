@@ -25,7 +25,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -107,7 +107,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -160,7 +160,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -231,7 +231,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -284,7 +284,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -355,7 +355,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -408,7 +408,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr1h40mOutput(IsoBuf.alloc(32), pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -479,7 +479,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -550,7 +550,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -603,7 +603,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr90d60dOutput(IsoBuf.alloc(32), pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
@@ -674,7 +674,7 @@ describe("TxVerifier", () => {
       // generate 5 keys, 5 outputs, and add them to the txOutMap
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
-        const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+        const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
         pkhKeyMap.add(key, pkh.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
         const txOut = new TxOut(BigInt(100), script);
