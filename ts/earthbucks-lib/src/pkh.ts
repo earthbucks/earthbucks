@@ -1,5 +1,5 @@
 import * as Hash from "./hash.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import bs58 from "bs58";
 import { StrictHex } from "./strict-hex.js";
 import { PubKey } from "./pub-key.js";
@@ -7,13 +7,13 @@ import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 // public key hash
 export class Pkh {
-  buf: IsoBuf;
+  buf: FixedIsoBuf<32>;
 
-  constructor(pkhBuf: IsoBuf) {
+  constructor(pkhBuf: FixedIsoBuf<32>) {
     this.buf = pkhBuf;
   }
 
-  static fromPubKeyBuf(pubKeyBuf: IsoBuf): Pkh {
+  static fromPubKeyBuf(pubKeyBuf: FixedIsoBuf<33>): Pkh {
     const pkhBuf = Hash.doubleBlake3Hash(pubKeyBuf);
     return new Pkh(pkhBuf);
   }
@@ -22,7 +22,7 @@ export class Pkh {
     return Pkh.fromPubKeyBuf(pubKey.toIsoBuf());
   }
 
-  static fromIsoBuf(buf: IsoBuf): Result<Pkh, string> {
+  static fromIsoBuf(buf: FixedIsoBuf<32>): Result<Pkh, string> {
     if (buf.length !== 32) {
       return Err("Invalid public key hash length");
     }
@@ -41,7 +41,14 @@ export class Pkh {
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = StrictHex.decode(checkHex).unwrap();
-    const buf = IsoBuf.from(bs58.decode(pkhStr.slice(14)));
+    const bufRes = (FixedIsoBuf<32>).fromIsoBuf(
+      32,
+      IsoBuf.from(bs58.decode(pkhStr.slice(14))),
+    );
+    if (bufRes.err) {
+      return Err("Invalid pkh length");
+    }
+    const buf = bufRes.unwrap();
     const hashBuf = Hash.blake3Hash(buf);
     const checkHash = hashBuf.subarray(0, 4);
     if (!checkHash.equals(checkBuf)) {

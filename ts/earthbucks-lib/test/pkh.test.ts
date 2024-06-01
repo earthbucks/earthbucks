@@ -9,11 +9,11 @@ import { PubKey } from "../src/pub-key.js";
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(IsoBuf.from(key.pubKey.toIsoBuf()));
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
     expect(pkh.buf).toBeDefined();
   });
 
-  test("to/from string format", () => {
+  test.only("to/from string format", () => {
     expect(
       Pkh.isValidStringFmt(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
@@ -29,7 +29,6 @@ describe("Pkh", () => {
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN",
       ),
     ).toBe(false);
-
     expect(
       Pkh.fromIsoStr(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",

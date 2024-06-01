@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";
@@ -15,10 +15,9 @@ import { Option, None, Some } from "earthbucks-opt-res/src/lib.js";
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
+  buf: FixedIsoBuf<33>;
 
-  buf: IsoBuf;
-
-  constructor(buf: IsoBuf) {
+  constructor(buf: FixedIsoBuf<33>) {
     this.buf = buf;
   }
 
@@ -27,10 +26,12 @@ export class PubKey {
     if (res.err) {
       return Err(res.val);
     }
-    return Ok(new PubKey(res.unwrap()));
+    const buf = res.unwrap();
+    const isoBuf33 = (FixedIsoBuf<33>).fromIsoBuf(33, buf).unwrap();
+    return Ok(new PubKey(isoBuf33));
   }
 
-  static fromIsoBuf(buf: IsoBuf): Result<PubKey, EbxError> {
+  static fromIsoBuf(buf: FixedIsoBuf<33>): Result<PubKey, EbxError> {
     if (buf.length > PubKey.SIZE) {
       return Err(new TooMuchDataError(None));
     }
@@ -40,7 +41,7 @@ export class PubKey {
     return Ok(new PubKey(buf));
   }
 
-  toIsoBuf(): IsoBuf {
+  toIsoBuf(): FixedIsoBuf<33> {
     return this.buf;
   }
 
@@ -54,7 +55,8 @@ export class PubKey {
       return Err(res.val);
     }
     const buf = res.unwrap();
-    return PubKey.fromIsoBuf(buf);
+    const isoBuf33 = (FixedIsoBuf<33>).fromIsoBuf(33, buf).unwrap();
+    return PubKey.fromIsoBuf(isoBuf33);
   }
 
   toIsoStr(): string {
@@ -80,12 +82,17 @@ export class PubKey {
     } catch (e) {
       return Err(new InvalidChecksumError(None));
     }
+    const decoded33Res = (FixedIsoBuf<33>).fromIsoBuf(33, decoded);
+    if (decoded33Res.err) {
+      return Err(new InvalidEncodingError(None));
+    }
+    const decoded33 = decoded33Res.unwrap();
     const checkHash = Hash.blake3Hash(decoded);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
       return Err(new InvalidEncodingError(None));
     }
-    return PubKey.fromIsoBuf(decoded);
+    return PubKey.fromIsoBuf(decoded33);
   }
 
   static isValidStringFmt(str: string): boolean {
