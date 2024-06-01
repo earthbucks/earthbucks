@@ -48,8 +48,8 @@ export class TxOut {
     const writer = new IsoBufWriter();
     writer.writeUInt64BE(this.value);
     const scriptBuf = this.script.toIsoBuf();
-    writer.writeIsoBuf(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
-    writer.writeIsoBuf(scriptBuf);
+    writer.write(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
+    writer.write(scriptBuf);
     return writer.toIsoBuf();
   }
 }

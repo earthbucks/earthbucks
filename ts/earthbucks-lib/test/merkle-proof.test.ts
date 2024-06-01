@@ -97,7 +97,7 @@ describe("MerkleProof", () => {
   test("generate proofs and root with non-unique data", () => {
     const data1 = Hash.doubleBlake3Hash(IsoBuf.from("data1"));
 
-    const data = [data1, IsoBuf.from(data1)];
+    const data = [data1, data1];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
     const hex = IsoBuf.from(root).toString("hex");
     expect(hex).toBe(

@@ -19,7 +19,7 @@ export class IsoBufWriter {
     return IsoBuf.concat(this.bufs);
   }
 
-  writeIsoBuf(buf: IsoBuf): this {
+  write(buf: IsoBuf): this {
     this.bufs.push(buf);
     return this;
   }
@@ -27,40 +27,40 @@ export class IsoBufWriter {
   writeUInt8(n: number): this {
     const buf = IsoBuf.alloc(1);
     buf.writeUInt8(n, 0);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 
   writeUInt16BE(n: number): this {
     const buf = IsoBuf.alloc(2);
     buf.writeUInt16BE(n, 0);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 
   writeUInt32BE(n: number): this {
     const buf = IsoBuf.alloc(4);
     buf.writeUInt32BE(n, 0);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 
   writeUInt64BE(bn: bigint): this {
     const buf = IsoBuf.alloc(8);
     buf.writeBigInt64BE(bn);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 
   writeVarIntNum(n: number): this {
     const buf = IsoBufWriter.varIntBufNum(n);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 
   writeVarInt(bn: bigint): this {
     const buf = IsoBufWriter.varIntBuf(bn);
-    this.writeIsoBuf(buf);
+    this.write(buf);
     return this;
   }
 

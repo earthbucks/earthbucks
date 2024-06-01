@@ -1,14 +1,14 @@
 import * as Hash from "./hash.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class MerkleProof {
-  public root: IsoBuf;
-  public proof: Array<[IsoBuf, boolean]>;
+  public root: FixedIsoBuf<32>;
+  public proof: Array<[FixedIsoBuf<32>, boolean]>;
 
-  constructor(root: IsoBuf, proof: Array<[IsoBuf, boolean]>) {
+  constructor(root: FixedIsoBuf<32>, proof: Array<[FixedIsoBuf<32>, boolean]>) {
     this.root = root;
     this.proof = proof;
   }
@@ -28,8 +28,8 @@ export class MerkleProof {
   }
 
   static generateProofsAndRoot(
-    hashedDatas: IsoBuf[],
-  ): Result<[IsoBuf, MerkleProof[]], string> {
+    hashedDatas: FixedIsoBuf<32>[],
+  ): Result<[FixedIsoBuf<32>, MerkleProof[]], string> {
     if (hashedDatas.length === 0) {
       return Err("Cannot create Merkle tree from empty array");
     }
@@ -70,12 +70,12 @@ export class MerkleProof {
     return Ok([root, proofs]);
   }
 
-  toIsoBuf() {
+  toIsoBuf(): IsoBuf {
     const bw = new IsoBufWriter();
-    bw.writeIsoBuf(this.root);
+    bw.write(this.root);
     bw.writeVarIntNum(this.proof.length);
     for (const [sibling, isLeft] of this.proof) {
-      bw.writeIsoBuf(sibling);
+      bw.write(sibling);
       bw.writeUInt8(isLeft ? 1 : 0);
     }
     return bw.toIsoBuf();
@@ -83,11 +83,11 @@ export class MerkleProof {
 
   static fromIsoBuf(buf: IsoBuf): MerkleProof {
     const br = new IsoBufReader(buf);
-    const root = br.read(32).unwrap();
-    const proof: Array<[IsoBuf, boolean]> = [];
+    const root = br.readFixed(32).unwrap();
+    const proof: Array<[FixedIsoBuf<32>, boolean]> = [];
     const proofLength = br.readVarIntNum().unwrap();
     for (let i = 0; i < proofLength; i++) {
-      const sibling = br.read(32).unwrap();
+      const sibling = br.readFixed(32).unwrap();
       const isLeft = br.readU8().unwrap() === 1;
       proof.push([sibling, isLeft]);
     }

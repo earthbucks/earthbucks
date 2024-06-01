@@ -13,15 +13,15 @@ describe("BlockBuilder", () => {
     const bh = new Header(
       1,
       (FixedIsoBuf<32>).alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0n,
       0n,
-      IsoBuf.alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);
@@ -34,7 +34,7 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = IsoBuf.alloc(32);
+    const target = (FixedIsoBuf<32>).alloc(32);
     const outputScript = new Script();
     const outputAmount = 0n;
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
@@ -50,19 +50,19 @@ describe("BlockBuilder", () => {
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
     const outputAmount = 0n;
-    const target = IsoBuf.alloc(32);
+    const target = (FixedIsoBuf<32>).alloc(32);
     const prevBlockHeader = new Header(
       1,
       (FixedIsoBuf<32>).alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0n,
       0n,
       target,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
       prevBlockHeader,
@@ -83,15 +83,15 @@ describe("BlockBuilder", () => {
     const bh = new Header(
       1,
       (FixedIsoBuf<32>).alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0n,
       0n,
-      IsoBuf.alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
     );
     const tx = new Tx(1, [], [], 0n);
     const block = new Block(bh, [tx]);

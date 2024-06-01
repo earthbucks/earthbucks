@@ -12,28 +12,28 @@ export class Header {
 
   version: number;
   prevBlockId: FixedIsoBuf<32>;
-  merkleRoot: IsoBuf;
+  merkleRoot: FixedIsoBuf<32>;
   timestamp: bigint; // seconds
   blockNum: bigint;
-  target: IsoBuf;
-  nonce: IsoBuf;
+  target: FixedIsoBuf<32>;
+  nonce: FixedIsoBuf<32>;
   workSerAlgo: number;
-  workSerHash: IsoBuf;
+  workSerHash: FixedIsoBuf<32>;
   workParAlgo: number;
-  workParHash: IsoBuf;
+  workParHash: FixedIsoBuf<32>;
 
   constructor(
     version: number,
     prevBlockId: FixedIsoBuf<32>,
-    merkleRoot: IsoBuf,
+    merkleRoot: FixedIsoBuf<32>,
     timestamp: bigint,
     blockNum: bigint,
-    target: IsoBuf,
-    nonce: IsoBuf,
+    target: FixedIsoBuf<32>,
+    nonce: FixedIsoBuf<32>,
     workSerAlgo: number,
-    workSerHash: IsoBuf,
+    workSerHash: FixedIsoBuf<32>,
     workParAlgo: number,
-    workParHash: IsoBuf,
+    workParHash: FixedIsoBuf<32>,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -51,16 +51,16 @@ export class Header {
   toIsoBuf(): IsoBuf {
     const bw = new IsoBufWriter();
     bw.writeUInt32BE(this.version);
-    bw.writeIsoBuf(this.prevBlockId);
-    bw.writeIsoBuf(this.merkleRoot);
+    bw.write(this.prevBlockId);
+    bw.write(this.merkleRoot);
     bw.writeUInt64BE(this.timestamp);
     bw.writeUInt64BE(this.blockNum);
-    bw.writeIsoBuf(this.target);
-    bw.writeIsoBuf(this.nonce);
+    bw.write(this.target);
+    bw.write(this.nonce);
     bw.writeUInt32BE(this.workSerAlgo);
-    bw.writeIsoBuf(this.workSerHash);
+    bw.write(this.workSerHash);
     bw.writeUInt32BE(this.workParAlgo);
-    bw.writeIsoBuf(this.workParHash);
+    bw.write(this.workParHash);
     return bw.toIsoBuf();
   }
 
@@ -84,7 +84,7 @@ export class Header {
     }
     const previousBlockId = previousBlockIdRes.unwrap();
     const merkleRootRes = br
-      .read(32)
+      .readFixed(32)
       .mapErr((err) => `Could not read merkle root: ${err}`);
     if (merkleRootRes.err) {
       return merkleRootRes;
@@ -105,14 +105,14 @@ export class Header {
     }
     const blockNum = blockNumRes.unwrap();
     const targetRes = br
-      .read(32)
+      .readFixed(32)
       .mapErr((err) => `Could not read target: ${err}`);
     if (targetRes.err) {
       return targetRes;
     }
     const target = targetRes.unwrap();
     const nonceRes = br
-      .read(32)
+      .readFixed(32)
       .mapErr((err) => `Could not read nonce: ${err}`);
     if (nonceRes.err) {
       return nonceRes;
@@ -126,7 +126,7 @@ export class Header {
     }
     const workSerAlgo = workSerAlgoRes.unwrap();
     const workSerHashRes = br
-      .read(32)
+      .readFixed(32)
       .mapErr((err) => `Could not read serial work: ${err}`);
     if (workSerHashRes.err) {
       return workSerHashRes;
@@ -140,7 +140,7 @@ export class Header {
     }
     const workParAlgo = workParAlgoRes.unwrap();
     const workParHashRes = br
-      .read(32)
+      .readFixed(32)
       .mapErr((err) => `Could not read parallel work: ${err}`);
     if (workParHashRes.err) {
       return workParHashRes;
@@ -165,16 +165,16 @@ export class Header {
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
     bw.writeUInt32BE(this.version);
-    bw.writeIsoBuf(this.prevBlockId);
-    bw.writeIsoBuf(this.merkleRoot);
+    bw.write(this.prevBlockId);
+    bw.write(this.merkleRoot);
     bw.writeUInt64BE(this.timestamp);
     bw.writeUInt64BE(this.blockNum);
-    bw.writeIsoBuf(this.target);
-    bw.writeIsoBuf(this.nonce);
+    bw.write(this.target);
+    bw.write(this.nonce);
     bw.writeUInt32BE(this.workSerAlgo);
-    bw.writeIsoBuf(this.workSerHash);
+    bw.write(this.workSerHash);
     bw.writeUInt32BE(this.workParAlgo);
-    bw.writeIsoBuf(this.workParHash);
+    bw.write(this.workParHash);
     return bw;
   }
 
@@ -194,20 +194,20 @@ export class Header {
     return Header.fromIsoHex(str);
   }
 
-  static fromGenesis(initialTarget: IsoBuf): Header {
+  static fromGenesis(initialTarget: FixedIsoBuf<32>): Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
       (FixedIsoBuf<32>).alloc(32),
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       timestamp,
       0n,
       initialTarget,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
       0,
-      IsoBuf.alloc(32),
+      (FixedIsoBuf<32>).alloc(32),
     );
   }
 
@@ -237,16 +237,16 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = IsoBuf.alloc(32);
+    const nonce = (FixedIsoBuf<32>).alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = IsoBuf.alloc(32);
+    const workSerHash = (FixedIsoBuf<32>).alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = IsoBuf.alloc(32);
+    const workParHash = (FixedIsoBuf<32>).alloc(32);
     return Ok(
       new Header(
         1,
         prevBlockId,
-        IsoBuf.alloc(32),
+        (FixedIsoBuf<32>).alloc(32),
         timestamp,
         blockNum,
         target,
@@ -305,7 +305,7 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  static adjustTarget(targetBuf: IsoBuf, timeDiff: bigint): IsoBuf {
+  static adjustTarget(targetBuf: IsoBuf, timeDiff: bigint): FixedIsoBuf<32> {
     const target = BigInt("0x" + IsoBuf.from(targetBuf).toString("hex"));
     const twoWeeks =
       Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
@@ -326,6 +326,6 @@ export class Header {
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );
-    return newTargetBuf;
+    return (FixedIsoBuf<32>).fromIsoBuf(32, newTargetBuf).unwrap();
   }
 }

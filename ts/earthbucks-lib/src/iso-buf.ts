@@ -48,6 +48,14 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
     return (FixedIsoBuf<N>).fromIsoBuf(size, IsoBuf.alloc(size, fill)).unwrap();
   }
+
+  static fromHex<N extends number>(
+    size: N,
+    hex: string,
+  ): Result<FixedIsoBuf<N>, EbxError> {
+    const buf = IsoBuf.from(hex, "hex");
+    return FixedIsoBuf.fromIsoBuf(size, buf);
+  }
 }
 
 export { IsoBuf, FixedIsoBuf };

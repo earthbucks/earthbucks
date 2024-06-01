@@ -99,7 +99,7 @@ describe("ScriptChunk", () => {
       const expected = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       expect(scriptChunk.toIsoBuf()).toEqual(expected);
     });
@@ -110,7 +110,7 @@ describe("ScriptChunk", () => {
       const expected = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       expect(scriptChunk.toIsoBuf()).toEqual(expected);
     });
@@ -143,7 +143,7 @@ describe("ScriptChunk", () => {
       const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(buffer.length)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       const scriptChunk = ScriptChunk.fromIsoBuf(arr).unwrap();
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA2);
@@ -155,7 +155,7 @@ describe("ScriptChunk", () => {
       const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(buffer.length)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       const scriptChunk = ScriptChunk.fromIsoBuf(arr).unwrap();
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4);
@@ -177,7 +177,7 @@ describe("ScriptChunk", () => {
       const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA2)
         .writeUInt16BE(200)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();
@@ -189,7 +189,7 @@ describe("ScriptChunk", () => {
       const arr = new IsoBufWriter()
         .writeUInt8(OP.PUSHDATA4)
         .writeUInt32BE(200)
-        .writeIsoBuf(buffer)
+        .write(buffer)
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
       expect(res.err).toBeTruthy();

@@ -8,15 +8,15 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { StrictHex } from "./strict-hex.js";
 import { EbxError } from "./ebx-error.js";
 
 export class HashCache {
-  public hashPrevouts?: IsoBuf;
-  public hashLockRel?: IsoBuf;
-  public hashOutputs?: IsoBuf;
+  public hashPrevouts?: FixedIsoBuf<32>;
+  public hashLockRel?: FixedIsoBuf<32>;
+  public hashOutputs?: FixedIsoBuf<32>;
 }
 
 export class Tx {
@@ -86,13 +86,13 @@ export class Tx {
   toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
-    writer.writeIsoBuf(VarInt.fromNumber(this.inputs.length).toIsoBuf());
+    writer.write(VarInt.fromNumber(this.inputs.length).toIsoBuf());
     for (const input of this.inputs) {
-      writer.writeIsoBuf(input.toIsoBuf());
+      writer.write(input.toIsoBuf());
     }
-    writer.writeIsoBuf(VarInt.fromNumber(this.outputs.length).toIsoBuf());
+    writer.write(VarInt.fromNumber(this.outputs.length).toIsoBuf());
     for (const output of this.outputs) {
-      writer.writeIsoBuf(output.toIsoBuf());
+      writer.write(output.toIsoBuf());
     }
     writer.writeUInt64BE(this.lockAbs);
     return writer.toIsoBuf();
@@ -127,24 +127,24 @@ export class Tx {
     return this.inputs.length === 1 && this.inputs[0].isCoinbase();
   }
 
-  blake3Hash(): IsoBuf {
+  blake3Hash(): FixedIsoBuf<32> {
     return Hash.blake3Hash(this.toIsoBuf());
   }
 
-  id(): IsoBuf {
+  id(): FixedIsoBuf<32> {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  hashPrevouts(): IsoBuf {
+  hashPrevouts(): FixedIsoBuf<32> {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
-      writer.writeIsoBuf(input.inputTxId);
+      writer.write(input.inputTxId);
       writer.writeUInt32BE(input.inputTxNOut);
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashLockRel(): IsoBuf {
+  hashLockRel(): FixedIsoBuf<32> {
     const writer = new IsoBufWriter();
     for (const input of this.inputs) {
       writer.writeUInt32BE(input.lockRel);
@@ -152,10 +152,10 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
 
-  hashOutputs(): IsoBuf {
+  hashOutputs(): FixedIsoBuf<32> {
     const writer = new IsoBufWriter();
     for (const output of this.outputs) {
-      writer.writeIsoBuf(output.toIsoBuf());
+      writer.write(output.toIsoBuf());
     }
     return Hash.doubleBlake3Hash(writer.toIsoBuf());
   }
@@ -171,9 +171,9 @@ export class Tx {
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = IsoBuf.alloc(32);
-    let lockRelHash = IsoBuf.alloc(32);
-    let outputsHash = IsoBuf.alloc(32);
+    let prevoutsHash = (FixedIsoBuf<32>).alloc(32);
+    let lockRelHash = (FixedIsoBuf<32>).alloc(32);
+    let outputsHash = (FixedIsoBuf<32>).alloc(32);
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
@@ -210,15 +210,15 @@ export class Tx {
 
     const writer = new IsoBufWriter();
     writer.writeUInt8(this.version);
-    writer.writeIsoBuf(prevoutsHash);
-    writer.writeIsoBuf(lockRelHash);
-    writer.writeIsoBuf(this.inputs[inputIndex].inputTxId);
+    writer.write(prevoutsHash);
+    writer.write(lockRelHash);
+    writer.write(this.inputs[inputIndex].inputTxId);
     writer.writeUInt32BE(this.inputs[inputIndex].inputTxNOut);
     writer.writeVarIntNum(script.length);
-    writer.writeIsoBuf(script);
+    writer.write(script);
     writer.writeUInt64BE(amount);
     writer.writeUInt32BE(this.inputs[inputIndex].lockRel);
-    writer.writeIsoBuf(outputsHash);
+    writer.write(outputsHash);
     writer.writeUInt64BE(this.lockAbs);
     writer.writeUInt8(hashType);
     return writer.toIsoBuf();

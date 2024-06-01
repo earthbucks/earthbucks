@@ -46,10 +46,10 @@ export class Block {
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
-    bw.writeIsoBuf(this.header.toIsoBuf());
+    bw.write(this.header.toIsoBuf());
     bw.writeVarIntNum(this.txs.length);
     this.txs.forEach((tx) => {
-      bw.writeIsoBuf(tx.toIsoBuf());
+      bw.write(tx.toIsoBuf());
     });
     return bw;
   }

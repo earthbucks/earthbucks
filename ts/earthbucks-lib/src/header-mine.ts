@@ -1,7 +1,7 @@
 import { Header } from "./header.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { HashNum } from "./hash-num.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class HeaderMine {
   header: Header;
@@ -11,7 +11,9 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = crypto.getRandomValues(IsoBuf.alloc(32));
+    this.header.nonce = (FixedIsoBuf<32>)
+      .fromIsoBuf(32, crypto.getRandomValues(IsoBuf.alloc(32)))
+      .unwrap();
   }
 
   getIdHashNum(): HashNum {

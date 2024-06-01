@@ -73,10 +73,10 @@ export class SignedMessage {
 
   toIsoBuf(): IsoBuf {
     const writer = new IsoBufWriter();
-    writer.writeIsoBuf(this.sig);
-    writer.writeIsoBuf(this.pubKey);
-    writer.writeIsoBuf(this.mac);
-    writer.writeIsoBuf(this.message);
+    writer.write(this.sig);
+    writer.write(this.pubKey);
+    writer.write(this.mac);
+    writer.write(this.message);
     return writer.toIsoBuf();
   }
 }

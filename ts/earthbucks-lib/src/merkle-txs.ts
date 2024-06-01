@@ -1,10 +1,10 @@
 import { MerkleProof } from "./merkle-proof.js";
 import { Tx } from "./tx.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class MerkleTxs {
   public txs: Tx[];
-  public root: IsoBuf;
+  public root: FixedIsoBuf<32>;
   public proofs: MerkleProof[];
 
   constructor(txs: Tx[]) {
