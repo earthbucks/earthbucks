@@ -8,7 +8,7 @@ export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
   static readonly BLOCK_INTERVAL = 600n; // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = SysBuf.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = FixedIsoBuf.alloc(32, 0xff);
 
   version: number;
   prevBlockId: FixedIsoBuf<32>;
@@ -198,16 +198,16 @@ export class Header {
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       1,
-      (FixedIsoBuf<32>).alloc(32),
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       timestamp,
       0n,
       initialTarget,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
       0,
-      (FixedIsoBuf<32>).alloc(32),
+      FixedIsoBuf.alloc(32),
     );
   }
 
@@ -237,16 +237,16 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
-    const nonce = (FixedIsoBuf<32>).alloc(32);
+    const nonce = FixedIsoBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = (FixedIsoBuf<32>).alloc(32);
+    const workSerHash = FixedIsoBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = (FixedIsoBuf<32>).alloc(32);
+    const workParHash = FixedIsoBuf.alloc(32);
     return Ok(
       new Header(
         1,
         prevBlockId,
-        (FixedIsoBuf<32>).alloc(32),
+        FixedIsoBuf.alloc(32),
         timestamp,
         blockNum,
         target,

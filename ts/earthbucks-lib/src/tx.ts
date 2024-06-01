@@ -170,9 +170,9 @@ export class Tx {
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = (FixedIsoBuf<32>).alloc(32);
-    let lockRelHash = (FixedIsoBuf<32>).alloc(32);
-    let outputsHash = (FixedIsoBuf<32>).alloc(32);
+    let prevoutsHash = FixedIsoBuf.alloc(32);
+    let lockRelHash = FixedIsoBuf.alloc(32);
+    let outputsHash = FixedIsoBuf.alloc(32);
 
     if (!(hashType & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
