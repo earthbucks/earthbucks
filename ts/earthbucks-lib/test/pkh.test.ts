@@ -13,7 +13,7 @@ describe("Pkh", () => {
     expect(pkh.buf).toBeDefined();
   });
 
-  test.only("to/from string format", () => {
+  test("to/from string format", () => {
     expect(
       Pkh.isValidStringFmt(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",

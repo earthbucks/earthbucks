@@ -18,7 +18,7 @@ describe("ScriptInterpreter", () => {
   beforeEach(() => {
     tx = new Tx(
       1,
-      [new TxIn(IsoBuf.alloc(0), 0, new Script(), 0xffffffff)],
+      [new TxIn(FixedIsoBuf.alloc(32, 0), 0, new Script(), 0xffffffff)],
       [new TxOut(BigInt(0), new Script())],
       BigInt(0),
     );
@@ -135,9 +135,10 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = (FixedIsoBuf<32>)
-        .fromHex(32, outputPrivKeyHex)
-        .unwrap();
+      const outputPrivKeyBuf = FixedIsoBuf.fromHex(
+        32,
+        outputPrivKeyHex,
+      ).unwrap();
       const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf).unwrap();
       const outputPubKey = outputKey.pubKey.toIsoBuf();
       expect(IsoBuf.from(outputPubKey).toString("hex")).toEqual(
@@ -146,7 +147,7 @@ describe("ScriptInterpreter", () => {
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
       const outputScript = Script.fromPkhOutput(outputAddress.buf);
       const outputAmount = BigInt(100);
-      const outputTxId = IsoBuf.from("00".repeat(32), "hex");
+      const outputTxId = FixedIsoBuf.alloc(32, 0);
       const outputTxIndex = 0;
 
       const tx = new Tx(
@@ -192,7 +193,7 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to IsoBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        (FixedIsoBuf<32>).fromIsoBuf(32, IsoBuf.from(hex, "hex")).unwrap(),
+        FixedIsoBuf.fromIsoBuf(32, IsoBuf.from(hex, "hex")).unwrap(),
       );
 
       // Generate public keys
@@ -205,7 +206,7 @@ describe("ScriptInterpreter", () => {
 
       // Other tx parameters
       const outputAmount = BigInt(100);
-      const outputTxId = IsoBuf.from("00".repeat(32), "hex");
+      const outputTxId = FixedIsoBuf.alloc(32, 0);
       const outputTxIndex = 0;
 
       // Create a tx
@@ -273,7 +274,7 @@ describe("ScriptInterpreter", () => {
       beforeEach(() => {
         tx = new Tx(
           1,
-          [new TxIn(IsoBuf.alloc(0), 0, new Script(), 0xffffffff)],
+          [new TxIn(FixedIsoBuf.alloc(32, 0), 0, new Script(), 0xffffffff)],
           [new TxOut(BigInt(0), new Script())],
           BigInt(0),
         );

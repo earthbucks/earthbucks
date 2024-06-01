@@ -6,7 +6,7 @@ import { Script } from "../src/script.js";
 import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { PkhKeyMap } from "../src/pkh-key-map.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxBuilder", () => {
@@ -25,7 +25,7 @@ describe("TxBuilder", () => {
       const script = Script.fromPkhOutput(pkh.buf);
       const txOut = new TxOut(BigInt(100), script);
       const txOutBn = new TxOutBn(txOut, 0n);
-      txOutBnMap.add(txOutBn, IsoBuf.from("00".repeat(32), "hex"), i);
+      txOutBnMap.add(txOutBn, FixedIsoBuf.alloc(32), i);
     }
 
     const changeScript = Script.fromEmpty();

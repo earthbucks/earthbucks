@@ -192,12 +192,10 @@ describe("BlockHeader", () => {
     });
 
     test("should correctly adjust the target for non-trivial adjustment", () => {
-      const initialTarget = (FixedIsoBuf<32>)
-        .fromHex(
-          32,
-          "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        )
-        .unwrap();
+      const initialTarget = FixedIsoBuf.fromHex(
+        32,
+        "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      ).unwrap();
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
         1,

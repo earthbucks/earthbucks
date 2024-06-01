@@ -1,5 +1,5 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 
 export class TxOutBnMap {
   public map: Map<string, TxOutBn>;
@@ -14,26 +14,26 @@ export class TxOutBnMap {
     return `${txIdStr}:${outputIndexStr}`;
   }
 
-  static nameToTxIdHash(name: string): IsoBuf {
-    return IsoBuf.from(name.split(":")[0], "hex");
+  static nameToTxId(name: string): FixedIsoBuf<32> {
+    return FixedIsoBuf.fromHex(32, name.split(":")[0]).unwrap();
   }
 
   static nameToOutputIndex(name: string): number {
     return parseInt(name.split(":")[1]);
   }
 
-  add(txOutBn: TxOutBn, txIdHash: IsoBuf, outputIndex: number): void {
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+  add(txOutBn: TxOutBn, txId: FixedIsoBuf<32>, outputIndex: number): void {
+    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     this.map.set(name, txOutBn);
   }
 
-  remove(txIdHash: IsoBuf, outputIndex: number): void {
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+  remove(txId: FixedIsoBuf<32>, outputIndex: number): void {
+    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     this.map.delete(name);
   }
 
-  get(txIdHash: IsoBuf, outputIndex: number): TxOutBn | undefined {
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+  get(txId: FixedIsoBuf<32>, outputIndex: number): TxOutBn | undefined {
+    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     return this.map.get(name);
   }
 

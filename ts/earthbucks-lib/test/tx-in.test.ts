@@ -2,11 +2,11 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxIn } from "../src/tx-in.js";
 import { Script } from "../src/script.js";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 
 describe("TxInput", () => {
   test("should create a TxInput", () => {
-    const inputTxHash = IsoBuf.alloc(32);
+    const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = 0;
     const script = new Script();
     const lockRel = 0;
@@ -21,7 +21,7 @@ describe("TxInput", () => {
 
   describe("fromIsoBufReader", () => {
     test("fromIsoBufReader", () => {
-      const inputTxHash = IsoBuf.alloc(32);
+      const inputTxHash = FixedIsoBuf.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
       const lockRel = 0;
@@ -42,7 +42,7 @@ describe("TxInput", () => {
 
   describe("toIsoBuf", () => {
     test("toIsoBuf", () => {
-      const inputTxHash = IsoBuf.alloc(32);
+      const inputTxHash = FixedIsoBuf.alloc(32);
       const inputTxIndex = 0;
       const script = new Script();
       const lockRel = 0;
@@ -55,7 +55,7 @@ describe("TxInput", () => {
     });
 
     test("toIsoBuf with script", () => {
-      const inputTxHash = IsoBuf.alloc(32);
+      const inputTxHash = FixedIsoBuf.alloc(32);
       const inputTxIndex = 0;
       const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
       const lockRel = 0;
@@ -69,7 +69,7 @@ describe("TxInput", () => {
   });
 
   test("toIsoBuf with pushdata", () => {
-    const inputTxHash = IsoBuf.alloc(32);
+    const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = 0;
     const script = Script.fromIsoStr("0x121212").unwrap();
     const lockRel = 0xffffffff;
@@ -82,7 +82,7 @@ describe("TxInput", () => {
   });
 
   test("isNull", () => {
-    const inputTxHash = IsoBuf.alloc(32);
+    const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = 0;
     const script = Script.fromIsoStr("0x121212").unwrap();
     const lockRel = 0;
@@ -90,12 +90,17 @@ describe("TxInput", () => {
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput.isNull()).toBe(false);
 
-    const nullTxInput = new TxIn(IsoBuf.alloc(32), 0xffffffff, new Script(), 0);
+    const nullTxInput = new TxIn(
+      FixedIsoBuf.alloc(32),
+      0xffffffff,
+      new Script(),
+      0,
+    );
     expect(nullTxInput.isNull()).toBe(true);
   });
 
   test("isMinimalLock", () => {
-    const inputTxHash = IsoBuf.alloc(32);
+    const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = 0;
     const script = Script.fromIsoStr("0x121212").unwrap();
     const lockRel = 0xffffffff;
@@ -104,7 +109,7 @@ describe("TxInput", () => {
     expect(txInput.isMinimalLock()).toBe(false);
 
     const finalTxInput = new TxIn(
-      IsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0xffffffff,
       new Script(),
       0,
@@ -113,7 +118,7 @@ describe("TxInput", () => {
   });
 
   test("isCoinbase", () => {
-    const inputTxHash = IsoBuf.alloc(32);
+    const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = 0;
     const script = Script.fromIsoStr("0x121212").unwrap();
     const lockRel = 0;
@@ -122,7 +127,7 @@ describe("TxInput", () => {
     expect(txInput.isCoinbase()).toBe(false);
 
     const coinbaseTxInput = new TxIn(
-      IsoBuf.alloc(32),
+      FixedIsoBuf.alloc(32),
       0xffffffff,
       new Script(),
       0,

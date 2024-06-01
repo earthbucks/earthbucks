@@ -2,27 +2,32 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { IsoBuf } from "../src/iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 
 describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;
   let txOut: TxOut;
   let txOutBn: TxOutBn;
-  let txIdHash: IsoBuf;
+  let txIdHash: FixedIsoBuf<32>;
   let outputIndex: number;
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
     txOut = new TxOut(BigInt(100), Script.fromEmpty());
     txOutBn = new TxOutBn(txOut, 0n);
-    txIdHash = IsoBuf.from([1, 2, 3, 4]);
+    txIdHash = FixedIsoBuf.fromHex(
+      32,
+      "0102030400000000000000000000000000000000000000000000000000000000",
+    ).unwrap();
     outputIndex = 0;
   });
 
   test("nameFromOutput", () => {
     const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
-    expect(name).toBe("01020304:0");
+    expect(name).toBe(
+      "0102030400000000000000000000000000000000000000000000000000000000:0",
+    );
   });
 
   test("add", () => {
