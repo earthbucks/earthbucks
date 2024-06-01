@@ -6,7 +6,12 @@
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
-import { EbxError, InvalidSizeError, InvalidHexError } from "./ebx-error.js";
+import {
+  EbxError,
+  InvalidSizeError,
+  InvalidHexError,
+  InvalidEncodingError,
+} from "./ebx-error.js";
 import bs58 from "bs58";
 
 const SysBuf = Buffer;
@@ -63,8 +68,12 @@ class IsoBuf extends SysBuf {
   }
 
   static fromBase58(size: number, base58: string): Result<IsoBuf, EbxError> {
-    const buf = SysBuf.from(bs58.decode(base58));
-    return IsoBuf.fromBuf(size, buf);
+    try {
+      const buf = SysBuf.from(bs58.decode(base58));
+      return IsoBuf.fromBuf(size, buf);
+    } catch (err) {
+      return Err(new InvalidEncodingError(None));
+    }
   }
 
   toBase58(): string {

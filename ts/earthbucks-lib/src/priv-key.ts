@@ -1,6 +1,5 @@
 import secp256k1 from "secp256k1";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import bs58 from "bs58";
 import * as Hash from "./hash.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
@@ -85,7 +84,7 @@ export class PrivKey {
     const hashBuf = Hash.blake3Hash(this.buf);
     const checkBuf = hashBuf.subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
-    return "ebxprv" + checkHex + bs58.encode(this.buf);
+    return "ebxprv" + checkHex + this.buf.toBase58();
   }
 
   static fromIsoStr(str: string): Result<PrivKey, EbxError> {
@@ -98,18 +97,12 @@ export class PrivKey {
       return checkBufRes;
     }
     const checkBuf = checkBufRes.unwrap();
-    let decoded: SysBuf;
-    try {
-      decoded = SysBuf.from(bs58.decode(str.slice(14)));
-    } catch (e) {
-      return Err(new InvalidChecksumError(None));
-    }
-    const decoded32Res = (FixedIsoBuf<32>).fromBuf(32, decoded);
+    const decoded32Res = (FixedIsoBuf<32>).fromBase58(32, str.slice(14));
     if (decoded32Res.err) {
       return decoded32Res;
     }
     const decoded32 = decoded32Res.unwrap();
-    const hashBuf = Hash.blake3Hash(decoded);
+    const hashBuf = Hash.blake3Hash(decoded32);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
       return Err(new InvalidEncodingError(None));

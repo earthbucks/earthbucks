@@ -1,6 +1,5 @@
 import * as Hash from "./hash.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import bs58 from "bs58";
+import { SysBuf, IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
@@ -31,7 +30,7 @@ export class Pkh {
   toIsoStr(): string {
     const checkHash = Hash.blake3Hash(this.buf).subarray(0, 4);
     const checkHex = checkHash.toString("hex");
-    return "ebxpkh" + checkHex + bs58.encode(this.buf);
+    return "ebxpkh" + checkHex + this.buf.toBase58();
   }
 
   static fromIsoStr(pkhStr: string): Result<Pkh, string> {
@@ -44,10 +43,7 @@ export class Pkh {
       return Err("Invalid pkh checksum");
     }
     const checkBuf = checkBufRes.unwrap();
-    const bufRes = (FixedIsoBuf<32>).fromBuf(
-      32,
-      SysBuf.from(bs58.decode(pkhStr.slice(14))),
-    );
+    const bufRes = (FixedIsoBuf<32>).fromBase58(32, pkhStr.slice(14));
     if (bufRes.err) {
       return Err("Invalid pkh length");
     }
