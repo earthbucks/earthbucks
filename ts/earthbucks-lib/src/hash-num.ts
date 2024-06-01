@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { IsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class HashNum {

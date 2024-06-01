@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
 
 export class TxSignature {
   static readonly SIGHASH_ALL = 0x00000001;
@@ -8,9 +8,9 @@ export class TxSignature {
   static readonly SIZE = 65;
 
   hashType: number;
-  sigBuf: IsoBuf;
+  sigBuf: FixedIsoBuf<64>;
 
-  constructor(hashType: number, sigBuf: IsoBuf) {
+  constructor(hashType: number, sigBuf: FixedIsoBuf<64>) {
     this.hashType = hashType;
     this.sigBuf = sigBuf;
   }
@@ -24,6 +24,7 @@ export class TxSignature {
   static fromIsoBuf(buf: IsoBuf): TxSignature {
     const hashType = buf[0];
     const sigBuf = buf.subarray(1);
-    return new TxSignature(hashType, sigBuf);
+    const sigFixedIsoBuf = FixedIsoBuf.fromIsoBuf(64, sigBuf).unwrap();
+    return new TxSignature(hashType, sigFixedIsoBuf);
   }
 }

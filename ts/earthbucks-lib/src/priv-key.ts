@@ -1,5 +1,5 @@
 import secp256k1 from "secp256k1";
-import { IsoBuf, FixedIsoBuf } from "./iso-buf";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import * as Hash from "./hash.js";

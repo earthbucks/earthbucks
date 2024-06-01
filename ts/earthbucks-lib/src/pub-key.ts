@@ -1,4 +1,4 @@
-import { IsoBuf, FixedIsoBuf } from "./iso-buf";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { StrictHex } from "./strict-hex.js";
 import bs58 from "bs58";
 import { PrivKey } from "./priv-key.js";

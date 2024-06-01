@@ -1,4 +1,4 @@
-import { FixedIsoBuf, IsoBuf } from "./iso-buf";
+import { FixedIsoBuf, IsoBuf } from "./iso-buf.js";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;

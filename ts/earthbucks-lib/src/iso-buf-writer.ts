@@ -1,4 +1,4 @@
-import { IsoBuf } from "./iso-buf";
+import { IsoBuf } from "./iso-buf.js";
 
 export class IsoBufWriter {
   bufs: IsoBuf[];
