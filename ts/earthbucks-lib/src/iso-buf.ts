@@ -14,9 +14,23 @@ import { EbxError, InvalidSizeError } from "./ebx-error.js";
 const IsoBuf = Buffer;
 type IsoBuf = Buffer;
 
+class ExtIsoBuf extends IsoBuf {
+  static fromHex<N extends number>(
+    size: N,
+    hex: string,
+  ): Result<FixedIsoBuf<N>, EbxError> {
+    const buf = IsoBuf.from(hex, "hex");
+    return FixedIsoBuf.fromIsoBuf(size, buf);
+  }
+
+  toHex(): string {
+    return this.toString("hex");
+  }
+}
+
 const sizeSymbol = Symbol("size");
 
-class FixedIsoBuf<N extends number> extends IsoBuf {
+class FixedIsoBuf<N extends number> extends ExtIsoBuf {
   [sizeSymbol]: N;
 
   constructor(size: N, ...args: ConstructorParameters<typeof IsoBuf>) {
@@ -44,18 +58,9 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     return Ok(fixedIsoBufN);
   }
 
-  // Buffer.alloc
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
     return (FixedIsoBuf<N>).fromIsoBuf(size, IsoBuf.alloc(size, fill)).unwrap();
   }
-
-  static fromHex<N extends number>(
-    size: N,
-    hex: string,
-  ): Result<FixedIsoBuf<N>, EbxError> {
-    const buf = IsoBuf.from(hex, "hex");
-    return FixedIsoBuf.fromIsoBuf(size, buf);
-  }
 }
 
-export { IsoBuf, FixedIsoBuf };
+export { IsoBuf, FixedIsoBuf, ExtIsoBuf };
