@@ -1,23 +1,23 @@
 import * as Hash from "./hash.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
-  public hashedData: IsoBuf;
+  public hashedData: FixedIsoBuf<32>;
 
   constructor(
     left: MerkleNode | null,
     right: MerkleNode | null,
-    hashedData: IsoBuf,
+    hashedData: FixedIsoBuf<32>,
   ) {
     this.left = left;
     this.right = right;
     this.hashedData = hashedData;
   }
 
-  public hash(): IsoBuf {
+  public hash(): FixedIsoBuf<32> {
     if (this.left || this.right) {
       const leftData = this.left ? this.left.hash() : IsoBuf.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
@@ -27,7 +27,9 @@ export class MerkleNode {
     }
   }
 
-  static fromIsoBufs(hashedDatas: IsoBuf[]): Result<MerkleNode, string> {
+  static fromIsoBufs(
+    hashedDatas: FixedIsoBuf<32>[],
+  ): Result<MerkleNode, string> {
     if (hashedDatas.length === 0) {
       return Err("Cannot create MerkleNode from empty array");
     }

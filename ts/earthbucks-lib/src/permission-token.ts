@@ -1,13 +1,13 @@
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
-import { IsoBuf } from "./iso-buf.js";
+import { IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class PermissionToken {
-  randValue: IsoBuf;
+  randValue: FixedIsoBuf<32>;
   timestamp: bigint; // milliseconds
 
-  constructor(randValue: IsoBuf, timestamp: bigint) {
+  constructor(randValue: FixedIsoBuf<32>, timestamp: bigint) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
@@ -26,7 +26,7 @@ export class PermissionToken {
       }
       const reader = new IsoBufReader(buf);
       const randValue = reader
-        .read(32)
+        .readFixed(32)
         .mapErr((err) => `Unable to read rand value: ${err}`)
         .unwrap();
       const timestamp = reader
@@ -40,9 +40,11 @@ export class PermissionToken {
   }
 
   static fromRandom(): PermissionToken {
-    const randValue = crypto.getRandomValues(new Uint8Array(32));
+    const randValue: FixedIsoBuf<32> = (FixedIsoBuf<32>)
+      .fromIsoBuf(32, crypto.getRandomValues(IsoBuf.alloc(32)))
+      .unwrap();
     const timestamp = BigInt(Date.now()); // milliseconds
-    return new PermissionToken(IsoBuf.from(randValue), timestamp);
+    return new PermissionToken(randValue, timestamp);
   }
 
   isValid(): boolean {
