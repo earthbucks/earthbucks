@@ -12,6 +12,7 @@ export * from "./key-pair.js";
 export * from "./merkle-node.js";
 export * from "./merkle-proof.js";
 export * from "./merkle-txs.js";
+export * from "./numbers.js";
 export * from "./opcode.js";
 export * from "./permission-token.js";
 export * from "./pkh-key-map.js";
