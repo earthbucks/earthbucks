@@ -16,45 +16,45 @@ import {
 
 describe("Numbers", () => {
   it("test U8", () => {
-    const a = new U8(10);
-    const b = new U8(20);
-    expect(a.add(b).getValue()).toBe(30);
-    expect(a.mul(b).getValue()).toBe(200);
+    const a = new U8(10n);
+    const b = new U8(20n);
+    expect(a.add(b).getValue()).toBe(30n);
+    expect(a.mul(b).getValue()).toBe(200n);
   });
 
   it("test I8", () => {
-    const a = new I8(10);
-    const b = new I8(2);
-    expect(a.add(b).getValue()).toBe(12);
-    expect(a.mul(b).getValue()).toBe(20);
+    const a = new I8(10n);
+    const b = new I8(2n);
+    expect(a.add(b).getValue()).toBe(12n);
+    expect(a.mul(b).getValue()).toBe(20n);
   });
 
   it("test U16", () => {
-    const a = new U16(10);
-    const b = new U16(20);
-    expect(a.add(b).getValue()).toBe(30);
-    expect(a.mul(b).getValue()).toBe(200);
+    const a = new U16(10n);
+    const b = new U16(20n);
+    expect(a.add(b).getValue()).toBe(30n);
+    expect(a.mul(b).getValue()).toBe(200n);
   });
 
   it("test I16", () => {
-    const a = new I16(10);
-    const b = new I16(20);
-    expect(a.add(b).getValue()).toBe(30);
-    expect(a.mul(b).getValue()).toBe(200);
+    const a = new I16(10n);
+    const b = new I16(20n);
+    expect(a.add(b).getValue()).toBe(30n);
+    expect(a.mul(b).getValue()).toBe(200n);
   });
 
   it("test U32", () => {
-    const a = new U32(10);
-    const b = new U32(20);
-    expect(a.add(b).getValue()).toBe(30);
-    expect(a.mul(b).getValue()).toBe(200);
+    const a = new U32(10n);
+    const b = new U32(20n);
+    expect(a.add(b).getValue()).toBe(30n);
+    expect(a.mul(b).getValue()).toBe(200n);
   });
 
   it("test I32", () => {
-    const a = new I32(10);
-    const b = new I32(20);
-    expect(a.add(b).getValue()).toBe(30);
-    expect(a.mul(b).getValue()).toBe(200);
+    const a = new I32(10n);
+    const b = new I32(20n);
+    expect(a.add(b).getValue()).toBe(30n);
+    expect(a.mul(b).getValue()).toBe(200n);
   });
 
   it("test U64", () => {

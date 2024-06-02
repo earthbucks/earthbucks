@@ -19,9 +19,9 @@ abstract class BasicNumber<T, U extends BasicNumber<T, U>> {
   protected abstract greaterThan(a: T, b: T): boolean;
 }
 
-export class U8 extends BasicNumber<number, U8> {
-  constructor(value: number) {
-    super(value, 0, 255);
+export class U8 extends BasicNumber<bigint, U8> {
+  constructor(value: bigint) {
+    super(value, 0n, 255n);
   }
 
   add(other: U8): U8 {
@@ -34,22 +34,22 @@ export class U8 extends BasicNumber<number, U8> {
     return new U8(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
 
-export class I8 extends BasicNumber<number, I8> {
-  constructor(value: number) {
-    super(value, -128, 127);
+export class I8 extends BasicNumber<bigint, I8> {
+  constructor(value: bigint) {
+    super(value, -128n, 127n);
   }
 
   add(other: I8): I8 {
@@ -62,22 +62,22 @@ export class I8 extends BasicNumber<number, I8> {
     return new I8(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
 
-export class U16 extends BasicNumber<number, U16> {
-  constructor(value: number) {
-    super(value, 0, 65535);
+export class U16 extends BasicNumber<bigint, U16> {
+  constructor(value: bigint) {
+    super(value, 0n, 65535n);
   }
 
   add(other: U16): U16 {
@@ -90,22 +90,22 @@ export class U16 extends BasicNumber<number, U16> {
     return new U16(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
 
-export class I16 extends BasicNumber<number, I16> {
-  constructor(value: number) {
-    super(value, -32768, 32767);
+export class I16 extends BasicNumber<bigint, I16> {
+  constructor(value: bigint) {
+    super(value, -32768n, 32767n);
   }
 
   add(other: I16): I16 {
@@ -118,22 +118,22 @@ export class I16 extends BasicNumber<number, I16> {
     return new I16(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
 
-export class U32 extends BasicNumber<number, U32> {
-  constructor(value: number) {
-    super(value, 0, 4294967295);
+export class U32 extends BasicNumber<bigint, U32> {
+  constructor(value: bigint) {
+    super(value, 0n, 4294967295n);
   }
 
   add(other: U32): U32 {
@@ -146,22 +146,22 @@ export class U32 extends BasicNumber<number, U32> {
     return new U32(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
 
-export class I32 extends BasicNumber<number, I32> {
-  constructor(value: number) {
-    super(value, -2147483648, 2147483647);
+export class I32 extends BasicNumber<bigint, I32> {
+  constructor(value: bigint) {
+    super(value, -2147483648n, 2147483647n);
   }
 
   add(other: I32): I32 {
@@ -174,15 +174,15 @@ export class I32 extends BasicNumber<number, I32> {
     return new I32(result);
   }
 
-  getValue(): number {
+  getValue(): bigint {
     return this.value;
   }
 
-  protected lessThan(a: number, b: number): boolean {
+  protected lessThan(a: bigint, b: bigint): boolean {
     return a < b;
   }
 
-  protected greaterThan(a: number, b: number): boolean {
+  protected greaterThan(a: bigint, b: bigint): boolean {
     return a > b;
   }
 }
