@@ -1,4 +1,4 @@
-abstract class BasicNumber<T, U extends BasicNumber<T, U>> {
+export abstract class BasicNumber<T, U extends BasicNumber<T, U>> {
   protected value: T;
 
   constructor(
@@ -13,7 +13,9 @@ abstract class BasicNumber<T, U extends BasicNumber<T, U>> {
   }
 
   abstract add(other: U): U;
+  abstract sub(other: U): U;
   abstract mul(other: U): U;
+  abstract div(other: U): U;
   abstract getValue(): T;
   protected abstract lessThan(a: T, b: T): boolean;
   protected abstract greaterThan(a: T, b: T): boolean;
@@ -29,8 +31,18 @@ export class U8 extends BasicNumber<bigint, U8> {
     return new U8(result);
   }
 
+  sub(other: U8): U8 {
+    const result = this.value - other.value;
+    return new U8(result);
+  }
+
   mul(other: U8): U8 {
     const result = this.value * other.value;
+    return new U8(result);
+  }
+
+  div(other: U8): U8 {
+    const result = this.value / other.value;
     return new U8(result);
   }
 
@@ -57,8 +69,18 @@ export class I8 extends BasicNumber<bigint, I8> {
     return new I8(result);
   }
 
+  sub(other: I8): I8 {
+    const result = this.value - other.value;
+    return new I8(result);
+  }
+
   mul(other: I8): I8 {
     const result = this.value * other.value;
+    return new I8(result);
+  }
+
+  div(other: I8): I8 {
+    const result = this.value / other.value;
     return new I8(result);
   }
 
@@ -85,8 +107,18 @@ export class U16 extends BasicNumber<bigint, U16> {
     return new U16(result);
   }
 
+  sub(other: U16): U16 {
+    const result = this.value - other.value;
+    return new U16(result);
+  }
+
   mul(other: U16): U16 {
     const result = this.value * other.value;
+    return new U16(result);
+  }
+
+  div(other: U16): U16 {
+    const result = this.value / other.value;
     return new U16(result);
   }
 
@@ -113,8 +145,18 @@ export class I16 extends BasicNumber<bigint, I16> {
     return new I16(result);
   }
 
+  sub(other: I16): I16 {
+    const result = this.value - other.value;
+    return new I16(result);
+  }
+
   mul(other: I16): I16 {
     const result = this.value * other.value;
+    return new I16(result);
+  }
+
+  div(other: I16): I16 {
+    const result = this.value / other.value;
     return new I16(result);
   }
 
@@ -141,8 +183,18 @@ export class U32 extends BasicNumber<bigint, U32> {
     return new U32(result);
   }
 
+  sub(other: U32): U32 {
+    const result = this.value - other.value;
+    return new U32(result);
+  }
+
   mul(other: U32): U32 {
     const result = this.value * other.value;
+    return new U32(result);
+  }
+
+  div(other: U32): U32 {
+    const result = this.value / other.value;
     return new U32(result);
   }
 
@@ -169,8 +221,18 @@ export class I32 extends BasicNumber<bigint, I32> {
     return new I32(result);
   }
 
+  sub(other: I32): I32 {
+    const result = this.value - other.value;
+    return new I32(result);
+  }
+
   mul(other: I32): I32 {
     const result = this.value * other.value;
+    return new I32(result);
+  }
+
+  div(other: I32): I32 {
+    const result = this.value / other.value;
     return new I32(result);
   }
 
@@ -197,8 +259,18 @@ export class U64 extends BasicNumber<bigint, U64> {
     return new U64(result);
   }
 
+  sub(other: U64): U64 {
+    const result = this.value - other.value;
+    return new U64(result);
+  }
+
   mul(other: U64): U64 {
     const result = this.value * other.value;
+    return new U64(result);
+  }
+
+  div(other: U64): U64 {
+    const result = this.value / other.value;
     return new U64(result);
   }
 
@@ -225,8 +297,18 @@ export class I64 extends BasicNumber<bigint, I64> {
     return new I64(result);
   }
 
+  sub(other: I64): I64 {
+    const result = this.value - other.value;
+    return new I64(result);
+  }
+
   mul(other: I64): I64 {
     const result = this.value * other.value;
+    return new I64(result);
+  }
+
+  div(other: I64): I64 {
+    const result = this.value / other.value;
     return new I64(result);
   }
 
@@ -253,8 +335,18 @@ export class U128 extends BasicNumber<bigint, U128> {
     return new U128(result);
   }
 
+  sub(other: U128): U128 {
+    const result = this.value - other.value;
+    return new U128(result);
+  }
+
   mul(other: U128): U128 {
     const result = this.value * other.value;
+    return new U128(result);
+  }
+
+  div(other: U128): U128 {
+    const result = this.value / other.value;
     return new U128(result);
   }
 
@@ -285,8 +377,18 @@ export class I128 extends BasicNumber<bigint, I128> {
     return new I128(result);
   }
 
+  sub(other: I128): I128 {
+    const result = this.value - other.value;
+    return new I128(result);
+  }
+
   mul(other: I128): I128 {
     const result = this.value * other.value;
+    return new I128(result);
+  }
+
+  div(other: I128): I128 {
+    const result = this.value / other.value;
     return new I128(result);
   }
 
@@ -317,8 +419,18 @@ export class U256 extends BasicNumber<bigint, U256> {
     return new U256(result);
   }
 
+  sub(other: U256): U256 {
+    const result = this.value - other.value;
+    return new U256(result);
+  }
+
   mul(other: U256): U256 {
     const result = this.value * other.value;
+    return new U256(result);
+  }
+
+  div(other: U256): U256 {
+    const result = this.value / other.value;
     return new U256(result);
   }
 
@@ -349,8 +461,18 @@ export class I256 extends BasicNumber<bigint, I256> {
     return new I256(result);
   }
 
+  sub(other: I256): I256 {
+    const result = this.value - other.value;
+    return new I256(result);
+  }
+
   mul(other: I256): I256 {
     const result = this.value * other.value;
+    return new I256(result);
+  }
+
+  div(other: I256): I256 {
+    const result = this.value / other.value;
     return new I256(result);
   }
 
