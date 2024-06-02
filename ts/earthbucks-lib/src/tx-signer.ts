@@ -7,18 +7,19 @@ import { PubKey } from "./pub-key.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Script } from "./script.js";
 import { KeyPair } from "./key-pair.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
   public txOutMap: TxOutBnMap;
-  public workingBlockNum: bigint;
+  public workingBlockNum: U64;
 
   constructor(
     tx: Tx,
     txOutMap: TxOutBnMap,
     pkhKeyMap: PkhKeyMap,
-    workingBlockNum: bigint,
+    workingBlockNum: U64,
   ) {
     this.tx = tx;
     this.txOutMap = txOutMap;
@@ -26,8 +27,8 @@ export class TxSigner {
     this.workingBlockNum = workingBlockNum;
   }
 
-  sign(nIn: number): Result<Tx, string> {
-    const txInput = this.tx.inputs[nIn];
+  sign(nIn: U32): Result<Tx, string> {
+    const txInput = this.tx.inputs[nIn.n];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
@@ -259,7 +260,7 @@ export class TxSigner {
 
   signAll(): Result<Tx, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      const res = this.sign(i);
+      const res = this.sign(new U32(i));
       if (res.err) {
         return Err("sign_all: " + res.err);
       }

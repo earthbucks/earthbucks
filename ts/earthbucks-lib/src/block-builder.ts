@@ -7,6 +7,7 @@ import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class BlockBuilder {
   public header: Header;
@@ -29,13 +30,13 @@ export class BlockBuilder {
   static fromGenesis(
     initialTarget: FixedIsoBuf<32>,
     outputScript: Script,
-    outputAmount: bigint,
+    outputAmount: U64,
   ): BlockBuilder {
     const header = Header.fromGenesis(initialTarget);
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(1, [txInput], [txOutput], 0n);
+    const coinbaseTx = new Tx(new U8(1), [txInput], [txOutput], new U64(0n));
     txs.push(coinbaseTx);
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;
@@ -47,7 +48,7 @@ export class BlockBuilder {
     prevBlockHeader: Header,
     prevAdjustmentBlockHeader: Header | null, // exactly 2016 blocks before
     outputScript: Script,
-    outputAmount: bigint,
+    outputAmount: U64,
   ): Result<BlockBuilder, string> {
     const res = Header.fromPrevBlockHeader(
       prevBlockHeader,
@@ -60,7 +61,7 @@ export class BlockBuilder {
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(1, [txInput], [txOutput], 0n);
+    const coinbaseTx = new Tx(new U8(1), [txInput], [txOutput], new U64(0n));
     txs.push(coinbaseTx);
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;

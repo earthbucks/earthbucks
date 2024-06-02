@@ -4,23 +4,24 @@ import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
 import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;
   let txOut: TxOut;
   let txOutBn: TxOutBn;
   let txIdHash: FixedIsoBuf<32>;
-  let outputIndex: number;
+  let outputIndex: U32;
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
-    txOut = new TxOut(BigInt(100), Script.fromEmpty());
-    txOutBn = new TxOutBn(txOut, 0n);
+    txOut = new TxOut(new U64(100), Script.fromEmpty());
+    txOutBn = new TxOutBn(txOut, new U64(0n));
     txIdHash = FixedIsoBuf.fromStrictHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
     ).unwrap();
-    outputIndex = 0;
+    outputIndex = new U32(0);
   });
 
   test("nameFromOutput", () => {
@@ -52,11 +53,11 @@ describe("TxOutBnMap", () => {
   test("values method should return all TxOutput values", () => {
     const txOutputMap = new TxOutBnMap();
     const txOut1 = txOut;
-    const txOutBn1 = new TxOutBn(txOut1, 0n);
+    const txOutBn1 = new TxOutBn(txOut1, new U64(0n));
     const txOut2 = txOut;
-    const txOutBn2 = new TxOutBn(txOut2, 1n);
-    txOutputMap.add(txOutBn1, txIdHash, 0);
-    txOutputMap.add(txOutBn2, txIdHash, 1);
+    const txOutBn2 = new TxOutBn(txOut2, new U64(1n));
+    txOutputMap.add(txOutBn1, txIdHash, new U32(0));
+    txOutputMap.add(txOutBn2, txIdHash, new U32(1));
 
     const values = Array.from(txOutputMap.values());
 

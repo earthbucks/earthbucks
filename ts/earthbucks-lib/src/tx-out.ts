@@ -5,12 +5,13 @@ import { Script } from "./script.js";
 import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxOut {
-  public value: bigint;
+  public value: U64;
   public script: Script;
 
-  constructor(value: bigint, script: Script) {
+  constructor(value: U64, script: Script) {
     this.value = value;
     this.script = script;
   }
@@ -26,11 +27,11 @@ export class TxOut {
       return valueRes;
     }
     const value = valueRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum();
+    const scriptLenRes = reader.readVarInt();
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
-    const scriptLen = scriptLenRes.unwrap();
+    const scriptLen = scriptLenRes.unwrap().n;
     const scriptArrRes = reader.read(scriptLen);
     if (scriptArrRes.err) {
       return scriptArrRes;
@@ -48,7 +49,7 @@ export class TxOut {
     const writer = new IsoBufWriter();
     writer.writeU64BE(this.value);
     const scriptBuf = this.script.toIsoBuf();
-    writer.write(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toIsoBuf());
     writer.write(scriptBuf);
     return writer.toIsoBuf();
   }

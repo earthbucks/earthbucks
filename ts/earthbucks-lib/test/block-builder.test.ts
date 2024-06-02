@@ -7,23 +7,24 @@ import { IsoBufReader } from "../src/iso-buf-reader.js";
 import { BlockBuilder } from "../src/block-builder.js";
 import { Script } from "../src/script.js";
 import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
-    const tx = new Tx(1, [], [], 0n);
+    const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     expect(bb.header.version).toBe(bh.version);
@@ -36,12 +37,12 @@ describe("BlockBuilder", () => {
   test("fromGenesis", () => {
     const target = FixedIsoBuf.alloc(32);
     const outputScript = new Script();
-    const outputAmount = 0n;
+    const outputAmount = new U64(0n);
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
-    expect(bb.header.version).toBe(1);
+    expect(bb.header.version.n).toEqual(1);
     expect(bb.header.prevBlockId).toEqual(FixedIsoBuf.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
-    expect(bb.header.timestamp).toBeLessThanOrEqual(
+    expect(bb.header.timestamp.n).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
     );
     expect(bb.header.target).toEqual(target);
@@ -49,19 +50,19 @@ describe("BlockBuilder", () => {
 
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
-    const outputAmount = 0n;
+    const outputAmount = new U64(0n);
     const target = FixedIsoBuf.alloc(32);
     const prevBlockHeader = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       target,
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
@@ -70,10 +71,10 @@ describe("BlockBuilder", () => {
       outputScript,
       outputAmount,
     ).unwrap();
-    expect(bb.header.version).toBe(1);
+    expect(bb.header.version.n).toBe(1);
     expect(bb.header.prevBlockId).toEqual(prevBlockHeader.id());
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
-    expect(bb.header.timestamp).toBeLessThanOrEqual(
+    expect(bb.header.timestamp.n).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
     );
     expect(bb.header.target).toEqual(target);
@@ -81,28 +82,28 @@ describe("BlockBuilder", () => {
 
   test("toBlock", () => {
     const bh = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
-    const tx = new Tx(1, [], [], 0n);
+    const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     const block2 = bb.toBlock();
-    expect(block2.header.version).toBe(bh.version);
+    expect(block2.header.version.n).toBe(bh.version.n);
     expect(block2.header.prevBlockId.toString("hex")).toEqual(
       bh.prevBlockId.toString("hex"),
     );
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
-    expect(bb.header.timestamp).toEqual(0n);
+    expect(bb.header.timestamp.bn).toEqual(0n);
     expect(block2.header.target).toEqual(bh.target);
   });
 });

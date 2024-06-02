@@ -3,6 +3,7 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class MerkleProof {
   public root: FixedIsoBuf<32>;
@@ -73,10 +74,10 @@ export class MerkleProof {
   toIsoBuf(): SysBuf {
     const bw = new IsoBufWriter();
     bw.write(this.root);
-    bw.writeVarIntNum(this.proof.length);
+    bw.writeVarInt(new U64(this.proof.length));
     for (const [sibling, isLeft] of this.proof) {
       bw.write(sibling);
-      bw.writeU8(isLeft ? 1 : 0);
+      bw.writeU8(new U8(isLeft ? 1 : 0));
     }
     return bw.toIsoBuf();
   }
@@ -85,10 +86,10 @@ export class MerkleProof {
     const br = new IsoBufReader(buf);
     const root = br.readFixed(32).unwrap();
     const proof: Array<[FixedIsoBuf<32>, boolean]> = [];
-    const proofLength = br.readVarIntNum().unwrap();
+    const proofLength = br.readVarInt().unwrap().n;
     for (let i = 0; i < proofLength; i++) {
       const sibling = br.readFixed(32).unwrap();
-      const isLeft = br.readU8().unwrap() === 1;
+      const isLeft = br.readU8().unwrap().n === 1;
       proof.push([sibling, isLeft]);
     }
     return new MerkleProof(root, proof);

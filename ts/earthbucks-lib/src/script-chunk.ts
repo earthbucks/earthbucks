@@ -10,6 +10,7 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class ScriptChunk {
   opcode: number;
@@ -86,19 +87,19 @@ export class ScriptChunk {
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU8(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU8(new U8(this.buf.length)).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU16BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU16BE(new U16(this.buf.length)).toIsoBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU32BE(this.buf.length).toIsoBuf(),
+        new IsoBufWriter().writeU32BE(new U32(this.buf.length)).toIsoBuf(),
         this.buf,
       ]);
     }
@@ -115,14 +116,14 @@ export class ScriptChunk {
     if (opcodeRes.err) {
       return opcodeRes;
     }
-    const opcode = opcodeRes.val;
+    const opcode = opcodeRes.val.n;
     const chunk = new ScriptChunk(opcode);
     if (opcode === OP.PUSHDATA1) {
       const lenRes = reader.readU8();
       if (lenRes.err) {
         return lenRes;
       }
-      const len = lenRes.unwrap();
+      const len = lenRes.unwrap().n;
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
         return bufferRes;
@@ -137,7 +138,7 @@ export class ScriptChunk {
       if (lenRes.err) {
         return lenRes;
       }
-      const len = lenRes.unwrap();
+      const len = lenRes.unwrap().n;
       if (len <= 0xff) {
         return Err(new NonMinimalEncodingError());
       }
@@ -152,7 +153,7 @@ export class ScriptChunk {
       if (lenRes.err) {
         return lenRes;
       }
-      const len = lenRes.unwrap();
+      const len = lenRes.unwrap().n;
       if (len <= 0xffff) {
         return Err(new NonMinimalEncodingError());
       }

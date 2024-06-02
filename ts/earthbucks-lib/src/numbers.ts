@@ -2,10 +2,13 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
   protected value: bigint;
 
   constructor(
-    value: bigint,
+    value: bigint | number,
     protected min: bigint,
     protected max: bigint,
   ) {
+    if (typeof value === "number") {
+      value = BigInt(value);
+    }
     if (value < min || value > max) {
       throw new Error(`Value ${value} is not a valid number`);
     }
@@ -16,12 +19,14 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
   abstract sub(other: U): U;
   abstract mul(other: U): U;
   abstract div(other: U): U;
-  abstract get bi(): bigint;
+  abstract get bn(): bigint;
   abstract get n(): number;
 }
 
 export class U8 extends BasicNumber<U8> {
-  constructor(value: bigint) {
+  readonly _U8: undefined;
+
+  constructor(value: bigint | number) {
     super(value, 0n, 255n);
   }
 
@@ -45,7 +50,7 @@ export class U8 extends BasicNumber<U8> {
     return new U8(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -55,7 +60,9 @@ export class U8 extends BasicNumber<U8> {
 }
 
 export class I8 extends BasicNumber<I8> {
-  constructor(value: bigint) {
+  readonly _I8: undefined;
+
+  constructor(value: bigint | number) {
     super(value, -128n, 127n);
   }
 
@@ -79,7 +86,7 @@ export class I8 extends BasicNumber<I8> {
     return new I8(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -89,7 +96,9 @@ export class I8 extends BasicNumber<I8> {
 }
 
 export class U16 extends BasicNumber<U16> {
-  constructor(value: bigint) {
+  readonly _U16: undefined;
+
+  constructor(value: bigint | number) {
     super(value, 0n, 65535n);
   }
 
@@ -113,7 +122,7 @@ export class U16 extends BasicNumber<U16> {
     return new U16(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -123,7 +132,9 @@ export class U16 extends BasicNumber<U16> {
 }
 
 export class I16 extends BasicNumber<I16> {
-  constructor(value: bigint) {
+  readonly _I16: undefined;
+
+  constructor(value: bigint | number) {
     super(value, -32768n, 32767n);
   }
 
@@ -147,7 +158,7 @@ export class I16 extends BasicNumber<I16> {
     return new I16(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -157,7 +168,8 @@ export class I16 extends BasicNumber<I16> {
 }
 
 export class U32 extends BasicNumber<U32> {
-  constructor(value: bigint) {
+  readonly _U32: undefined;
+  constructor(value: bigint | number) {
     super(value, 0n, 4294967295n);
   }
 
@@ -181,7 +193,7 @@ export class U32 extends BasicNumber<U32> {
     return new U32(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -191,7 +203,9 @@ export class U32 extends BasicNumber<U32> {
 }
 
 export class I32 extends BasicNumber<I32> {
-  constructor(value: bigint) {
+  readonly _I32: undefined;
+
+  constructor(value: bigint | number) {
     super(value, -2147483648n, 2147483647n);
   }
 
@@ -215,7 +229,7 @@ export class I32 extends BasicNumber<I32> {
     return new I32(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -225,7 +239,9 @@ export class I32 extends BasicNumber<I32> {
 }
 
 export class U64 extends BasicNumber<U64> {
-  constructor(value: bigint) {
+  readonly _U64: undefined;
+
+  constructor(value: bigint | number) {
     super(value, 0n, 18446744073709551615n);
   }
 
@@ -249,7 +265,7 @@ export class U64 extends BasicNumber<U64> {
     return new U64(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -259,7 +275,9 @@ export class U64 extends BasicNumber<U64> {
 }
 
 export class I64 extends BasicNumber<I64> {
-  constructor(value: bigint) {
+  readonly _I64: undefined;
+
+  constructor(value: bigint | number) {
     super(value, -9223372036854775808n, 9223372036854775807n);
   }
 
@@ -283,7 +301,7 @@ export class I64 extends BasicNumber<I64> {
     return new I64(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -293,7 +311,9 @@ export class I64 extends BasicNumber<I64> {
 }
 
 export class U128 extends BasicNumber<U128> {
-  constructor(value: bigint) {
+  readonly _U128: undefined;
+
+  constructor(value: bigint | number) {
     super(value, 0n, 340282366920938463463374607431768211455n);
   }
 
@@ -317,7 +337,7 @@ export class U128 extends BasicNumber<U128> {
     return new U128(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -327,7 +347,9 @@ export class U128 extends BasicNumber<U128> {
 }
 
 export class I128 extends BasicNumber<I128> {
-  constructor(value: bigint) {
+  readonly _I128: undefined;
+
+  constructor(value: bigint | number) {
     super(
       value,
       -170141183460469231731687303715884105728n,
@@ -355,7 +377,7 @@ export class I128 extends BasicNumber<I128> {
     return new I128(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -365,7 +387,9 @@ export class I128 extends BasicNumber<I128> {
 }
 
 export class U256 extends BasicNumber<U256> {
-  constructor(value: bigint) {
+  readonly _U256: undefined;
+
+  constructor(value: bigint | number) {
     super(
       value,
       0n,
@@ -393,7 +417,7 @@ export class U256 extends BasicNumber<U256> {
     return new U256(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 
@@ -403,7 +427,8 @@ export class U256 extends BasicNumber<U256> {
 }
 
 export class I256 extends BasicNumber<I256> {
-  constructor(value: bigint) {
+  readonly _I256: undefined;
+  constructor(value: bigint | number) {
     super(
       value,
       -57896044618658097711785492504343953926634992332820282019728792003956564819968n,
@@ -431,7 +456,7 @@ export class I256 extends BasicNumber<I256> {
     return new I256(result);
   }
 
-  get bi(): bigint {
+  get bn(): bigint {
     return this.value;
   }
 

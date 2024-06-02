@@ -4,6 +4,7 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Block {
   public header: Header;
@@ -28,7 +29,7 @@ export class Block {
     if (txCountRes.err) {
       return txCountRes;
     }
-    const txCount = txCountRes.unwrap();
+    const txCount = txCountRes.unwrap().n;
 
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
@@ -47,7 +48,7 @@ export class Block {
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
     bw.write(this.header.toIsoBuf());
-    bw.writeVarIntNum(this.txs.length);
+    bw.writeVarInt(new U64(this.txs.length));
     this.txs.forEach((tx) => {
       bw.write(tx.toIsoBuf());
     });

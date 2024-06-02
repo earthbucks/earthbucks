@@ -3,36 +3,37 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Header {
-  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = 2016n;
-  static readonly BLOCK_INTERVAL = 600n; // seconds
+  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
+  static readonly BLOCK_INTERVAL = new U64(600n); // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
   static readonly INITIAL_TARGET = FixedIsoBuf.alloc(32, 0xff);
 
-  version: number;
+  version: U32;
   prevBlockId: FixedIsoBuf<32>;
   merkleRoot: FixedIsoBuf<32>;
-  timestamp: bigint; // seconds
-  blockNum: bigint;
+  timestamp: U64; // seconds
+  blockNum: U64;
   target: FixedIsoBuf<32>;
   nonce: FixedIsoBuf<32>;
-  workSerAlgo: number;
+  workSerAlgo: U32;
   workSerHash: FixedIsoBuf<32>;
-  workParAlgo: number;
+  workParAlgo: U32;
   workParHash: FixedIsoBuf<32>;
 
   constructor(
-    version: number,
+    version: U32,
     prevBlockId: FixedIsoBuf<32>,
     merkleRoot: FixedIsoBuf<32>,
-    timestamp: bigint,
-    blockNum: bigint,
+    timestamp: U64,
+    blockNum: U64,
     target: FixedIsoBuf<32>,
     nonce: FixedIsoBuf<32>,
-    workSerAlgo: number,
+    workSerAlgo: U32,
     workSerHash: FixedIsoBuf<32>,
-    workParAlgo: number,
+    workParAlgo: U32,
     workParHash: FixedIsoBuf<32>,
   ) {
     this.version = version;
@@ -195,18 +196,18 @@ export class Header {
   }
 
   static fromGenesis(initialTarget: FixedIsoBuf<32>): Header {
-    const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
+    const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
       timestamp,
-      0n,
+      new U64(0n),
       initialTarget,
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
   }
@@ -216,27 +217,28 @@ export class Header {
     prevAdjustmentBlockHeader: Header | null,
   ): Result<Header, string> {
     let target = null;
-    const blockNum = prevBlockHeader.blockNum + 1n;
-    if (blockNum % Header.BLOCKS_PER_TARGET_ADJ_PERIOD === 0n) {
+    const blockNum = prevBlockHeader.blockNum.add(new U64(1n));
+    if (blockNum.bn % Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.blockNum +
-          Header.BLOCKS_PER_TARGET_ADJ_PERIOD !==
-          blockNum
+        prevAdjustmentBlockHeader.blockNum.add(
+          Header.BLOCKS_PER_TARGET_ADJ_PERIOD,
+        ).bn !== blockNum.bn
       ) {
         return Err(
           "must provide previous adjustment block header 2016 blocks before",
         );
       }
-      const timeDiff =
-        prevBlockHeader.timestamp - prevAdjustmentBlockHeader!.timestamp;
+      const timeDiff: U64 = prevBlockHeader.timestamp.sub(
+        prevAdjustmentBlockHeader!.timestamp,
+      );
       const prevTarget = prevBlockHeader.target;
       target = Header.adjustTarget(prevTarget, timeDiff);
     } else {
       target = prevBlockHeader.target;
     }
     const prevBlockId = prevBlockHeader.id();
-    const timestamp = BigInt(Math.floor(Date.now() / 1000)); // seconds
+    const timestamp = new U64(BigInt(Math.floor(Date.now() / 1000))); // seconds
     const nonce = FixedIsoBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
     const workSerHash = FixedIsoBuf.alloc(32);
@@ -244,7 +246,7 @@ export class Header {
     const workParHash = FixedIsoBuf.alloc(32);
     return Ok(
       new Header(
-        1,
+        new U32(1),
         prevBlockId,
         FixedIsoBuf.alloc(32),
         timestamp,
@@ -259,8 +261,8 @@ export class Header {
     );
   }
 
-  static isValidVersion(version: number): boolean {
-    return version === 1;
+  static isValidVersion(version: U32): boolean {
+    return version.n === 1;
   }
 
   static isValidPreviousBlockHash(previousBlockHash: SysBuf): boolean {
@@ -294,7 +296,9 @@ export class Header {
   }
 
   isGenesis(): boolean {
-    return this.blockNum === 0n && this.prevBlockId.every((byte) => byte === 0);
+    return (
+      this.blockNum.bn === 0n && this.prevBlockId.every((byte) => byte === 0)
+    );
   }
 
   hash(): FixedIsoBuf<32> {
@@ -305,22 +309,23 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toIsoBuf());
   }
 
-  static adjustTarget(targetBuf: SysBuf, timeDiff: bigint): FixedIsoBuf<32> {
+  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedIsoBuf<32> {
     const target = BigInt("0x" + SysBuf.from(targetBuf).toString("hex"));
-    const twoWeeks =
-      Header.BLOCKS_PER_TARGET_ADJ_PERIOD * Header.BLOCK_INTERVAL;
+    const twoWeeks: bigint = Header.BLOCKS_PER_TARGET_ADJ_PERIOD.mul(
+      Header.BLOCK_INTERVAL,
+    ).bn;
 
     // To prevent extreme difficulty adjustments, if it took less than 1 week or
     // more than 8 weeks, we still consider it as 1 week or 8 weeks
     // respectively.
-    if (timeDiff < twoWeeks / 2n) {
-      timeDiff = twoWeeks / 2n; // seconds
+    if (timeDiff.bn < twoWeeks / 2n) {
+      timeDiff = new U64(twoWeeks / 2n); // seconds
     }
-    if (timeDiff > twoWeeks * 2n) {
-      timeDiff = twoWeeks * 2n; // seconds
+    if (timeDiff.bn > twoWeeks * 2n) {
+      timeDiff = new U64(twoWeeks * 2n); // seconds
     }
 
-    const newTarget = (target * timeDiff) / twoWeeks; // seconds
+    const newTarget = (target * timeDiff.bn) / twoWeeks; // seconds
 
     const newTargetBuf = SysBuf.from(
       newTarget.toString(16).padStart(64, "0"),

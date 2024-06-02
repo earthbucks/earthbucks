@@ -2,22 +2,23 @@ import { Tx, HashCache } from "./tx.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
 import { SysBuf } from "./iso-buf.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxVerifier {
   public tx: Tx;
   public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
-  public blockNum: bigint;
+  public blockNum: U64;
 
-  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: bigint) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: U64) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
     this.blockNum = blockNum;
   }
 
-  verifyInputScript(nIn: number): boolean {
-    const txInput = this.tx.inputs[nIn];
+  verifyInputScript(nIn: U32): boolean {
+    const txInput = this.tx.inputs[nIn.n];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txOutHash, outputIndex);
@@ -42,25 +43,25 @@ export class TxVerifier {
     return result;
   }
 
-  verifyInputLockRel(nIn: number): boolean {
-    const txInput = this.tx.inputs[nIn];
+  verifyInputLockRel(nIn: U32): boolean {
+    const txInput = this.tx.inputs[nIn.n];
     const txId = txInput.inputTxId;
     const txOutNum = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txId, txOutNum);
     if (!txOutBn) {
       return false;
     }
-    const lockRel = Number(txInput.lockRel);
+    const lockRel = txInput.lockRel;
     const prevBlockNum = txOutBn.blockNum;
-    return this.blockNum >= prevBlockNum + BigInt(lockRel);
+    return this.blockNum.bn >= prevBlockNum.bn + lockRel.bn;
   }
 
   verifyInputs(): boolean {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      if (!this.verifyInputScript(i)) {
+      if (!this.verifyInputScript(new U32(i))) {
         return false;
       }
-      if (!this.verifyInputLockRel(i)) {
+      if (!this.verifyInputLockRel(new U32(i))) {
         return false;
       }
     }
@@ -83,19 +84,19 @@ export class TxVerifier {
   }
 
   verifyOutputValues(): boolean {
-    let totalOutputValue = BigInt(0);
-    let totalInputValue = BigInt(0);
+    let totalOutputValue = new U64(0);
+    let totalInputValue = new U64(0);
     for (const output of this.tx.outputs) {
-      totalOutputValue += output.value;
+      totalOutputValue = totalOutputValue.add(output.value);
     }
     for (const input of this.tx.inputs) {
       const txOutBn = this.txOutBnMap.get(input.inputTxId, input.inputTxNOut);
       if (!txOutBn) {
         return false;
       }
-      totalInputValue += txOutBn.txOut.value;
+      totalInputValue = totalInputValue.add(txOutBn.txOut.value);
     }
-    return totalOutputValue === totalInputValue;
+    return totalOutputValue.bn === totalInputValue.bn;
   }
 
   verifyIsNotCoinbase(): boolean {

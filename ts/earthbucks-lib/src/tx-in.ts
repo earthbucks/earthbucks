@@ -5,18 +5,19 @@ import { VarInt } from "./var-int.js";
 import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxIn {
   public inputTxId: FixedIsoBuf<32>;
-  public inputTxNOut: number;
+  public inputTxNOut: U32;
   public script: Script;
-  public lockRel: number;
+  public lockRel: U32;
 
   constructor(
     inputTxId: FixedIsoBuf<32>,
-    inputTxNOut: number,
+    inputTxNOut: U32,
     script: Script,
-    lockRel: number,
+    lockRel: U32,
   ) {
     this.inputTxId = inputTxId;
     this.inputTxNOut = inputTxNOut;
@@ -40,11 +41,11 @@ export class TxIn {
       return inputTxIndexRes;
     }
     const inputTxIndex = inputTxIndexRes.unwrap();
-    const scriptLenRes = reader.readVarIntNum();
+    const scriptLenRes = reader.readVarInt();
     if (scriptLenRes.err) {
       return scriptLenRes;
     }
-    const scriptLen = scriptLenRes.unwrap();
+    const scriptLen = scriptLenRes.unwrap().n;
     const scriptBufRes = reader.read(scriptLen);
     if (scriptBufRes.err) {
       return scriptBufRes;
@@ -68,7 +69,7 @@ export class TxIn {
     writer.write(this.inputTxId);
     writer.writeU32BE(this.inputTxNOut);
     const scriptBuf = this.script.toIsoBuf();
-    writer.write(VarInt.fromNumber(scriptBuf.length).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toIsoBuf());
     writer.write(scriptBuf);
     writer.writeU32BE(this.lockRel);
     return writer.toIsoBuf();
@@ -77,12 +78,12 @@ export class TxIn {
   isNull(): boolean {
     return (
       this.inputTxId.every((byte) => byte === 0) &&
-      this.inputTxNOut === 0xffffffff
+      this.inputTxNOut.n === 0xffffffff
     );
   }
 
   isMinimalLock(): boolean {
-    return this.lockRel === 0;
+    return this.lockRel.n === 0;
   }
 
   isCoinbase(): boolean {
@@ -91,6 +92,6 @@ export class TxIn {
 
   static fromCoinbase(script: Script): TxIn {
     const emptyId = FixedIsoBuf.alloc(32);
-    return new TxIn(emptyId, 0xffffffff, script, 0);
+    return new TxIn(emptyId, new U32(0xffffffff), script, new U32(0));
   }
 }

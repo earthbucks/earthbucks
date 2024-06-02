@@ -2,12 +2,13 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class PermissionToken {
   randValue: FixedIsoBuf<32>;
-  timestamp: bigint; // milliseconds
+  timestamp: U64; // milliseconds
 
-  constructor(randValue: FixedIsoBuf<32>, timestamp: bigint) {
+  constructor(randValue: FixedIsoBuf<32>, timestamp: U64) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
@@ -43,7 +44,7 @@ export class PermissionToken {
     const randValue: FixedIsoBuf<32> = (FixedIsoBuf<32>)
       .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
       .unwrap();
-    const timestamp = BigInt(Date.now()); // milliseconds
+    const timestamp = new U64(Date.now()); // milliseconds
     return new PermissionToken(randValue, timestamp);
   }
 

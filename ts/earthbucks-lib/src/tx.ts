@@ -11,6 +11,7 @@ import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class HashCache {
   public hashPrevouts?: FixedIsoBuf<32>;
@@ -19,17 +20,12 @@ export class HashCache {
 }
 
 export class Tx {
-  public version: number;
+  public version: U8;
   public inputs: TxIn[];
   public outputs: TxOut[];
-  public lockAbs: bigint;
+  public lockAbs: U64;
 
-  constructor(
-    version: number,
-    inputs: TxIn[],
-    outputs: TxOut[],
-    lockAbs: bigint,
-  ) {
+  constructor(version: U8, inputs: TxIn[], outputs: TxOut[], lockAbs: U64) {
     this.version = version;
     this.inputs = inputs;
     this.outputs = outputs;
@@ -46,13 +42,13 @@ export class Tx {
       return versionRes;
     }
     const version = versionRes.unwrap();
-    const numInputsRes = reader.readVarIntNum();
+    const numInputsRes = reader.readVarInt();
     if (numInputsRes.err) {
       return numInputsRes;
     }
     const numInputs = numInputsRes.unwrap();
     const inputs = [];
-    for (let i = 0; i < numInputs; i++) {
+    for (let i = 0; i < numInputs.n; i++) {
       const txInRes = TxIn.fromIsoBufReader(reader);
       if (txInRes.err) {
         return txInRes;
@@ -60,13 +56,13 @@ export class Tx {
       const txIn = txInRes.unwrap();
       inputs.push(txIn);
     }
-    const numOutputsRes = reader.readVarIntNum();
+    const numOutputsRes = reader.readVarInt();
     if (numOutputsRes.err) {
       return numOutputsRes;
     }
     const numOutputs = numOutputsRes.unwrap();
     const outputs = [];
-    for (let i = 0; i < numOutputs; i++) {
+    for (let i = 0; i < numOutputs.n; i++) {
       const txOutRes = TxOut.fromIsoBufReader(reader);
       if (txOutRes.err) {
         return txOutRes;
@@ -79,17 +75,17 @@ export class Tx {
       return lockNumRes;
     }
     const lockNum = lockNumRes.unwrap();
-    return Ok(new Tx(version, inputs, outputs, BigInt(lockNum)));
+    return Ok(new Tx(version, inputs, outputs, lockNum));
   }
 
   toIsoBuf(): SysBuf {
     const writer = new IsoBufWriter();
     writer.writeU8(this.version);
-    writer.write(VarInt.fromNumber(this.inputs.length).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toIsoBuf());
     for (const input of this.inputs) {
       writer.write(input.toIsoBuf());
     }
-    writer.write(VarInt.fromNumber(this.outputs.length).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toIsoBuf());
     for (const output of this.outputs) {
       writer.write(output.toIsoBuf());
     }
@@ -113,12 +109,12 @@ export class Tx {
   static fromCoinbase(
     inputScript: Script,
     outputScript: Script,
-    outputAmount: bigint,
+    outputAmount: U64,
   ): Tx {
-    const version = 1;
+    const version = new U8(1);
     const inputs = [TxIn.fromCoinbase(inputScript)];
     const outputs = [new TxOut(outputAmount, outputScript)];
-    const lockNum = BigInt(0);
+    const lockNum = new U64(0);
     return new Tx(version, inputs, outputs, lockNum);
   }
 
@@ -160,10 +156,10 @@ export class Tx {
   }
 
   sighashPreimage(
-    inputIndex: number,
+    inputIndex: U32,
     script: SysBuf,
-    amount: bigint,
-    hashType: number,
+    amount: U64,
+    hashType: U8,
     hashCache: HashCache,
   ): SysBuf {
     const SIGHASH_ANYONECANPAY = 0x80;
@@ -174,7 +170,7 @@ export class Tx {
     let lockRelHash = FixedIsoBuf.alloc(32);
     let outputsHash = FixedIsoBuf.alloc(32);
 
-    if (!(hashType & SIGHASH_ANYONECANPAY)) {
+    if (!(hashType.n & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
         hashCache.hashPrevouts = this.hashPrevouts();
       }
@@ -182,9 +178,9 @@ export class Tx {
     }
 
     if (
-      !(hashType & SIGHASH_ANYONECANPAY) &&
-      (hashType & 0x1f) !== SIGHASH_SINGLE &&
-      (hashType & 0x1f) !== SIGHASH_NONE
+      !(hashType.n & SIGHASH_ANYONECANPAY) &&
+      (hashType.n & 0x1f) !== SIGHASH_SINGLE &&
+      (hashType.n & 0x1f) !== SIGHASH_NONE
     ) {
       if (!hashCache.hashLockRel) {
         hashCache.hashLockRel = this.hashLockRel();
@@ -193,30 +189,32 @@ export class Tx {
     }
 
     if (
-      (hashType & 0x1f) !== SIGHASH_SINGLE &&
-      (hashType & 0x1f) !== SIGHASH_NONE
+      (hashType.n & 0x1f) !== SIGHASH_SINGLE &&
+      (hashType.n & 0x1f) !== SIGHASH_NONE
     ) {
       if (!hashCache.hashOutputs) {
         hashCache.hashOutputs = this.hashOutputs();
       }
       outputsHash = hashCache.hashOutputs;
     } else if (
-      (hashType & 0x1f) === SIGHASH_SINGLE &&
-      inputIndex < this.outputs.length
+      (hashType.n & 0x1f) === SIGHASH_SINGLE &&
+      inputIndex.n < this.outputs.length
     ) {
-      outputsHash = Hash.doubleBlake3Hash(this.outputs[inputIndex].toIsoBuf());
+      outputsHash = Hash.doubleBlake3Hash(
+        this.outputs[inputIndex.n].toIsoBuf(),
+      );
     }
 
     const writer = new IsoBufWriter();
     writer.writeU8(this.version);
     writer.write(prevoutsHash);
     writer.write(lockRelHash);
-    writer.write(this.inputs[inputIndex].inputTxId);
-    writer.writeU32BE(this.inputs[inputIndex].inputTxNOut);
-    writer.writeVarIntNum(script.length);
+    writer.write(this.inputs[inputIndex.n].inputTxId);
+    writer.writeU32BE(this.inputs[inputIndex.n].inputTxNOut);
+    writer.writeVarInt(new U64(script.length));
     writer.write(script);
     writer.writeU64BE(amount);
-    writer.writeU32BE(this.inputs[inputIndex].lockRel);
+    writer.writeU32BE(this.inputs[inputIndex.n].lockRel);
     writer.write(outputsHash);
     writer.writeU64BE(this.lockAbs);
     writer.writeU8(hashType);
@@ -224,10 +222,10 @@ export class Tx {
   }
 
   sighashNoCache(
-    inputIndex: number,
+    inputIndex: U32,
     script: SysBuf,
-    amount: bigint,
-    hashType: number,
+    amount: U64,
+    hashType: U8,
   ): SysBuf {
     const hashCache = new HashCache();
     const preimage = this.sighashPreimage(
@@ -242,10 +240,10 @@ export class Tx {
   }
 
   sighashWithCache(
-    inputIndex: number,
+    inputIndex: U32,
     script: SysBuf,
-    amount: bigint,
-    hashType: number,
+    amount: U64,
+    hashType: U8,
     hashCache: HashCache,
   ): SysBuf {
     const preimage = this.sighashPreimage(
@@ -260,11 +258,11 @@ export class Tx {
   }
 
   signNoCache(
-    inputIndex: number,
+    inputIndex: U32,
     privateKey: SysBuf,
     script: SysBuf,
-    amount: bigint,
-    hashType: number,
+    amount: U64,
+    hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
     const sigBuf = FixedIsoBuf.fromBuf(
@@ -276,11 +274,11 @@ export class Tx {
   }
 
   signWithCache(
-    inputIndex: number,
+    inputIndex: U32,
     privateKey: SysBuf,
     script: SysBuf,
-    amount: bigint,
-    hashType: number,
+    amount: U64,
+    hashType: U8,
     hashCache: HashCache,
   ): TxSignature {
     const hash = this.sighashWithCache(
@@ -299,11 +297,11 @@ export class Tx {
   }
 
   verifyNoCache(
-    inputIndex: number,
+    inputIndex: U32,
     publicKey: SysBuf,
     sig: TxSignature,
     script: SysBuf,
-    amount: bigint,
+    amount: U64,
   ): boolean {
     const hashType = sig.hashType;
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
@@ -311,11 +309,11 @@ export class Tx {
   }
 
   verifyWithCache(
-    inputIndex: number,
+    inputIndex: U32,
     publicKey: SysBuf,
     sig: TxSignature,
     script: SysBuf,
-    amount: bigint,
+    amount: U64,
     hashCache: HashCache,
   ): boolean {
     const hashType = sig.hashType;

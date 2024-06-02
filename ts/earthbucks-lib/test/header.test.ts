@@ -1,74 +1,75 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
 import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
-describe("BlockHeader", () => {
+describe("Header", () => {
   test("toIsoBuf and fromIsoBuf", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     const buf = bh1.toIsoBuf();
     const bh2 = Header.fromIsoBuf(buf).unwrap();
-    expect(bh1.version).toBe(bh2.version);
+    expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),
     );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
-    expect(bh1.timestamp).toBe(bh2.timestamp);
+    expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
     expect(bh1.target).toEqual(bh2.target);
     expect(bh1.nonce).toEqual(bh2.nonce);
-    expect(bh1.blockNum).toBe(bh2.blockNum);
+    expect(bh1.blockNum.bn).toEqual(bh2.blockNum.bn);
   });
 
   test("toIsoBuf", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     const buf = bh1.toIsoBuf();
     const bh2 = Header.fromIsoBuf(buf).unwrap();
-    expect(bh1.version).toBe(bh2.version);
+    expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),
     );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
-    expect(bh1.timestamp).toBe(bh2.timestamp);
+    expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
     expect(bh1.target).toEqual(bh2.target);
     expect(bh1.nonce).toEqual(bh2.nonce);
-    expect(bh1.blockNum).toBe(bh2.blockNum);
+    expect(bh1.blockNum.bn).toEqual(bh2.blockNum.bn);
   });
 
   test("isValid", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     expect(bh1.isValid()).toBe(true);
@@ -76,16 +77,16 @@ describe("BlockHeader", () => {
 
   test("isGenesis", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     expect(bh1.isGenesis()).toBe(true);
@@ -93,16 +94,16 @@ describe("BlockHeader", () => {
 
   test("hash", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     expect(SysBuf.from(bh1.hash()).toString("hex")).toBe(
@@ -112,16 +113,16 @@ describe("BlockHeader", () => {
 
   test("id", () => {
     const bh1 = new Header(
-      1,
+      new U32(1),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0n,
-      0n,
+      new U64(0n),
+      new U64(0n),
       FixedIsoBuf.alloc(32),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
-      0,
+      new U32(0),
       FixedIsoBuf.alloc(32),
     );
     expect(SysBuf.from(bh1.id()).toString("hex")).toBe(
@@ -132,16 +133,16 @@ describe("BlockHeader", () => {
   describe("fromPrevBlockHeader", () => {
     test("fromPrevBlockHeader", () => {
       const prevBlockHeader = new Header(
-        1,
+        new U32(1),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0n,
-        0n,
+        new U64(0n),
+        new U64(0n),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = null;
@@ -149,46 +150,48 @@ describe("BlockHeader", () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       ).unwrap();
-      expect(bh.version).toBe(1);
+      expect(bh.version.n).toBe(1);
       expect(bh.prevBlockId).toEqual(prevBlockHeader.id());
       expect(bh.merkleRoot).toEqual(FixedIsoBuf.alloc(32));
-      expect(bh.timestamp).toBeLessThanOrEqual(new Date().getTime() / 1000);
+      expect(bh.timestamp.n).toBeLessThanOrEqual(new Date().getTime() / 1000);
       expect(bh.target).toEqual(FixedIsoBuf.alloc(32));
     });
 
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
       const prevBlockHeader = new Header(
-        1,
+        new U32(1),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
-        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
+        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
+        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        1,
+        new U32(1),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0n,
-        0n,
+        new U64(0n),
+        new U64(0n),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       ).unwrap();
-      expect(bh.blockNum).toBe(Header.BLOCKS_PER_TARGET_ADJ_PERIOD);
-      expect(bh.target).toEqual(Header.adjustTarget(FixedIsoBuf.alloc(32), 0n));
+      expect(bh.blockNum.bn).toEqual(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn);
+      expect(bh.target).toEqual(
+        Header.adjustTarget(FixedIsoBuf.alloc(32), new U64(0n)),
+      );
     });
 
     test("should correctly adjust the target for non-trivial adjustment", () => {
@@ -198,36 +201,36 @@ describe("BlockHeader", () => {
       ).unwrap();
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
-        1,
+        new U32(1),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        timeDiff - 1n,
-        Header.BLOCKS_PER_TARGET_ADJ_PERIOD - 1n,
+        new U64(timeDiff - 1n),
+        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         initialTarget,
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        1,
+        new U32(1),
         FixedIsoBuf.alloc(32),
         FixedIsoBuf.alloc(32),
-        0n,
-        0n,
+        new U64(0n),
+        new U64(0n),
         initialTarget,
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
-        0,
+        new U32(0),
         FixedIsoBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       ).unwrap();
-      expect(bh.blockNum).toBe(Header.BLOCKS_PER_TARGET_ADJ_PERIOD);
+      expect(bh.blockNum.bn).toEqual(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn);
       expect(SysBuf.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
@@ -237,7 +240,7 @@ describe("BlockHeader", () => {
   describe("adjustTarget", () => {
     test("adjustTarget", () => {
       const prevTarget = FixedIsoBuf.alloc(32);
-      const timeDiff = 0n;
+      const timeDiff = new U64(0n);
       expect(Header.adjustTarget(prevTarget, timeDiff)).toEqual(
         FixedIsoBuf.alloc(32),
       );
@@ -248,7 +251,7 @@ describe("BlockHeader", () => {
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
-      const timeDiff = 2016n * 200n; // Less than a week
+      const timeDiff = new U64(2016n * 200n); // Less than a week
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
       expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",
@@ -260,7 +263,7 @@ describe("BlockHeader", () => {
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
-      const timeDiff = 2016n * 600n * 3n; // More than four weeks
+      const timeDiff = new U64(2016n * 600n * 3n); // More than four weeks
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
       expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "00000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffe",
@@ -272,7 +275,7 @@ describe("BlockHeader", () => {
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
         "hex",
       );
-      const timeDiff = 2016n * 600n; // Two weeks
+      const timeDiff = new U64(2016n * 600n); // Two weeks
       const newTarget = Header.adjustTarget(targetBuf, timeDiff);
       expect(SysBuf.from(newTarget).toString("hex")).toBe(
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",

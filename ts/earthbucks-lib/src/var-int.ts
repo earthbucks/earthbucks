@@ -2,6 +2,8 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { SysBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
+import { EbxError } from "./ebx-error.js";
 
 export class VarInt {
   private buf: SysBuf;
@@ -10,13 +12,13 @@ export class VarInt {
     this.buf = buf;
   }
 
-  static fromBigInt(bn: bigint) {
-    const buf = new IsoBufWriter().writeVarInt(bn).toIsoBuf();
+  static fromU64(u64: U64) {
+    const buf = new IsoBufWriter().writeVarInt(u64).toIsoBuf();
     return new VarInt(buf);
   }
 
-  static fromNumber(num: number) {
-    const buf = new IsoBufWriter().writeVarIntNum(num).toIsoBuf();
+  static fromU32(u32: U32) {
+    const buf = new IsoBufWriter().writeVarInt(new U64(u32.n)).toIsoBuf();
     return new VarInt(buf);
   }
 
@@ -24,12 +26,17 @@ export class VarInt {
     return this.buf;
   }
 
-  toBigInt(): Result<bigint, string> {
-    return new IsoBufReader(this.buf).readVarInt().mapErr((e) => e.toString());
+  toU64(): Result<U64, EbxError> {
+    return new IsoBufReader(this.buf).readVarInt();
   }
 
-  toNumber() {
-    return new IsoBufReader(this.buf).readVarIntNum();
+  toU32(): Result<U32, EbxError> {
+    const u64Res = new IsoBufReader(this.buf).readVarInt();
+    if (u64Res.err) {
+      return Err(u64Res.val);
+    }
+    const u64 = u64Res.unwrap();
+    return Ok(new U32(u64.n));
   }
 
   static fromIsoBufReader(br: IsoBufReader): Result<VarInt, string> {
@@ -42,12 +49,12 @@ export class VarInt {
   }
 
   isMinimal() {
-    const res = this.toBigInt();
+    const res = this.toU64();
     if (res.err) {
       return false;
     }
     const bn = res.unwrap();
-    const varint = VarInt.fromBigInt(bn);
+    const varint = VarInt.fromU64(bn);
     return SysBuf.compare(this.buf, varint.toIsoBuf()) === 0;
   }
 }

@@ -6,11 +6,12 @@ import * as Hash from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
 import { SysBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class ScriptInterpreter {
   public script: Script;
   public tx: Tx;
-  public nIn: number;
+  public nIn: U32;
   public stack: SysBuf[];
   public altStack: SysBuf[];
   public pc: number;
@@ -19,13 +20,13 @@ export class ScriptInterpreter {
   public returnValue?: SysBuf;
   public returnSuccess?: boolean;
   public errStr: string;
-  public value: bigint;
+  public value: U64;
   public hashCache: HashCache;
 
   constructor(
     script: Script,
     tx: Tx,
-    nIn: number,
+    nIn: U32,
     stack: SysBuf[],
     altStack: SysBuf[],
     pc: number,
@@ -34,7 +35,7 @@ export class ScriptInterpreter {
     returnValue: SysBuf | undefined,
     returnSuccess: boolean | undefined,
     errStr: string,
-    value: bigint,
+    value: U64,
     hashCache: HashCache,
   ) {
     this.script = script;
@@ -55,7 +56,7 @@ export class ScriptInterpreter {
   static fromScriptTx(
     script: Script,
     tx: Tx,
-    nIn: number,
+    nIn: U32,
     hashCache: HashCache,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
@@ -70,7 +71,7 @@ export class ScriptInterpreter {
       undefined,
       undefined,
       "",
-      BigInt(0),
+      new U64(0),
       hashCache,
     );
   }
@@ -78,9 +79,9 @@ export class ScriptInterpreter {
   static fromOutputScriptTx(
     script: Script,
     tx: Tx,
-    nIn: number,
+    nIn: U32,
     stack: SysBuf[],
-    value: bigint,
+    value: U64,
     hashCache: HashCache,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
@@ -1171,7 +1172,7 @@ export class ScriptInterpreter {
               this.errStr = "negative lockabs";
               break loop;
             }
-            if (this.tx.lockAbs < scriptNum.num) {
+            if (this.tx.lockAbs.bn < scriptNum.num) {
               this.errStr = "lockabs requirement not met";
               break loop;
             }
@@ -1190,8 +1191,8 @@ export class ScriptInterpreter {
               this.errStr = "negative lockrel";
               break loop;
             }
-            const txInput = this.tx.inputs[this.nIn];
-            if (txInput.lockRel < scriptNum.num) {
+            const txInput = this.tx.inputs[this.nIn.n];
+            if (txInput.lockRel.bn < scriptNum.num) {
               this.errStr = "lockrel requirement not met";
               break loop;
             }

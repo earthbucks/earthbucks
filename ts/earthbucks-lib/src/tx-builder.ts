@@ -6,23 +6,20 @@ import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, GenericError } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;
   public tx: Tx;
   public changeScript: Script;
-  public inputAmount: bigint;
-  public lockAbs: bigint;
+  public inputAmount: U64;
+  public lockAbs: U64;
 
-  constructor(
-    inputTxOutMap: TxOutBnMap,
-    changeScript: Script,
-    lockAbs: bigint,
-  ) {
-    this.tx = new Tx(1, [], [], BigInt(0));
+  constructor(inputTxOutMap: TxOutBnMap, changeScript: Script, lockAbs: U64) {
+    this.tx = new Tx(new U8(1), [], [], new U64(0));
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
-    this.inputAmount = BigInt(0);
+    this.inputAmount = new U64(0);
     this.lockAbs = lockAbs;
   }
 
@@ -30,9 +27,9 @@ export class TxBuilder {
     this.tx.outputs.push(txOut);
   }
 
-  addInput(txIn: TxIn, amount: bigint): void {
+  addInput(txIn: TxIn, amount: U64): void {
     this.tx.inputs.push(txIn);
-    this.inputAmount += amount;
+    this.inputAmount = this.inputAmount.add(amount);
   }
 
   build(): Result<Tx, EbxError> {
@@ -41,11 +38,11 @@ export class TxBuilder {
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
     this.tx.lockAbs = this.lockAbs;
-    const totalSpendAmount = this.tx.outputs.reduce(
-      (acc, output) => acc + output.value,
-      BigInt(0),
+    const totalSpendAmount: U64 = this.tx.outputs.reduce(
+      (acc, output) => acc.add(output.value),
+      new U64(0),
     );
-    let changeAmount = BigInt(0);
+    let changeAmount = new U64(0);
     let inputAmount = this.inputAmount;
 
     // sort by block number first, but if those are the same, sort by the id
@@ -69,8 +66,8 @@ export class TxBuilder {
     );
 
     for (const [txOutId, txOutBn] of sortedTxOutBns) {
-      if (inputAmount >= totalSpendAmount) {
-        changeAmount = inputAmount - totalSpendAmount;
+      if (inputAmount.bn >= totalSpendAmount.bn) {
+        changeAmount = inputAmount.sub(totalSpendAmount);
         break;
       }
       const txId = TxOutBnMap.nameToTxId(txOutId);
@@ -94,13 +91,13 @@ export class TxBuilder {
         return Err(new GenericError("unsupported script type"));
       }
 
-      const txInput = new TxIn(txId, txOutNum, inputScript, 0);
+      const txInput = new TxIn(txId, txOutNum, inputScript, new U32(0));
       const outputAmount = txOutBn.txOut.value;
-      inputAmount += outputAmount;
+      inputAmount = inputAmount.add(outputAmount);
       this.tx.inputs.push(txInput);
     }
     this.inputAmount = inputAmount;
-    if (changeAmount > BigInt(0)) {
+    if (changeAmount.bn > BigInt(0)) {
       const txOut = new TxOut(changeAmount, this.changeScript);
       this.addOutput(txOut);
     }

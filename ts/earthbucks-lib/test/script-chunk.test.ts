@@ -3,6 +3,7 @@ import { ScriptChunk } from "../src/script-chunk.js";
 import { OP } from "../src/opcode.js";
 import { IsoBufWriter } from "../src/iso-buf-writer.js";
 import { SysBuf } from "../src/iso-buf.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("ScriptChunk", () => {
   let scriptChunk: ScriptChunk;
@@ -97,8 +98,8 @@ describe("ScriptChunk", () => {
       const buffer = SysBuf.alloc(256).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA2, buffer);
       const expected = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA2)
-        .writeU16BE(buffer.length)
+        .writeU8(new U8(OP.PUSHDATA2))
+        .writeU16BE(new U16(buffer.length))
         .write(buffer)
         .toIsoBuf();
       expect(scriptChunk.toIsoBuf()).toEqual(expected);
@@ -108,8 +109,8 @@ describe("ScriptChunk", () => {
       const buffer = SysBuf.alloc(65536).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA4, buffer);
       const expected = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA4)
-        .writeU32BE(buffer.length)
+        .writeU8(new U8(OP.PUSHDATA4))
+        .writeU32BE(new U32(buffer.length))
         .write(buffer)
         .toIsoBuf();
       expect(scriptChunk.toIsoBuf()).toEqual(expected);
@@ -141,8 +142,8 @@ describe("ScriptChunk", () => {
     test("should create a ScriptChunk from IsoBuf with opcode OP_PUSHDATA2 and a buffer", () => {
       const buffer = SysBuf.alloc(256).fill(0);
       const arr = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA2)
-        .writeU16BE(buffer.length)
+        .writeU8(new U8(OP.PUSHDATA2))
+        .writeU16BE(new U16(buffer.length))
         .write(buffer)
         .toIsoBuf();
       const scriptChunk = ScriptChunk.fromIsoBuf(arr).unwrap();
@@ -153,8 +154,8 @@ describe("ScriptChunk", () => {
     test("should create a ScriptChunk from IsoBuf with opcode OP_PUSHDATA4 and a buffer", () => {
       const buffer = SysBuf.alloc(65536).fill(0);
       const arr = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA4)
-        .writeU32BE(buffer.length)
+        .writeU8(new U8(OP.PUSHDATA4))
+        .writeU32BE(new U32(buffer.length))
         .write(buffer)
         .toIsoBuf();
       const scriptChunk = ScriptChunk.fromIsoBuf(arr).unwrap();
@@ -175,8 +176,8 @@ describe("ScriptChunk", () => {
     test("should throw error if length does not match expected length", () => {
       const buffer = SysBuf.alloc(100).fill(0);
       const arr = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA2)
-        .writeU16BE(200)
+        .writeU8(new U8(OP.PUSHDATA2))
+        .writeU16BE(new U16(200))
         .write(buffer)
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);
@@ -187,8 +188,8 @@ describe("ScriptChunk", () => {
     test("should throw error if length does not match expected length", () => {
       const buffer = SysBuf.alloc(100).fill(0);
       const arr = new IsoBufWriter()
-        .writeU8(OP.PUSHDATA4)
-        .writeU32BE(200)
+        .writeU8(new U8(OP.PUSHDATA4))
+        .writeU32BE(new U32(200))
         .write(buffer)
         .toIsoBuf();
       const res = ScriptChunk.fromIsoBuf(arr);

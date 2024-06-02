@@ -6,6 +6,7 @@ import {
   NonMinimalEncodingError,
   InsufficientPrecisionError,
 } from "./ebx-error.js";
+import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class IsoBufReader {
   buf: SysBuf;
@@ -46,7 +47,7 @@ export class IsoBufReader {
     return this.read(this.buf.length - this.pos).unwrap();
   }
 
-  readU8(): Result<number, EbxError> {
+  readU8(): Result<U8, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt8(this.pos);
@@ -54,10 +55,10 @@ export class IsoBufReader {
       return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 1;
-    return Ok(val);
+    return Ok(new U8(BigInt(val)));
   }
 
-  readU16BE(): Result<number, EbxError> {
+  readU16BE(): Result<U16, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt16BE(this.pos);
@@ -65,10 +66,10 @@ export class IsoBufReader {
       return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 2;
-    return Ok(val);
+    return Ok(new U16(BigInt(val)));
   }
 
-  readU32BE(): Result<number, EbxError> {
+  readU32BE(): Result<U32, EbxError> {
     let val: number;
     try {
       val = this.buf.readUInt32BE(this.pos);
@@ -76,10 +77,10 @@ export class IsoBufReader {
       return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 4;
-    return Ok(val);
+    return Ok(new U32(BigInt(val)));
   }
 
-  readU64BE(): Result<bigint, EbxError> {
+  readU64BE(): Result<U64, EbxError> {
     let val: bigint;
     try {
       val = this.buf.readBigUInt64BE(this.pos);
@@ -87,7 +88,7 @@ export class IsoBufReader {
       return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 8;
-    return Ok(val);
+    return Ok(new U64(val));
   }
 
   readVarIntBuf(): Result<SysBuf, EbxError> {
@@ -95,7 +96,7 @@ export class IsoBufReader {
     if (res.err) {
       return Err(new NotEnoughDataError(res.val));
     }
-    const first = res.unwrap();
+    const first = res.unwrap().n;
     if (first === 0xfd) {
       const res = this.read(2);
       if (res.err) {
@@ -132,7 +133,7 @@ export class IsoBufReader {
     }
   }
 
-  readVarInt(): Result<bigint, EbxError> {
+  readVarInt(): Result<U64, EbxError> {
     const res = this.readVarIntBuf();
     if (res.err) {
       return Err(res.val);
@@ -154,17 +155,6 @@ export class IsoBufReader {
         value = BigInt(first);
         break;
     }
-    return Ok(value);
-  }
-
-  readVarIntNum(): Result<number, EbxError> {
-    const value = this.readVarInt();
-    if (value.err) {
-      return Err(value.val);
-    }
-    if (value.unwrap() > BigInt(Number.MAX_SAFE_INTEGER)) {
-      return Err(new InsufficientPrecisionError());
-    }
-    return Ok(Number(value.unwrap()));
+    return Ok(new U64(value));
   }
 }

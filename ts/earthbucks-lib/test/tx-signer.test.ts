@@ -11,6 +11,7 @@ import { ScriptInterpreter } from "../src/script-interpreter.js";
 import { HashCache } from "../src/tx.js";
 import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxSigner", () => {
   let txBuilder: TxBuilder;
@@ -27,30 +28,30 @@ describe("TxSigner", () => {
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
-      const txOut = new TxOut(BigInt(100), script);
-      const txOutBn = new TxOutBn(txOut, 0n);
-      txOutBnMap.add(txOutBn, FixedIsoBuf.alloc(32), i);
+      const txOut = new TxOut(new U64(100), script);
+      const txOutBn = new TxOutBn(txOut, new U64(0n));
+      txOutBnMap.add(txOutBn, FixedIsoBuf.alloc(32), new U32(i));
     }
 
     const changeScript = Script.fromEmpty();
-    txBuilder = new TxBuilder(txOutBnMap, changeScript, 0n);
+    txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
   });
 
   test("should sign a tx", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
     const script = Script.fromPkhOutput(pkh.buf);
-    const output = new TxOut(BigInt(50), script);
+    const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 
     const tx = txBuilder.build().unwrap();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
-    expect(tx.outputs[0].value).toBe(BigInt(50));
+    expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
 
-    txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
-    const signed = txSigner.sign(0);
+    txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+    const signed = txSigner.sign(new U32(0));
     expect(signed.ok).toBe(true);
 
     const txInput = tx.inputs[0];
@@ -67,9 +68,9 @@ describe("TxSigner", () => {
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       execScript,
       tx,
-      0,
+      new U32(0),
       stack,
-      100n,
+      new U64(100n),
       hashCache,
     );
 
@@ -81,7 +82,7 @@ describe("TxSigner", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
     const script = Script.fromPkhOutput(pkh.buf);
-    const output = new TxOut(BigInt(100), script);
+    const output = new TxOut(new U64(100), script);
     txBuilder.addOutput(output);
     txBuilder.addOutput(output);
 
@@ -89,13 +90,13 @@ describe("TxSigner", () => {
 
     expect(tx.inputs.length).toBe(2);
     expect(tx.outputs.length).toBe(2);
-    expect(tx.outputs[0].value).toBe(BigInt(100));
-    expect(tx.outputs[1].value).toBe(BigInt(100));
+    expect(tx.outputs[0].value.bn).toEqual(BigInt(100));
+    expect(tx.outputs[1].value.bn).toEqual(BigInt(100));
 
-    txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, 0n);
-    const signed1 = txSigner.sign(0);
+    txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+    const signed1 = txSigner.sign(new U32(0));
     expect(signed1.ok).toBe(true);
-    const signed2 = txSigner.sign(1);
+    const signed2 = txSigner.sign(new U32(1));
     expect(signed2.ok).toBe(true);
 
     const txInput1 = tx.inputs[0];
@@ -112,9 +113,9 @@ describe("TxSigner", () => {
     const scriptInterpreter1 = ScriptInterpreter.fromOutputScriptTx(
       execScript1,
       tx,
-      0,
+      new U32(0),
       stack1,
-      100n,
+      new U64(100n),
       hashCache1,
     );
 
@@ -135,9 +136,9 @@ describe("TxSigner", () => {
     const scriptInterpreter2 = ScriptInterpreter.fromOutputScriptTx(
       execScript2,
       tx,
-      1,
+      new U32(1),
       stack2,
-      100n,
+      new U64(100n),
       hashCache2,
     );
 

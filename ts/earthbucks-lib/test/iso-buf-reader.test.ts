@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
 import { SysBuf } from "../src/iso-buf.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 import fs from "fs";
 import path from "path";
 
@@ -38,19 +39,19 @@ describe("IsoBufReader", () => {
 
   test("readUInt8 returns correct value and updates position", () => {
     const result = bufferReader.readU8().unwrap();
-    expect(result).toBe(1);
+    expect(result.n).toBe(1);
     expect(bufferReader["pos"]).toBe(1);
   });
 
   test("readUInt16BE returns correct value and updates position", () => {
     const result = bufferReader.readU16BE().unwrap();
-    expect(result).toBe(SysBuf.from([1, 2]).readUInt16BE());
+    expect(result.n).toBe(SysBuf.from([1, 2]).readUInt16BE());
     expect(bufferReader["pos"]).toBe(2);
   });
 
   test("readUInt32BE returns correct value and updates position", () => {
     const result = bufferReader.readU32BE().unwrap();
-    expect(result).toBe(SysBuf.from([1, 2, 3, 4]).readUInt32BE());
+    expect(result.n).toBe(SysBuf.from([1, 2, 3, 4]).readUInt32BE());
     expect(bufferReader["pos"]).toBe(4);
   });
 
@@ -63,58 +64,10 @@ describe("IsoBufReader", () => {
     const result = bufferReader.readU64BE().unwrap();
 
     // Check that the method returns the correct BigInt
-    expect(result).toEqual(BigInt("0x0123456789ABCDEF"));
+    expect(result.bn).toEqual(BigInt("0x0123456789ABCDEF"));
 
     // Check that the position has been updated correctly
     expect(bufferReader["pos"]).toBe(8);
-  });
-
-  test("readVarIntNum returns correct value and updates position for small numbers", () => {
-    const result = bufferReader.readVarIntNum().unwrap();
-    expect(result).toBe(1); // Assuming that the implementation treats a single byte as a varint
-    expect(bufferReader["pos"]).toBe(1);
-  });
-
-  test("readVarIntNum returns correct value and updates position for 16 bit numbers", () => {
-    const buf = SysBuf.from([0xfd, 0, 0, 0, 0]);
-    buf.writeUInt16BE(500, 1);
-    bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
-    const result = bufferReader.readVarIntNum().unwrap();
-    expect(result).toBe(500); // 2^30
-    expect(bufferReader["pos"]).toBe(3);
-  });
-
-  test("readVarIntNum returns correct value and updates position for 32 bit numbers", () => {
-    const buf = SysBuf.from([254, 0, 0, 0, 0]);
-    buf.writeUInt32BE(2000000000, 1);
-    bufferReader = new IsoBufReader(buf); // A varint that represents the number 2^30
-    const result = bufferReader.readVarIntNum().unwrap();
-    expect(result).toBe(2000000000); // 2^30
-    expect(bufferReader["pos"]).toBe(5);
-  });
-
-  test("readVarIntNum", () => {
-    let bufferReader = new IsoBufReader(SysBuf.from([0xfd, 0x00, 0x01]));
-    expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal encoding",
-    );
-
-    bufferReader = new IsoBufReader(
-      SysBuf.from([0xfe, 0x00, 0x00, 0x00, 0x01]),
-    );
-    expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal encoding",
-    );
-
-    bufferReader = new IsoBufReader(
-      SysBuf.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
-    );
-    expect(bufferReader.readVarIntNum().val.toString()).toBe(
-      "non-minimal encoding",
-    );
-
-    bufferReader = new IsoBufReader(SysBuf.from([0x01]));
-    expect(bufferReader.readVarIntNum().unwrap()).toBe(1);
   });
 
   test("readVarIntBuf", () => {
@@ -162,7 +115,7 @@ describe("IsoBufReader", () => {
     );
 
     bufferReader = new IsoBufReader(SysBuf.from([0x01]));
-    expect(bufferReader.readVarInt().unwrap()).toEqual(BigInt(1));
+    expect(bufferReader.readVarInt().unwrap().bn).toEqual(BigInt(1));
   });
 
   describe("test vectors", () => {

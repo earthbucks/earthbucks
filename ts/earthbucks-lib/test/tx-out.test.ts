@@ -3,11 +3,12 @@ import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
 import { IsoBufReader } from "../src/iso-buf-reader.js";
 import { SysBuf } from "../src/iso-buf.js";
+import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxOutput", () => {
   describe("fromIsoBufReader", () => {
     test("fromIsoBufReader", () => {
-      const value = BigInt(100);
+      const value = new U64(100);
       const script = new Script();
       const txOutput = new TxOut(value, script);
 
@@ -21,7 +22,7 @@ describe("TxOutput", () => {
 
   describe("fromU8Vec and toIsoBuf", () => {
     test("should create a TxOutput from a IsoBuf", () => {
-      const value = BigInt(100);
+      const value = new U64(100);
       const script = Script.fromIsoStr(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       ).unwrap();
@@ -34,7 +35,7 @@ describe("TxOutput", () => {
 
     test("big push data", () => {
       const data = "0x" + "00".repeat(0xffff);
-      const value = BigInt(100);
+      const value = new U64(100);
       const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`).unwrap();
       const txOutput = new TxOut(value, script);
       const result = TxOut.fromIsoBuf(txOutput.toIsoBuf()).unwrap();
