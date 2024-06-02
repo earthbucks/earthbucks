@@ -16,7 +16,8 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
   abstract sub(other: U): U;
   abstract mul(other: U): U;
   abstract div(other: U): U;
-  abstract get n(): bigint;
+  abstract get bi(): bigint;
+  abstract get n(): number;
 }
 
 export class U8 extends BasicNumber<U8> {
@@ -44,8 +45,12 @@ export class U8 extends BasicNumber<U8> {
     return new U8(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -74,8 +79,12 @@ export class I8 extends BasicNumber<I8> {
     return new I8(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -104,8 +113,12 @@ export class U16 extends BasicNumber<U16> {
     return new U16(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -134,8 +147,12 @@ export class I16 extends BasicNumber<I16> {
     return new I16(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -164,8 +181,12 @@ export class U32 extends BasicNumber<U32> {
     return new U32(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -194,8 +215,12 @@ export class I32 extends BasicNumber<I32> {
     return new I32(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -224,8 +249,12 @@ export class U64 extends BasicNumber<U64> {
     return new U64(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -254,8 +283,12 @@ export class I64 extends BasicNumber<I64> {
     return new I64(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -284,8 +317,12 @@ export class U128 extends BasicNumber<U128> {
     return new U128(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -318,8 +355,12 @@ export class I128 extends BasicNumber<I128> {
     return new I128(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -352,8 +393,12 @@ export class U256 extends BasicNumber<U256> {
     return new U256(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
 
@@ -386,7 +431,11 @@ export class I256 extends BasicNumber<I256> {
     return new I256(result);
   }
 
-  get n(): bigint {
+  get bi(): bigint {
     return this.value;
+  }
+
+  get n(): number {
+    return Number(this.value);
   }
 }
