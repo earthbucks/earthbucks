@@ -1,6 +1,3 @@
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
-
 export abstract class EbxError extends Error {
   constructor() {
     super();
@@ -9,8 +6,8 @@ export abstract class EbxError extends Error {
 
 export class GenericError extends EbxError {
   constructor(
-    public source: Option<EbxError>,
     public message: string,
+    public source?: EbxError,
   ) {
     super();
   }
@@ -21,7 +18,7 @@ export class GenericError extends EbxError {
 }
 
 export class InvalidSizeError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -31,7 +28,7 @@ export class InvalidSizeError extends EbxError {
 }
 
 export class NotEnoughDataError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -41,7 +38,7 @@ export class NotEnoughDataError extends EbxError {
 }
 
 export class TooMuchDataError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -51,7 +48,7 @@ export class TooMuchDataError extends EbxError {
 }
 
 export class NonMinimalEncodingError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -61,7 +58,7 @@ export class NonMinimalEncodingError extends EbxError {
 }
 
 export class InsufficientPrecisionError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -71,7 +68,7 @@ export class InsufficientPrecisionError extends EbxError {
 }
 
 export class InvalidOpcodeError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -81,7 +78,7 @@ export class InvalidOpcodeError extends EbxError {
 }
 
 export class InvalidHexError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -91,7 +88,7 @@ export class InvalidHexError extends EbxError {
 }
 
 export class InvalidEncodingError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -101,7 +98,7 @@ export class InvalidEncodingError extends EbxError {
 }
 
 export class InvalidKeyError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 
@@ -111,7 +108,7 @@ export class InvalidKeyError extends EbxError {
 }
 
 export class InvalidChecksumError extends EbxError {
-  constructor(public source: Option<EbxError>) {
+  constructor(public source?: EbxError) {
     super();
   }
 

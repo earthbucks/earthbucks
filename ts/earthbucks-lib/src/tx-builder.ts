@@ -5,7 +5,6 @@ import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, GenericError } from "./ebx-error.js";
 
 export class TxBuilder {
@@ -92,7 +91,7 @@ export class TxBuilder {
       ) {
         inputScript = Script.fromUnexpiredPkhxrInputPlaceholder();
       } else {
-        return Err(new GenericError(None, "unsupported script type"));
+        return Err(new GenericError("unsupported script type"));
       }
 
       const txInput = new TxIn(txId, txOutNum, inputScript, 0);

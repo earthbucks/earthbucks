@@ -10,7 +10,6 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export class ScriptChunk {
   opcode: number;
@@ -32,7 +31,7 @@ export class ScriptChunk {
     if (this.buf) {
       return Ok(this.buf);
     } else {
-      return Err(new NotEnoughDataError(None));
+      return Err(new NotEnoughDataError());
     }
   }
 
@@ -44,7 +43,7 @@ export class ScriptChunk {
       if (name !== undefined) {
         return Ok(name);
       } else {
-        return Err(new InvalidOpcodeError(None));
+        return Err(new InvalidOpcodeError());
       }
     }
   }
@@ -64,7 +63,7 @@ export class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        return Err(new TooMuchDataError(None));
+        return Err(new TooMuchDataError());
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -74,7 +73,7 @@ export class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        return Err(new InvalidOpcodeError(None));
+        return Err(new InvalidOpcodeError());
       }
 
       scriptChunk.buf = undefined;
@@ -130,7 +129,7 @@ export class ScriptChunk {
       }
       const buffer = bufferRes.unwrap();
       if (len == 0 || (len === 1 && buffer[0] >= 1 && buffer[0] <= 16)) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA2) {
@@ -140,7 +139,7 @@ export class ScriptChunk {
       }
       const len = lenRes.unwrap();
       if (len <= 0xff) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {
@@ -155,7 +154,7 @@ export class ScriptChunk {
       }
       const len = lenRes.unwrap();
       if (len <= 0xffff) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       const bufferRes = reader.read(len);
       if (bufferRes.err) {

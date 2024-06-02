@@ -5,7 +5,6 @@
 // the standard node version so that it polyfills in the browser correctly.
 import { Buffer } from "buffer";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidSizeError,
@@ -27,7 +26,7 @@ function encodeHex(buffer: SysBuf): string {
 
 function decodeHex(hex: string): Result<SysBuf, EbxError> {
   if (!isValidHex(hex)) {
-    return Err(new InvalidHexError(None));
+    return Err(new InvalidHexError());
   }
   const buffer = SysBuf.from(hex, "hex");
   return Ok(buffer);
@@ -39,7 +38,7 @@ class IsoBuf extends SysBuf {
     buf: SysBuf,
   ): Result<IsoBuf, EbxError> {
     if (buf.length !== size) {
-      return Err(new InvalidSizeError(None));
+      return Err(new InvalidSizeError());
     }
     // weird roundabout prototype code to avoid calling "new" because on Buffer
     // that is actually deprecated
@@ -72,7 +71,7 @@ class IsoBuf extends SysBuf {
       const buf = SysBuf.from(bs58.decode(base58));
       return IsoBuf.fromBuf(size, buf);
     } catch (err) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
   }
 
@@ -89,7 +88,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
   constructor(size: N, ...args: ConstructorParameters<typeof SysBuf>) {
     super(...args);
     if (this.length !== size) {
-      throw new InvalidSizeError(None);
+      throw new InvalidSizeError();
     }
     this[sizeSymbol] = size;
   }
@@ -99,7 +98,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     buf: SysBuf,
   ): Result<FixedIsoBuf<N>, EbxError> {
     if (buf.length !== size) {
-      return Err(new InvalidSizeError(None));
+      return Err(new InvalidSizeError());
     }
     // weird roundabout prototype code to avoid calling "new" because on Buffer
     // that is actually deprecated

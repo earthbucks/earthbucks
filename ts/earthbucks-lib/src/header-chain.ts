@@ -1,8 +1,4 @@
 import { Header } from "./header.js";
-import { Pkh } from "./pkh.js";
-import { Script } from "./script.js";
-import { ScriptChunk } from "./script-chunk.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 
 export class HeaderChain {
   headers: Header[];
@@ -15,12 +11,12 @@ export class HeaderChain {
     this.headers.push(header);
   }
 
-  getTip(): Option<Header> {
+  getTip(): Header | void {
     const header = this.headers[this.headers.length - 1];
     if (header) {
-      return Some(header);
+      return header;
     } else {
-      return None;
+      return;
     }
   }
 

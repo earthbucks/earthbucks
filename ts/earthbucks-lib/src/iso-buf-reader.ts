@@ -1,6 +1,5 @@
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
-import { Option, Some, None } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   NotEnoughDataError,
@@ -23,7 +22,7 @@ export class IsoBufReader {
 
   read(len: number): Result<SysBuf, EbxError> {
     if (this.pos + len > this.buf.length) {
-      return Err(new NotEnoughDataError(None));
+      return Err(new NotEnoughDataError());
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = SysBuf.alloc(len);
@@ -52,7 +51,7 @@ export class IsoBufReader {
     try {
       val = this.buf.readUInt8(this.pos);
     } catch (err: unknown) {
-      return Err(new NotEnoughDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 1;
     return Ok(val);
@@ -63,7 +62,7 @@ export class IsoBufReader {
     try {
       val = this.buf.readUInt16BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 2;
     return Ok(val);
@@ -74,7 +73,7 @@ export class IsoBufReader {
     try {
       val = this.buf.readUInt32BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 4;
     return Ok(val);
@@ -85,7 +84,7 @@ export class IsoBufReader {
     try {
       val = this.buf.readBigUInt64BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(Some(err as Error)));
+      return Err(new NotEnoughDataError(err as Error));
     }
     this.pos += 8;
     return Ok(val);
@@ -94,38 +93,38 @@ export class IsoBufReader {
   readVarIntBuf(): Result<SysBuf, EbxError> {
     const res = this.readU8();
     if (res.err) {
-      return Err(new NotEnoughDataError(Some(res.val)));
+      return Err(new NotEnoughDataError(res.val));
     }
     const first = res.unwrap();
     if (first === 0xfd) {
       const res = this.read(2);
       if (res.err) {
-        return Err(new NotEnoughDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(res.val));
       }
       const buf = res.unwrap();
       if (buf.readUInt16BE(0) < 0xfd) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
     } else if (first === 0xfe) {
       const res = this.read(4);
       if (res.err) {
-        return Err(new NotEnoughDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(res.val));
       }
       const buf = res.unwrap();
       if (buf.readUInt32BE(0) < 0x10000) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
     } else if (first === 0xff) {
       const res = this.read(8);
       if (res.err) {
-        return Err(new NotEnoughDataError(Some(res.val)));
+        return Err(new NotEnoughDataError(res.val));
       }
       const buf = res.unwrap();
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
-        return Err(new NonMinimalEncodingError(None));
+        return Err(new NonMinimalEncodingError());
       }
       return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
     } else {
@@ -164,7 +163,7 @@ export class IsoBufReader {
       return Err(value.val);
     }
     if (value.unwrap() > BigInt(Number.MAX_SAFE_INTEGER)) {
-      return Err(new InsufficientPrecisionError(None));
+      return Err(new InsufficientPrecisionError());
     }
     return Ok(Number(value.unwrap()));
   }

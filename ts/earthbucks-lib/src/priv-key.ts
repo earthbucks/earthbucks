@@ -10,7 +10,6 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, None, Some } from "earthbucks-opt-res/src/lib.js";
 
 export class PrivKey {
   buf: FixedIsoBuf<32>;
@@ -41,7 +40,7 @@ export class PrivKey {
           .unwrap(),
       );
     } catch (err) {
-      return Err(new InvalidKeyError(None));
+      return Err(new InvalidKeyError());
     }
   }
 
@@ -55,13 +54,13 @@ export class PrivKey {
 
   static fromIsoBuf(buf: FixedIsoBuf<32>): Result<PrivKey, EbxError> {
     if (buf.length > 32) {
-      return Err(new TooMuchDataError(None));
+      return Err(new TooMuchDataError());
     }
     if (buf.length < 32) {
-      return Err(new NotEnoughDataError(None));
+      return Err(new NotEnoughDataError());
     }
     if (!secp256k1.privateKeyVerify(buf)) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     return Ok(new PrivKey(buf));
   }
@@ -89,7 +88,7 @@ export class PrivKey {
 
   static fromIsoStr(str: string): Result<PrivKey, EbxError> {
     if (!str.startsWith("ebxprv")) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     const hexStr = str.slice(6, 14);
     const checkBufRes = FixedIsoBuf.fromStrictHex(4, hexStr);
@@ -105,7 +104,7 @@ export class PrivKey {
     const hashBuf = Hash.blake3Hash(decoded32);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     return PrivKey.fromIsoBuf(decoded32);
   }

@@ -9,7 +9,6 @@ import {
   NotEnoughDataError,
   TooMuchDataError,
 } from "./ebx-error.js";
-import { Option, None, Some } from "earthbucks-opt-res/src/lib.js";
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
@@ -31,10 +30,10 @@ export class PubKey {
 
   static fromIsoBuf(buf: FixedIsoBuf<33>): Result<PubKey, EbxError> {
     if (buf.length > PubKey.SIZE) {
-      return Err(new TooMuchDataError(None));
+      return Err(new TooMuchDataError());
     }
     if (buf.length < PubKey.SIZE) {
-      return Err(new NotEnoughDataError(None));
+      return Err(new NotEnoughDataError());
     }
     return Ok(new PubKey(buf));
   }
@@ -66,7 +65,7 @@ export class PubKey {
 
   static fromIsoStr(str: string): Result<PubKey, EbxError> {
     if (!str.startsWith("ebxpub")) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     const checkHex = str.slice(6, 14);
     const res = FixedIsoBuf.fromStrictHex(4, checkHex);
@@ -76,13 +75,13 @@ export class PubKey {
     const checkBuf = res.unwrap();
     const decoded33Res = FixedIsoBuf.fromBase58(33, str.slice(14));
     if (decoded33Res.err) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     const decoded33 = decoded33Res.unwrap();
     const checkHash = Hash.blake3Hash(decoded33);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
-      return Err(new InvalidEncodingError(None));
+      return Err(new InvalidEncodingError());
     }
     return PubKey.fromIsoBuf(decoded33);
   }
