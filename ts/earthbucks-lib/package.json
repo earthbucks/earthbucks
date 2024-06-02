@@ -16,7 +16,7 @@
   },
   "engines": {
     "node": ">=20.8.0",
-    "pnpm": ">=6.0.0"
+    "pnpm": ">=8.0.0"
   },
   "keywords": [],
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
@@ -26,6 +26,11 @@
   },
   "license": "MIT",
   "type": "module",
+  "prettier": {
+    "semi": true,
+    "singleQuote": false
+  },
+  "packageManager": "pnpm@8.15.4",
   "dependencies": {
     "@noble/hashes": "^1.4.0",
     "@types/secp256k1": "^4.0.6",
@@ -38,10 +43,6 @@
     "rimraf": "^5.0.7",
     "secp256k1": "^5.0.0",
     "tsx": "^4.11.0"
-  },
-  "prettier": {
-    "semi": true,
-    "singleQuote": false
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
