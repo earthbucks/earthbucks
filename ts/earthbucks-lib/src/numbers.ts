@@ -27,7 +27,7 @@ export class U8 extends BasicNumber<U8> {
   readonly _U8: undefined;
 
   constructor(value: bigint | number) {
-    super(value, 0n, 255n);
+    super(value, 0x00n, 0xffn);
   }
 
   add(other: U8): U8 {
@@ -63,7 +63,7 @@ export class I8 extends BasicNumber<I8> {
   readonly _I8: undefined;
 
   constructor(value: bigint | number) {
-    super(value, -128n, 127n);
+    super(value, -0x80n, 0x7fn);
   }
 
   add(other: I8): I8 {
@@ -99,7 +99,7 @@ export class U16 extends BasicNumber<U16> {
   readonly _U16: undefined;
 
   constructor(value: bigint | number) {
-    super(value, 0n, 65535n);
+    super(value, 0x0000n, 0xffffn);
   }
 
   add(other: U16): U16 {
@@ -135,7 +135,7 @@ export class I16 extends BasicNumber<I16> {
   readonly _I16: undefined;
 
   constructor(value: bigint | number) {
-    super(value, -32768n, 32767n);
+    super(value, -0x8000n, 0x7fffn);
   }
 
   add(other: I16): I16 {
@@ -169,8 +169,9 @@ export class I16 extends BasicNumber<I16> {
 
 export class U32 extends BasicNumber<U32> {
   readonly _U32: undefined;
+
   constructor(value: bigint | number) {
-    super(value, 0n, 4294967295n);
+    super(value, 0x00000000n, 0xffffffffn);
   }
 
   add(other: U32): U32 {
@@ -206,7 +207,7 @@ export class I32 extends BasicNumber<I32> {
   readonly _I32: undefined;
 
   constructor(value: bigint | number) {
-    super(value, -2147483648n, 2147483647n);
+    super(value, -0x80000000n, 0x7fffffffn);
   }
 
   add(other: I32): I32 {
@@ -242,7 +243,7 @@ export class U64 extends BasicNumber<U64> {
   readonly _U64: undefined;
 
   constructor(value: bigint | number) {
-    super(value, 0n, 18446744073709551615n);
+    super(value, 0x0000000000000000n, 0xffffffffffffffffn);
   }
 
   add(other: U64): U64 {
@@ -278,7 +279,7 @@ export class I64 extends BasicNumber<I64> {
   readonly _I64: undefined;
 
   constructor(value: bigint | number) {
-    super(value, -9223372036854775808n, 9223372036854775807n);
+    super(value, -0x8000000000000000n, 0x7fffffffffffffffn);
   }
 
   add(other: I64): I64 {
@@ -314,7 +315,11 @@ export class U128 extends BasicNumber<U128> {
   readonly _U128: undefined;
 
   constructor(value: bigint | number) {
-    super(value, 0n, 340282366920938463463374607431768211455n);
+    super(
+      value,
+      0x00000000000000000000000000000000n,
+      0xffffffffffffffffffffffffffffffffn,
+    );
   }
 
   add(other: U128): U128 {
@@ -352,8 +357,8 @@ export class I128 extends BasicNumber<I128> {
   constructor(value: bigint | number) {
     super(
       value,
-      -170141183460469231731687303715884105728n,
-      170141183460469231731687303715884105727n,
+      -0x80000000000000000000000000000000n,
+      0x7fffffffffffffffffffffffffffffffn,
     );
   }
 
@@ -392,8 +397,8 @@ export class U256 extends BasicNumber<U256> {
   constructor(value: bigint | number) {
     super(
       value,
-      0n,
-      115792089237316195423570985008687907853269984665640564039457584007913129639935n,
+      0x0000000000000000000000000000000000000000000000000000000000000000n,
+      0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn,
     );
   }
 
@@ -428,11 +433,12 @@ export class U256 extends BasicNumber<U256> {
 
 export class I256 extends BasicNumber<I256> {
   readonly _I256: undefined;
+
   constructor(value: bigint | number) {
     super(
       value,
-      -57896044618658097711785492504343953926634992332820282019728792003956564819968n,
-      57896044618658097711785492504343953926634992332820282019728792003956564819967n,
+      -0x8000000000000000000000000000000000000000000000000000000000000000n,
+      0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn,
     );
   }
 
