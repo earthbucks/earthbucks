@@ -119,11 +119,11 @@ export class Header {
     return Header.fromBuf(SysBuf.from(str, "hex"));
   }
 
-  toStr(): string {
+  toIsoString(): string {
     return this.toStrictHex();
   }
 
-  static fromStr(str: string): Header {
+  static fromIsoString(str: string): Header {
     return Header.fromStrictHex(str);
   }
 

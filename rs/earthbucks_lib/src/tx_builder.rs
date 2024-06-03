@@ -98,7 +98,7 @@ mod tests {
 
     fn setup() -> TxBuilder {
         let mut tx_out_bn_map = TxOutBnMap::new();
-        let change_script = Script::from_str("");
+        let change_script = Script::from_iso_str("");
 
         for i in 0..5 {
             let key = KeyPair::from_random();

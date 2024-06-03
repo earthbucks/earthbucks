@@ -46,14 +46,14 @@ export class PubKey {
     return PubKey.fromBuf(buf);
   }
 
-  toStr(): string {
+  toIsoStr(): string {
     const checkHash = Hash.blake3Hash(this.buf);
     const checkSum = checkHash.subarray(0, 4);
     const checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + this.buf.toBase58();
   }
 
-  static fromStr(str: string): PubKey {
+  static fromIsoStr(str: string): PubKey {
     if (!str.startsWith("ebxpub")) {
       throw new InvalidEncodingError();
     }
@@ -70,7 +70,7 @@ export class PubKey {
 
   static isValidStringFmt(str: string): boolean {
     try {
-      PubKey.fromStr(str);
+      PubKey.fromIsoStr(str);
     } catch (e) {
       return false;
     }

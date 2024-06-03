@@ -9,7 +9,7 @@ impl Domain {
         Self { domain_str }
     }
 
-    pub fn from_str(domain_str: String) -> Self {
+    pub fn from_iso_str(domain_str: String) -> Self {
         Self::new(domain_str)
     }
 
@@ -68,11 +68,11 @@ mod tests {
 
     #[test]
     fn test_is_valid_domain() {
-        assert!(Domain::from_str("earthbucks.com".to_string()).is_valid());
-        assert!(!Domain::from_str("earthbucks.com.".to_string()).is_valid());
-        assert!(!Domain::from_str(".earthbucks.com".to_string()).is_valid());
-        assert!(Domain::from_str("node.node.node.node.earthbucks.com".to_string()).is_valid());
-        assert!(!Domain::from_str(
+        assert!(Domain::from_iso_str("earthbucks.com".to_string()).is_valid());
+        assert!(!Domain::from_iso_str("earthbucks.com.".to_string()).is_valid());
+        assert!(!Domain::from_iso_str(".earthbucks.com".to_string()).is_valid());
+        assert!(Domain::from_iso_str("node.node.node.node.earthbucks.com".to_string()).is_valid());
+        assert!(!Domain::from_iso_str(
             "node.node.node.node.node.node.node.node.node.earthbucks.com".to_string()
         )
         .is_valid());

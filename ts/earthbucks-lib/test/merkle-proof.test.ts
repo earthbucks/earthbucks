@@ -135,9 +135,9 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
-    const str = proof1.toStr();
-    const proof1FromString = MerkleProof.fromStr(str);
-    const str2 = proof1FromString.toStr();
+    const str = proof1.toIsoStr();
+    const proof1FromString = MerkleProof.fromIsoStr(str);
+    const str2 = proof1FromString.toIsoStr();
     expect(str).toBe(str2);
   });
 });

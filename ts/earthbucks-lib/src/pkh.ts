@@ -29,13 +29,13 @@ export class Pkh {
     return new Pkh(buf);
   }
 
-  toStr(): string {
+  toIsoStr(): string {
     const checkHash = Hash.blake3Hash(this.buf).subarray(0, 4);
     const checkHex = checkHash.toString("hex");
     return "ebxpkh" + checkHex + this.buf.toBase58();
   }
 
-  static fromStr(pkhStr: string): Pkh {
+  static fromIsoStr(pkhStr: string): Pkh {
     if (!pkhStr.startsWith("ebxpkh")) {
       throw new InvalidEncodingError();
     }
@@ -52,7 +52,7 @@ export class Pkh {
 
   static isValidStringFmt(pkhStr: string): boolean {
     try {
-      Pkh.fromStr(pkhStr);
+      Pkh.fromIsoStr(pkhStr);
     } catch (e) {
       return false;
     }

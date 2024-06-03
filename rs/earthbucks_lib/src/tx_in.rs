@@ -88,7 +88,7 @@ mod tests {
     fn test_tx_input() -> Result<(), String> {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_str("");
+        let script = Script::from_iso_str("");
         let lock_rel = 0;
 
         let script_clone = match script {
@@ -106,7 +106,7 @@ mod tests {
         let tx_input2 = TxIn::from_buf(buf).map_err(|e| e.to_string())?;
         assert_eq!(tx_input2.input_tx_id, input_tx_id);
         assert_eq!(tx_input2.input_tx_out_num, input_tx_index);
-        match (tx_input.script.to_str(), tx_input2.script.to_str()) {
+        match (tx_input.script.to_iso_str(), tx_input2.script.to_iso_str()) {
             (Ok(script_str), Ok(expected_script_str)) => {
                 assert_eq!(script_str, expected_script_str)
             }
@@ -121,7 +121,7 @@ mod tests {
         let input_tx_id = [0u8; 32];
         let input_tx_index = 1u32;
         let script_hex = "";
-        let script = Script::from_str(script_hex);
+        let script = Script::from_iso_str(script_hex);
         let lock_rel = 2u32;
 
         let script_v8_vec = match script {
@@ -140,7 +140,7 @@ mod tests {
         let tx_input = TxIn::from_buf_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;
-        let script2_hex = match script2.to_str() {
+        let script2_hex = match script2.to_iso_str() {
             Ok(script2_hex) => script2_hex,
             Err(_) => panic!("Failed to convert script to string"),
         };
@@ -156,7 +156,7 @@ mod tests {
         let tx_input = TxIn {
             input_tx_id: [0; 32],
             input_tx_out_num: 0,
-            script: Script::from_str("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             lock_rel: 0,
         };
         assert!(!tx_input.is_null());
@@ -175,7 +175,7 @@ mod tests {
         let tx_input = TxIn {
             input_tx_id: [0; 32],
             input_tx_out_num: 0,
-            script: Script::from_str("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             lock_rel: 0xffffffff,
         };
         assert!(!tx_input.is_minimal_lock());
@@ -194,7 +194,7 @@ mod tests {
         let tx_input = TxIn {
             input_tx_id: [0; 32],
             input_tx_out_num: 0,
-            script: Script::from_str("0x121212").unwrap(),
+            script: Script::from_iso_str("0x121212").unwrap(),
             lock_rel: 0,
         };
         assert!(!tx_input.is_coinbase());
@@ -210,12 +210,12 @@ mod tests {
 
     #[test]
     fn test_from_coinbase() {
-        let script = Script::from_str("0x121212").unwrap();
+        let script = Script::from_iso_str("0x121212").unwrap();
         let tx_input = TxIn::from_coinbase(script);
 
         assert_eq!(tx_input.input_tx_id, [0; 32]);
         assert_eq!(tx_input.input_tx_out_num, 0xffffffff);
-        assert_eq!(tx_input.script.to_str().unwrap(), "0x121212");
+        assert_eq!(tx_input.script.to_iso_str().unwrap(), "0x121212");
         assert_eq!(tx_input.lock_rel, 0);
     }
 }

@@ -15,21 +15,21 @@ export class Script {
     this.chunks = chunks;
   }
 
-  toStr(): string {
-    return this.chunks.map((chunk) => chunk.toStr()).join(" ");
+  toIsoStr(): string {
+    return this.chunks.map((chunk) => chunk.toIsoStr()).join(" ");
   }
 
   static fromEmpty(): Script {
     return new Script();
   }
 
-  static fromStr(str: string): Script {
+  static fromIsoStr(str: string): Script {
     const script = new Script();
     if (str === "") {
       return script;
     }
 
-    const chunks = str.split(" ").map(ScriptChunk.fromStr);
+    const chunks = str.split(" ").map(ScriptChunk.fromIsoStr);
     script.chunks = chunks;
     return script;
   }
