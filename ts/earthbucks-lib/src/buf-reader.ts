@@ -1,4 +1,4 @@
-import { SysBuf, EbxBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, EbxBuf, FixedBuf } from "./ebx-buf.js";
 import {
   EbxError,
   NotEnoughDataError,
@@ -31,9 +31,9 @@ export class BufReader {
     return newBuf;
   }
 
-  readFixed<N extends number>(len: N): FixedEbxBuf<N> {
+  readFixed<N extends number>(len: N): FixedBuf<N> {
     const isoBuf = this.read(len);
-    return FixedEbxBuf.fromBuf(len, isoBuf) as FixedEbxBuf<N>;
+    return FixedBuf.fromBuf(len, isoBuf) as FixedBuf<N>;
   }
 
   readRemainder(): SysBuf {

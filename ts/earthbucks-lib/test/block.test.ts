@@ -4,23 +4,23 @@ import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
 import { BufWriter } from "../src/buf-writer.js";
 import { BufReader } from "../src/buf-reader.js";
-import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Block", () => {
   test("toEbxBufWriter", () => {
     const bh = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
@@ -31,16 +31,16 @@ describe("Block", () => {
   test("toEbxBuf", () => {
     const bh = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
@@ -51,16 +51,16 @@ describe("Block", () => {
   test("fromEbxBufReader", () => {
     const bh = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
@@ -82,16 +82,16 @@ describe("Block", () => {
   test("isGenesis", () => {
     const bh = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);

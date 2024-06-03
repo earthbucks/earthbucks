@@ -1,40 +1,40 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class Header {
   version: U32;
-  prevBlockId: FixedEbxBuf<32>;
-  merkleRoot: FixedEbxBuf<32>;
+  prevBlockId: FixedBuf<32>;
+  merkleRoot: FixedBuf<32>;
   timestamp: U64; // seconds
   blockNum: U64;
-  target: FixedEbxBuf<32>;
-  nonce: FixedEbxBuf<32>;
+  target: FixedBuf<32>;
+  nonce: FixedBuf<32>;
   workSerAlgo: U32;
-  workSerHash: FixedEbxBuf<32>;
+  workSerHash: FixedBuf<32>;
   workParAlgo: U32;
-  workParHash: FixedEbxBuf<32>;
+  workParHash: FixedBuf<32>;
 
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
   static readonly BLOCK_INTERVAL = new U64(600n); // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = FixedEbxBuf.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = FixedBuf.alloc(32, 0xff);
 
   constructor(
     version: U32,
-    prevBlockId: FixedEbxBuf<32>,
-    merkleRoot: FixedEbxBuf<32>,
+    prevBlockId: FixedBuf<32>,
+    merkleRoot: FixedBuf<32>,
     timestamp: U64,
     blockNum: U64,
-    target: FixedEbxBuf<32>,
-    nonce: FixedEbxBuf<32>,
+    target: FixedBuf<32>,
+    nonce: FixedBuf<32>,
     workSerAlgo: U32,
-    workSerHash: FixedEbxBuf<32>,
+    workSerHash: FixedBuf<32>,
     workParAlgo: U32,
-    workParHash: FixedEbxBuf<32>,
+    workParHash: FixedBuf<32>,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -127,20 +127,20 @@ export class Header {
     return Header.fromIsoHex(str);
   }
 
-  static fromGenesis(initialTarget: FixedEbxBuf<32>): Header {
+  static fromGenesis(initialTarget: FixedBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       timestamp,
       new U64(0n),
       initialTarget,
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
   }
 
@@ -171,15 +171,15 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = new U64(BigInt(Math.floor(Date.now() / 1000))); // seconds
-    const nonce = FixedEbxBuf.alloc(32);
+    const nonce = FixedBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = FixedEbxBuf.alloc(32);
+    const workSerHash = FixedBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = FixedEbxBuf.alloc(32);
+    const workParHash = FixedBuf.alloc(32);
     return new Header(
       new U32(1),
       prevBlockId,
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       timestamp,
       blockNum,
       target,
@@ -231,15 +231,15 @@ export class Header {
     );
   }
 
-  hash(): FixedEbxBuf<32> {
+  hash(): FixedBuf<32> {
     return Hash.blake3Hash(this.toEbxBuf());
   }
 
-  id(): FixedEbxBuf<32> {
+  id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toEbxBuf());
   }
 
-  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedEbxBuf<32> {
+  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedBuf<32> {
     const target = new BufReader(targetBuf).readU256BE().bn;
     const twoWeeks: bigint = Header.BLOCKS_PER_TARGET_ADJ_PERIOD.mul(
       Header.BLOCK_INTERVAL,
@@ -260,6 +260,6 @@ export class Header {
     const newTargetBuf = new BufWriter()
       .writeU256BE(new U256(newTarget))
       .toSysBuf();
-    return FixedEbxBuf.fromBuf(32, newTargetBuf);
+    return FixedBuf.fromBuf(32, newTargetBuf);
   }
 }

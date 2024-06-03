@@ -74,7 +74,7 @@ class EbxBuf extends SysBuf {
 
 const sizeSymbol = Symbol("size");
 
-class FixedEbxBuf<N extends number> extends EbxBuf {
+class FixedBuf<N extends number> extends EbxBuf {
   [sizeSymbol]: N;
 
   constructor(size: N, ...args: ConstructorParameters<typeof SysBuf>) {
@@ -85,7 +85,7 @@ class FixedEbxBuf<N extends number> extends EbxBuf {
     this[sizeSymbol] = size;
   }
 
-  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedEbxBuf<N> {
+  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedBuf<N> {
     if (buf.length !== size) {
       throw new InvalidSizeError();
     }
@@ -93,28 +93,28 @@ class FixedEbxBuf<N extends number> extends EbxBuf {
     // that is actually deprecated
     const newBuf = Buffer.alloc(size);
     newBuf.set(buf);
-    Object.setPrototypeOf(newBuf, FixedEbxBuf.prototype);
-    const fixedEbxBufN = newBuf as FixedEbxBuf<N>;
+    Object.setPrototypeOf(newBuf, FixedBuf.prototype);
+    const fixedEbxBufN = newBuf as FixedBuf<N>;
     fixedEbxBufN[sizeSymbol] = size;
     return fixedEbxBufN;
   }
 
-  static alloc<N extends number>(size: N, fill?: number): FixedEbxBuf<N> {
-    return FixedEbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
+  static alloc<N extends number>(size: N, fill?: number): FixedBuf<N> {
+    return FixedBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex<N extends number>(size: N, hex: string): FixedEbxBuf<N> {
+  static fromStrictHex<N extends number>(size: N, hex: string): FixedBuf<N> {
     const buf = decodeHex(hex);
-    return FixedEbxBuf.fromBuf(size, buf);
+    return FixedBuf.fromBuf(size, buf);
   }
 
   toStrictHex(): string {
     return encodeHex(this);
   }
 
-  static fromBase58<N extends number>(size: N, base58: string): FixedEbxBuf<N> {
+  static fromBase58<N extends number>(size: N, base58: string): FixedBuf<N> {
     const buf = SysBuf.from(bs58.decode(base58));
-    return FixedEbxBuf.fromBuf(size, buf);
+    return FixedBuf.fromBuf(size, buf);
   }
 
   toBase58(): string {
@@ -122,4 +122,4 @@ class FixedEbxBuf<N extends number> extends EbxBuf {
   }
 }
 
-export { SysBuf, FixedEbxBuf, EbxBuf as EbxBuf };
+export { SysBuf, EbxBuf, FixedBuf };

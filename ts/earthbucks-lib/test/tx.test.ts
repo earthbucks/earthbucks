@@ -8,7 +8,7 @@ import { BufWriter } from "../src/buf-writer.js";
 import * as Hash from "../src/hash.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
-import { FixedEbxBuf, SysBuf } from "../src/ebx-buf.js";
+import { FixedBuf, SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Tx", () => {
@@ -30,7 +30,7 @@ describe("Tx", () => {
   test("to/from u8Vec", () => {
     const version = new U8(1);
     const inputs: TxIn[] = [
-      new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+      new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
     ];
     const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
     const lockAbs = new U64(0);
@@ -46,7 +46,7 @@ describe("Tx", () => {
     test("fromU8Vec", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -65,7 +65,7 @@ describe("Tx", () => {
     test("fromEbxBufReader", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -85,7 +85,7 @@ describe("Tx", () => {
     test("to/from string", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -116,7 +116,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedEbxBuf.alloc(32),
+          FixedBuf.alloc(32),
           new U32(0xffffffff),
           new Script(),
           new U32(0),
@@ -132,7 +132,7 @@ describe("Tx", () => {
     test("is not coinbase", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -153,7 +153,7 @@ describe("Tx", () => {
     it("should return the hash of the tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -168,7 +168,7 @@ describe("Tx", () => {
     it("should return the hash of the hash of the tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -183,7 +183,7 @@ describe("Tx", () => {
     test("hashPrevouts", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -200,7 +200,7 @@ describe("Tx", () => {
     test("hashLockRel", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -217,7 +217,7 @@ describe("Tx", () => {
     test("hashOutputs", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -235,7 +235,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedEbxBuf.alloc(32),
+          FixedBuf.alloc(32),
           new U32(0),
           Script.fromEmpty(),
           new U32(0),
@@ -264,7 +264,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedEbxBuf.alloc(32),
+          FixedBuf.alloc(32),
           new U32(0),
           Script.fromEmpty(),
           new U32(0),
@@ -304,7 +304,7 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedEbxBuf.alloc(32),
+            FixedBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),
@@ -333,7 +333,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = new U32(0);
-        const privateKey = FixedEbxBuf.fromStrictHex(
+        const privateKey = FixedBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
@@ -342,7 +342,7 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedEbxBuf.alloc(32),
+            FixedBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),
@@ -392,7 +392,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = new U32(0);
-        const privateKey = FixedEbxBuf.fromStrictHex(
+        const privateKey = FixedBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
@@ -401,7 +401,7 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedEbxBuf.alloc(32),
+            FixedBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),

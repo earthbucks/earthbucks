@@ -1,23 +1,23 @@
 import { GenericError } from "./ebx-error.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
-  public hashedData: FixedEbxBuf<32>;
+  public hashedData: FixedBuf<32>;
 
   constructor(
     left: MerkleNode | null,
     right: MerkleNode | null,
-    hashedData: FixedEbxBuf<32>,
+    hashedData: FixedBuf<32>,
   ) {
     this.left = left;
     this.right = right;
     this.hashedData = hashedData;
   }
 
-  public hash(): FixedEbxBuf<32> {
+  public hash(): FixedBuf<32> {
     if (this.left || this.right) {
       const leftData = this.left ? this.left.hash() : SysBuf.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
@@ -27,7 +27,7 @@ export class MerkleNode {
     }
   }
 
-  static fromEbxBufs(hashedDatas: FixedEbxBuf<32>[]): MerkleNode {
+  static fromEbxBufs(hashedDatas: FixedBuf<32>[]): MerkleNode {
     if (hashedDatas.length === 0) {
       throw new GenericError("Cannot create MerkleNode from empty array");
     }

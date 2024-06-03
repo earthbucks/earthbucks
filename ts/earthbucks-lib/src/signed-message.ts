@@ -1,4 +1,4 @@
-import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
+import { FixedBuf, SysBuf } from "./ebx-buf.js";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
@@ -8,16 +8,16 @@ import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 
 export class SignedMessage {
-  sig: FixedEbxBuf<64>;
-  pubKey: FixedEbxBuf<33>;
-  mac: FixedEbxBuf<32>;
+  sig: FixedBuf<64>;
+  pubKey: FixedBuf<33>;
+  mac: FixedBuf<32>;
   message: SysBuf;
   keyStr: string;
 
   constructor(
-    sig: FixedEbxBuf<64>,
-    pubKey: FixedEbxBuf<33>,
-    mac: FixedEbxBuf<32>,
+    sig: FixedBuf<64>,
+    pubKey: FixedBuf<33>,
+    mac: FixedBuf<32>,
     message: SysBuf,
     keyStr: string,
   ) {
@@ -40,7 +40,7 @@ export class SignedMessage {
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toEbxBuf());
-    const sigBuf = (FixedEbxBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
+    const sigBuf = (FixedBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
     const pubKey = privKey.toPubKeyEbxBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }

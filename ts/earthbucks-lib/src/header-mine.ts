@@ -1,5 +1,5 @@
 import { Header } from "./header.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 import { BufReader } from "./buf-reader.js";
 
@@ -11,7 +11,7 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = (FixedEbxBuf<32>).fromBuf(
+    this.header.nonce = (FixedBuf<32>).fromBuf(
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );

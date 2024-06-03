@@ -1,15 +1,15 @@
 import * as Hash from "./hash.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class MerkleProof {
-  public root: FixedEbxBuf<32>;
-  public proof: Array<[FixedEbxBuf<32>, boolean]>;
+  public root: FixedBuf<32>;
+  public proof: Array<[FixedBuf<32>, boolean]>;
 
-  constructor(root: FixedEbxBuf<32>, proof: Array<[FixedEbxBuf<32>, boolean]>) {
+  constructor(root: FixedBuf<32>, proof: Array<[FixedBuf<32>, boolean]>) {
     this.root = root;
     this.proof = proof;
   }
@@ -29,8 +29,8 @@ export class MerkleProof {
   }
 
   static generateProofsAndRoot(
-    hashedDatas: FixedEbxBuf<32>[],
-  ): [FixedEbxBuf<32>, MerkleProof[]] {
+    hashedDatas: FixedBuf<32>[],
+  ): [FixedBuf<32>, MerkleProof[]] {
     if (hashedDatas.length === 0) {
       throw new GenericError("Cannot create Merkle tree from empty array");
     }
@@ -85,7 +85,7 @@ export class MerkleProof {
   static fromEbxBuf(buf: SysBuf): MerkleProof {
     const br = new BufReader(buf);
     const root = br.readFixed(32);
-    const proof: Array<[FixedEbxBuf<32>, boolean]> = [];
+    const proof: Array<[FixedBuf<32>, boolean]> = [];
     const proofLength = br.readVarInt().n;
     for (let i = 0; i < proofLength; i++) {
       const sibling = br.readFixed(32);

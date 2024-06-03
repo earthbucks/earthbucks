@@ -1,22 +1,22 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
-import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Header", () => {
   test("toEbxBuf and fromEbxBuf", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const buf = bh1.toEbxBuf();
     const bh2 = Header.fromEbxBuf(buf);
@@ -34,16 +34,16 @@ describe("Header", () => {
   test("toEbxBuf", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     const buf = bh1.toEbxBuf();
     const bh2 = Header.fromEbxBuf(buf);
@@ -61,16 +61,16 @@ describe("Header", () => {
   test("isValid", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     expect(bh1.isValid()).toBe(true);
   });
@@ -78,16 +78,16 @@ describe("Header", () => {
   test("isGenesis", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     expect(bh1.isGenesis()).toBe(true);
   });
@@ -95,16 +95,16 @@ describe("Header", () => {
   test("hash", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     expect(SysBuf.from(bh1.hash()).toString("hex")).toBe(
       "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00",
@@ -114,16 +114,16 @@ describe("Header", () => {
   test("id", () => {
     const bh1 = new Header(
       new U32(1),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedEbxBuf.alloc(32),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
       new U32(0),
-      FixedEbxBuf.alloc(32),
+      FixedBuf.alloc(32),
     );
     expect(SysBuf.from(bh1.id()).toString("hex")).toBe(
       "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e",
@@ -134,16 +134,16 @@ describe("Header", () => {
     test("fromPrevBlockHeader", () => {
       const prevBlockHeader = new Header(
         new U32(1),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U64(0n),
         new U64(0n),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = null;
       const bh = Header.fromPrevBlockHeader(
@@ -152,37 +152,37 @@ describe("Header", () => {
       );
       expect(bh.version.n).toBe(1);
       expect(bh.prevBlockId).toEqual(prevBlockHeader.id());
-      expect(bh.merkleRoot).toEqual(FixedEbxBuf.alloc(32));
+      expect(bh.merkleRoot).toEqual(FixedBuf.alloc(32));
       expect(bh.timestamp.n).toBeLessThanOrEqual(new Date().getTime() / 1000);
-      expect(bh.target).toEqual(FixedEbxBuf.alloc(32));
+      expect(bh.target).toEqual(FixedBuf.alloc(32));
     });
 
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
       const prevBlockHeader = new Header(
         new U32(1),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
         new U32(1),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U64(0n),
         new U64(0n),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
@@ -190,41 +190,41 @@ describe("Header", () => {
       );
       expect(bh.blockNum.bn).toEqual(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn);
       expect(bh.target).toEqual(
-        Header.adjustTarget(FixedEbxBuf.alloc(32), new U64(0n)),
+        Header.adjustTarget(FixedBuf.alloc(32), new U64(0n)),
       );
     });
 
     test("should correctly adjust the target for non-trivial adjustment", () => {
-      const initialTarget = FixedEbxBuf.fromStrictHex(
+      const initialTarget = FixedBuf.fromStrictHex(
         32,
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       );
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
         new U32(1),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U64(timeDiff - 1n),
         new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         initialTarget,
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
         new U32(1),
-        FixedEbxBuf.alloc(32),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U64(0n),
         new U64(0n),
         initialTarget,
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
         new U32(0),
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
@@ -239,10 +239,10 @@ describe("Header", () => {
 
   describe("adjustTarget", () => {
     test("adjustTarget", () => {
-      const prevTarget = FixedEbxBuf.alloc(32);
+      const prevTarget = FixedBuf.alloc(32);
       const timeDiff = new U64(0n);
       expect(Header.adjustTarget(prevTarget, timeDiff)).toEqual(
-        FixedEbxBuf.alloc(32),
+        FixedBuf.alloc(32),
       );
     });
 

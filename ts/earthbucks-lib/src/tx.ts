@@ -8,14 +8,14 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class HashCache {
-  public hashPrevouts?: FixedEbxBuf<32>;
-  public hashLockRel?: FixedEbxBuf<32>;
-  public hashOutputs?: FixedEbxBuf<32>;
+  public hashPrevouts?: FixedBuf<32>;
+  public hashLockRel?: FixedBuf<32>;
+  public hashOutputs?: FixedBuf<32>;
 }
 
 export class Tx {
@@ -73,7 +73,7 @@ export class Tx {
   }
 
   static fromIsoHex(hex: string): Tx {
-    const buf = FixedEbxBuf.fromStrictHex(hex.length / 2, hex);
+    const buf = FixedBuf.fromStrictHex(hex.length / 2, hex);
     return Tx.fromEbxBuf(buf);
   }
 
@@ -93,15 +93,15 @@ export class Tx {
     return this.inputs.length === 1 && this.inputs[0].isCoinbase();
   }
 
-  blake3Hash(): FixedEbxBuf<32> {
+  blake3Hash(): FixedBuf<32> {
     return Hash.blake3Hash(this.toEbxBuf());
   }
 
-  id(): FixedEbxBuf<32> {
+  id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toEbxBuf());
   }
 
-  hashPrevouts(): FixedEbxBuf<32> {
+  hashPrevouts(): FixedBuf<32> {
     const writer = new BufWriter();
     for (const input of this.inputs) {
       writer.write(input.inputTxId);
@@ -110,7 +110,7 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toSysBuf());
   }
 
-  hashLockRel(): FixedEbxBuf<32> {
+  hashLockRel(): FixedBuf<32> {
     const writer = new BufWriter();
     for (const input of this.inputs) {
       writer.writeU32BE(input.lockRel);
@@ -118,7 +118,7 @@ export class Tx {
     return Hash.doubleBlake3Hash(writer.toSysBuf());
   }
 
-  hashOutputs(): FixedEbxBuf<32> {
+  hashOutputs(): FixedBuf<32> {
     const writer = new BufWriter();
     for (const output of this.outputs) {
       writer.write(output.toEbxBuf());
@@ -137,9 +137,9 @@ export class Tx {
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = FixedEbxBuf.alloc(32);
-    let lockRelHash = FixedEbxBuf.alloc(32);
-    let outputsHash = FixedEbxBuf.alloc(32);
+    let prevoutsHash = FixedBuf.alloc(32);
+    let lockRelHash = FixedBuf.alloc(32);
+    let outputsHash = FixedBuf.alloc(32);
 
     if (!(hashType.n & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
@@ -236,7 +236,7 @@ export class Tx {
     hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = FixedEbxBuf.fromBuf(
+    const sigBuf = FixedBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
     );
@@ -259,7 +259,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = FixedEbxBuf.fromBuf(
+    const sigBuf = FixedBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
     );

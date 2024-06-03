@@ -1,14 +1,14 @@
 import { InvalidSizeError } from "./ebx-error.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class PermissionToken {
-  randValue: FixedEbxBuf<32>;
+  randValue: FixedBuf<32>;
   timestamp: U64; // milliseconds
 
-  constructor(randValue: FixedEbxBuf<32>, timestamp: U64) {
+  constructor(randValue: FixedBuf<32>, timestamp: U64) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
@@ -31,7 +31,7 @@ export class PermissionToken {
   }
 
   static fromRandom(): PermissionToken {
-    const randValue: FixedEbxBuf<32> = (FixedEbxBuf<32>).fromBuf(
+    const randValue: FixedBuf<32> = (FixedBuf<32>).fromBuf(
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );

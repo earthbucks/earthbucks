@@ -5,7 +5,7 @@ import { MerkleTxs } from "./merkle-txs.js";
 import { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class BlockBuilder {
@@ -27,7 +27,7 @@ export class BlockBuilder {
   }
 
   static fromGenesis(
-    initialTarget: FixedEbxBuf<32>,
+    initialTarget: FixedBuf<32>,
     outputScript: Script,
     outputAmount: U64,
   ): BlockBuilder {

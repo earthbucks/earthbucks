@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { FixedEbxBuf, SysBuf } from "../src/ebx-buf.js";
+import { FixedBuf, SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("ScriptInterpreter", () => {
@@ -21,7 +21,7 @@ describe("ScriptInterpreter", () => {
       new U8(1),
       [
         new TxIn(
-          FixedEbxBuf.alloc(32, 0),
+          FixedBuf.alloc(32, 0),
           new U32(0),
           new Script(),
           new U32(0xffffffff),
@@ -143,7 +143,7 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = FixedEbxBuf.fromStrictHex(32, outputPrivKeyHex);
+      const outputPrivKeyBuf = FixedBuf.fromStrictHex(32, outputPrivKeyHex);
       const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toEbxBuf();
       expect(SysBuf.from(outputPubKey).toString("hex")).toEqual(
@@ -152,7 +152,7 @@ describe("ScriptInterpreter", () => {
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
       const outputScript = Script.fromPkhOutput(outputAddress.buf);
       const outputAmount = new U64(100);
-      const outputTxId = FixedEbxBuf.alloc(32, 0);
+      const outputTxId = FixedBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
 
       const tx = new Tx(
@@ -205,7 +205,7 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to EbxBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedEbxBuf.fromBuf(32, SysBuf.from(hex, "hex")),
+        FixedBuf.fromBuf(32, SysBuf.from(hex, "hex")),
       );
 
       // Generate public keys
@@ -218,7 +218,7 @@ describe("ScriptInterpreter", () => {
 
       // Other tx parameters
       const outputAmount = new U64(100);
-      const outputTxId = FixedEbxBuf.alloc(32, 0);
+      const outputTxId = FixedBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
 
       // Create a tx
@@ -295,7 +295,7 @@ describe("ScriptInterpreter", () => {
           new U8(1),
           [
             new TxIn(
-              FixedEbxBuf.alloc(32, 0),
+              FixedBuf.alloc(32, 0),
               new U32(0),
               new Script(),
               new U32(0xffffffff),

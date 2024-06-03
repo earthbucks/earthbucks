@@ -1,4 +1,4 @@
-import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
+import { FixedBuf, SysBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxSignature {
@@ -9,9 +9,9 @@ export class TxSignature {
   static readonly SIZE = 65;
 
   hashType: U8;
-  sigBuf: FixedEbxBuf<64>;
+  sigBuf: FixedBuf<64>;
 
-  constructor(hashType: U8, sigBuf: FixedEbxBuf<64>) {
+  constructor(hashType: U8, sigBuf: FixedBuf<64>) {
     this.hashType = hashType;
     this.sigBuf = sigBuf;
   }
@@ -25,7 +25,7 @@ export class TxSignature {
   static fromEbxBuf(buf: SysBuf): TxSignature {
     const hashType = new U8(buf[0]);
     const sigBuf = buf.subarray(1);
-    const sigFixedEbxBuf = FixedEbxBuf.fromBuf(64, sigBuf);
+    const sigFixedEbxBuf = FixedBuf.fromBuf(64, sigBuf);
     return new TxSignature(hashType, sigFixedEbxBuf);
   }
 }

@@ -2,18 +2,18 @@ import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
+import { FixedBuf, SysBuf } from "./ebx-buf.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxIn {
-  public inputTxId: FixedEbxBuf<32>;
+  public inputTxId: FixedBuf<32>;
   public inputTxNOut: U32;
   public script: Script;
   public lockRel: U32;
 
   constructor(
-    inputTxId: FixedEbxBuf<32>,
+    inputTxId: FixedBuf<32>,
     inputTxNOut: U32,
     script: Script,
     lockRel: U32,
@@ -66,7 +66,7 @@ export class TxIn {
   }
 
   static fromCoinbase(script: Script): TxIn {
-    const emptyId = FixedEbxBuf.alloc(32);
+    const emptyId = FixedBuf.alloc(32);
     return new TxIn(emptyId, new U32(0xffffffff), script, new U32(0));
   }
 }

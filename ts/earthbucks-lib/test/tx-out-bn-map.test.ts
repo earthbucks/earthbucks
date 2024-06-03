@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
@@ -10,14 +10,14 @@ describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;
   let txOut: TxOut;
   let txOutBn: TxOutBn;
-  let txIdHash: FixedEbxBuf<32>;
+  let txIdHash: FixedBuf<32>;
   let outputIndex: U32;
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
     txOut = new TxOut(new U64(100), Script.fromEmpty());
     txOutBn = new TxOutBn(txOut, new U64(0n));
-    txIdHash = FixedEbxBuf.fromStrictHex(
+    txIdHash = FixedBuf.fromStrictHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
     );
