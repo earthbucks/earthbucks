@@ -35,7 +35,7 @@ export class ScriptChunk {
     }
   }
 
-  toIsoStr(): string {
+  toStrictStr(): string {
     if (this.buf) {
       return `0x${this.buf.toString("hex")}`;
     } else {
@@ -48,7 +48,7 @@ export class ScriptChunk {
     }
   }
 
-  static fromIsoStr(str: string): ScriptChunk {
+  static fromStrictStr(str: string): ScriptChunk {
     const scriptChunk = new ScriptChunk();
     if (str.startsWith("0x")) {
       scriptChunk.buf = SysBuf.from(str.slice(2), "hex");

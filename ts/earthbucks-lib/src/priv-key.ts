@@ -66,14 +66,14 @@ export class PrivKey {
     return PrivKey.fromBuf(buf32);
   }
 
-  toIsoStr(): string {
+  toStrictStr(): string {
     const hashBuf = Hash.blake3Hash(this.buf);
     const checkBuf = hashBuf.subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return "ebxprv" + checkHex + this.buf.toBase58();
   }
 
-  static fromIsoStr(str: string): PrivKey {
+  static fromStrictStr(str: string): PrivKey {
     if (!str.startsWith("ebxprv")) {
       throw new InvalidEncodingError();
     }
@@ -90,7 +90,7 @@ export class PrivKey {
 
   static isValidIsoStr(str: string): boolean {
     try {
-      PrivKey.fromIsoStr(str);
+      PrivKey.fromStrictStr(str);
     } catch (e) {
       return false;
     }

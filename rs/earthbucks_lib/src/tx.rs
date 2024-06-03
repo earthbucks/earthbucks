@@ -97,11 +97,11 @@ impl Tx {
         Self::from_buf(Vec::<u8>::from_strict_hex(hex)?)
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_strict_str(&self) -> String {
         hex::encode(self.to_buf())
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<Self, EbxError> {
+    pub fn from_strict_str(hex: &str) -> Result<Self, EbxError> {
         Self::from_strict_hex(hex)
     }
 
@@ -360,12 +360,12 @@ mod tests {
     fn test_tx() -> Result<(), String> {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;
@@ -387,12 +387,12 @@ mod tests {
     fn test_from_buf_reader() -> Result<(), String> {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;
@@ -412,15 +412,15 @@ mod tests {
     }
 
     #[test]
-    fn test_to_string_and_from_iso_str() -> Result<(), String> {
+    fn test_to_string_and_from_strict_str() -> Result<(), String> {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;
@@ -429,8 +429,8 @@ mod tests {
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
-        let hex = tx.to_iso_str();
-        let tx2 = Tx::from_iso_str(&hex).unwrap();
+        let hex = tx.to_strict_str();
+        let tx2 = Tx::from_strict_str(&hex).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
@@ -440,8 +440,10 @@ mod tests {
 
     #[test]
     fn test_from_coinbase() {
-        let input_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let output_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let input_script =
+            Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script =
+            Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
         let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert_eq!(tx.version, 1);
@@ -454,12 +456,12 @@ mod tests {
     fn test_is_coinbase() {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;
@@ -469,8 +471,10 @@ mod tests {
         let tx = Tx::new(version, inputs, outputs, lock_num);
         assert!(!tx.is_coinbase());
 
-        let input_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
-        let output_script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let input_script =
+            Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let output_script =
+            Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let output_amount = 100;
         let tx = Tx::from_coinbase(input_script, output_script, output_amount, 0);
         assert!(tx.is_coinbase());
@@ -480,12 +484,12 @@ mod tests {
     fn test_hash_once() {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;
@@ -501,12 +505,12 @@ mod tests {
     fn test_hash() {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let lock_rel = 0;
         let tx_input = TxIn::new(input_tx_id, input_tx_index, script, lock_rel);
 
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
 
         let version = 1;

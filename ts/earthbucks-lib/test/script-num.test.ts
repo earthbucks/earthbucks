@@ -40,7 +40,7 @@ describe("ScriptNum", () => {
   });
 
   it("should correctly output positive numbers with the most significant bit set", () => {
-    const num = ScriptNum.fromIsoStr("128"); // 128 is a positive number with the most significant bit set
+    const num = ScriptNum.fromStrictStr("128"); // 128 is a positive number with the most significant bit set
     const buffer = num.toBuf();
     const hex = buffer.toString("hex");
     expect(hex).toEqual("0080"); // 128 in hexadecimal is 80, but we expect an extra '00' at the front

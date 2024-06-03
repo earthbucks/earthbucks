@@ -5,11 +5,11 @@ export class Domain {
     this.domainStr = domainStr;
   }
 
-  static fromIsoStr(domainStr: string): Domain {
+  static fromStrictStr(domainStr: string): Domain {
     return new Domain(domainStr);
   }
 
-  toIsoStr(): string {
+  toStrictStr(): string {
     return this.domainStr;
   }
 

@@ -49,14 +49,14 @@ impl PubKey {
         PubKey::from_buf(pub_key_buf)
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_strict_str(&self) -> String {
         let check_hash = blake3_hash(&self.buf);
         let check_sum: [u8; 4] = check_hash[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
         "ebxpub".to_string() + &check_hex + &self.buf.to_base58()
     }
 
-    pub fn from_iso_str(s: &str) -> Result<PubKey, EbxError> {
+    pub fn from_strict_str(s: &str) -> Result<PubKey, EbxError> {
         if !s.starts_with("ebxpub") {
             return Err(EbxError::InvalidEncodingError { source: None });
         }
@@ -78,7 +78,7 @@ impl PubKey {
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
-        let res = Self::from_iso_str(s);
+        let res = Self::from_strict_str(s);
         res.is_ok()
     }
 }
@@ -91,7 +91,7 @@ mod tests {
     fn test_from_priv_key() {
         let priv_key = PrivKey::from_random();
         let pub_key = PubKey::from_priv_key(&priv_key).unwrap();
-        println!("priv_key: {}", priv_key.to_iso_str());
+        println!("priv_key: {}", priv_key.to_strict_str());
         println!("pub_key: {}", pub_key.to_strict_hex());
     }
 
@@ -110,7 +110,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_from_iso_str_format() {
+    fn test_to_from_strict_str_format() {
         assert!(PubKey::is_valid_string_fmt(
             "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo"
         ));

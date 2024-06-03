@@ -131,11 +131,11 @@ impl MerkleProof {
         Ok(MerkleProof::new(root, proof))
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_strict_str(&self) -> String {
         hex::encode(self.to_buf())
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<MerkleProof, String> {
+    pub fn from_strict_str(hex: &str) -> Result<MerkleProof, String> {
         MerkleProof::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 }
@@ -495,13 +495,13 @@ mod tests {
     }
 
     #[test]
-    fn to_iso_str_and_from_iso_str() {
+    fn to_strict_str_and_from_strict_str() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
         let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
-        let hex = proof.to_iso_str();
-        let new_proof = MerkleProof::from_iso_str(&hex).unwrap();
+        let hex = proof.to_strict_str();
+        let new_proof = MerkleProof::from_strict_str(&hex).unwrap();
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);

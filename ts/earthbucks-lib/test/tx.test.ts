@@ -100,11 +100,11 @@ describe("Tx", () => {
 
   describe("fromCoinbase", () => {
     test("fromCoinbase", () => {
-      const script = Script.fromIsoStr("DOUBLEBLAKE3");
+      const script = Script.fromStrictStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
       expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut.n).toEqual(0xffffffff);
-      expect(txInput.script.toIsoStr()).toEqual(script.toIsoStr());
+      expect(txInput.script.toStrictStr()).toEqual(script.toStrictStr());
       expect(txInput.lockRel.n).toBe(0);
     });
   });
@@ -140,7 +140,7 @@ describe("Tx", () => {
     });
 
     test("fromCoinbase -> isCoinbase", () => {
-      const script = Script.fromIsoStr("DOUBLEBLAKE3");
+      const script = Script.fromStrictStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
       const tx = new Tx(new U8(1), [txInput], [], new U64(0));
       expect(tx.isCoinbase()).toBe(true);

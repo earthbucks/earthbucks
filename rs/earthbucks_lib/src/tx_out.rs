@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn test_tx_output_from_buf_and_to_buf() {
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
         let result = TxOut::from_buf(tx_output.to_buf());
         let result = match result {
@@ -75,7 +75,7 @@ mod tests {
         let data = vec![0u8; 0xffff];
         let value = 100;
         let script =
-            Script::from_iso_str(&format!("0x{} DOUBLEBLAKE3", data.to_strict_hex())).unwrap();
+            Script::from_strict_str(&format!("0x{} DOUBLEBLAKE3", data.to_strict_hex())).unwrap();
         let tx_output = TxOut::new(value, script);
         let result = TxOut::from_buf(tx_output.to_buf()).unwrap();
         assert_eq!(
@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn test_buffer_reader() {
         let value = 100;
-        let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
+        let script = Script::from_strict_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
         let tx_output = TxOut::new(value, script);
         let result = TxOut::from_buf_reader(&mut BufReader::new(tx_output.to_buf())).unwrap();
         assert_eq!(
