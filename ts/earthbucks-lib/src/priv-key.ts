@@ -56,11 +56,11 @@ export class PrivKey {
     return new PrivKey(buf);
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): PrivKey {
+  static fromStrictHex(hex: string): PrivKey {
     const buf = FixedBuf.fromStrictHex(32, hex);
     const buf32: FixedBuf<32> = FixedBuf.fromBuf(32, buf);
     return PrivKey.fromBuf(buf32);

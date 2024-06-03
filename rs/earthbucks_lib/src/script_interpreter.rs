@@ -1182,10 +1182,10 @@ mod tests {
         fn test_checksig() {
             let output_priv_key_hex =
                 "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-            let output_priv_key_buf = PrivKey::from_iso_hex(output_priv_key_hex).unwrap().buf;
+            let output_priv_key_buf = PrivKey::from_strict_hex(output_priv_key_hex).unwrap().buf;
             // let output_key = KeyPair::new(output_priv_key_buf.clone());
             let output_pub_key =
-                PubKey::from_priv_key(&PrivKey::from_iso_hex(output_priv_key_hex).unwrap())
+                PubKey::from_priv_key(&PrivKey::from_strict_hex(output_priv_key_hex).unwrap())
                     .unwrap()
                     .buf;
             assert_eq!(

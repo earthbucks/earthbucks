@@ -94,11 +94,11 @@ impl Header {
         bw
     }
 
-    pub fn to_iso_hex(&self) -> String {
+    pub fn to_strict_hex(&self) -> String {
         self.to_buf().to_strict_hex()
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Header, EbxError> {
+    pub fn from_strict_hex(hex: &str) -> Result<Header, EbxError> {
         let buf: [u8; Header::SIZE] = Vec::<u8>::from_strict_hex(hex)
             .map_err(|_| EbxError::InvalidHexError { source: None })?
             .try_into()
@@ -107,11 +107,11 @@ impl Header {
     }
 
     pub fn to_iso_str(&self) -> String {
-        self.to_iso_hex()
+        self.to_strict_hex()
     }
 
     pub fn from_iso_str(hex: &str) -> Result<Header, EbxError> {
-        Header::from_iso_hex(hex)
+        Header::from_strict_hex(hex)
     }
 
     pub fn is_valid_target(&self, lch: &[Header]) -> bool {

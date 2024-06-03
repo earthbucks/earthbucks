@@ -89,11 +89,11 @@ impl Tx {
         writer
     }
 
-    pub fn to_iso_hex(&self) -> String {
+    pub fn to_strict_hex(&self) -> String {
         hex::encode(self.to_buf())
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
+    pub fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
         Self::from_buf(Vec::<u8>::from_strict_hex(hex)?)
     }
 
@@ -102,7 +102,7 @@ impl Tx {
     }
 
     pub fn from_iso_str(hex: &str) -> Result<Self, EbxError> {
-        Self::from_iso_hex(hex)
+        Self::from_strict_hex(hex)
     }
 
     pub fn from_coinbase(

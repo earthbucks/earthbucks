@@ -111,20 +111,20 @@ export class Header {
     return bw;
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.toBuf().toString("hex");
   }
 
-  static fromIsoHex(str: string): Header {
+  static fromStrictHex(str: string): Header {
     return Header.fromBuf(SysBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
-    return this.toIsoHex();
+    return this.toStrictHex();
   }
 
   static fromIsoString(str: string): Header {
-    return Header.fromIsoHex(str);
+    return Header.fromStrictHex(str);
   }
 
   static fromGenesis(initialTarget: FixedBuf<32>): Header {

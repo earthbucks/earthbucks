@@ -37,11 +37,11 @@ export class PubKey {
     return this.buf;
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): PubKey {
+  static fromStrictHex(hex: string): PubKey {
     const buf = FixedBuf.fromStrictHex(PubKey.SIZE, hex);
     return PubKey.fromBuf(buf);
   }

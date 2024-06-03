@@ -40,11 +40,11 @@ impl PubKey {
         Ok(PubKey::new(pub_key_buf.unwrap()))
     }
 
-    pub fn to_iso_hex(&self) -> String {
+    pub fn to_strict_hex(&self) -> String {
         hex::encode(self.buf)
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<PubKey, EbxError> {
+    pub fn from_strict_hex(hex: &str) -> Result<PubKey, EbxError> {
         let pub_key_buf: Vec<u8> = Vec::<u8>::from_strict_hex(hex)?;
         PubKey::from_buf(pub_key_buf)
     }
@@ -92,7 +92,7 @@ mod tests {
         let priv_key = PrivKey::from_random();
         let pub_key = PubKey::from_priv_key(&priv_key).unwrap();
         println!("priv_key: {}", priv_key.to_iso_str());
-        println!("pub_key: {}", pub_key.to_iso_hex());
+        println!("pub_key: {}", pub_key.to_strict_hex());
     }
 
     #[test]
@@ -105,7 +105,7 @@ mod tests {
     #[test]
     fn test_is_not_valid() {
         let invalid = "065b3ea48a27d75cef083a1e216d91a653577566aad51b22701d002e4ea9fc2219";
-        let pub_key = PubKey::from_iso_hex(invalid).unwrap();
+        let pub_key = PubKey::from_strict_hex(invalid).unwrap();
         assert!(!pub_key.is_valid());
     }
 

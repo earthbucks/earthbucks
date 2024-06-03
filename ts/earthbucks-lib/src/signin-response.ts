@@ -41,7 +41,7 @@ export class SigninResponse {
     return new SigninResponse(signedMessage);
   }
 
-  static fromIsoHex(hex: string, domain: string): SigninResponse {
+  static fromStrictHex(hex: string, domain: string): SigninResponse {
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
     return SigninResponse.toBuf(buf, domain);
   }
@@ -50,7 +50,7 @@ export class SigninResponse {
     return this.signedMessage.toBuf();
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.toBuf().toString("hex");
   }
 

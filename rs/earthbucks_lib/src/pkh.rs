@@ -18,7 +18,7 @@ impl Pkh {
         Self::from_pub_key_buffer(pub_key.to_buffer().to_vec())
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
+    pub fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
         let pkh_buf = <[u8; 32]>::from_strict_hex(hex)?.to_vec();
         if pkh_buf.len() != 32 {
             return Err(EbxError::InvalidKeyError { source: None });

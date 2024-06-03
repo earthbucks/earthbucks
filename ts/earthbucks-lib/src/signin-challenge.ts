@@ -35,7 +35,7 @@ export class SigninChallenge {
     return new SigninChallenge(signedMessage);
   }
 
-  static fromIsoHex(hex: string, domain: string): SigninChallenge {
+  static fromStrictHex(hex: string, domain: string): SigninChallenge {
     // TODO: Fix return type (do not throw error)
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
     return SigninChallenge.fromBuf(buf, domain);
@@ -45,7 +45,7 @@ export class SigninChallenge {
     return this.signedMessage.toBuf();
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.toBuf().toString("hex");
   }
 

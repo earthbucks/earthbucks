@@ -90,7 +90,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const result = Tx.fromIsoHex(tx.toIsoHex());
+      const result = Tx.fromStrictHex(tx.toStrictHex());
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);

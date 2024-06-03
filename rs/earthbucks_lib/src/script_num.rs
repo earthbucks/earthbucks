@@ -71,11 +71,11 @@ impl ScriptNum {
         }
     }
 
-    pub fn from_iso_hex(hex: &str) -> Self {
+    pub fn from_strict_hex(hex: &str) -> Self {
         ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 
-    pub fn to_iso_hex(&self) -> String {
+    pub fn to_strict_hex(&self) -> String {
         hex::encode(self.to_buf())
     }
 
@@ -133,11 +133,12 @@ mod tests {
         ];
 
         for (hex, dec) in test_cases {
-            let num_from_iso_hex = ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
+            let num_from_strict_hex =
+                ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
             let num_from_dec = ScriptNum::from_iso_str(dec);
-            assert_eq!(num_from_iso_hex.num, num_from_dec.num);
+            assert_eq!(num_from_strict_hex.num, num_from_dec.num);
 
-            let hex_from_num = hex::encode(num_from_iso_hex.to_buf());
+            let hex_from_num = hex::encode(num_from_strict_hex.to_buf());
             assert_eq!(hex, &hex_from_num);
         }
     }

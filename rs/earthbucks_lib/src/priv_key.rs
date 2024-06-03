@@ -57,11 +57,11 @@ impl PrivKey {
         Ok(PrivKey::new(priv_key))
     }
 
-    pub fn to_iso_hex(&self) -> String {
+    pub fn to_strict_hex(&self) -> String {
         self.buf.to_strict_hex()
     }
 
-    pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
+    pub fn from_strict_hex(hex: &str) -> Result<Self, EbxError> {
         let priv_key_vec: Vec<u8> = Vec::<u8>::from_strict_hex(hex)?;
         PrivKey::from_buf(priv_key_vec)
     }
@@ -112,17 +112,17 @@ mod tests {
     }
 
     #[test]
-    fn test_to_iso_hex() {
+    fn test_to_strict_hex() {
         let priv_key = PrivKey::from_random();
         let hex = priv_key.to_iso_str();
         println!("hex: {}", hex);
     }
 
     #[test]
-    fn test_from_iso_hex() {
+    fn test_from_strict_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_iso_hex();
-        let priv_key2 = PrivKey::from_iso_hex(&hex).unwrap();
+        let hex = priv_key.to_strict_hex();
+        let priv_key2 = PrivKey::from_strict_hex(&hex).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }
 
@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_this_priv_key_vec() {
-        let priv_key = PrivKey::from_iso_hex(
+        let priv_key = PrivKey::from_strict_hex(
             "2ef930fed143c0b92b485c29aaaba97d09cab882baafdb9ea1e55dec252cd09f",
         )
         .unwrap();

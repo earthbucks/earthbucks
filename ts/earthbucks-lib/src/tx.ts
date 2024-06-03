@@ -68,11 +68,11 @@ export class Tx {
     return writer.toBuf();
   }
 
-  toIsoHex(): string {
+  toStrictHex(): string {
     return this.toBuf().toString("hex");
   }
 
-  static fromIsoHex(hex: string): Tx {
+  static fromStrictHex(hex: string): Tx {
     const buf = FixedBuf.fromStrictHex(hex.length / 2, hex);
     return Tx.fromBuf(buf);
   }
