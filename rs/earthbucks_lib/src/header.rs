@@ -45,30 +45,7 @@ impl Header {
 
     pub fn from_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
         let mut br = BufReader::new(buf.to_vec());
-        let version = br.read_u32_be()?;
-        let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let timestamp = br.read_u64_be()?;
-        let block_num = br.read_u64_be()?;
-        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_ser_algo = br.read_u32_be()?;
-        let work_ser_hash: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_par_algo = br.read_u32_be()?;
-        let work_par_hash: [u8; 32] = br.read(32)?.try_into().unwrap();
-        Ok(Self {
-            version,
-            prev_block_id,
-            merkle_root,
-            timestamp,
-            block_num,
-            target,
-            nonce,
-            work_ser_algo,
-            work_ser_hash,
-            work_par_algo,
-            work_par_hash,
-        })
+        Header::from_buf_reader(&mut br)
     }
 
     pub fn from_buf_reader(br: &mut BufReader) -> Result<Header, EbxError> {
