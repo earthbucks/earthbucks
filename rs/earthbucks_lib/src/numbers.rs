@@ -13,6 +13,13 @@ mod tests {
     }
 
     #[test]
+    fn test_beyond_max_value() {
+        let u = u256::from_be_bytes(&[255; 32]);
+        let result = u.checked_add(u256::from(1u32).to_be());
+        assert!(result.is_none(), "Beyond max value test failed");
+    }
+
+    #[test]
     fn test_min_value() {
         let min_value = Uint256::from_be_bytes(&[0; 32]);
         let u = u256::from_be_bytes(&[0; 32]);
