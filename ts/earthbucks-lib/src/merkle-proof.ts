@@ -2,8 +2,8 @@ import * as Hash from "./hash.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
+import { GenericError } from "./ebx-error.js";
 
 export class MerkleProof {
   public root: FixedIsoBuf<32>;
@@ -30,14 +30,14 @@ export class MerkleProof {
 
   static generateProofsAndRoot(
     hashedDatas: FixedIsoBuf<32>[],
-  ): Result<[FixedIsoBuf<32>, MerkleProof[]], string> {
+  ): [FixedIsoBuf<32>, MerkleProof[]] {
     if (hashedDatas.length === 0) {
-      return Err("Cannot create Merkle tree from empty array");
+      throw new GenericError("Cannot create Merkle tree from empty array");
     }
     if (hashedDatas.length === 1) {
       const root = hashedDatas[0];
       const proof = new MerkleProof(root, []);
-      return Ok([root, [proof]]);
+      return [root, [proof]];
     }
     if (hashedDatas.length === 2) {
       const root = Hash.doubleBlake3Hash(
@@ -47,7 +47,7 @@ export class MerkleProof {
         new MerkleProof(root, [[hashedDatas[1], true]]),
         new MerkleProof(root, [[hashedDatas[0], false]]),
       ];
-      return Ok([root, proofs]);
+      return [root, proofs];
     }
     // Make sure the number of elements is a power of two
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
@@ -55,10 +55,10 @@ export class MerkleProof {
     }
     const [leftRoot, leftProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(0, hashedDatas.length / 2),
-    ).unwrap();
+    );
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(hashedDatas.length / 2),
-    ).unwrap();
+    );
     const root = Hash.doubleBlake3Hash(SysBuf.concat([leftRoot, rightRoot]));
     const proofs = [
       ...leftProofs.map(
@@ -68,7 +68,7 @@ export class MerkleProof {
         (proof) => new MerkleProof(root, [[leftRoot, false], ...proof.proof]),
       ),
     ];
-    return Ok([root, proofs]);
+    return [root, proofs];
   }
 
   toIsoBuf(): SysBuf {
@@ -84,12 +84,12 @@ export class MerkleProof {
 
   static fromIsoBuf(buf: SysBuf): MerkleProof {
     const br = new IsoBufReader(buf);
-    const root = br.readFixed(32).unwrap();
+    const root = br.readFixed(32);
     const proof: Array<[FixedIsoBuf<32>, boolean]> = [];
-    const proofLength = br.readVarInt().unwrap().n;
+    const proofLength = br.readVarInt().n;
     for (let i = 0; i < proofLength; i++) {
-      const sibling = br.readFixed(32).unwrap();
-      const isLeft = br.readU8().unwrap().n === 1;
+      const sibling = br.readFixed(32);
+      const isLeft = br.readU8().n === 1;
       proof.push([sibling, isLeft]);
     }
     return new MerkleProof(root, proof);

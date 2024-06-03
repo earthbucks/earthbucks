@@ -4,7 +4,6 @@ import { TxOut } from "./tx-out.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError, GenericError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -32,7 +31,7 @@ export class TxBuilder {
     this.inputAmount = this.inputAmount.add(amount);
   }
 
-  build(): Result<Tx, EbxError> {
+  build(): Tx {
     // "tx fees", also called "change fees", are zero on earthbucks. this
     // simplifies the logic of building a tx. input must be exactly equal to
     // output to be valid. remainder goes to change, which is owned by the user.
@@ -88,7 +87,7 @@ export class TxBuilder {
       ) {
         inputScript = Script.fromUnexpiredPkhxrInputPlaceholder();
       } else {
-        return Err(new GenericError("unsupported script type"));
+        throw new GenericError("unsupported script type");
       }
 
       const txInput = new TxIn(txId, txOutNum, inputScript, new U32(0));
@@ -101,6 +100,6 @@ export class TxBuilder {
       const txOut = new TxOut(changeAmount, this.changeScript);
       this.addOutput(txOut);
     }
-    return Ok(this.tx);
+    return this.tx;
   }
 }

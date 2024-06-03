@@ -4,10 +4,10 @@ import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
 import { SysBuf } from "./iso-buf.js";
 import { PubKey } from "./pub-key.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { Script } from "./script.js";
 import { KeyPair } from "./key-pair.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
+import { GenericError } from "./ebx-error.js";
 
 export class TxSigner {
   public tx: Tx;
@@ -27,13 +27,13 @@ export class TxSigner {
     this.workingBlockNum = workingBlockNum;
   }
 
-  sign(nIn: U32): Result<Tx, string> {
+  sign(nIn: U32): Tx {
     const txInput = this.tx.inputs[nIn.n];
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
     if (!txOutBn) {
-      return Err("tx_out not found");
+      throw new GenericError("tx_out not found");
     }
     const txOut = txOutBn.txOut;
     const prevBlockNum = txOutBn.blockNum;
@@ -42,11 +42,11 @@ export class TxSigner {
       const pkh_buf = txOut.script.chunks[2].buf as SysBuf;
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
-        return Err("expected pkh input placeholder");
+        throw new GenericError("expected pkh input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return Err("key not found");
+        throw new GenericError("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -73,17 +73,17 @@ export class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return this.tx;
         } else {
-          return Err("expected expired pkhx input");
+          throw new GenericError("expected expired pkhx input");
         }
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        return Err("expected unexpired pkhx input placeholder");
+        throw new GenericError("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return Err("key not found");
+        throw new GenericError("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -110,17 +110,17 @@ export class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return this.tx;
         } else {
-          return Err("expected expired pkhx input");
+          throw new GenericError("expected expired pkhx input");
         }
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        return Err("expected unexpired pkhx input placeholder");
+        throw new GenericError("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        return Err("key not found");
+        throw new GenericError("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
 
@@ -148,9 +148,9 @@ export class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxrInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return this.tx;
         } else {
-          return Err("expected expired pkhx input");
+          throw new GenericError("expected expired pkhx input");
         }
       }
 
@@ -161,23 +161,23 @@ export class TxSigner {
           prevBlockNum,
         );
         if (!recoverable) {
-          return Err("expected recoverable pkhx input");
+          throw new GenericError("expected recoverable pkhx input");
         }
         const res = this.pkhKeyMap.get(rpkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          return Err("key not found");
+          throw new GenericError("key not found");
         }
       } else if (inputScript.isUnexpiredPkhxrInput()) {
         const res = this.pkhKeyMap.get(pkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          return Err("key not found");
+          throw new GenericError("key not found");
         }
       } else {
-        return Err("expected unexpired pkhx input placeholder");
+        throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
@@ -205,9 +205,9 @@ export class TxSigner {
       if (expired) {
         if (inputScript.isExpiredPkhxrInput()) {
           // no need to sign expired pkhx
-          return Ok(this.tx);
+          return this.tx;
         } else {
-          return Err("expected expired pkhx input");
+          throw new GenericError("expected expired pkhx input");
         }
       }
 
@@ -218,23 +218,23 @@ export class TxSigner {
           prevBlockNum,
         );
         if (!recoverable) {
-          return Err("expected recoverable pkhx input");
+          throw new GenericError("expected recoverable pkhx input");
         }
         const res = this.pkhKeyMap.get(rpkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          return Err("key not found");
+          throw new GenericError("key not found");
         }
       } else if (inputScript.isUnexpiredPkhxrInput()) {
         const res = this.pkhKeyMap.get(pkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          return Err("key not found");
+          throw new GenericError("key not found");
         }
       } else {
-        return Err("expected unexpired pkhx input placeholder");
+        throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
       const pubKeyBuf = keyPair.pubKey.toIsoBuf();
@@ -252,19 +252,16 @@ export class TxSigner {
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
     } else {
-      return Err("unsupported script type");
+      throw new GenericError("unsupported script type");
     }
 
-    return Ok(this.tx);
+    return this.tx;
   }
 
-  signAll(): Result<Tx, string> {
+  signAll(): Tx {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      const res = this.sign(new U32(i));
-      if (res.err) {
-        return Err("sign_all: " + res.err);
-      }
+      this.sign(new U32(i));
     }
-    return Ok(this.tx);
+    return this.tx;
   }
 }

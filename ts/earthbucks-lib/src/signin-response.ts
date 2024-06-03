@@ -42,11 +42,7 @@ export class SigninResponse {
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const bufRes = IsoBuf.fromStrictHex(hex.length / 2, hex);
-    if (bufRes.err) {
-      throw new Error("Invalid hex");
-    }
-    const buf = bufRes.unwrap();
+    const buf = IsoBuf.fromStrictHex(hex.length / 2, hex);
     return SigninResponse.toIsoBuf(buf, domain);
   }
 

@@ -44,7 +44,7 @@ describe("TxSigner", () => {
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build().unwrap();
+    const tx = txBuilder.build();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
@@ -52,7 +52,6 @@ describe("TxSigner", () => {
 
     txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
     const signed = txSigner.sign(new U32(0));
-    expect(signed.ok).toBe(true);
 
     const txInput = tx.inputs[0];
     const txOutBn = txOutBnMap.get(txInput.inputTxId, txInput.inputTxNOut);
@@ -86,7 +85,7 @@ describe("TxSigner", () => {
     txBuilder.addOutput(output);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build().unwrap();
+    const tx = txBuilder.build();
 
     expect(tx.inputs.length).toBe(2);
     expect(tx.outputs.length).toBe(2);
@@ -95,9 +94,9 @@ describe("TxSigner", () => {
 
     txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
     const signed1 = txSigner.sign(new U32(0));
-    expect(signed1.ok).toBe(true);
+    expect(signed1).toBeTruthy();
     const signed2 = txSigner.sign(new U32(1));
-    expect(signed2.ok).toBe(true);
+    expect(signed2).toBeTruthy();
 
     const txInput1 = tx.inputs[0];
     const txOutput1 = txOutBnMap.get(txInput1.inputTxId, txInput1.inputTxNOut);

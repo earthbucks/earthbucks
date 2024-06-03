@@ -9,7 +9,6 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -32,50 +31,26 @@ export class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<Tx, EbxError> {
+  static fromIsoBuf(buf: SysBuf): Tx {
     return Tx.fromIsoBufReader(new IsoBufReader(buf));
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<Tx, EbxError> {
-    const versionRes = reader.readU8();
-    if (versionRes.err) {
-      return versionRes;
-    }
-    const version = versionRes.unwrap();
-    const numInputsRes = reader.readVarInt();
-    if (numInputsRes.err) {
-      return numInputsRes;
-    }
-    const numInputs = numInputsRes.unwrap();
+  static fromIsoBufReader(reader: IsoBufReader): Tx {
+    const version = reader.readU8();
+    const numInputs = reader.readVarInt();
     const inputs = [];
     for (let i = 0; i < numInputs.n; i++) {
-      const txInRes = TxIn.fromIsoBufReader(reader);
-      if (txInRes.err) {
-        return txInRes;
-      }
-      const txIn = txInRes.unwrap();
+      const txIn = TxIn.fromIsoBufReader(reader);
       inputs.push(txIn);
     }
-    const numOutputsRes = reader.readVarInt();
-    if (numOutputsRes.err) {
-      return numOutputsRes;
-    }
-    const numOutputs = numOutputsRes.unwrap();
+    const numOutputs = reader.readVarInt();
     const outputs = [];
     for (let i = 0; i < numOutputs.n; i++) {
-      const txOutRes = TxOut.fromIsoBufReader(reader);
-      if (txOutRes.err) {
-        return txOutRes;
-      }
-      const txOut = txOutRes.unwrap();
+      const txOut = TxOut.fromIsoBufReader(reader);
       outputs.push(txOut);
     }
-    const lockNumRes = reader.readU64BE();
-    if (lockNumRes.err) {
-      return lockNumRes;
-    }
-    const lockNum = lockNumRes.unwrap();
-    return Ok(new Tx(version, inputs, outputs, lockNum));
+    const lockNum = reader.readU64BE();
+    return new Tx(version, inputs, outputs, lockNum);
   }
 
   toIsoBuf(): SysBuf {
@@ -97,12 +72,8 @@ export class Tx {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<Tx, EbxError> {
-    const bufRes = FixedIsoBuf.fromStrictHex(hex.length / 2, hex);
-    if (bufRes.err) {
-      return bufRes;
-    }
-    const buf = bufRes.unwrap();
+  static fromIsoHex(hex: string): Tx {
+    const buf = FixedIsoBuf.fromStrictHex(hex.length / 2, hex);
     return Tx.fromIsoBuf(buf);
   }
 
@@ -268,7 +239,7 @@ export class Tx {
     const sigBuf = FixedIsoBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
-    ).unwrap();
+    );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
@@ -291,7 +262,7 @@ export class Tx {
     const sigBuf = FixedIsoBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
-    ).unwrap();
+    );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }

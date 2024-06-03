@@ -2,7 +2,6 @@ import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
@@ -16,34 +15,23 @@ export class Script {
     this.chunks = chunks;
   }
 
-  toIsoStr(): Result<string, EbxError> {
-    const chunksRes = this.chunks.map((chunk) => chunk.toIsoStr());
-    for (const res of chunksRes) {
-      if (res.err) {
-        return res;
-      }
-    }
-    return Ok(chunksRes.map((res) => res.unwrap()).join(" "));
+  toIsoStr(): string {
+    return this.chunks.map((chunk) => chunk.toIsoStr()).join(" ");
   }
 
   static fromEmpty(): Script {
     return new Script();
   }
 
-  static fromIsoStr(str: string): Result<Script, EbxError> {
+  static fromIsoStr(str: string): Script {
     const script = new Script();
     if (str === "") {
-      return Ok(script);
+      return script;
     }
 
-    const chunksRes = str.split(" ").map(ScriptChunk.fromIsoStr);
-    for (const res of chunksRes) {
-      if (res.err) {
-        return res;
-      }
-    }
-    script.chunks = chunksRes.map((res) => res.unwrap());
-    return Ok(script);
+    const chunks = str.split(" ").map(ScriptChunk.fromIsoStr);
+    script.chunks = chunks;
+    return script;
   }
 
   toIsoBuf(): SysBuf {
@@ -51,21 +39,18 @@ export class Script {
     return SysBuf.concat(bufArray);
   }
 
-  static fromIsoBuf(arr: SysBuf): Result<Script, EbxError> {
+  static fromIsoBuf(arr: SysBuf): Script {
     const reader = new IsoBufReader(arr);
     return Script.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<Script, EbxError> {
+  static fromIsoBufReader(reader: IsoBufReader): Script {
     const script = new Script();
     while (!reader.eof()) {
-      const chunkRes = ScriptChunk.fromIsoBufReader(reader);
-      if (chunkRes.err) {
-        return chunkRes;
-      }
-      script.chunks.push(chunkRes.unwrap());
+      const chunk = ScriptChunk.fromIsoBufReader(reader);
+      script.chunks.push(chunk);
     }
-    return Ok(script);
+    return script;
   }
 
   static fromMultiSigOutput(m: number, pubKeys: SysBuf[]): Script {

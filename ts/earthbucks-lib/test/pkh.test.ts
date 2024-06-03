@@ -33,7 +33,7 @@ describe("Pkh", () => {
       Pkh.fromIsoStr(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
       )
-        .unwrap()
+
         .toIsoStr(),
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
@@ -52,7 +52,7 @@ describe("Pkh", () => {
       const pkhPairs: AddressPair[] = JSON.parse(data).pkh;
 
       for (const pair of pkhPairs) {
-        const pubKey = PubKey.fromIsoStr(pair.pub_key).unwrap();
+        const pubKey = PubKey.fromIsoStr(pair.pub_key);
         const pkh = Pkh.fromPubKey(pubKey);
         expect(pkh.toIsoStr()).toBe(pair.pkh);
       }

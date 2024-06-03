@@ -8,7 +8,7 @@ describe("MerkleProof", () => {
     const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
 
     const data = [data1];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root).toString("hex");
     expect(hex).toBe(
       "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244",
@@ -24,7 +24,7 @@ describe("MerkleProof", () => {
     const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
     const data = [data1, data2];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root).toString("hex");
     expect(hex).toBe(
       "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde",
@@ -45,7 +45,7 @@ describe("MerkleProof", () => {
     const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
 
     const data = [data1, data2, data3];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root).toString("hex");
     expect(hex).toBe(
       "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf",
@@ -71,7 +71,7 @@ describe("MerkleProof", () => {
     const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
 
     const data = [data1, data2, data3, data4];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root).toString("hex");
     expect(hex).toBe(
       "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187",
@@ -98,7 +98,7 @@ describe("MerkleProof", () => {
     const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
 
     const data = [data1, data1];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root).toString("hex");
     expect(hex).toBe(
       "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3",
@@ -118,7 +118,7 @@ describe("MerkleProof", () => {
     const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
     const data = [data1, data2];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
     const buf1 = proof1.toIsoBuf();
@@ -132,7 +132,7 @@ describe("MerkleProof", () => {
     const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
     const data = [data1, data2];
-    const [root, proofs] = MerkleProof.generateProofsAndRoot(data).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
     const str = proof1.toIsoStr();

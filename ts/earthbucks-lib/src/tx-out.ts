@@ -3,7 +3,6 @@ import { IsoBufWriter } from "./iso-buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
 import { SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -16,33 +15,17 @@ export class TxOut {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<TxOut, EbxError> {
+  static fromIsoBuf(buf: SysBuf): TxOut {
     const reader = new IsoBufReader(buf);
     return TxOut.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<TxOut, EbxError> {
-    const valueRes = reader.readU64BE();
-    if (valueRes.err) {
-      return valueRes;
-    }
-    const value = valueRes.unwrap();
-    const scriptLenRes = reader.readVarInt();
-    if (scriptLenRes.err) {
-      return scriptLenRes;
-    }
-    const scriptLen = scriptLenRes.unwrap().n;
-    const scriptArrRes = reader.read(scriptLen);
-    if (scriptArrRes.err) {
-      return scriptArrRes;
-    }
-    const scriptArr = scriptArrRes.unwrap();
-    const scriptRes = Script.fromIsoBuf(scriptArr);
-    if (scriptRes.err) {
-      return scriptRes;
-    }
-    const script = scriptRes.unwrap();
-    return Ok(new TxOut(value, script));
+  static fromIsoBufReader(reader: IsoBufReader): TxOut {
+    const value = reader.readU64BE();
+    const scriptLen = reader.readVarInt().n;
+    const scriptArr = reader.read(scriptLen);
+    const script = Script.fromIsoBuf(scriptArr);
+    return new TxOut(value, script);
   }
 
   toIsoBuf(): SysBuf {

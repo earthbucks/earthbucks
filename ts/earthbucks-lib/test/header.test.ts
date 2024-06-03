@@ -19,7 +19,7 @@ describe("Header", () => {
       FixedIsoBuf.alloc(32),
     );
     const buf = bh1.toIsoBuf();
-    const bh2 = Header.fromIsoBuf(buf).unwrap();
+    const bh2 = Header.fromIsoBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),
@@ -46,7 +46,7 @@ describe("Header", () => {
       FixedIsoBuf.alloc(32),
     );
     const buf = bh1.toIsoBuf();
-    const bh2 = Header.fromIsoBuf(buf).unwrap();
+    const bh2 = Header.fromIsoBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),
@@ -149,7 +149,7 @@ describe("Header", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      ).unwrap();
+      );
       expect(bh.version.n).toBe(1);
       expect(bh.prevBlockId).toEqual(prevBlockHeader.id());
       expect(bh.merkleRoot).toEqual(FixedIsoBuf.alloc(32));
@@ -187,7 +187,7 @@ describe("Header", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      ).unwrap();
+      );
       expect(bh.blockNum.bn).toEqual(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn);
       expect(bh.target).toEqual(
         Header.adjustTarget(FixedIsoBuf.alloc(32), new U64(0n)),
@@ -198,7 +198,7 @@ describe("Header", () => {
       const initialTarget = FixedIsoBuf.fromStrictHex(
         32,
         "00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      ).unwrap();
+      );
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
         new U32(1),
@@ -229,7 +229,7 @@ describe("Header", () => {
       const bh = Header.fromPrevBlockHeader(
         prevBlockHeader,
         prevAdjustmentBlockHeader,
-      ).unwrap();
+      );
       expect(bh.blockNum.bn).toEqual(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn);
       expect(SysBuf.from(bh.target).toString("hex")).toEqual(
         "000000007fffffffffffffffffffffffffffffffffffffffffffffffffffffff",

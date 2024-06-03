@@ -1,5 +1,5 @@
 import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { InvalidSizeError, InvalidEncodingError } from "./ebx-error.js";
 
 export class HashNum {
   num: bigint;
@@ -8,23 +8,23 @@ export class HashNum {
     this.num = num;
   }
 
-  static fromIsoBuf(target: FixedIsoBuf<32>): Result<HashNum, string> {
+  static fromIsoBuf(target: FixedIsoBuf<32>): HashNum {
     if (target.length !== 32) {
-      return Err("Invalid target length");
+      throw new InvalidSizeError();
     }
     const hex = target.toString("hex");
     const num = BigInt("0x" + hex);
-    return Ok(new HashNum(num));
+    return new HashNum(num);
   }
 
-  toIsoBuf(): Result<FixedIsoBuf<32>, string> {
+  toIsoBuf(): FixedIsoBuf<32> {
     let hex = this.num.toString(16);
     if (hex.length > 64) {
-      return Err("Target number is too large");
+      throw new InvalidEncodingError();
     }
     while (hex.length < 64) {
       hex = "0" + hex;
     }
-    return Ok(FixedIsoBuf.fromStrictHex(32, hex).unwrap());
+    return FixedIsoBuf.fromStrictHex(32, hex);
   }
 }

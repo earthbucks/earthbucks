@@ -34,7 +34,7 @@ describe("ScriptInterpreter", () => {
 
   describe("sanity tests", () => {
     test("0", () => {
-      const script = Script.fromIsoStr("0").unwrap();
+      const script = Script.fromIsoStr("0");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -51,7 +51,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("pushdata1", () => {
-      const script = Script.fromIsoStr("0xff").unwrap();
+      const script = Script.fromIsoStr("0xff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -69,7 +69,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA1", () => {
-      const script = Script.fromIsoStr("0xffff").unwrap();
+      const script = Script.fromIsoStr("0xffff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -87,7 +87,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA2", () => {
-      const script = Script.fromIsoStr("0x" + "ff".repeat(256)).unwrap();
+      const script = Script.fromIsoStr("0x" + "ff".repeat(256));
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -105,7 +105,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA4", () => {
-      const script = Script.fromIsoStr("0x" + "ff".repeat(65536)).unwrap();
+      const script = Script.fromIsoStr("0x" + "ff".repeat(65536));
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -123,7 +123,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("1NEGATE", () => {
-      const script = Script.fromIsoStr("1NEGATE").unwrap();
+      const script = Script.fromIsoStr("1NEGATE");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -143,11 +143,8 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = FixedIsoBuf.fromStrictHex(
-        32,
-        outputPrivKeyHex,
-      ).unwrap();
-      const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf).unwrap();
+      const outputPrivKeyBuf = FixedIsoBuf.fromStrictHex(32, outputPrivKeyHex);
+      const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toIsoBuf();
       expect(SysBuf.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
@@ -208,12 +205,12 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to IsoBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedIsoBuf.fromBuf(32, SysBuf.from(hex, "hex")).unwrap(),
+        FixedIsoBuf.fromBuf(32, SysBuf.from(hex, "hex")),
       );
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map((privKey) =>
-        PrivKey.fromIsoBuf(privKey).unwrap().toPubKeyIsoBuf().unwrap(),
+        PrivKey.fromIsoBuf(privKey).toPubKeyIsoBuf(),
       );
 
       // Create a multisig output script
@@ -311,7 +308,7 @@ describe("ScriptInterpreter", () => {
 
       testScripts.forEach((testScript) => {
         test(testScript.name, () => {
-          const script = Script.fromIsoStr(testScript.script).unwrap();
+          const script = Script.fromIsoStr(testScript.script);
           const hashCache = new HashCache();
           const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,

@@ -37,11 +37,7 @@ export class SigninChallenge {
 
   static fromIsoHex(hex: string, domain: string): SigninChallenge {
     // TODO: Fix return type (do not throw error)
-    const bufRes = IsoBuf.fromStrictHex(hex.length / 2, hex);
-    if (bufRes.err) {
-      throw new Error("Invalid hex");
-    }
-    const buf = bufRes.unwrap();
+    const buf = IsoBuf.fromStrictHex(hex.length / 2, hex);
     return SigninChallenge.fromIsoBuf(buf, domain);
   }
 
@@ -55,7 +51,7 @@ export class SigninChallenge {
 
   isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
-    const permissionToken = PermissionToken.fromIsoBuf(message).unwrap();
+    const permissionToken = PermissionToken.fromIsoBuf(message);
     if (!permissionToken.isValid()) {
       return false;
     }

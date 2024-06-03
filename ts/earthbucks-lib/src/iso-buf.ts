@@ -4,7 +4,6 @@
 // specifically to make sure we always use this version of "Buffer" and never
 // the standard node version so that it polyfills in the browser correctly.
 import { Buffer } from "buffer";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidSizeError,
@@ -24,21 +23,18 @@ function encodeHex(buffer: SysBuf): string {
   return buffer.toString("hex");
 }
 
-function decodeHex(hex: string): Result<SysBuf, EbxError> {
+function decodeHex(hex: string): SysBuf {
   if (!isValidHex(hex)) {
-    return Err(new InvalidHexError());
+    throw new InvalidHexError();
   }
-  const buffer = SysBuf.from(hex, "hex");
-  return Ok(buffer);
+  const sysBuf = SysBuf.from(hex, "hex");
+  return sysBuf;
 }
 
 class IsoBuf extends SysBuf {
-  static fromBuf<N extends number>(
-    size: N,
-    buf: SysBuf,
-  ): Result<IsoBuf, EbxError> {
+  static fromBuf<N extends number>(size: N, buf: SysBuf): IsoBuf {
     if (buf.length !== size) {
-      return Err(new InvalidSizeError());
+      throw new InvalidSizeError();
     }
     // weird roundabout prototype code to avoid calling "new" because on Buffer
     // that is actually deprecated
@@ -46,19 +42,15 @@ class IsoBuf extends SysBuf {
     newBuf.set(buf);
     Object.setPrototypeOf(newBuf, IsoBuf.prototype);
     const isoBuf = newBuf as IsoBuf;
-    return Ok(isoBuf);
+    return isoBuf;
   }
 
   static alloc(size: number, fill?: number): IsoBuf {
-    return IsoBuf.fromBuf(size, SysBuf.alloc(size, fill)).unwrap();
+    return IsoBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex(size: number, hex: string): Result<IsoBuf, EbxError> {
-    const bufRes = decodeHex(hex);
-    if (bufRes.err) {
-      return Err(bufRes.val);
-    }
-    const buf = bufRes.unwrap();
+  static fromStrictHex(size: number, hex: string): IsoBuf {
+    const buf = decodeHex(hex);
     return IsoBuf.fromBuf(size, buf);
   }
 
@@ -66,12 +58,12 @@ class IsoBuf extends SysBuf {
     return encodeHex(this);
   }
 
-  static fromBase58(size: number, base58: string): Result<IsoBuf, EbxError> {
+  static fromBase58(size: number, base58: string): IsoBuf {
     try {
       const buf = SysBuf.from(bs58.decode(base58));
       return IsoBuf.fromBuf(size, buf);
     } catch (err) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidEncodingError();
     }
   }
 
@@ -93,12 +85,9 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     this[sizeSymbol] = size;
   }
 
-  static fromBuf<N extends number>(
-    size: N,
-    buf: SysBuf,
-  ): Result<FixedIsoBuf<N>, EbxError> {
+  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedIsoBuf<N> {
     if (buf.length !== size) {
-      return Err(new InvalidSizeError());
+      throw new InvalidSizeError();
     }
     // weird roundabout prototype code to avoid calling "new" because on Buffer
     // that is actually deprecated
@@ -107,22 +96,15 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     Object.setPrototypeOf(newBuf, FixedIsoBuf.prototype);
     const fixedIsoBufN = newBuf as FixedIsoBuf<N>;
     fixedIsoBufN[sizeSymbol] = size;
-    return Ok(fixedIsoBufN);
+    return fixedIsoBufN;
   }
 
   static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
-    return FixedIsoBuf.fromBuf(size, SysBuf.alloc(size, fill)).unwrap();
+    return FixedIsoBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex<N extends number>(
-    size: N,
-    hex: string,
-  ): Result<FixedIsoBuf<N>, EbxError> {
-    const bufRes = decodeHex(hex);
-    if (bufRes.err) {
-      return Err(bufRes.val);
-    }
-    const buf = bufRes.unwrap();
+  static fromStrictHex<N extends number>(size: N, hex: string): FixedIsoBuf<N> {
+    const buf = decodeHex(hex);
     return FixedIsoBuf.fromBuf(size, buf);
   }
 
@@ -130,10 +112,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     return encodeHex(this);
   }
 
-  static fromBase58<N extends number>(
-    size: N,
-    base58: string,
-  ): Result<FixedIsoBuf<N>, EbxError> {
+  static fromBase58<N extends number>(size: N, base58: string): FixedIsoBuf<N> {
     const buf = SysBuf.from(bs58.decode(base58));
     return FixedIsoBuf.fromBuf(size, buf);
   }

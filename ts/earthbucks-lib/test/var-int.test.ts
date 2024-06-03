@@ -14,7 +14,7 @@ describe("VarInt", () => {
     it("should create a VarInt from a number", () => {
       const u32: U32 = new U32(123);
       varInt = VarInt.fromU32(u32);
-      expect(varInt.toU32().unwrap().bn.toString()).toEqual(u32.bn.toString());
+      expect(varInt.toU32().bn.toString()).toEqual(u32.bn.toString());
     });
   });
 
@@ -22,7 +22,7 @@ describe("VarInt", () => {
     it("should create a VarInt from a bigint", () => {
       const u64: U64 = new U64(123);
       varInt = VarInt.fromU64(u64);
-      expect(varInt.toU64().unwrap().bn.toString()).toEqual(u64.bn.toString());
+      expect(varInt.toU64().bn.toString()).toEqual(u64.bn.toString());
     });
   });
 
@@ -30,7 +30,7 @@ describe("VarInt", () => {
     it("should create a VarInt from a number", () => {
       const u32: U32 = new U32(123);
       varInt = VarInt.fromU32(u32);
-      expect(varInt.toU32().unwrap().bn.toString()).toEqual(u32.bn.toString());
+      expect(varInt.toU32().bn.toString()).toEqual(u32.bn.toString());
     });
   });
 
@@ -46,9 +46,7 @@ describe("VarInt", () => {
     it("should return a bigint", () => {
       const u64: U64 = new U64(123);
       varInt = VarInt.fromU64(u64);
-      expect(varInt.toU64().unwrap().bn.toString()).toEqual(
-        BigInt(123).toString(),
-      );
+      expect(varInt.toU64().bn.toString()).toEqual(BigInt(123).toString());
     });
   });
 
@@ -56,7 +54,7 @@ describe("VarInt", () => {
     it("should return a number", () => {
       const u32: U32 = new U32(123);
       varInt = VarInt.fromU32(u32);
-      expect(varInt.toU32().unwrap().bn.toString()).toEqual("123");
+      expect(varInt.toU32().bn.toString()).toEqual("123");
     });
   });
 

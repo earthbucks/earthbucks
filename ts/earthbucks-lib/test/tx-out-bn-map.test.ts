@@ -20,7 +20,7 @@ describe("TxOutBnMap", () => {
     txIdHash = FixedIsoBuf.fromStrictHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
-    ).unwrap();
+    );
     outputIndex = new U32(0);
   });
 

@@ -36,7 +36,7 @@ describe("Tx", () => {
     const lockAbs = new U64(0);
 
     const tx = new Tx(version, inputs, outputs, lockAbs);
-    const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
+    const result = Tx.fromIsoBuf(tx.toIsoBuf());
     expect(tx.toIsoBuf().toString("hex")).toEqual(
       result.toIsoBuf().toString("hex"),
     );
@@ -53,7 +53,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const result = Tx.fromIsoBuf(tx.toIsoBuf()).unwrap();
+      const result = Tx.fromIsoBuf(tx.toIsoBuf());
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
@@ -73,7 +73,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const reader = new IsoBufReader(tx.toIsoBuf());
-      const result = Tx.fromIsoBufReader(reader).unwrap();
+      const result = Tx.fromIsoBufReader(reader);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
@@ -92,7 +92,7 @@ describe("Tx", () => {
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const result = Tx.fromIsoHex(tx.toIsoHex()).unwrap();
+      const result = Tx.fromIsoHex(tx.toIsoHex());
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
@@ -102,7 +102,7 @@ describe("Tx", () => {
 
   describe("fromCoinbase", () => {
     test("fromCoinbase", () => {
-      const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
+      const script = Script.fromIsoStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
       expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut.n).toEqual(0xffffffff);
@@ -142,7 +142,7 @@ describe("Tx", () => {
     });
 
     test("fromCoinbase -> isCoinbase", () => {
-      const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
+      const script = Script.fromIsoStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
       const tx = new Tx(new U8(1), [txInput], [], new U64(0));
       expect(tx.isCoinbase()).toBe(true);
@@ -336,7 +336,7 @@ describe("Tx", () => {
         const privateKey = FixedIsoBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-        ).unwrap();
+        );
         const script = SysBuf.from([]);
         const amount = new U64(100);
         const hashType = TxSignature.SIGHASH_ALL;
@@ -377,7 +377,7 @@ describe("Tx", () => {
           expectedSignatureHex,
         );
         const publicKey = KeyPair.fromPrivKeyIsoBuf(privateKey)
-          .unwrap()
+
           .pubKey.toIsoBuf();
         const result = tx.verifyNoCache(
           inputIndex,
@@ -395,7 +395,7 @@ describe("Tx", () => {
         const privateKey = FixedIsoBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
-        ).unwrap();
+        );
         const script = SysBuf.from([]);
         const amount = new U64(100);
         const hashType = TxSignature.SIGHASH_ALL;
@@ -438,7 +438,7 @@ describe("Tx", () => {
           expectedSignatureHex,
         );
         const publicKey = KeyPair.fromPrivKeyIsoBuf(privateKey)
-          .unwrap()
+
           .pubKey.toIsoBuf();
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(

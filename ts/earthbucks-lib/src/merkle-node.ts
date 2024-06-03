@@ -1,6 +1,6 @@
+import { GenericError } from "./ebx-error.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;
@@ -27,24 +27,20 @@ export class MerkleNode {
     }
   }
 
-  static fromIsoBufs(
-    hashedDatas: FixedIsoBuf<32>[],
-  ): Result<MerkleNode, string> {
+  static fromIsoBufs(hashedDatas: FixedIsoBuf<32>[]): MerkleNode {
     if (hashedDatas.length === 0) {
-      return Err("Cannot create MerkleNode from empty array");
+      throw new GenericError("Cannot create MerkleNode from empty array");
     }
     if (hashedDatas.length === 1) {
-      return Ok(new MerkleNode(null, null, hashedDatas[0]));
+      return new MerkleNode(null, null, hashedDatas[0]);
     }
     if (hashedDatas.length === 2) {
       const left = new MerkleNode(null, null, hashedDatas[0]);
       const right = new MerkleNode(null, null, hashedDatas[1]);
-      return Ok(
-        new MerkleNode(
-          left,
-          right,
-          Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
-        ),
+      return new MerkleNode(
+        left,
+        right,
+        Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
       );
     }
     // Make sure the number of elements is a power of two
@@ -53,17 +49,15 @@ export class MerkleNode {
     }
     const left = MerkleNode.fromIsoBufs(
       hashedDatas.slice(0, hashedDatas.length / 2),
-    ).unwrap();
+    );
     const right = MerkleNode.fromIsoBufs(
       hashedDatas.slice(hashedDatas.length / 2),
-    ).unwrap();
+    );
 
-    return Ok(
-      new MerkleNode(
-        left,
-        right,
-        Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
-      ),
+    return new MerkleNode(
+      left,
+      right,
+      Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
     );
   }
 }

@@ -1,5 +1,4 @@
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
+import { SysBuf, IsoBuf, FixedIsoBuf } from "./iso-buf.js";
 import {
   EbxError,
   NotEnoughDataError,
@@ -21,124 +20,98 @@ export class IsoBufReader {
     return this.pos >= this.buf.length;
   }
 
-  read(len: number): Result<SysBuf, EbxError> {
+  read(len: number): SysBuf {
     if (this.pos + len > this.buf.length) {
-      return Err(new NotEnoughDataError());
+      throw new NotEnoughDataError();
     }
     const buf = this.buf.subarray(this.pos, this.pos + len);
     const newBuf = SysBuf.alloc(len);
     newBuf.set(buf);
     this.pos += len;
-    return Ok(newBuf);
+    return newBuf;
   }
 
-  readFixed<N extends number>(len: N): Result<FixedIsoBuf<N>, EbxError> {
-    const res = this.read(len);
-    if (res.err) {
-      return Err(res.val);
-    }
-    return FixedIsoBuf.fromBuf(len, res.unwrap()) as Result<
-      FixedIsoBuf<N>,
-      EbxError
-    >;
+  readFixed<N extends number>(len: N): FixedIsoBuf<N> {
+    const isoBuf = this.read(len);
+    return FixedIsoBuf.fromBuf(len, isoBuf) as FixedIsoBuf<N>;
   }
 
   readRemainder(): SysBuf {
-    return this.read(this.buf.length - this.pos).unwrap();
+    return this.read(this.buf.length - this.pos);
   }
 
-  readU8(): Result<U8, EbxError> {
+  readU8(): U8 {
     let val: number;
     try {
       val = this.buf.readUInt8(this.pos);
     } catch (err: unknown) {
-      return Err(new NotEnoughDataError(err as Error));
+      throw new NotEnoughDataError(err as Error);
     }
     this.pos += 1;
-    return Ok(new U8(BigInt(val)));
+    return new U8(BigInt(val));
   }
 
-  readU16BE(): Result<U16, EbxError> {
+  readU16BE(): U16 {
     let val: number;
     try {
       val = this.buf.readUInt16BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(err as Error));
+      throw new NotEnoughDataError(err as Error);
     }
     this.pos += 2;
-    return Ok(new U16(BigInt(val)));
+    return new U16(BigInt(val));
   }
 
-  readU32BE(): Result<U32, EbxError> {
+  readU32BE(): U32 {
     let val: number;
     try {
       val = this.buf.readUInt32BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(err as Error));
+      throw new NotEnoughDataError(err as Error);
     }
     this.pos += 4;
-    return Ok(new U32(BigInt(val)));
+    return new U32(BigInt(val));
   }
 
-  readU64BE(): Result<U64, EbxError> {
+  readU64BE(): U64 {
     let val: bigint;
     try {
       val = this.buf.readBigUInt64BE(this.pos);
     } catch (err) {
-      return Err(new NotEnoughDataError(err as Error));
+      throw new NotEnoughDataError(err as Error);
     }
     this.pos += 8;
-    return Ok(new U64(val));
+    return new U64(val);
   }
 
-  readVarIntBuf(): Result<SysBuf, EbxError> {
-    const res = this.readU8();
-    if (res.err) {
-      return Err(new NotEnoughDataError(res.val));
-    }
-    const first = res.unwrap().n;
+  readVarIntBuf(): SysBuf {
+    const first = this.readU8().n;
     if (first === 0xfd) {
-      const res = this.read(2);
-      if (res.err) {
-        return Err(new NotEnoughDataError(res.val));
-      }
-      const buf = res.unwrap();
+      const buf = this.read(2);
       if (buf.readUInt16BE(0) < 0xfd) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
-      return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
+      return SysBuf.concat([SysBuf.from([first]), buf]);
     } else if (first === 0xfe) {
-      const res = this.read(4);
-      if (res.err) {
-        return Err(new NotEnoughDataError(res.val));
-      }
-      const buf = res.unwrap();
+      const buf = this.read(4);
       if (buf.readUInt32BE(0) < 0x10000) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
-      return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
+      return SysBuf.concat([SysBuf.from([first]), buf]);
     } else if (first === 0xff) {
-      const res = this.read(8);
-      if (res.err) {
-        return Err(new NotEnoughDataError(res.val));
-      }
-      const buf = res.unwrap();
+      const buf = this.read(8);
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
-      return Ok(SysBuf.concat([SysBuf.from([first]), buf]));
+      return SysBuf.concat([SysBuf.from([first]), buf]);
     } else {
-      return Ok(SysBuf.from([first]));
+      return SysBuf.from([first]);
     }
   }
 
-  readVarInt(): Result<U64, EbxError> {
-    const res = this.readVarIntBuf();
-    if (res.err) {
-      return Err(res.val);
-    }
-    const buf = res.unwrap();
+  readVarInt(): U64 {
+    const buf = this.readVarIntBuf();
     const first = buf.readUInt8(0);
     let value: bigint;
     switch (first) {
@@ -155,6 +128,6 @@ export class IsoBufReader {
         value = BigInt(first);
         break;
     }
-    return Ok(new U64(value));
+    return new U64(value);
   }
 }

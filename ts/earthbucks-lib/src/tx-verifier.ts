@@ -30,7 +30,7 @@ export class TxVerifier {
     if (!inputScript.isPushOnly()) {
       return false;
     }
-    const stack = inputScript.chunks.map((chunk) => chunk.getData().unwrap());
+    const stack = inputScript.chunks.map((chunk) => chunk.getData());
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
       outputScript,
       this.tx,

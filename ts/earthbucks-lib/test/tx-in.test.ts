@@ -30,7 +30,7 @@ describe("TxInput", () => {
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
 
       const reader = new IsoBufReader(txInput.toIsoBuf());
-      const result = TxIn.fromIsoBufReader(reader).unwrap();
+      const result = TxIn.fromIsoBufReader(reader);
       expect(result).toBeInstanceOf(TxIn);
       expect(SysBuf.from(result.inputTxId).toString("hex")).toEqual(
         SysBuf.from(inputTxHash).toString("hex"),
@@ -58,7 +58,7 @@ describe("TxInput", () => {
     test("toIsoBuf with script", () => {
       const inputTxHash = FixedIsoBuf.alloc(32);
       const inputTxIndex = new U32(0);
-      const script = Script.fromIsoStr("DOUBLEBLAKE3").unwrap();
+      const script = Script.fromIsoStr("DOUBLEBLAKE3");
       const lockRel = new U32(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -72,7 +72,7 @@ describe("TxInput", () => {
   test("toIsoBuf with pushdata", () => {
     const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromIsoStr("0x121212").unwrap();
+    const script = Script.fromIsoStr("0x121212");
     const lockRel = new U32(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -85,7 +85,7 @@ describe("TxInput", () => {
   test("isNull", () => {
     const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromIsoStr("0x121212").unwrap();
+    const script = Script.fromIsoStr("0x121212");
     const lockRel = new U32(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -103,7 +103,7 @@ describe("TxInput", () => {
   test("isMinimalLock", () => {
     const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromIsoStr("0x121212").unwrap();
+    const script = Script.fromIsoStr("0x121212");
     const lockRel = new U32(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -121,7 +121,7 @@ describe("TxInput", () => {
   test("isCoinbase", () => {
     const inputTxHash = FixedIsoBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromIsoStr("0x121212").unwrap();
+    const script = Script.fromIsoStr("0x121212");
     const lockRel = new U32(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -137,7 +137,7 @@ describe("TxInput", () => {
   });
 
   test("fromCoinbase", () => {
-    const script = Script.fromIsoStr("0x121212").unwrap();
+    const script = Script.fromIsoStr("0x121212");
     const txInput = TxIn.fromCoinbase(script);
     expect(txInput).toBeInstanceOf(TxIn);
     expect(txInput.isNull()).toBe(true);

@@ -1,7 +1,6 @@
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import { PrivKey } from "./priv-key.js";
 import * as Hash from "./hash.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidChecksumError,
@@ -18,24 +17,20 @@ export class PubKey {
     this.buf = buf;
   }
 
-  static fromPrivKey(privKey: PrivKey): Result<PubKey, EbxError> {
-    const res = privKey.toPubKeyIsoBuf();
-    if (res.err) {
-      return Err(res.val);
-    }
-    const buf = res.unwrap();
-    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf).unwrap();
-    return Ok(new PubKey(isoBuf33));
+  static fromPrivKey(privKey: PrivKey): PubKey {
+    const buf = privKey.toPubKeyIsoBuf();
+    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf);
+    return new PubKey(isoBuf33);
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<33>): Result<PubKey, EbxError> {
+  static fromIsoBuf(buf: FixedIsoBuf<33>): PubKey {
     if (buf.length > PubKey.SIZE) {
-      return Err(new TooMuchDataError());
+      throw new TooMuchDataError();
     }
     if (buf.length < PubKey.SIZE) {
-      return Err(new NotEnoughDataError());
+      throw new NotEnoughDataError();
     }
-    return Ok(new PubKey(buf));
+    return new PubKey(buf);
   }
 
   toIsoBuf(): FixedIsoBuf<33> {
@@ -46,14 +41,9 @@ export class PubKey {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<PubKey, EbxError> {
-    const res = FixedIsoBuf.fromStrictHex(PubKey.SIZE, hex);
-    if (res.err) {
-      return Err(res.val);
-    }
-    const buf = res.unwrap();
-    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf).unwrap();
-    return PubKey.fromIsoBuf(isoBuf33);
+  static fromIsoHex(hex: string): PubKey {
+    const buf = FixedIsoBuf.fromStrictHex(PubKey.SIZE, hex);
+    return PubKey.fromIsoBuf(buf);
   }
 
   toIsoStr(): string {
@@ -63,31 +53,27 @@ export class PubKey {
     return "ebxpub" + checkHex + this.buf.toBase58();
   }
 
-  static fromIsoStr(str: string): Result<PubKey, EbxError> {
+  static fromIsoStr(str: string): PubKey {
     if (!str.startsWith("ebxpub")) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidEncodingError();
     }
     const checkHex = str.slice(6, 14);
-    const res = FixedIsoBuf.fromStrictHex(4, checkHex);
-    if (res.err) {
-      return Err(res.val);
-    }
-    const checkBuf = res.unwrap();
-    const decoded33Res = FixedIsoBuf.fromBase58(33, str.slice(14));
-    if (decoded33Res.err) {
-      return Err(new InvalidEncodingError());
-    }
-    const decoded33 = decoded33Res.unwrap();
+    const checkBuf = FixedIsoBuf.fromStrictHex(4, checkHex);
+    const decoded33 = FixedIsoBuf.fromBase58(33, str.slice(14));
     const checkHash = Hash.blake3Hash(decoded33);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidChecksumError();
     }
     return PubKey.fromIsoBuf(decoded33);
   }
 
   static isValidStringFmt(str: string): boolean {
-    const res = PubKey.fromIsoStr(str);
-    return res.ok;
+    try {
+      PubKey.fromIsoStr(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 }

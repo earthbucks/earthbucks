@@ -67,7 +67,7 @@ describe("Block", () => {
     const bw = block.toIsoBufWriter(new IsoBufWriter());
     const buf = bw.toIsoBuf();
     const br = new IsoBufReader(buf);
-    const block2 = Block.fromIsoBufReader(br).unwrap();
+    const block2 = Block.fromIsoBufReader(br);
     expect(block2.header.version.n).toBe(bh.version.n);
     expect(block2.header.prevBlockId.toString("hex")).toEqual(
       bh.prevBlockId.toString("hex"),

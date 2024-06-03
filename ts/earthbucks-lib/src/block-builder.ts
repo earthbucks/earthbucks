@@ -6,7 +6,6 @@ import { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class BlockBuilder {
@@ -49,15 +48,12 @@ export class BlockBuilder {
     prevAdjustmentBlockHeader: Header | null, // exactly 2016 blocks before
     outputScript: Script,
     outputAmount: U64,
-  ): Result<BlockBuilder, string> {
-    const res = Header.fromPrevBlockHeader(
+  ): BlockBuilder {
+    const header = Header.fromPrevBlockHeader(
       prevBlockHeader,
       prevAdjustmentBlockHeader,
-    ).mapErr((err) => `Error creating block builder: ${err}`);
-    if (res.err) {
-      return Err(res.val);
-    }
-    const header = res.unwrap();
+    );
+
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
@@ -66,7 +62,7 @@ export class BlockBuilder {
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;
     header.merkleRoot = root;
-    return Ok(new BlockBuilder(header, txs, merkleTxs));
+    return new BlockBuilder(header, txs, merkleTxs);
   }
 
   toBlock(): Block {

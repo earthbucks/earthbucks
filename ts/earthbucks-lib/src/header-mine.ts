@@ -11,14 +11,15 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = (FixedIsoBuf<32>)
-      .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
-      .unwrap();
+    this.header.nonce = (FixedIsoBuf<32>).fromBuf(
+      32,
+      crypto.getRandomValues(SysBuf.alloc(32)),
+    );
   }
 
   getIdHashNum(): HashNum {
     const headerId = this.header.id();
-    const hashNum = HashNum.fromIsoBuf(headerId).unwrap();
+    const hashNum = HashNum.fromIsoBuf(headerId);
     return hashNum;
   }
 

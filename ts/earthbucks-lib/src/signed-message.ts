@@ -40,10 +40,8 @@ export class SignedMessage {
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
-    const sigBuf = (FixedIsoBuf<64>)
-      .fromBuf(64, SysBuf.from(sigObj.signature))
-      .unwrap();
-    const pubKey = privKey.toPubKeyIsoBuf().unwrap();
+    const sigBuf = (FixedIsoBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
+    const pubKey = privKey.toPubKeyIsoBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
@@ -66,9 +64,9 @@ export class SignedMessage {
 
   static fromIsoBuf(buf: SysBuf, keyStr: string): SignedMessage {
     const reader = new IsoBufReader(buf);
-    const sig = reader.readFixed(64).unwrap();
-    const pubKey = reader.readFixed(PubKey.SIZE).unwrap();
-    const mac = reader.readFixed(32).unwrap();
+    const sig = reader.readFixed(64);
+    const pubKey = reader.readFixed(PubKey.SIZE);
+    const mac = reader.readFixed(32);
     const message = reader.readRemainder();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }

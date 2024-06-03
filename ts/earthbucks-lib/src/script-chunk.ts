@@ -2,7 +2,6 @@ import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidOpcodeError,
@@ -21,35 +20,35 @@ export class ScriptChunk {
     this.buf = buf;
   }
 
-  getData(): Result<SysBuf, EbxError> {
+  getData(): SysBuf {
     if (this.opcode === Opcode.OP_1NEGATE) {
-      return Ok(SysBuf.from([0x80]));
+      return SysBuf.from([0x80]);
     } else if (this.opcode === Opcode.OP_0) {
-      return Ok(SysBuf.from([]));
+      return SysBuf.from([]);
     } else if (this.opcode >= Opcode.OP_1 && this.opcode <= Opcode.OP_16) {
-      return Ok(SysBuf.from([this.opcode - Opcode.OP_1 + 1]));
+      return SysBuf.from([this.opcode - Opcode.OP_1 + 1]);
     }
     if (this.buf) {
-      return Ok(this.buf);
+      return this.buf;
     } else {
-      return Err(new NotEnoughDataError());
+      throw new NotEnoughDataError();
     }
   }
 
-  toIsoStr(): Result<string, EbxError> {
+  toIsoStr(): string {
     if (this.buf) {
-      return Ok(`0x${this.buf.toString("hex")}`);
+      return `0x${this.buf.toString("hex")}`;
     } else {
       const name = OPCODE_TO_NAME[this.opcode];
       if (name !== undefined) {
-        return Ok(name);
+        return name;
       } else {
-        return Err(new InvalidOpcodeError());
+        throw new InvalidOpcodeError();
       }
     }
   }
 
-  static fromIsoStr(str: string): Result<ScriptChunk, EbxError> {
+  static fromIsoStr(str: string): ScriptChunk {
     const scriptChunk = new ScriptChunk();
     if (str.startsWith("0x")) {
       scriptChunk.buf = SysBuf.from(str.slice(2), "hex");
@@ -64,7 +63,7 @@ export class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        return Err(new TooMuchDataError());
+        throw new TooMuchDataError();
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -74,12 +73,12 @@ export class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        return Err(new InvalidOpcodeError());
+        throw new InvalidOpcodeError();
       }
 
       scriptChunk.buf = undefined;
     }
-    return Ok(scriptChunk);
+    return scriptChunk;
   }
 
   toIsoBuf(): SysBuf {
@@ -106,65 +105,37 @@ export class ScriptChunk {
     return SysBuf.from([opcode]);
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<ScriptChunk, EbxError> {
+  static fromIsoBuf(buf: SysBuf): ScriptChunk {
     const reader = new IsoBufReader(buf);
     return ScriptChunk.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<ScriptChunk, EbxError> {
-    const opcodeRes = reader.readU8();
-    if (opcodeRes.err) {
-      return opcodeRes;
-    }
-    const opcode = opcodeRes.val.n;
+  static fromIsoBufReader(reader: IsoBufReader): ScriptChunk {
+    const opcode = reader.readU8().n;
     const chunk = new ScriptChunk(opcode);
     if (opcode === OP.PUSHDATA1) {
-      const lenRes = reader.readU8();
-      if (lenRes.err) {
-        return lenRes;
-      }
-      const len = lenRes.unwrap().n;
-      const bufferRes = reader.read(len);
-      if (bufferRes.err) {
-        return bufferRes;
-      }
-      const buffer = bufferRes.unwrap();
+      const len = reader.readU8().n;
+      const buffer = reader.read(len);
       if (len == 0 || (len === 1 && buffer[0] >= 1 && buffer[0] <= 16)) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA2) {
-      const lenRes = reader.readU16BE();
-      if (lenRes.err) {
-        return lenRes;
-      }
-      const len = lenRes.unwrap().n;
+      const len = reader.readU16BE().n;
       if (len <= 0xff) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
-      const bufferRes = reader.read(len);
-      if (bufferRes.err) {
-        return bufferRes;
-      }
-      const buffer = bufferRes.unwrap();
+      const buffer = reader.read(len);
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA4) {
-      const lenRes = reader.readU32BE();
-      if (lenRes.err) {
-        return lenRes;
-      }
-      const len = lenRes.unwrap().n;
+      const len = reader.readU32BE().n;
       if (len <= 0xffff) {
-        return Err(new NonMinimalEncodingError());
+        throw new NonMinimalEncodingError();
       }
-      const bufferRes = reader.read(len);
-      if (bufferRes.err) {
-        return bufferRes;
-      }
-      const buffer = bufferRes.unwrap();
+      const buffer = reader.read(len);
       chunk.buf = buffer;
     }
-    return Ok(chunk);
+    return chunk;
   }
 
   static fromData(data: SysBuf): ScriptChunk {

@@ -2,8 +2,8 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
+import { GenericError } from "./ebx-error.js";
 
 export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
@@ -65,102 +65,34 @@ export class Header {
     return bw.toIsoBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<Header, string> {
+  static fromIsoBuf(buf: SysBuf): Header {
     return Header.fromIsoBufReader(new IsoBufReader(buf));
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Result<Header, string> {
-    const versionRes = br
-      .readU32BE()
-      .mapErr((err) => `Could not read version number: ${err}`);
-    if (versionRes.err) {
-      return versionRes;
-    }
-    const version = versionRes.unwrap();
-    const previousBlockIdRes = br
-      .readFixed<32>(32)
-      .mapErr((err) => `Could not read previous block hash: ${err}`);
-    if (previousBlockIdRes.err) {
-      return previousBlockIdRes;
-    }
-    const previousBlockId = previousBlockIdRes.unwrap();
-    const merkleRootRes = br
-      .readFixed(32)
-      .mapErr((err) => `Could not read merkle root: ${err}`);
-    if (merkleRootRes.err) {
-      return merkleRootRes;
-    }
-    const merkleRoot = merkleRootRes.unwrap();
-    const timestampRes = br
-      .readU64BE()
-      .mapErr((err) => `Could not read timestamp: ${err}`);
-    if (timestampRes.err) {
-      return timestampRes;
-    }
-    const timestamp = timestampRes.unwrap();
-    const blockNumRes = br
-      .readU64BE()
-      .mapErr((err) => `Could not read block number: ${err}`);
-    if (blockNumRes.err) {
-      return blockNumRes;
-    }
-    const blockNum = blockNumRes.unwrap();
-    const targetRes = br
-      .readFixed(32)
-      .mapErr((err) => `Could not read target: ${err}`);
-    if (targetRes.err) {
-      return targetRes;
-    }
-    const target = targetRes.unwrap();
-    const nonceRes = br
-      .readFixed(32)
-      .mapErr((err) => `Could not read nonce: ${err}`);
-    if (nonceRes.err) {
-      return nonceRes;
-    }
-    const nonce = nonceRes.unwrap();
-    const workSerAlgoRes = br
-      .readU32BE()
-      .mapErr((err) => `Could not read work algorithm: ${err}`);
-    if (workSerAlgoRes.err) {
-      return workSerAlgoRes;
-    }
-    const workSerAlgo = workSerAlgoRes.unwrap();
-    const workSerHashRes = br
-      .readFixed(32)
-      .mapErr((err) => `Could not read serial work: ${err}`);
-    if (workSerHashRes.err) {
-      return workSerHashRes;
-    }
-    const workSerHash = workSerHashRes.unwrap();
-    const workParAlgoRes = br
-      .readU32BE()
-      .mapErr((err) => `Could not read work algorithm: ${err}`);
-    if (workParAlgoRes.err) {
-      return workParAlgoRes;
-    }
-    const workParAlgo = workParAlgoRes.unwrap();
-    const workParHashRes = br
-      .readFixed(32)
-      .mapErr((err) => `Could not read parallel work: ${err}`);
-    if (workParHashRes.err) {
-      return workParHashRes;
-    }
-    const workParHash = workParHashRes.unwrap();
-    return Ok(
-      new Header(
-        version,
-        previousBlockId,
-        merkleRoot,
-        timestamp,
-        blockNum,
-        target,
-        nonce,
-        workSerAlgo,
-        workSerHash,
-        workParAlgo,
-        workParHash,
-      ),
+  static fromIsoBufReader(br: IsoBufReader): Header {
+    const version = br.readU32BE();
+    const previousBlockId = br.readFixed<32>(32);
+    const merkleRoot = br.readFixed(32);
+    const timestamp = br.readU64BE();
+    const blockNum = br.readU64BE();
+    const target = br.readFixed(32);
+    const nonce = br.readFixed(32);
+    const workSerAlgo = br.readU32BE();
+    const workSerHash = br.readFixed(32);
+    const workParAlgo = br.readU32BE();
+    const workParHash = br.readFixed(32);
+    return new Header(
+      version,
+      previousBlockId,
+      merkleRoot,
+      timestamp,
+      blockNum,
+      target,
+      nonce,
+      workSerAlgo,
+      workSerHash,
+      workParAlgo,
+      workParHash,
     );
   }
 
@@ -183,7 +115,7 @@ export class Header {
     return this.toIsoBuf().toString("hex");
   }
 
-  static fromIsoHex(str: string): Result<Header, string> {
+  static fromIsoHex(str: string): Header {
     return Header.fromIsoBuf(SysBuf.from(str, "hex"));
   }
 
@@ -191,7 +123,7 @@ export class Header {
     return this.toIsoHex();
   }
 
-  static fromIsoString(str: string): Result<Header, string> {
+  static fromIsoString(str: string): Header {
     return Header.fromIsoHex(str);
   }
 
@@ -215,7 +147,7 @@ export class Header {
   static fromPrevBlockHeader(
     prevBlockHeader: Header,
     prevAdjustmentBlockHeader: Header | null,
-  ): Result<Header, string> {
+  ): Header {
     let target = null;
     const blockNum = prevBlockHeader.blockNum.add(new U64(1n));
     if (blockNum.bn % Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn === 0n) {
@@ -225,7 +157,7 @@ export class Header {
           Header.BLOCKS_PER_TARGET_ADJ_PERIOD,
         ).bn !== blockNum.bn
       ) {
-        return Err(
+        throw new GenericError(
           "must provide previous adjustment block header 2016 blocks before",
         );
       }
@@ -244,20 +176,18 @@ export class Header {
     const workSerHash = FixedIsoBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
     const workParHash = FixedIsoBuf.alloc(32);
-    return Ok(
-      new Header(
-        new U32(1),
-        prevBlockId,
-        FixedIsoBuf.alloc(32),
-        timestamp,
-        blockNum,
-        target,
-        nonce,
-        workSerAlgo,
-        workSerHash,
-        workParAlgo,
-        workParHash,
-      ),
+    return new Header(
+      new U32(1),
+      prevBlockId,
+      FixedIsoBuf.alloc(32),
+      timestamp,
+      blockNum,
+      target,
+      nonce,
+      workSerAlgo,
+      workSerHash,
+      workParAlgo,
+      workParHash,
     );
   }
 
@@ -331,6 +261,6 @@ export class Header {
       newTarget.toString(16).padStart(64, "0"),
       "hex",
     );
-    return FixedIsoBuf.fromBuf(32, newTargetBuf).unwrap();
+    return FixedIsoBuf.fromBuf(32, newTargetBuf);
   }
 }

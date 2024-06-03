@@ -40,7 +40,7 @@ describe("TxBuilder", () => {
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 
-    const tx = txBuilder.build().unwrap();
+    const tx = txBuilder.build();
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
@@ -51,7 +51,7 @@ describe("TxBuilder", () => {
     const txOut = new TxOut(new U64(10000), Script.fromEmpty());
     txBuilder.addOutput(txOut);
 
-    const tx = txBuilder.build().unwrap();
+    const tx = txBuilder.build();
 
     expect(tx.inputs.length).toBe(5);
     expect(tx.outputs.length).toBe(1);

@@ -1,7 +1,6 @@
 import secp256k1 from "secp256k1";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
 import * as Hash from "./hash.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import {
   EbxError,
   InvalidChecksumError,
@@ -21,9 +20,10 @@ export class PrivKey {
   static fromRandom(): PrivKey {
     let privateKey;
     do {
-      privateKey = (FixedIsoBuf<32>)
-        .fromBuf(32, crypto.getRandomValues(SysBuf.alloc(32)))
-        .unwrap();
+      privateKey = (FixedIsoBuf<32>).fromBuf(
+        32,
+        crypto.getRandomValues(SysBuf.alloc(32)),
+      );
     } while (!secp256k1.privateKeyVerify(privateKey));
     return new PrivKey(privateKey);
   }
@@ -32,50 +32,37 @@ export class PrivKey {
     return this.buf;
   }
 
-  toPubKeyIsoBuf(): Result<FixedIsoBuf<33>, EbxError> {
-    try {
-      return Ok(
-        (FixedIsoBuf<33>)
-          .fromBuf(33, SysBuf.from(secp256k1.publicKeyCreate(this.buf)))
-          .unwrap(),
-      );
-    } catch (err) {
-      return Err(new InvalidKeyError());
-    }
+  toPubKeyIsoBuf(): FixedIsoBuf<33> {
+    return FixedIsoBuf.fromBuf(
+      33,
+      SysBuf.from(secp256k1.publicKeyCreate(this.buf)),
+    );
   }
 
-  toPubKeyHex(): Result<string, EbxError> {
-    const res = this.toPubKeyIsoBuf();
-    if (res.err) {
-      return res;
-    }
-    return Ok(res.unwrap().toString("hex"));
+  toPubKeyHex(): string {
+    return this.toPubKeyIsoBuf().toStrictHex();
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<32>): Result<PrivKey, EbxError> {
+  static fromIsoBuf(buf: FixedIsoBuf<32>): PrivKey {
     if (buf.length > 32) {
-      return Err(new TooMuchDataError());
+      throw new TooMuchDataError();
     }
     if (buf.length < 32) {
-      return Err(new NotEnoughDataError());
+      throw new NotEnoughDataError();
     }
     if (!secp256k1.privateKeyVerify(buf)) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidEncodingError();
     }
-    return Ok(new PrivKey(buf));
+    return new PrivKey(buf);
   }
 
   toIsoHex(): string {
     return this.buf.toString("hex");
   }
 
-  static fromIsoHex(hex: string): Result<PrivKey, EbxError> {
-    const bufRes = FixedIsoBuf.fromStrictHex(32, hex);
-    if (bufRes.err) {
-      return bufRes;
-    }
-    const buf = bufRes.unwrap();
-    const buf32: FixedIsoBuf<32> = FixedIsoBuf.fromBuf(32, buf).unwrap();
+  static fromIsoHex(hex: string): PrivKey {
+    const buf = FixedIsoBuf.fromStrictHex(32, hex);
+    const buf32: FixedIsoBuf<32> = FixedIsoBuf.fromBuf(32, buf);
     return PrivKey.fromIsoBuf(buf32);
   }
 
@@ -86,30 +73,27 @@ export class PrivKey {
     return "ebxprv" + checkHex + this.buf.toBase58();
   }
 
-  static fromIsoStr(str: string): Result<PrivKey, EbxError> {
+  static fromIsoStr(str: string): PrivKey {
     if (!str.startsWith("ebxprv")) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidEncodingError();
     }
     const hexStr = str.slice(6, 14);
-    const checkBufRes = FixedIsoBuf.fromStrictHex(4, hexStr);
-    if (checkBufRes.err) {
-      return checkBufRes;
-    }
-    const checkBuf = checkBufRes.unwrap();
-    const decoded32Res = (FixedIsoBuf<32>).fromBase58(32, str.slice(14));
-    if (decoded32Res.err) {
-      return decoded32Res;
-    }
-    const decoded32 = decoded32Res.unwrap();
+    const checkBuf = FixedIsoBuf.fromStrictHex(4, hexStr);
+    const decoded32 = (FixedIsoBuf<32>).fromBase58(32, str.slice(14));
     const hashBuf = Hash.blake3Hash(decoded32);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
-      return Err(new InvalidEncodingError());
+      throw new InvalidChecksumError();
     }
     return PrivKey.fromIsoBuf(decoded32);
   }
 
   static isValidIsoStr(str: string): boolean {
-    return PrivKey.fromIsoStr(str).ok;
+    try {
+      PrivKey.fromIsoStr(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 }

@@ -28,9 +28,6 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
-      earthbucks-opt-res:
-        specifier: 0.2.0
-        version: link:../earthbucks-opt-res
       mathjs:
         specifier: ^13.0.0
         version: 13.0.0

@@ -7,7 +7,7 @@ import { SysBuf } from "../src/iso-buf.js";
 describe("SignedMessage", () => {
   test("sign and verify", async () => {
     const privKey = PrivKey.fromRandom();
-    const pubKey = PubKey.fromPrivKey(privKey).unwrap();
+    const pubKey = PubKey.fromPrivKey(privKey);
     const message = SysBuf.from("message");
     const keyStr = "signed message";
     const signedMessage = SignedMessage.fromSignMessage(

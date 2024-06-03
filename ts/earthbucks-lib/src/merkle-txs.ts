@@ -13,8 +13,7 @@ export class MerkleTxs {
     }
     this.txs = txs;
     const hashedDatas = txs.map((tx) => tx.id());
-    const [root, proofs] =
-      MerkleProof.generateProofsAndRoot(hashedDatas).unwrap();
+    const [root, proofs] = MerkleProof.generateProofsAndRoot(hashedDatas);
     this.root = root;
     this.proofs = proofs;
   }

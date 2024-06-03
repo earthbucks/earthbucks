@@ -3,7 +3,6 @@ import { Tx } from "./tx.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import { IsoBufReader } from "./iso-buf-reader.js";
 import { SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Block {
@@ -15,35 +14,17 @@ export class Block {
     this.txs = txs;
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Result<Block, string> {
-    const headerRes = Header.fromIsoBufReader(br).mapErr(
-      (err) => `Unable to parse header: ${err}`,
-    );
-    if (headerRes.err) {
-      return headerRes;
-    }
-    const header = headerRes.unwrap();
-    const txCountRes = br
-      .readVarInt()
-      .mapErr((err) => `Unable to parse tx count: ${err}`);
-    if (txCountRes.err) {
-      return txCountRes;
-    }
-    const txCount = txCountRes.unwrap().n;
+  static fromIsoBufReader(br: IsoBufReader): Block {
+    const header = Header.fromIsoBufReader(br);
+    const txCount = br.readVarInt().n;
 
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
-      const txRes = Tx.fromIsoBufReader(br).mapErr(
-        (err) => `Unable to parse tx ${i}: ${err}`,
-      );
-      if (txRes.err) {
-        return txRes;
-      }
-      const tx = txRes.unwrap();
+      const tx = Tx.fromIsoBufReader(br);
       txs.push(tx);
     }
 
-    return Ok(new Block(header, txs));
+    return new Block(header, txs);
   }
 
   toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
@@ -59,7 +40,7 @@ export class Block {
     return this.toIsoBufWriter(new IsoBufWriter()).toIsoBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<Block, string> {
+  static fromIsoBuf(buf: SysBuf): Block {
     return Block.fromIsoBufReader(new IsoBufReader(buf));
   }
 

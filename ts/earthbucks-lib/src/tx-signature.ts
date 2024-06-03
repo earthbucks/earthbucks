@@ -25,7 +25,7 @@ export class TxSignature {
   static fromIsoBuf(buf: SysBuf): TxSignature {
     const hashType = new U8(buf[0]);
     const sigBuf = buf.subarray(1);
-    const sigFixedIsoBuf = FixedIsoBuf.fromBuf(64, sigBuf).unwrap();
+    const sigFixedIsoBuf = FixedIsoBuf.fromBuf(64, sigBuf);
     return new TxSignature(hashType, sigFixedIsoBuf);
   }
 }

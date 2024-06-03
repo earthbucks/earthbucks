@@ -3,6 +3,11 @@ import { Script } from "../src/script.js";
 import { SysBuf } from "../src/iso-buf.js";
 import fs from "fs";
 import path from "path";
+import {
+  GenericError,
+  NonMinimalEncodingError,
+  NotEnoughDataError,
+} from "../src/ebx-error.js";
 
 describe("Script", () => {
   test("constructor", () => {
@@ -11,53 +16,53 @@ describe("Script", () => {
   });
 
   test("fromIsoStr", () => {
-    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
+    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3");
     expect(script.chunks.length).toBe(2);
-    expect(script.chunks[0].toIsoStr().unwrap()).toBe("DUP");
-    expect(script.chunks[1].toIsoStr().unwrap()).toBe("DOUBLEBLAKE3");
+    expect(script.chunks[0].toIsoStr()).toBe("DUP");
+    expect(script.chunks[1].toIsoStr()).toBe("DOUBLEBLAKE3");
   });
 
   test("fromIsoStr toString with PUSHDATA1", () => {
-    const script = Script.fromIsoStr("0x00").unwrap();
-    expect(script.toIsoStr().unwrap()).toBe("0x00");
+    const script = Script.fromIsoStr("0x00");
+    expect(script.toIsoStr()).toBe("0x00");
   });
 
   test("fromIsoStr toString with PUSHDATA2", () => {
-    const script = Script.fromIsoStr("0x" + "00".repeat(256)).unwrap();
-    expect(script.toIsoStr().unwrap()).toBe("0x" + "00".repeat(256));
+    const script = Script.fromIsoStr("0x" + "00".repeat(256));
+    expect(script.toIsoStr()).toBe("0x" + "00".repeat(256));
   });
 
   test("toString", () => {
-    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
-    expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
+    const script = Script.fromIsoStr("DUP DOUBLEBLAKE3");
+    expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromIsoBuf", () => {
-    const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3").unwrap();
+    const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3");
     const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr).unwrap();
-    expect(script.toIsoStr().unwrap()).toBe("DUP DOUBLEBLAKE3");
+    const script = Script.fromIsoBuf(arr);
+    expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toIsoBuf and fromIsoBuf with PUSHDATA1", () => {
-    const originalScript = Script.fromIsoStr("0xff 0xff").unwrap();
+    const originalScript = Script.fromIsoStr("0xff 0xff");
     const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr).unwrap();
-    expect(script.toIsoStr().unwrap()).toBe("0xff 0xff");
+    const script = Script.fromIsoBuf(arr);
+    expect(script.toIsoStr()).toBe("0xff 0xff");
   });
 
   it("should correctly convert between string and IsoBuf for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
-    const initialScript = Script.fromIsoStr("0xffff 0xffff").unwrap();
+    const initialScript = Script.fromIsoStr("0xffff 0xffff");
 
     // Convert the Script to a IsoBuf
     const arr = initialScript.toIsoBuf();
 
     // Create a new Script from the IsoBuf
-    const finalScript = Script.fromIsoBuf(arr).unwrap();
+    const finalScript = Script.fromIsoBuf(arr);
 
     // Convert the final Script back to a string
-    const finalString = finalScript.toIsoStr().unwrap();
+    const finalString = finalScript.toIsoStr();
 
     // Check that the final string matches the initial string
     expect(finalString).toEqual("0xffff 0xffff");
@@ -66,7 +71,7 @@ describe("Script", () => {
   describe("pubkeyhash", () => {
     test("fromAddressOutput", () => {
       const script = Script.fromPkhOutput(SysBuf.from("01".repeat(32), "hex"));
-      expect(script.toIsoStr().unwrap()).toBe(
+      expect(script.toIsoStr()).toBe(
         "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
       );
     });
@@ -79,7 +84,7 @@ describe("Script", () => {
     test("isAddressOutput false", () => {
       const script = Script.fromIsoStr(
         "DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG",
-      ).unwrap();
+      );
       expect(script.isPkhOutput()).toBe(false);
     });
 
@@ -108,13 +113,15 @@ describe("Script", () => {
     const testVectors: TestVectorScript = JSON.parse(jsonString);
 
     test("test vectors: iso buf reader", () => {
-      for (const testVector of testVectors.from_iso_buf.errors) {
-        const arr = SysBuf.from(testVector.hex, "hex");
-        const result = Script.fromIsoBuf(arr);
-        expect(result.err).toBeTruthy();
-        expect(result.val.toString()).toMatch(
-          new RegExp("^" + testVector.error),
-        );
+      for (const test of testVectors.from_iso_buf.errors) {
+        const arr = SysBuf.from(test.hex, "hex");
+        const errorType =
+          test.error === "non-minimal encoding"
+            ? NonMinimalEncodingError
+            : test.error === "not enough bytes in the buffer to read"
+              ? NotEnoughDataError
+              : GenericError;
+        expect(() => Script.fromIsoBuf(arr)).toThrow(errorType);
       }
     });
   });

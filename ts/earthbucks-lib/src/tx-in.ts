@@ -3,7 +3,6 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
 import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
-import { Result, Ok, Err } from "earthbucks-opt-res/src/lib.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -25,43 +24,19 @@ export class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromIsoBuf(buf: SysBuf): Result<TxIn, EbxError> {
+  static fromIsoBuf(buf: SysBuf): TxIn {
     const reader = new IsoBufReader(buf);
     return TxIn.fromIsoBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Result<TxIn, EbxError> {
-    const inputTxHashRes = reader.readFixed(32);
-    if (inputTxHashRes.err) {
-      return inputTxHashRes;
-    }
-    const inputTxHash = inputTxHashRes.unwrap();
-    const inputTxIndexRes = reader.readU32BE();
-    if (inputTxIndexRes.err) {
-      return inputTxIndexRes;
-    }
-    const inputTxIndex = inputTxIndexRes.unwrap();
-    const scriptLenRes = reader.readVarInt();
-    if (scriptLenRes.err) {
-      return scriptLenRes;
-    }
-    const scriptLen = scriptLenRes.unwrap().n;
-    const scriptBufRes = reader.read(scriptLen);
-    if (scriptBufRes.err) {
-      return scriptBufRes;
-    }
-    const scriptBuf = scriptBufRes.unwrap();
-    const scriptRes = Script.fromIsoBuf(scriptBuf);
-    if (scriptRes.err) {
-      return scriptRes;
-    }
-    const script = scriptRes.unwrap();
-    const lockRelRes = reader.readU32BE();
-    if (lockRelRes.err) {
-      return lockRelRes;
-    }
-    const lockRel = lockRelRes.unwrap();
-    return Ok(new TxIn(inputTxHash, inputTxIndex, script, lockRel));
+  static fromIsoBufReader(reader: IsoBufReader): TxIn {
+    const inputTxHash = reader.readFixed(32);
+    const inputTxIndex = reader.readU32BE();
+    const scriptLen = reader.readVarInt().n;
+    const scriptBuf = reader.read(scriptLen);
+    const script = Script.fromIsoBuf(scriptBuf);
+    const lockRel = reader.readU32BE();
+    return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
   }
 
   toIsoBuf(): SysBuf {
