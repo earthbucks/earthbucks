@@ -5,6 +5,9 @@
 - [x] [Bitcoin Cash](https://bitcoincash.org): The closest blockchain to
   EarthBucks, but with far more baggage. EarthBucks is new code, new chain, new
   brand, and with a better design (no reorgs).
+- [x] [eCash](https://e.cash): Adds pre-consensus with Avalanche. Like a more
+  complicated version of EarthBucks voting. Retains history of Bitcoin
+  blockchain and code like BCH.
 - [x] [ampleforth](https://www.ampleforth.org/): Aims to have price stability,
   i.e. stablecoin. Not in the same market as EarthBucks.
 - [x] [saito](https://saito.io/saito-whitepaper.pdf): Aims to solve similar
@@ -25,6 +28,8 @@
   "Block-lattice architecture". Not like EarthBucks.
 - [x] [Radiant](https://radiantblockchain.org/radiant.pdf): "Assets" and Proof
   of Stake. Not like EarthBucks.
+- [x] [Dash](https://www.exodus.com/assets/docs/dash-whitepaper.pdf): "Masternodes"
+  and "Darksend". Not like EarthBucks.
 
 ## Detailed Notes
 
