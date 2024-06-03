@@ -114,7 +114,7 @@ impl Header {
         Header::from_strict_hex(hex)
     }
 
-    pub fn is_valid_target(&self, lch: &[Header]) -> bool {
+    pub fn is_target_valid(&self, lch: &[Header]) -> bool {
         let new_target_res = Header::new_target_from_lch(lch, self.timestamp);
         if new_target_res.is_err() {
             return false;
@@ -125,26 +125,18 @@ impl Header {
         target == new_target_num
     }
 
-    pub fn is_valid_pow(&self) -> bool {
-        let id = self.id();
+    pub fn is_pow_valid(&self) -> bool {
+        let id: [u8; 32] = self.id();
         let target = BigUint::from_bytes_be(&self.target);
         let id_num = BigUint::from_bytes_be(&id);
         id_num < target
     }
 
-    pub fn is_valid_version(version: u32) -> bool {
-        version == 1
+    pub fn is_version_valid(&self) -> bool {
+        self.version == 1
     }
 
-    pub fn is_valid_in_isolation(&self) -> bool {
-        let len = self.to_buf().len();
-        if len != Header::SIZE {
-            return false;
-        }
-        Header::is_valid_version(self.version)
-    }
-
-    pub fn is_valid_at_timestamp(&self, timestamp: u64) -> bool {
+    pub fn is_timestamp_valid_at(&self, timestamp: u64) -> bool {
         if self.timestamp > timestamp {
             return false;
         }
@@ -152,7 +144,7 @@ impl Header {
     }
 
     pub fn is_valid_in_lch(&self, lch: &[Header]) -> bool {
-        if !self.is_valid_in_isolation() {
+        if !self.is_version_valid() {
             return false;
         }
         if self.block_num == 0 {
@@ -170,17 +162,17 @@ impl Header {
         if self.timestamp <= lch.last().unwrap().timestamp {
             return false;
         }
-        if !self.is_valid_target(lch) {
+        if !self.is_target_valid(lch) {
             return false;
         }
-        if !self.is_valid_pow() {
+        if !self.is_pow_valid() {
             return false;
         }
         true
     }
 
     pub fn is_valid_at(&self, lch: &[Header], timestamp: u64) -> bool {
-        self.is_valid_in_lch(lch) && self.is_valid_at_timestamp(timestamp)
+        self.is_valid_in_lch(lch) && self.is_timestamp_valid_at(timestamp)
     }
 
     pub fn is_valid_now(&self, lch: &[Header]) -> bool {
@@ -380,7 +372,7 @@ mod tests {
     }
 
     #[test]
-    fn test_is_valid() {
+    fn test_is_version_valid() {
         let bh1 = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -394,7 +386,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        assert!(bh1.is_valid_in_isolation());
+        assert!(bh1.is_version_valid());
     }
 
     #[test]
