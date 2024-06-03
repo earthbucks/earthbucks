@@ -1,3 +1,4 @@
+use crate::numbers::u256;
 use byteorder::{BigEndian, WriteBytesExt};
 
 // add Default
@@ -59,6 +60,16 @@ impl IsoBufWriter {
         let mut buf = vec![0; 8];
         buf.as_mut_slice().write_u64::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
+    }
+
+    pub fn write_u128_be(&mut self, n: u128) {
+        let mut buf = vec![0; 16];
+        buf.as_mut_slice().write_u128::<BigEndian>(n).unwrap();
+        self.bufs.push(buf);
+    }
+
+    pub fn write_u256_be(&mut self, n: u256) {
+        self.bufs.push(n.to_be_bytes().to_vec());
     }
 
     pub fn var_int_buf(n: u64) -> Vec<u8> {

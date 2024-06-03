@@ -13,6 +13,7 @@ pub mod key_pair;
 pub mod merkle_node;
 pub mod merkle_proof;
 pub mod merkle_txs;
+pub mod numbers;
 pub mod opcode;
 pub mod pkh;
 pub mod pkh_key_map;

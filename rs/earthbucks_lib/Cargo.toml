@@ -21,3 +21,4 @@ num-integer = "0.1"
 regex = "1.10.4"
 ndarray = { version = "0.15.6"  }
 bs58 = "0.5.1"
+num256 = "0.5.2"

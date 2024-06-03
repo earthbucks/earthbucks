@@ -1,4 +1,5 @@
 use crate::ebx_error::EbxError;
+use crate::numbers::u256;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 
@@ -60,6 +61,20 @@ impl IsoBufReader {
         self.buf
             .read_u64::<BigEndian>()
             .map_err(|_| EbxError::NotEnoughDataError { source: None })
+    }
+
+    pub fn read_u128_be(&mut self) -> Result<u128, EbxError> {
+        self.buf
+            .read_u128::<BigEndian>()
+            .map_err(|_| EbxError::NotEnoughDataError { source: None })
+    }
+
+    pub fn read_u256_be(&mut self) -> Result<u256, EbxError> {
+        let num =
+            u256::from_be_bytes(&self.read(32).map_err(|e| EbxError::NotEnoughDataError {
+                source: Some(Box::new(e)),
+            })?);
+        Ok(num)
     }
 
     pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, EbxError> {
