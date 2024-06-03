@@ -70,10 +70,11 @@ impl IsoBufReader {
     }
 
     pub fn read_u256_be(&mut self) -> Result<u256, EbxError> {
-        let num =
-            u256::from_be_bytes(&self.read(32).map_err(|e| EbxError::NotEnoughDataError {
-                source: Some(Box::new(e)),
-            })?);
+        let num = u256::from_be_bytes(
+            &self
+                .read(32)
+                .map_err(|_| EbxError::NotEnoughDataError { source: None })?,
+        );
         Ok(num)
     }
 
