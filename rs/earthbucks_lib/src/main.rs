@@ -12,8 +12,8 @@ fn main() {
         2 => match args[1].as_str() {
             "key" => {
                 let key = KeyPair::from_random();
-                let priv_key_str = key.priv_key.to_iso_str();
-                let pub_key_str = key.pub_key.to_iso_str();
+                let priv_key_str = key.priv_key.to_str();
+                let pub_key_str = key.pub_key.to_str();
 
                 println!("Private key: {}", priv_key_str);
                 println!("Public key: {}", pub_key_str);
@@ -23,9 +23,9 @@ fn main() {
                 let public_key = key.pub_key.buf;
                 let pkh = pkh::Pkh::from_pub_key_buffer(public_key.to_vec());
 
-                let prv_key_str = key.priv_key.to_iso_str();
-                let pub_key_str = key.pub_key.to_iso_str();
-                let pkh_str = pkh.to_iso_str();
+                let prv_key_str = key.priv_key.to_str();
+                let pub_key_str = key.pub_key.to_str();
+                let pkh_str = pkh.to_str();
 
                 println!("Private key: {}", prv_key_str);
                 println!("Public key: {}", pub_key_str);

@@ -66,14 +66,14 @@ impl PrivKey {
         PrivKey::from_buf(priv_key_vec)
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_str(&self) -> String {
         let check_buf = blake3::hash(&self.buf);
         let check_sum: [u8; 4] = check_buf.as_bytes()[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
         "ebxprv".to_string() + &check_hex + &self.buf.to_base58()
     }
 
-    pub fn from_iso_str(s: &str) -> Result<Self, EbxError> {
+    pub fn from_str(s: &str) -> Result<Self, EbxError> {
         if !s.starts_with("ebxprv") {
             return Err(EbxError::InvalidEncodingError { source: None });
         }
@@ -89,7 +89,7 @@ impl PrivKey {
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
-        let res = Self::from_iso_str(s);
+        let res = Self::from_str(s);
         res.is_ok()
     }
 }
@@ -101,7 +101,7 @@ mod tests {
     #[test]
     fn test_from_random() {
         let priv_key = PrivKey::from_random();
-        println!("priv_key: {}", priv_key.to_iso_str());
+        println!("priv_key: {}", priv_key.to_str());
     }
 
     #[test]
@@ -114,7 +114,7 @@ mod tests {
     #[test]
     fn test_to_strict_hex() {
         let priv_key = PrivKey::from_random();
-        let hex = priv_key.to_iso_str();
+        let hex = priv_key.to_str();
         println!("hex: {}", hex);
     }
 
@@ -129,15 +129,15 @@ mod tests {
     #[test]
     fn test_to_string() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_iso_str();
+        let s = priv_key.to_str();
         println!("s: {}", s);
     }
 
     #[test]
-    fn test_from_iso_str() {
+    fn test_from_str() {
         let priv_key = PrivKey::from_random();
-        let s = priv_key.to_iso_str();
-        let priv_key2 = PrivKey::from_iso_str(&s).unwrap();
+        let s = priv_key.to_str();
+        let priv_key2 = PrivKey::from_str(&s).unwrap();
         assert_eq!(priv_key.buf, priv_key2.buf);
     }
 
@@ -171,7 +171,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_from_iso_str_format() {
+    fn test_to_from_str_format() {
         assert!(PrivKey::is_valid_string_fmt(
             "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ"
         ));
@@ -183,7 +183,7 @@ mod tests {
         ));
 
         let str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
-        let priv_key = PrivKey::from_iso_str(str).unwrap();
-        assert_eq!(priv_key.to_iso_str(), str);
+        let priv_key = PrivKey::from_str(str).unwrap();
+        assert_eq!(priv_key.to_str(), str);
     }
 }

@@ -32,7 +32,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn to_iso_str(&self) -> Result<String, EbxError> {
+    pub fn to_str(&self) -> Result<String, EbxError> {
         match &self.buffer {
             Some(buffer) => {
                 let hex: Vec<String> = buffer.iter().map(|b| format!("{:02x}", b)).collect();
@@ -48,7 +48,7 @@ impl ScriptChunk {
         }
     }
 
-    pub fn from_iso_str(str: String) -> Result<ScriptChunk, EbxError> {
+    pub fn from_str(str: String) -> Result<ScriptChunk, EbxError> {
         let mut chunk = ScriptChunk::new(0, None);
         if str.starts_with("0x") {
             let buffer = Vec::<u8>::from_strict_hex(str.strip_prefix("0x").unwrap())
@@ -176,58 +176,58 @@ mod tests {
     #[test]
     fn test_to_string_if() {
         let chunk = ScriptChunk::new(Opcode::OP_IF, None);
-        assert_eq!(chunk.to_iso_str().unwrap(), "IF");
+        assert_eq!(chunk.to_str().unwrap(), "IF");
     }
 
     #[test]
     fn test_to_string_pushdata1() {
         let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA1, Some(vec![1, 2, 3]));
-        assert_eq!(chunk.to_iso_str().unwrap(), "0x010203");
+        assert_eq!(chunk.to_str().unwrap(), "0x010203");
     }
 
     #[test]
     fn test_to_string_pushdata2() {
         let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA2, Some(vec![4, 5, 6]));
-        assert_eq!(chunk.to_iso_str().unwrap(), "0x040506");
+        assert_eq!(chunk.to_str().unwrap(), "0x040506");
     }
 
     #[test]
     fn test_to_string_pushdata4() {
         let chunk = ScriptChunk::new(Opcode::OP_PUSHDATA4, Some(vec![7, 8, 9]));
-        assert_eq!(chunk.to_iso_str().unwrap(), "0x070809");
+        assert_eq!(chunk.to_str().unwrap(), "0x070809");
     }
 
     #[test]
-    fn test_from_iso_str_if() {
-        let chunk = ScriptChunk::from_iso_str("IF".to_string()).unwrap();
+    fn test_from_str_if() {
+        let chunk = ScriptChunk::from_str("IF".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_IF);
         assert_eq!(chunk.buffer, None);
     }
 
     #[test]
-    fn test_from_iso_str_pushdata1() {
-        let chunk = ScriptChunk::from_iso_str("0x010203".to_string()).unwrap();
+    fn test_from_str_pushdata1() {
+        let chunk = ScriptChunk::from_str("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }
 
     #[test]
-    fn test_from_iso_str_pushdata2() {
-        let chunk = ScriptChunk::from_iso_str("0x".to_string() + &"01".repeat(256)).unwrap();
+    fn test_from_str_pushdata2() {
+        let chunk = ScriptChunk::from_str("0x".to_string() + &"01".repeat(256)).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA2);
         assert_eq!(chunk.buffer, Some(vec![1; 256]));
     }
 
     #[test]
-    fn test_from_iso_str_pushdata4() {
-        let chunk = ScriptChunk::from_iso_str("0x".to_string() + &"01".repeat(70000)).unwrap();
+    fn test_from_str_pushdata4() {
+        let chunk = ScriptChunk::from_str("0x".to_string() + &"01".repeat(70000)).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA4);
         assert_eq!(chunk.buffer, Some(vec![1; 70000]));
     }
 
     #[test]
-    fn test_from_iso_str_new() {
-        let chunk = ScriptChunk::from_iso_str("0x010203".to_string()).unwrap();
+    fn test_from_str_new() {
+        let chunk = ScriptChunk::from_str("0x010203".to_string()).unwrap();
         assert_eq!(chunk.opcode, Opcode::OP_PUSHDATA1);
         assert_eq!(chunk.buffer, Some(vec![1, 2, 3]));
     }

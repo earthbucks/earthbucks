@@ -4,14 +4,14 @@ import { Domain } from "../src/domain.js";
 describe("Domain", () => {
   describe("isValidDomain", () => {
     it("should test these known valid/invalid domains", () => {
-      expect(Domain.fromIsoStr("earthbucks.com").isValid()).toEqual(true);
-      expect(Domain.fromIsoStr("earthbucks.com.").isValid()).toEqual(false);
-      expect(Domain.fromIsoStr(".earthbucks.com").isValid()).toEqual(false);
+      expect(Domain.fromStr("earthbucks.com").isValid()).toEqual(true);
+      expect(Domain.fromStr("earthbucks.com.").isValid()).toEqual(false);
+      expect(Domain.fromStr(".earthbucks.com").isValid()).toEqual(false);
       expect(
-        Domain.fromIsoStr("node.node.node.node.earthbucks.com").isValid(),
+        Domain.fromStr("node.node.node.node.earthbucks.com").isValid(),
       ).toEqual(true);
       expect(
-        Domain.fromIsoStr(
+        Domain.fromStr(
           "node.node.node.node.node.node.node.node.node.earthbucks.com",
         ).isValid(),
       ).toEqual(false);

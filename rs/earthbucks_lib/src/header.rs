@@ -106,11 +106,11 @@ impl Header {
         Header::from_buf(buf)
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_str(&self) -> String {
         self.to_strict_hex()
     }
 
-    pub fn from_iso_str(hex: &str) -> Result<Header, EbxError> {
+    pub fn from_str(hex: &str) -> Result<Header, EbxError> {
         Header::from_strict_hex(hex)
     }
 

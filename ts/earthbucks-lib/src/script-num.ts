@@ -62,11 +62,11 @@ export class ScriptNum {
     }
   }
 
-  toIsoStr(): string {
+  toStr(): string {
     return this.num.toString();
   }
 
-  static fromIsoStr(str: string): ScriptNum {
+  static fromStr(str: string): ScriptNum {
     const scriptNum = new ScriptNum();
     scriptNum.num = BigInt(str);
     return scriptNum;

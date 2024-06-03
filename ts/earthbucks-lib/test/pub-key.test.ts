@@ -26,10 +26,10 @@ describe("PubKey", () => {
       ),
     ).toBe(false);
 
-    const pubKey = PubKey.fromIsoStr(
+    const pubKey = PubKey.fromStr(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
-    expect(pubKey.toIsoStr()).toEqual(
+    expect(pubKey.toStr()).toEqual(
       "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
     );
   });

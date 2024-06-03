@@ -25,7 +25,7 @@ describe("PrivKey", () => {
     ).toBe(false);
 
     const str = "ebxprv786752b8GxmUZuZzYKihcmUv88T1K88Q7KNm1WjHCAWx2rNGRjxJ";
-    const privKey2 = PrivKey.fromIsoStr(str);
-    expect(privKey2.toIsoStr()).toBe(str);
+    const privKey2 = PrivKey.fromStr(str);
+    expect(privKey2.toStr()).toBe(str);
   });
 });

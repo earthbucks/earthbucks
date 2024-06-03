@@ -95,13 +95,13 @@ export class MerkleProof {
     return new MerkleProof(root, proof);
   }
 
-  toIsoStr(): string {
+  toStr(): string {
     const u8vec = this.toBuf();
     const hex = SysBuf.from(u8vec).toString("hex");
     return hex;
   }
 
-  static fromIsoStr(hex: string): MerkleProof {
+  static fromStr(hex: string): MerkleProof {
     const u8vec = SysBuf.from(hex, "hex");
     return MerkleProof.fromBuf(u8vec);
   }

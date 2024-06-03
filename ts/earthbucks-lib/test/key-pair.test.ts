@@ -27,9 +27,9 @@ describe("KeyPair", () => {
 
       for (const pair of keyPairs) {
         const privKeyBuf = SysBuf.from(pair.priv_key, "hex");
-        const privKey = PrivKey.fromIsoStr(pair.priv_key);
+        const privKey = PrivKey.fromStr(pair.priv_key);
         const key = KeyPair.fromPrivKey(privKey);
-        expect(key.pubKey.toIsoStr()).toBe(pair.pub_key);
+        expect(key.pubKey.toStr()).toBe(pair.pub_key);
       }
     });
   });

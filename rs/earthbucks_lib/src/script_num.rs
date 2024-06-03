@@ -79,11 +79,11 @@ impl ScriptNum {
         hex::encode(self.to_buf())
     }
 
-    pub fn to_iso_str(&self) -> String {
+    pub fn to_str(&self) -> String {
         self.num.to_str_radix(10)
     }
 
-    pub fn from_iso_str(str: &str) -> Self {
+    pub fn from_str(str: &str) -> Self {
         ScriptNum {
             num: BigInt::parse_bytes(str.as_bytes(), 10).unwrap(),
         }
@@ -105,7 +105,7 @@ mod tests {
 
     #[test]
     fn test_script_num() {
-        let original_num = ScriptNum::from_iso_str("123456789");
+        let original_num = ScriptNum::from_str("123456789");
         let bytes = original_num.to_buf();
         let new_num = ScriptNum::from_buf(&bytes);
         assert_eq!(original_num.num, new_num.num);
@@ -135,7 +135,7 @@ mod tests {
         for (hex, dec) in test_cases {
             let num_from_strict_hex =
                 ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
-            let num_from_dec = ScriptNum::from_iso_str(dec);
+            let num_from_dec = ScriptNum::from_str(dec);
             assert_eq!(num_from_strict_hex.num, num_from_dec.num);
 
             let hex_from_num = hex::encode(num_from_strict_hex.to_buf());
