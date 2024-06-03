@@ -51,7 +51,7 @@ impl TxOut {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::IsoBuf;
+    use crate::ebx_buf::EbxBuf;
     use crate::script::Script;
 
     #[test]

@@ -25,7 +25,7 @@ describe("ScriptNum", () => {
   testCases.forEach(({ hex, dec }) => {
     test(`fromEbxBuf correctly converts ${hex} to ${dec}`, () => {
       const buffer = SysBuf.from(hex, "hex");
-      const scriptNum = ScriptNum.fromEbxBuf(buffer);
+      const scriptNum = ScriptNum.fromBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });
   });
@@ -34,14 +34,14 @@ describe("ScriptNum", () => {
     test(`toEbxBuf correctly converts ${dec} to ${hex}`, () => {
       const scriptNum = new ScriptNum();
       scriptNum.num = BigInt(dec);
-      const buffer = scriptNum.toEbxBuf();
+      const buffer = scriptNum.toBuf();
       expect(buffer.toString("hex")).toBe(hex);
     });
   });
 
   it("should correctly output positive numbers with the most significant bit set", () => {
     const num = ScriptNum.fromIsoStr("128"); // 128 is a positive number with the most significant bit set
-    const buffer = num.toEbxBuf();
+    const buffer = num.toBuf();
     const hex = buffer.toString("hex");
     expect(hex).toEqual("0080"); // 128 in hexadecimal is 80, but we expect an extra '00' at the front
   });

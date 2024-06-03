@@ -534,7 +534,7 @@ impl Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::IsoBuf;
+    use crate::ebx_buf::EbxBuf;
     use crate::script_chunk::ScriptChunk;
     use serde::Deserialize;
 

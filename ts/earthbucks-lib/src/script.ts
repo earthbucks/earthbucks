@@ -128,7 +128,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHX_90D_LOCK_REL.n).toEbxBuf(),
+        ScriptNum.fromNumber(Script.PKHX_90D_LOCK_REL.n).toBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),
@@ -179,7 +179,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_ELSE),
       new ScriptChunk(Opcode.OP_IF),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHXR_90D_60D_R_LOCK_REL.n).toEbxBuf(),
+        ScriptNum.fromNumber(Script.PKHXR_90D_60D_R_LOCK_REL.n).toBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),
@@ -190,7 +190,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHXR_90D_60D_X_LOCK_REL.n).toEbxBuf(),
+        ScriptNum.fromNumber(Script.PKHXR_90D_60D_X_LOCK_REL.n).toBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),

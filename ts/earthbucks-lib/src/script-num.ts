@@ -14,7 +14,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  static fromEbxBuf(buffer: SysBuf): ScriptNum {
+  static fromBuf(buffer: SysBuf): ScriptNum {
     const scriptNum = new ScriptNum();
     if (buffer.length === 0) {
       scriptNum.num = 0n;
@@ -36,7 +36,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const num = this.num;
     if (num === 0n) {
       return SysBuf.alloc(0);

@@ -133,7 +133,7 @@ impl BufReader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::IsoBuf;
+    use crate::ebx_buf::EbxBuf;
     use byteorder::{BigEndian, WriteBytesExt};
     use serde::Deserialize;
     use std::fs;

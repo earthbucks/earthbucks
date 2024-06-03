@@ -1097,7 +1097,7 @@ impl<'a> ScriptInterpreter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::IsoBuf;
+    use crate::ebx_buf::EbxBuf;
     use crate::pkh::Pkh;
     use crate::tx_in::TxIn;
     use crate::tx_out::TxOut;

@@ -1,4 +1,4 @@
-use crate::ebx_buf::IsoBuf;
+use crate::ebx_buf::EbxBuf;
 use crate::tx::Tx;
 use crate::tx_out::TxOut;
 use crate::tx_out_bn::TxOutBn;

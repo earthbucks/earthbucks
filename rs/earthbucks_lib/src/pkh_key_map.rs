@@ -1,4 +1,4 @@
-use crate::ebx_buf::IsoBuf;
+use crate::ebx_buf::EbxBuf;
 use crate::key_pair::KeyPair;
 use std::collections::HashMap;
 

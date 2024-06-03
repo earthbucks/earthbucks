@@ -27,7 +27,7 @@ pub fn decode(hex: &str) -> Result<Vec<u8>, EbxError> {
     Ok(res.unwrap())
 }
 
-pub trait IsoBuf {
+pub trait EbxBuf {
     fn to_strict_hex(&self) -> String;
     fn from_strict_hex(hex: &str) -> Result<Self, EbxError>
     where
@@ -38,7 +38,7 @@ pub trait IsoBuf {
         Self: Sized;
 }
 
-impl IsoBuf for Vec<u8> {
+impl EbxBuf for Vec<u8> {
     fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }
@@ -58,7 +58,7 @@ impl IsoBuf for Vec<u8> {
     }
 }
 
-impl<const N: usize> IsoBuf for [u8; N] {
+impl<const N: usize> EbxBuf for [u8; N] {
     fn to_strict_hex(&self) -> String {
         hex::encode(self)
     }

@@ -1,6 +1,6 @@
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::ebx_buf::IsoBuf;
+use crate::ebx_buf::EbxBuf;
 use crate::ebx_error::EbxError;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
 

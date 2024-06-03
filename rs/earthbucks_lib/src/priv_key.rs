@@ -1,4 +1,4 @@
-use crate::ebx_buf::IsoBuf;
+use crate::ebx_buf::EbxBuf;
 use crate::ebx_error::EbxError;
 use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
