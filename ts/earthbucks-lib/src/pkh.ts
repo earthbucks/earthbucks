@@ -22,10 +22,10 @@ export class Pkh {
   }
 
   static fromPubKey(pubKey: PubKey): Pkh {
-    return Pkh.fromPubKeyBuf(pubKey.toEbxBuf());
+    return Pkh.fromPubKeyBuf(pubKey.toBuf());
   }
 
-  static fromEbxBuf(buf: FixedBuf<32>): Pkh {
+  static fromBuf(buf: FixedBuf<32>): Pkh {
     return new Pkh(buf);
   }
 
@@ -47,7 +47,7 @@ export class Pkh {
     if (!checkHash.equals(checkBuf)) {
       throw new InvalidChecksumError();
     }
-    return Pkh.fromEbxBuf(buf);
+    return Pkh.fromBuf(buf);
   }
 
   static isValidStringFmt(pkhStr: string): boolean {

@@ -13,14 +13,14 @@ export class PermissionToken {
     this.timestamp = timestamp; // milliseconds
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const writer = new BufWriter();
     writer.write(this.randValue);
     writer.writeU64BE(this.timestamp);
     return writer.toBuf();
   }
 
-  static fromEbxBuf(buf: SysBuf): PermissionToken {
+  static fromBuf(buf: SysBuf): PermissionToken {
     if (buf.length !== 32 + 8) {
       throw new InvalidSizeError();
     }

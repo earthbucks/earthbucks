@@ -24,27 +24,27 @@ export class TxIn {
     this.lockRel = lockRel;
   }
 
-  static fromEbxBuf(buf: SysBuf): TxIn {
+  static fromBuf(buf: SysBuf): TxIn {
     const reader = new BufReader(buf);
-    return TxIn.fromEbxBufReader(reader);
+    return TxIn.fromBufReader(reader);
   }
 
-  static fromEbxBufReader(reader: BufReader): TxIn {
+  static fromBufReader(reader: BufReader): TxIn {
     const inputTxHash = reader.readFixed(32);
     const inputTxIndex = reader.readU32BE();
     const scriptLen = reader.readVarInt().n;
     const scriptBuf = reader.read(scriptLen);
-    const script = Script.fromEbxBuf(scriptBuf);
+    const script = Script.fromBuf(scriptBuf);
     const lockRel = reader.readU32BE();
     return new TxIn(inputTxHash, inputTxIndex, script, lockRel);
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const writer = new BufWriter();
     writer.write(this.inputTxId);
     writer.writeU32BE(this.inputTxNOut);
-    const scriptBuf = this.script.toEbxBuf();
-    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toEbxBuf());
+    const scriptBuf = this.script.toBuf();
+    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toBuf());
     writer.write(scriptBuf);
     writer.writeU32BE(this.lockRel);
     return writer.toBuf();

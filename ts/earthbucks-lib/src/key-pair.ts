@@ -17,7 +17,7 @@ export class KeyPair {
   }
 
   static fromPrivKeyEbxBuf(privKeyBuf: FixedBuf<32>): KeyPair {
-    const privKey = PrivKey.fromEbxBuf(privKeyBuf);
+    const privKey = PrivKey.fromBuf(privKeyBuf);
     const pubKey = PubKey.fromPrivKey(privKey);
     return new KeyPair(privKey, pubKey);
   }

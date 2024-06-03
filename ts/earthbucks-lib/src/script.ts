@@ -34,20 +34,20 @@ export class Script {
     return script;
   }
 
-  toEbxBuf(): SysBuf {
-    const bufArray = this.chunks.map((chunk) => chunk.toEbxBuf());
+  toBuf(): SysBuf {
+    const bufArray = this.chunks.map((chunk) => chunk.toBuf());
     return SysBuf.concat(bufArray);
   }
 
-  static fromEbxBuf(arr: SysBuf): Script {
+  static fromBuf(arr: SysBuf): Script {
     const reader = new BufReader(arr);
-    return Script.fromEbxBufReader(reader);
+    return Script.fromBufReader(reader);
   }
 
-  static fromEbxBufReader(reader: BufReader): Script {
+  static fromBufReader(reader: BufReader): Script {
     const script = new Script();
     while (!reader.eof()) {
-      const chunk = ScriptChunk.fromEbxBufReader(reader);
+      const chunk = ScriptChunk.fromBufReader(reader);
       script.chunks.push(chunk);
     }
     return script;

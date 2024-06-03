@@ -71,7 +71,7 @@ export class MerkleProof {
     return [root, proofs];
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const bw = new BufWriter();
     bw.write(this.root);
     bw.writeVarInt(new U64(this.proof.length));
@@ -82,7 +82,7 @@ export class MerkleProof {
     return bw.toBuf();
   }
 
-  static fromEbxBuf(buf: SysBuf): MerkleProof {
+  static fromBuf(buf: SysBuf): MerkleProof {
     const br = new BufReader(buf);
     const root = br.readFixed(32);
     const proof: Array<[FixedBuf<32>, boolean]> = [];
@@ -96,13 +96,13 @@ export class MerkleProof {
   }
 
   toIsoStr(): string {
-    const u8vec = this.toEbxBuf();
+    const u8vec = this.toBuf();
     const hex = SysBuf.from(u8vec).toString("hex");
     return hex;
   }
 
   static fromIsoStr(hex: string): MerkleProof {
     const u8vec = SysBuf.from(hex, "hex");
-    return MerkleProof.fromEbxBuf(u8vec);
+    return MerkleProof.fromBuf(u8vec);
   }
 }

@@ -8,8 +8,8 @@ import { SysBuf } from "../src/ebx-buf.js";
 describe("KeyPair", () => {
   test("KeyPair", () => {
     const keypair = KeyPair.fromRandom();
-    expect(keypair.privKey.toEbxBuf()).toBeDefined();
-    expect(keypair.pubKey.toEbxBuf()).toBeDefined();
+    expect(keypair.privKey.toBuf()).toBeDefined();
+    expect(keypair.pubKey.toBuf()).toBeDefined();
   });
 
   describe("standard test vectors: key_pair.json", () => {

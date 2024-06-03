@@ -28,7 +28,7 @@ export class PrivKey {
     return new PrivKey(privateKey);
   }
 
-  toEbxBuf(): FixedBuf<32> {
+  toBuf(): FixedBuf<32> {
     return this.buf;
   }
 
@@ -43,7 +43,7 @@ export class PrivKey {
     return this.toPubKeyEbxBuf().toStrictHex();
   }
 
-  static fromEbxBuf(buf: FixedBuf<32>): PrivKey {
+  static fromBuf(buf: FixedBuf<32>): PrivKey {
     if (buf.length > 32) {
       throw new TooMuchDataError();
     }
@@ -63,7 +63,7 @@ export class PrivKey {
   static fromIsoHex(hex: string): PrivKey {
     const buf = FixedBuf.fromStrictHex(32, hex);
     const buf32: FixedBuf<32> = FixedBuf.fromBuf(32, buf);
-    return PrivKey.fromEbxBuf(buf32);
+    return PrivKey.fromBuf(buf32);
   }
 
   toIsoStr(): string {
@@ -85,7 +85,7 @@ export class PrivKey {
     if (!checkBuf.equals(checkBuf2)) {
       throw new InvalidChecksumError();
     }
-    return PrivKey.fromEbxBuf(decoded32);
+    return PrivKey.fromBuf(decoded32);
   }
 
   static isValidIsoStr(str: string): boolean {

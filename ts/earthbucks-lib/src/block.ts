@@ -14,34 +14,34 @@ export class Block {
     this.txs = txs;
   }
 
-  static fromEbxBufReader(br: BufReader): Block {
-    const header = Header.fromEbxBufReader(br);
+  static fromBufReader(br: BufReader): Block {
+    const header = Header.fromBufReader(br);
     const txCount = br.readVarInt().n;
 
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
-      const tx = Tx.fromEbxBufReader(br);
+      const tx = Tx.fromBufReader(br);
       txs.push(tx);
     }
 
     return new Block(header, txs);
   }
 
-  toEbxBufWriter(bw: BufWriter): BufWriter {
-    bw.write(this.header.toEbxBuf());
+  toBufWriter(bw: BufWriter): BufWriter {
+    bw.write(this.header.toBuf());
     bw.writeVarInt(new U64(this.txs.length));
     this.txs.forEach((tx) => {
-      bw.write(tx.toEbxBuf());
+      bw.write(tx.toBuf());
     });
     return bw;
   }
 
-  toEbxBuf(): SysBuf {
-    return this.toEbxBufWriter(new BufWriter()).toBuf();
+  toBuf(): SysBuf {
+    return this.toBufWriter(new BufWriter()).toBuf();
   }
 
-  static fromEbxBuf(buf: SysBuf): Block {
-    return Block.fromEbxBufReader(new BufReader(buf));
+  static fromBuf(buf: SysBuf): Block {
+    return Block.fromBufReader(new BufReader(buf));
   }
 
   isGenesis(): boolean {

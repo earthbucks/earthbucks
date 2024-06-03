@@ -39,7 +39,7 @@ export class SignedMessage {
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
-    const sigObj = ecdsaSign(mac, privKey.toEbxBuf());
+    const sigObj = ecdsaSign(mac, privKey.toBuf());
     const sigBuf = (FixedBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
     const pubKey = privKey.toPubKeyEbxBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
@@ -53,7 +53,7 @@ export class SignedMessage {
     if (!mac.equals(this.mac)) {
       return false;
     }
-    if (!pubKey.toEbxBuf().equals(this.pubKey)) {
+    if (!pubKey.toBuf().equals(this.pubKey)) {
       return false;
     }
     if (!ecdsaVerify(this.sig, mac, this.pubKey)) {
@@ -62,7 +62,7 @@ export class SignedMessage {
     return true;
   }
 
-  static fromEbxBuf(buf: SysBuf, keyStr: string): SignedMessage {
+  static fromBuf(buf: SysBuf, keyStr: string): SignedMessage {
     const reader = new BufReader(buf);
     const sig = reader.readFixed(64);
     const pubKey = reader.readFixed(PubKey.SIZE);
@@ -71,7 +71,7 @@ export class SignedMessage {
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const writer = new BufWriter();
     writer.write(this.sig);
     writer.write(this.pubKey);

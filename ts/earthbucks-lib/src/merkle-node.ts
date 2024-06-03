@@ -27,7 +27,7 @@ export class MerkleNode {
     }
   }
 
-  static fromEbxBufs(hashedDatas: FixedBuf<32>[]): MerkleNode {
+  static fromBufs(hashedDatas: FixedBuf<32>[]): MerkleNode {
     if (hashedDatas.length === 0) {
       throw new GenericError("Cannot create MerkleNode from empty array");
     }
@@ -47,10 +47,10 @@ export class MerkleNode {
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
       hashedDatas.push(hashedDatas[hashedDatas.length - 1]);
     }
-    const left = MerkleNode.fromEbxBufs(
+    const left = MerkleNode.fromBufs(
       hashedDatas.slice(0, hashedDatas.length / 2),
     );
-    const right = MerkleNode.fromEbxBufs(
+    const right = MerkleNode.fromBufs(
       hashedDatas.slice(hashedDatas.length / 2),
     );
 

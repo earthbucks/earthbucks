@@ -34,11 +34,11 @@ describe("VarInt", () => {
     });
   });
 
-  describe("toEbxBuf", () => {
+  describe("toBuf", () => {
     it("should return a EbxBuf", () => {
       const u32: U32 = new U32(123);
       varInt = VarInt.fromU32(u32);
-      expect(varInt.toEbxBuf().toString("hex")).toEqual("7b");
+      expect(varInt.toBuf().toString("hex")).toEqual("7b");
     });
   });
 

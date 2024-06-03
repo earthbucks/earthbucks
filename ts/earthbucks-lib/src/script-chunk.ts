@@ -81,7 +81,7 @@ export class ScriptChunk {
     return scriptChunk;
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const opcode = this.opcode;
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return SysBuf.concat([
@@ -105,12 +105,12 @@ export class ScriptChunk {
     return SysBuf.from([opcode]);
   }
 
-  static fromEbxBuf(buf: SysBuf): ScriptChunk {
+  static fromBuf(buf: SysBuf): ScriptChunk {
     const reader = new BufReader(buf);
-    return ScriptChunk.fromEbxBufReader(reader);
+    return ScriptChunk.fromBufReader(reader);
   }
 
-  static fromEbxBufReader(reader: BufReader): ScriptChunk {
+  static fromBufReader(reader: BufReader): ScriptChunk {
     const opcode = reader.readU8().n;
     const chunk = new ScriptChunk(opcode);
     if (opcode === OP.PUSHDATA1) {

@@ -48,18 +48,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
+      const pubKeyBuf = keyPair.pubKey.toBuf();
 
-      const outputScriptBuf = txOut.script.toEbxBuf();
+      const outputScriptBuf = txOut.script.toBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toEbxBuf(),
+        keyPair.privKey.toBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toEbxBuf();
+      const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -85,18 +85,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
+      const pubKeyBuf = keyPair.pubKey.toBuf();
 
-      const outputScriptBuf = txOut.script.toEbxBuf();
+      const outputScriptBuf = txOut.script.toBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toEbxBuf(),
+        keyPair.privKey.toBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toEbxBuf();
+      const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -122,18 +122,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
+      const pubKeyBuf = keyPair.pubKey.toBuf();
 
-      const outputScriptBuf = txOut.script.toEbxBuf();
+      const outputScriptBuf = txOut.script.toBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toEbxBuf(),
+        keyPair.privKey.toBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toEbxBuf();
+      const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -180,17 +180,17 @@ export class TxSigner {
         throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
-      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
-      const outputScriptBuf = txOut.script.toEbxBuf();
+      const pubKeyBuf = keyPair.pubKey.toBuf();
+      const outputScriptBuf = txOut.script.toBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toEbxBuf(),
+        keyPair.privKey.toBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toEbxBuf();
+      const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -237,17 +237,17 @@ export class TxSigner {
         throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
-      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
-      const outputScriptBuf = txOut.script.toEbxBuf();
+      const pubKeyBuf = keyPair.pubKey.toBuf();
+      const outputScriptBuf = txOut.script.toBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toEbxBuf(),
+        keyPair.privKey.toBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toEbxBuf();
+      const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);

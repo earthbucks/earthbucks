@@ -4,7 +4,7 @@ import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Header", () => {
-  test("toEbxBuf and fromEbxBuf", () => {
+  test("toBuf and fromBuf", () => {
     const bh1 = new Header(
       new U32(1),
       FixedBuf.alloc(32),
@@ -18,8 +18,8 @@ describe("Header", () => {
       new U32(0),
       FixedBuf.alloc(32),
     );
-    const buf = bh1.toEbxBuf();
-    const bh2 = Header.fromEbxBuf(buf);
+    const buf = bh1.toBuf();
+    const bh2 = Header.fromBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),
@@ -31,7 +31,7 @@ describe("Header", () => {
     expect(bh1.blockNum.bn).toEqual(bh2.blockNum.bn);
   });
 
-  test("toEbxBuf", () => {
+  test("toBuf", () => {
     const bh1 = new Header(
       new U32(1),
       FixedBuf.alloc(32),
@@ -45,8 +45,8 @@ describe("Header", () => {
       new U32(0),
       FixedBuf.alloc(32),
     );
-    const buf = bh1.toEbxBuf();
-    const bh2 = Header.fromEbxBuf(buf);
+    const buf = bh1.toBuf();
+    const bh2 = Header.fromBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
     expect(bh1.prevBlockId.toString("hex")).toEqual(
       bh2.prevBlockId.toString("hex"),

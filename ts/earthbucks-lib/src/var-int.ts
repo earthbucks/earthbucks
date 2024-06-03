@@ -21,7 +21,7 @@ export class VarInt {
     return new VarInt(buf);
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     return this.buf;
   }
 
@@ -34,7 +34,7 @@ export class VarInt {
     return new U32(u64.n);
   }
 
-  static fromEbxBufReader(br: BufReader): VarInt {
+  static fromBufReader(br: BufReader): VarInt {
     const buf = br.readVarIntBuf();
     return new VarInt(buf);
   }
@@ -43,7 +43,7 @@ export class VarInt {
     try {
       const u64 = this.toU64();
       const varint = VarInt.fromU64(u64);
-      return SysBuf.compare(this.buf, varint.toEbxBuf()) === 0;
+      return SysBuf.compare(this.buf, varint.toBuf()) === 0;
     } catch (err) {
       return false;
     }

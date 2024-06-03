@@ -20,8 +20,8 @@ describe("TxInput", () => {
     expect(txInput.lockRel).toBe(lockRel);
   });
 
-  describe("fromEbxBufReader", () => {
-    test("fromEbxBufReader", () => {
+  describe("fromBufReader", () => {
+    test("fromBufReader", () => {
       const inputTxHash = FixedBuf.alloc(32);
       const inputTxIndex = new U32(0);
       const script = new Script();
@@ -29,8 +29,8 @@ describe("TxInput", () => {
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
 
-      const reader = new BufReader(txInput.toEbxBuf());
-      const result = TxIn.fromEbxBufReader(reader);
+      const reader = new BufReader(txInput.toBuf());
+      const result = TxIn.fromBufReader(reader);
       expect(result).toBeInstanceOf(TxIn);
       expect(SysBuf.from(result.inputTxId).toString("hex")).toEqual(
         SysBuf.from(inputTxHash).toString("hex"),
@@ -41,42 +41,42 @@ describe("TxInput", () => {
     });
   });
 
-  describe("toEbxBuf", () => {
-    test("toEbxBuf", () => {
+  describe("toBuf", () => {
+    test("toBuf", () => {
       const inputTxHash = FixedBuf.alloc(32);
       const inputTxIndex = new U32(0);
       const script = new Script();
       const lockRel = new U32(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
-      const result = txInput.toEbxBuf();
+      const result = txInput.toBuf();
       expect(result.toString("hex")).toEqual(
         "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
       );
     });
 
-    test("toEbxBuf with script", () => {
+    test("toBuf with script", () => {
       const inputTxHash = FixedBuf.alloc(32);
       const inputTxIndex = new U32(0);
       const script = Script.fromIsoStr("DOUBLEBLAKE3");
       const lockRel = new U32(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
-      const result = txInput.toEbxBuf();
+      const result = txInput.toBuf();
       expect(result.toString("hex")).toEqual(
         "00000000000000000000000000000000000000000000000000000000000000000000000001a700000000",
       );
     });
   });
 
-  test("toEbxBuf with pushdata", () => {
+  test("toBuf with pushdata", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
     const script = Script.fromIsoStr("0x121212");
     const lockRel = new U32(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
-    const result = txInput.toEbxBuf();
+    const result = txInput.toBuf();
     expect(result.toString("hex")).toEqual(
       "000000000000000000000000000000000000000000000000000000000000000000000000054c03121212ffffffff",
     );

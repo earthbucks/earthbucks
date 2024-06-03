@@ -49,7 +49,7 @@ export class Header {
     this.workParHash = workParHash;
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const bw = new BufWriter();
     bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
@@ -65,11 +65,11 @@ export class Header {
     return bw.toBuf();
   }
 
-  static fromEbxBuf(buf: SysBuf): Header {
-    return Header.fromEbxBufReader(new BufReader(buf));
+  static fromBuf(buf: SysBuf): Header {
+    return Header.fromBufReader(new BufReader(buf));
   }
 
-  static fromEbxBufReader(br: BufReader): Header {
+  static fromBufReader(br: BufReader): Header {
     const version = br.readU32BE();
     const previousBlockId = br.readFixed<32>(32);
     const merkleRoot = br.readFixed(32);
@@ -96,7 +96,7 @@ export class Header {
     );
   }
 
-  toEbxBufWriter(bw: BufWriter): BufWriter {
+  toBufWriter(bw: BufWriter): BufWriter {
     bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
@@ -112,11 +112,11 @@ export class Header {
   }
 
   toIsoHex(): string {
-    return this.toEbxBuf().toString("hex");
+    return this.toBuf().toString("hex");
   }
 
   static fromIsoHex(str: string): Header {
-    return Header.fromEbxBuf(SysBuf.from(str, "hex"));
+    return Header.fromBuf(SysBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
@@ -212,7 +212,7 @@ export class Header {
   }
 
   isValid(): boolean {
-    const len = this.toEbxBuf().length;
+    const len = this.toBuf().length;
     if (len !== Header.BLOCK_HEADER_SIZE) {
       return false;
     }
@@ -232,11 +232,11 @@ export class Header {
   }
 
   hash(): FixedBuf<32> {
-    return Hash.blake3Hash(this.toEbxBuf());
+    return Hash.blake3Hash(this.toBuf());
   }
 
   id(): FixedBuf<32> {
-    return Hash.doubleBlake3Hash(this.toEbxBuf());
+    return Hash.doubleBlake3Hash(this.toBuf());
   }
 
   static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedBuf<32> {

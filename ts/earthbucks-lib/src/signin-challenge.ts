@@ -19,7 +19,7 @@ export class SigninChallenge {
     const signInPermissionStr =
       SigninChallenge.signinChallengeKeyString(domain);
     const permissionToken = PermissionToken.fromRandom();
-    const message = permissionToken.toEbxBuf();
+    const message = permissionToken.toBuf();
     const signedMessage = SignedMessage.fromSignMessage(
       domainPrivKey,
       message,
@@ -28,30 +28,30 @@ export class SigninChallenge {
     return new SigninChallenge(signedMessage);
   }
 
-  static fromEbxBuf(buf: SysBuf, domain: string): SigninChallenge {
+  static fromBuf(buf: SysBuf, domain: string): SigninChallenge {
     const signinChallengeKeyStr =
       SigninChallenge.signinChallengeKeyString(domain);
-    const signedMessage = SignedMessage.fromEbxBuf(buf, signinChallengeKeyStr);
+    const signedMessage = SignedMessage.fromBuf(buf, signinChallengeKeyStr);
     return new SigninChallenge(signedMessage);
   }
 
   static fromIsoHex(hex: string, domain: string): SigninChallenge {
     // TODO: Fix return type (do not throw error)
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninChallenge.fromEbxBuf(buf, domain);
+    return SigninChallenge.fromBuf(buf, domain);
   }
 
-  toEbxBuf(): SysBuf {
-    return this.signedMessage.toEbxBuf();
+  toBuf(): SysBuf {
+    return this.signedMessage.toBuf();
   }
 
   toIsoHex(): string {
-    return this.toEbxBuf().toString("hex");
+    return this.toBuf().toString("hex");
   }
 
   isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
-    const permissionToken = PermissionToken.fromEbxBuf(message);
+    const permissionToken = PermissionToken.fromBuf(message);
     if (!permissionToken.isValid()) {
       return false;
     }

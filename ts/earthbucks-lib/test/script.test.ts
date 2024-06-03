@@ -37,17 +37,17 @@ describe("Script", () => {
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toEbxBuf and fromEbxBuf", () => {
+  test("toBuf and fromBuf", () => {
     const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3");
-    const arr = originalScript.toEbxBuf();
-    const script = Script.fromEbxBuf(arr);
+    const arr = originalScript.toBuf();
+    const script = Script.fromBuf(arr);
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toEbxBuf and fromEbxBuf with PUSHDATA1", () => {
+  test("toBuf and fromBuf with PUSHDATA1", () => {
     const originalScript = Script.fromIsoStr("0xff 0xff");
-    const arr = originalScript.toEbxBuf();
-    const script = Script.fromEbxBuf(arr);
+    const arr = originalScript.toBuf();
+    const script = Script.fromBuf(arr);
     expect(script.toIsoStr()).toBe("0xff 0xff");
   });
 
@@ -56,10 +56,10 @@ describe("Script", () => {
     const initialScript = Script.fromIsoStr("0xffff 0xffff");
 
     // Convert the Script to a EbxBuf
-    const arr = initialScript.toEbxBuf();
+    const arr = initialScript.toBuf();
 
     // Create a new Script from the EbxBuf
-    const finalScript = Script.fromEbxBuf(arr);
+    const finalScript = Script.fromBuf(arr);
 
     // Convert the final Script back to a string
     const finalString = finalScript.toIsoStr();
@@ -121,7 +121,7 @@ describe("Script", () => {
             : test.error === "not enough bytes in the buffer to read"
               ? NotEnoughDataError
               : GenericError;
-        expect(() => Script.fromEbxBuf(arr)).toThrow(errorType);
+        expect(() => Script.fromBuf(arr)).toThrow(errorType);
       }
     });
   });

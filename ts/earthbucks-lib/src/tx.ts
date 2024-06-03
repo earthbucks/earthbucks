@@ -31,50 +31,50 @@ export class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromEbxBuf(buf: SysBuf): Tx {
-    return Tx.fromEbxBufReader(new BufReader(buf));
+  static fromBuf(buf: SysBuf): Tx {
+    return Tx.fromBufReader(new BufReader(buf));
   }
 
-  static fromEbxBufReader(reader: BufReader): Tx {
+  static fromBufReader(reader: BufReader): Tx {
     const version = reader.readU8();
     const numInputs = reader.readVarInt();
     const inputs = [];
     for (let i = 0; i < numInputs.n; i++) {
-      const txIn = TxIn.fromEbxBufReader(reader);
+      const txIn = TxIn.fromBufReader(reader);
       inputs.push(txIn);
     }
     const numOutputs = reader.readVarInt();
     const outputs = [];
     for (let i = 0; i < numOutputs.n; i++) {
-      const txOut = TxOut.fromEbxBufReader(reader);
+      const txOut = TxOut.fromBufReader(reader);
       outputs.push(txOut);
     }
     const lockNum = reader.readU64BE();
     return new Tx(version, inputs, outputs, lockNum);
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const writer = new BufWriter();
     writer.writeU8(this.version);
-    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toEbxBuf());
+    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toBuf());
     for (const input of this.inputs) {
-      writer.write(input.toEbxBuf());
+      writer.write(input.toBuf());
     }
-    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toEbxBuf());
+    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toBuf());
     for (const output of this.outputs) {
-      writer.write(output.toEbxBuf());
+      writer.write(output.toBuf());
     }
     writer.writeU64BE(this.lockAbs);
     return writer.toBuf();
   }
 
   toIsoHex(): string {
-    return this.toEbxBuf().toString("hex");
+    return this.toBuf().toString("hex");
   }
 
   static fromIsoHex(hex: string): Tx {
     const buf = FixedBuf.fromStrictHex(hex.length / 2, hex);
-    return Tx.fromEbxBuf(buf);
+    return Tx.fromBuf(buf);
   }
 
   static fromCoinbase(
@@ -94,11 +94,11 @@ export class Tx {
   }
 
   blake3Hash(): FixedBuf<32> {
-    return Hash.blake3Hash(this.toEbxBuf());
+    return Hash.blake3Hash(this.toBuf());
   }
 
   id(): FixedBuf<32> {
-    return Hash.doubleBlake3Hash(this.toEbxBuf());
+    return Hash.doubleBlake3Hash(this.toBuf());
   }
 
   hashPrevouts(): FixedBuf<32> {
@@ -121,7 +121,7 @@ export class Tx {
   hashOutputs(): FixedBuf<32> {
     const writer = new BufWriter();
     for (const output of this.outputs) {
-      writer.write(output.toEbxBuf());
+      writer.write(output.toBuf());
     }
     return Hash.doubleBlake3Hash(writer.toBuf());
   }
@@ -171,9 +171,7 @@ export class Tx {
       (hashType.n & 0x1f) === SIGHASH_SINGLE &&
       inputIndex.n < this.outputs.length
     ) {
-      outputsHash = Hash.doubleBlake3Hash(
-        this.outputs[inputIndex.n].toEbxBuf(),
-      );
+      outputsHash = Hash.doubleBlake3Hash(this.outputs[inputIndex.n].toBuf());
     }
 
     const writer = new BufWriter();

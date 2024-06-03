@@ -8,7 +8,7 @@ import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Block", () => {
-  test("toEbxBufWriter", () => {
+  test("toBufWriter", () => {
     const bh = new Header(
       new U32(1),
       FixedBuf.alloc(32),
@@ -24,11 +24,11 @@ describe("Block", () => {
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const bw = block.toEbxBufWriter(new BufWriter());
+    const bw = block.toBufWriter(new BufWriter());
     expect(bw.toBuf().length).toBeGreaterThan(0);
   });
 
-  test("toEbxBuf", () => {
+  test("toBuf", () => {
     const bh = new Header(
       new U32(1),
       FixedBuf.alloc(32),
@@ -44,11 +44,11 @@ describe("Block", () => {
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const u8vec = block.toEbxBuf();
+    const u8vec = block.toBuf();
     expect(u8vec.length).toBeGreaterThan(0);
   });
 
-  test("fromEbxBufReader", () => {
+  test("fromBufReader", () => {
     const bh = new Header(
       new U32(1),
       FixedBuf.alloc(32),
@@ -64,10 +64,10 @@ describe("Block", () => {
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const bw = block.toEbxBufWriter(new BufWriter());
+    const bw = block.toBufWriter(new BufWriter());
     const buf = bw.toBuf();
     const br = new BufReader(buf);
-    const block2 = Block.fromEbxBufReader(br);
+    const block2 = Block.fromBufReader(br);
     expect(block2.header.version.n).toBe(bh.version.n);
     expect(block2.header.prevBlockId.toString("hex")).toEqual(
       bh.prevBlockId.toString("hex"),

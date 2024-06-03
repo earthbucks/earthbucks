@@ -455,9 +455,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromBuf(
-              this.stack.pop() as SysBuf,
-            ).num;
+            const scriptNum = ScriptNum.fromBuf(this.stack.pop() as SysBuf).num;
             if (scriptNum < 0 || scriptNum >= this.stack.length) {
               this.errStr = "invalid stack operation";
               break loop;
@@ -472,9 +470,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromBuf(
-              this.stack.pop() as SysBuf,
-            ).num;
+            const scriptNum = ScriptNum.fromBuf(this.stack.pop() as SysBuf).num;
             if (scriptNum < 0 || scriptNum >= this.stack.length) {
               this.errStr = "invalid stack operation";
               break loop;
@@ -1017,12 +1013,8 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNumMax = ScriptNum.fromBuf(
-              this.stack.pop() as SysBuf,
-            );
-            const scriptNumMin = ScriptNum.fromBuf(
-              this.stack.pop() as SysBuf,
-            );
+            const scriptNumMax = ScriptNum.fromBuf(this.stack.pop() as SysBuf);
+            const scriptNumMin = ScriptNum.fromBuf(this.stack.pop() as SysBuf);
             const scriptNumX = ScriptNum.fromBuf(this.stack.pop() as SysBuf);
             const within =
               scriptNumX.num >= scriptNumMin.num &&
@@ -1067,9 +1059,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid signature length";
               break loop;
             }
-            const signature = TxSignature.fromEbxBuf(sigBuf);
+            const signature = TxSignature.fromBuf(sigBuf);
 
-            const execScriptBuf = this.script.toEbxBuf();
+            const execScriptBuf = this.script.toBuf();
 
             const success = this.tx.verifyWithCache(
               this.nIn,
@@ -1130,7 +1122,7 @@ export class ScriptInterpreter {
               }
               sigs.push(sigBuf);
             }
-            const execScriptBuf = this.script.toEbxBuf();
+            const execScriptBuf = this.script.toBuf();
 
             let matchedSigs = 0n;
             for (let i = 0; i < nSigs; i++) {
@@ -1138,7 +1130,7 @@ export class ScriptInterpreter {
                 const success = this.tx.verifyWithCache(
                   this.nIn,
                   pubKeys[j],
-                  TxSignature.fromEbxBuf(sigs[i]),
+                  TxSignature.fromBuf(sigs[i]),
                   execScriptBuf,
                   this.value,
                   this.hashCache,

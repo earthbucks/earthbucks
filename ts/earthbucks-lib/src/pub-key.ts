@@ -23,7 +23,7 @@ export class PubKey {
     return new PubKey(isoBuf33);
   }
 
-  static fromEbxBuf(buf: FixedBuf<33>): PubKey {
+  static fromBuf(buf: FixedBuf<33>): PubKey {
     if (buf.length > PubKey.SIZE) {
       throw new TooMuchDataError();
     }
@@ -33,7 +33,7 @@ export class PubKey {
     return new PubKey(buf);
   }
 
-  toEbxBuf(): FixedBuf<33> {
+  toBuf(): FixedBuf<33> {
     return this.buf;
   }
 
@@ -43,7 +43,7 @@ export class PubKey {
 
   static fromIsoHex(hex: string): PubKey {
     const buf = FixedBuf.fromStrictHex(PubKey.SIZE, hex);
-    return PubKey.fromEbxBuf(buf);
+    return PubKey.fromBuf(buf);
   }
 
   toIsoStr(): string {
@@ -65,7 +65,7 @@ export class PubKey {
     if (!checkBuf.equals(checkSum)) {
       throw new InvalidChecksumError();
     }
-    return PubKey.fromEbxBuf(decoded33);
+    return PubKey.fromBuf(decoded33);
   }
 
   static isValidStringFmt(str: string): boolean {

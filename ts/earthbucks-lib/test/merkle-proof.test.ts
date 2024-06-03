@@ -121,9 +121,9 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
-    const buf1 = proof1.toEbxBuf();
-    const proof1FromBuf = MerkleProof.fromEbxBuf(buf1);
-    const buf2 = proof1FromBuf.toEbxBuf();
+    const buf1 = proof1.toBuf();
+    const proof1FromBuf = MerkleProof.fromBuf(buf1);
+    const buf2 = proof1FromBuf.toBuf();
     expect(SysBuf.compare(buf1, buf2)).toBe(0);
   });
 

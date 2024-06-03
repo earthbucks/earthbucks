@@ -23,7 +23,7 @@ describe("ScriptNum", () => {
   ];
 
   testCases.forEach(({ hex, dec }) => {
-    test(`fromEbxBuf correctly converts ${hex} to ${dec}`, () => {
+    test(`fromBuf correctly converts ${hex} to ${dec}`, () => {
       const buffer = SysBuf.from(hex, "hex");
       const scriptNum = ScriptNum.fromBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
@@ -31,7 +31,7 @@ describe("ScriptNum", () => {
   });
 
   testCases.forEach(({ hex, dec }) => {
-    test(`toEbxBuf correctly converts ${dec} to ${hex}`, () => {
+    test(`toBuf correctly converts ${dec} to ${hex}`, () => {
       const scriptNum = new ScriptNum();
       scriptNum.num = BigInt(dec);
       const buffer = scriptNum.toBuf();

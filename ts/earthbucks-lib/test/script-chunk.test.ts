@@ -80,17 +80,17 @@ describe("ScriptChunk", () => {
     });
   });
 
-  describe("toEbxBuf", () => {
+  describe("toBuf", () => {
     test("should convert a ScriptChunk with opcode IF to EbxBuf", () => {
       const scriptChunk = new ScriptChunk(OP.IF);
-      expect(scriptChunk.toEbxBuf()).toEqual(SysBuf.from([OP.IF]));
+      expect(scriptChunk.toBuf()).toEqual(SysBuf.from([OP.IF]));
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA1 and a buffer to EbxBuf", () => {
       const buffer = SysBuf.alloc(255).fill(0);
       const scriptChunk = new ScriptChunk(OP.PUSHDATA1, buffer);
       const expected = SysBuf.from([OP.PUSHDATA1, buffer.length, ...buffer]);
-      expect(scriptChunk.toEbxBuf()).toEqual(expected);
+      expect(scriptChunk.toBuf()).toEqual(expected);
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA2 and a buffer to EbxBuf", () => {
@@ -101,7 +101,7 @@ describe("ScriptChunk", () => {
         .writeU16BE(new U16(buffer.length))
         .write(buffer)
         .toBuf();
-      expect(scriptChunk.toEbxBuf()).toEqual(expected);
+      expect(scriptChunk.toBuf()).toEqual(expected);
     });
 
     test("should convert a ScriptChunk with opcode OP_PUSHDATA4 and a buffer to EbxBuf", () => {
@@ -112,20 +112,20 @@ describe("ScriptChunk", () => {
         .writeU32BE(new U32(buffer.length))
         .write(buffer)
         .toBuf();
-      expect(scriptChunk.toEbxBuf()).toEqual(expected);
+      expect(scriptChunk.toBuf()).toEqual(expected);
     });
 
     test("pushdata1", () => {
       const scriptChunk = ScriptChunk.fromIsoStr("0xff");
-      const arr = scriptChunk.toEbxBuf();
+      const arr = scriptChunk.toBuf();
       expect(arr).toEqual(SysBuf.from([0x4c, 0x01, 0xff]));
     });
   });
 
-  describe("fromEbxBuf", () => {
+  describe("fromBuf", () => {
     test("should create a ScriptChunk from EbxBuf with opcode IF", () => {
       const arr = SysBuf.from([OP.IF]);
-      const scriptChunk = ScriptChunk.fromEbxBuf(arr);
+      const scriptChunk = ScriptChunk.fromBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.IF);
       expect(scriptChunk.buf).toBeUndefined();
     });
@@ -133,7 +133,7 @@ describe("ScriptChunk", () => {
     test("should create a ScriptChunk from EbxBuf with opcode OP_PUSHDATA1 and a buffer", () => {
       const buffer = SysBuf.alloc(255).fill(0);
       const arr = SysBuf.from([OP.PUSHDATA1, buffer.length, ...buffer]);
-      const scriptChunk = ScriptChunk.fromEbxBuf(arr);
+      const scriptChunk = ScriptChunk.fromBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA1);
       expect(scriptChunk.buf).toEqual(SysBuf.from(buffer));
     });
@@ -145,7 +145,7 @@ describe("ScriptChunk", () => {
         .writeU16BE(new U16(buffer.length))
         .write(buffer)
         .toBuf();
-      const scriptChunk = ScriptChunk.fromEbxBuf(arr);
+      const scriptChunk = ScriptChunk.fromBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA2);
       expect(scriptChunk.buf).toEqual(SysBuf.from(buffer));
     });
@@ -157,7 +157,7 @@ describe("ScriptChunk", () => {
         .writeU32BE(new U32(buffer.length))
         .write(buffer)
         .toBuf();
-      const scriptChunk = ScriptChunk.fromEbxBuf(arr);
+      const scriptChunk = ScriptChunk.fromBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4);
       expect(scriptChunk.buf).toEqual(SysBuf.from(buffer));
     });
@@ -165,7 +165,7 @@ describe("ScriptChunk", () => {
     test("should throw error if length does not match expected length", () => {
       const buffer = SysBuf.alloc(100).fill(0);
       const arr = SysBuf.from([OP.PUSHDATA1, 200, ...buffer]);
-      expect(() => ScriptChunk.fromEbxBuf(arr)).toThrow(NotEnoughDataError);
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NotEnoughDataError);
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -175,9 +175,7 @@ describe("ScriptChunk", () => {
         .writeU16BE(new U16(200))
         .write(buffer)
         .toBuf();
-      expect(() => ScriptChunk.fromEbxBuf(arr)).toThrow(
-        NonMinimalEncodingError,
-      );
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NonMinimalEncodingError);
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -187,9 +185,7 @@ describe("ScriptChunk", () => {
         .writeU32BE(new U32(200))
         .write(buffer)
         .toBuf();
-      expect(() => ScriptChunk.fromEbxBuf(arr)).toThrow(
-        NonMinimalEncodingError,
-      );
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NonMinimalEncodingError);
     });
   });
 

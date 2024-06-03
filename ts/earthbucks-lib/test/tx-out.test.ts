@@ -6,30 +6,30 @@ import { SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxOutput", () => {
-  describe("fromEbxBufReader", () => {
-    test("fromEbxBufReader", () => {
+  describe("fromBufReader", () => {
+    test("fromBufReader", () => {
       const value = new U64(100);
       const script = new Script();
       const txOutput = new TxOut(value, script);
 
-      const reader = new BufReader(txOutput.toEbxBuf());
-      const result = TxOut.fromEbxBufReader(reader);
+      const reader = new BufReader(txOutput.toBuf());
+      const result = TxOut.fromBufReader(reader);
       expect(result).toBeInstanceOf(TxOut);
       expect(result.value).toEqual(value);
       expect(result.script.toIsoStr()).toEqual(script.toIsoStr());
     });
   });
 
-  describe("fromU8Vec and toEbxBuf", () => {
+  describe("fromU8Vec and toBuf", () => {
     test("should create a TxOutput from a EbxBuf", () => {
       const value = new U64(100);
       const script = Script.fromIsoStr(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       );
       const txOutput = new TxOut(value, script);
-      const result = TxOut.fromEbxBuf(txOutput.toEbxBuf());
-      expect(txOutput.toEbxBuf().toString("hex")).toEqual(
-        result.toEbxBuf().toString("hex"),
+      const result = TxOut.fromBuf(txOutput.toBuf());
+      expect(txOutput.toBuf().toString("hex")).toEqual(
+        result.toBuf().toString("hex"),
       );
     });
 
@@ -38,9 +38,9 @@ describe("TxOutput", () => {
       const value = new U64(100);
       const script = Script.fromIsoStr(`${data} DOUBLEBLAKE3`);
       const txOutput = new TxOut(value, script);
-      const result = TxOut.fromEbxBuf(txOutput.toEbxBuf());
-      expect(txOutput.toEbxBuf().toString("hex")).toEqual(
-        result.toEbxBuf().toString("hex"),
+      const result = TxOut.fromBuf(txOutput.toBuf());
+      expect(txOutput.toBuf().toString("hex")).toEqual(
+        result.toBuf().toString("hex"),
       );
     });
   });

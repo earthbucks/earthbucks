@@ -16,13 +16,13 @@ export class TxSignature {
     this.sigBuf = sigBuf;
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const hashTypeBuf = SysBuf.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType.n);
     return SysBuf.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromEbxBuf(buf: SysBuf): TxSignature {
+  static fromBuf(buf: SysBuf): TxSignature {
     const hashType = new U8(buf[0]);
     const sigBuf = buf.subarray(1);
     const sigFixedEbxBuf = FixedBuf.fromBuf(64, sigBuf);

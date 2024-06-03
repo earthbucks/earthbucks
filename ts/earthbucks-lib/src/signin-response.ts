@@ -26,7 +26,7 @@ export class SigninResponse {
       domain,
     );
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
-    const message = signinChallenge.toEbxBuf();
+    const message = signinChallenge.toBuf();
     const signedMessage = SignedMessage.fromSignMessage(
       userPrivKey,
       message,
@@ -35,23 +35,23 @@ export class SigninResponse {
     return new SigninResponse(signedMessage);
   }
 
-  static toEbxBuf(buf: SysBuf, domain: string): SigninResponse {
+  static toBuf(buf: SysBuf, domain: string): SigninResponse {
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
-    const signedMessage = SignedMessage.fromEbxBuf(buf, signInResponseStr);
+    const signedMessage = SignedMessage.fromBuf(buf, signInResponseStr);
     return new SigninResponse(signedMessage);
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninResponse.toEbxBuf(buf, domain);
+    return SigninResponse.toBuf(buf, domain);
   }
 
-  toEbxBuf(): SysBuf {
-    return this.signedMessage.toEbxBuf();
+  toBuf(): SysBuf {
+    return this.signedMessage.toBuf();
   }
 
   toIsoHex(): string {
-    return this.toEbxBuf().toString("hex");
+    return this.toBuf().toString("hex");
   }
 
   isValid(userPubKey: PubKey, domain: string): boolean {

@@ -9,7 +9,7 @@ import { PubKey } from "../src/pub-key.js";
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toEbxBuf());
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
     expect(pkh.buf).toBeDefined();
   });
 

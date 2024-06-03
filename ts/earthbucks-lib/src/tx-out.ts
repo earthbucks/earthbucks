@@ -15,24 +15,24 @@ export class TxOut {
     this.script = script;
   }
 
-  static fromEbxBuf(buf: SysBuf): TxOut {
+  static fromBuf(buf: SysBuf): TxOut {
     const reader = new BufReader(buf);
-    return TxOut.fromEbxBufReader(reader);
+    return TxOut.fromBufReader(reader);
   }
 
-  static fromEbxBufReader(reader: BufReader): TxOut {
+  static fromBufReader(reader: BufReader): TxOut {
     const value = reader.readU64BE();
     const scriptLen = reader.readVarInt().n;
     const scriptArr = reader.read(scriptLen);
-    const script = Script.fromEbxBuf(scriptArr);
+    const script = Script.fromBuf(scriptArr);
     return new TxOut(value, script);
   }
 
-  toEbxBuf(): SysBuf {
+  toBuf(): SysBuf {
     const writer = new BufWriter();
     writer.writeU64BE(this.value);
-    const scriptBuf = this.script.toEbxBuf();
-    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toEbxBuf());
+    const scriptBuf = this.script.toBuf();
+    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toBuf());
     writer.write(scriptBuf);
     return writer.toBuf();
   }
