@@ -107,7 +107,7 @@ impl MerkleProof {
         (root, proofs)
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_buf(&self) -> Vec<u8> {
         let mut bw = BufWriter::new();
         bw.write(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
@@ -118,7 +118,7 @@ impl MerkleProof {
         bw.to_buf()
     }
 
-    pub fn from_iso_buf(u8: &[u8]) -> Result<MerkleProof, String> {
+    pub fn from_buf(u8: &[u8]) -> Result<MerkleProof, String> {
         let mut br = BufReader::new(u8.to_vec());
         let root: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         let mut proof = vec![];
@@ -132,11 +132,11 @@ impl MerkleProof {
     }
 
     pub fn to_iso_str(&self) -> String {
-        hex::encode(self.to_iso_buf())
+        hex::encode(self.to_buf())
     }
 
     pub fn from_iso_str(hex: &str) -> Result<MerkleProof, String> {
-        MerkleProof::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
+        MerkleProof::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 }
 
@@ -482,13 +482,13 @@ mod tests {
     }
 
     #[test]
-    fn to_iso_buf_and_from_iso_buf() {
+    fn to_buf_and_from_buf() {
         let data1 = double_blake3_hash("data1".as_bytes());
         let data2 = double_blake3_hash("data2".as_bytes());
         let proof = MerkleProof::new(data1, vec![(data2, true)]);
 
-        let u8 = proof.to_iso_buf();
-        let new_proof = MerkleProof::from_iso_buf(&u8).unwrap();
+        let u8 = proof.to_buf();
+        let new_proof = MerkleProof::from_buf(&u8).unwrap();
         let hex1 = hex::encode(proof.root);
         let hex2 = hex::encode(new_proof.root);
         assert_eq!(hex1, hex2);

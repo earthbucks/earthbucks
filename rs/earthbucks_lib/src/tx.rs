@@ -49,26 +49,26 @@ impl Tx {
         }
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
+    pub fn from_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut reader = BufReader::new(buf);
-        Self::from_iso_buf_reader(&mut reader)
+        Self::from_buf_reader(&mut reader)
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_buf(&self) -> Vec<u8> {
         self.to_buffer_writer().to_buf()
     }
 
-    pub fn from_iso_buf_reader(reader: &mut BufReader) -> Result<Self, EbxError> {
+    pub fn from_buf_reader(reader: &mut BufReader) -> Result<Self, EbxError> {
         let version = reader.read_u8()?;
         let input_count = reader.read_var_int()? as usize;
         let mut inputs = Vec::new();
         for _ in 0..input_count {
-            inputs.push(TxIn::from_iso_buf_reader(reader)?);
+            inputs.push(TxIn::from_buf_reader(reader)?);
         }
         let output_count = reader.read_var_int()? as usize;
         let mut outputs = Vec::new();
         for _ in 0..output_count {
-            outputs.push(TxOut::from_iso_buf_reader(reader)?);
+            outputs.push(TxOut::from_buf_reader(reader)?);
         }
         let lock_num = reader.read_u64_be()?;
         Ok(Self::new(version, inputs, outputs, lock_num))
@@ -77,28 +77,28 @@ impl Tx {
     pub fn to_buffer_writer(&self) -> BufWriter {
         let mut writer = BufWriter::new();
         writer.write_u8(self.version);
-        writer.write(VarInt::from_u64(self.inputs.len() as u64).to_iso_buf());
+        writer.write(VarInt::from_u64(self.inputs.len() as u64).to_buf());
         for input in &self.inputs {
-            writer.write(input.to_iso_buf());
+            writer.write(input.to_buf());
         }
-        writer.write(VarInt::from_u64(self.outputs.len() as u64).to_iso_buf());
+        writer.write(VarInt::from_u64(self.outputs.len() as u64).to_buf());
         for output in &self.outputs {
-            writer.write(output.to_iso_buf());
+            writer.write(output.to_buf());
         }
         writer.write_u64_be(self.lock_abs);
         writer
     }
 
     pub fn to_iso_hex(&self) -> String {
-        hex::encode(self.to_iso_buf())
+        hex::encode(self.to_buf())
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
-        Self::from_iso_buf(Vec::<u8>::from_strict_hex(hex)?)
+        Self::from_buf(Vec::<u8>::from_strict_hex(hex)?)
     }
 
     pub fn to_iso_str(&self) -> String {
-        hex::encode(self.to_iso_buf())
+        hex::encode(self.to_buf())
     }
 
     pub fn from_iso_str(hex: &str) -> Result<Self, EbxError> {
@@ -123,11 +123,11 @@ impl Tx {
     }
 
     pub fn blake3_hash(&self) -> [u8; 32] {
-        blake3_hash(&self.to_iso_buf())
+        blake3_hash(&self.to_buf())
     }
 
     pub fn id(&self) -> [u8; 32] {
-        double_blake3_hash(&self.to_iso_buf())
+        double_blake3_hash(&self.to_buf())
     }
 
     pub fn hash_prevouts(&self) -> [u8; 32] {
@@ -150,7 +150,7 @@ impl Tx {
     pub fn hash_outputs(&self) -> [u8; 32] {
         let mut data = Vec::new();
         for output in &self.outputs {
-            data.extend(&output.to_iso_buf());
+            data.extend(&output.to_buf());
         }
         double_blake3_hash(&data)
     }
@@ -203,7 +203,7 @@ impl Tx {
 
             outputs_hash = hash_cache.outputs_hash.unwrap();
         } else if hash_type & 0x1f == SIGHASH_SINGLE && input_index < self.outputs.len() {
-            outputs_hash = double_blake3_hash(&self.outputs[input_index].to_iso_buf());
+            outputs_hash = double_blake3_hash(&self.outputs[input_index].to_buf());
         }
 
         let mut bw = BufWriter::new();
@@ -374,8 +374,8 @@ mod tests {
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
-        let buf = tx.to_iso_buf();
-        let tx2 = Tx::from_iso_buf(buf).unwrap();
+        let buf = tx.to_buf();
+        let tx2 = Tx::from_buf(buf).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
@@ -384,7 +384,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_iso_buf_reader() -> Result<(), String> {
+    fn test_from_buf_reader() -> Result<(), String> {
         let input_tx_id = [0; 32];
         let input_tx_index = 0;
         let script = Script::from_iso_str("DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL").unwrap();
@@ -401,9 +401,9 @@ mod tests {
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
-        let buf = tx.to_iso_buf();
+        let buf = tx.to_buf();
         let mut reader = BufReader::new(buf);
-        let tx2 = Tx::from_iso_buf_reader(&mut reader).unwrap();
+        let tx2 = Tx::from_buf_reader(&mut reader).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());
         assert_eq!(tx.outputs.len(), tx2.outputs.len());
@@ -493,7 +493,7 @@ mod tests {
         let outputs = vec![tx_output];
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
-        let expected_hash = blake3_hash(&tx.to_iso_buf());
+        let expected_hash = blake3_hash(&tx.to_buf());
         assert_eq!(tx.blake3_hash(), expected_hash);
     }
 
@@ -514,7 +514,7 @@ mod tests {
         let outputs = vec![tx_output];
         let lock_num = 0;
         let tx = Tx::new(version, inputs, outputs, lock_num);
-        let expected_hash = double_blake3_hash(&tx.to_iso_buf());
+        let expected_hash = double_blake3_hash(&tx.to_buf());
         assert_eq!(tx.id(), expected_hash);
     }
 
@@ -586,7 +586,7 @@ mod tests {
         let script = Script::from_empty();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let sighash = tx.sighash_no_cache(0, script.to_iso_buf(), amount, hash_type);
+        let sighash = tx.sighash_no_cache(0, script.to_buf(), amount, hash_type);
 
         let expected = <[u8; 32]>::from_strict_hex(
             "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
@@ -607,7 +607,7 @@ mod tests {
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let hash_cache = &mut HashCache::new();
-        let sighash = tx.sighash_with_cache(0, script.to_iso_buf(), amount, hash_type, hash_cache);
+        let sighash = tx.sighash_with_cache(0, script.to_buf(), amount, hash_type, hash_cache);
 
         let expected = <[u8; 32]>::from_strict_hex(
             "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
@@ -629,13 +629,13 @@ mod tests {
         let hash_type = TxSignature::SIGHASH_ALL;
         let inputs = vec![TxIn::new([0; 32], 0, Script::from_empty(), 0)];
         assert_eq!(
-            hex::encode(inputs[0].to_iso_buf()),
+            hex::encode(inputs[0].to_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
         let outputs = vec![TxOut::new(100, Script::from_empty())];
-        assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
+        assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
 
         // Act
         let signature = tx.sign_no_cache(
@@ -648,13 +648,13 @@ mod tests {
 
         // Assert
         let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
-        assert_eq!(hex::encode(signature.to_iso_buf()), expected_signature_hex);
+        assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         // Arrange
         // let key = KeyPair::new(private_key);
         // let public_key = key.public_key();
 
-        let priv_key = PrivKey::from_iso_buf(private_key).unwrap();
+        let priv_key = PrivKey::from_buf(private_key).unwrap();
         let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
 
         // Act
@@ -678,13 +678,13 @@ mod tests {
         let hash_type = TxSignature::SIGHASH_ALL;
         let inputs = vec![TxIn::new([0; 32], 0, Script::from_empty(), 0)];
         assert_eq!(
-            hex::encode(inputs[0].to_iso_buf()),
+            hex::encode(inputs[0].to_buf()),
             "0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         );
         let outputs = vec![TxOut::new(100, Script::from_empty())];
-        assert_eq!(hex::encode(outputs[0].to_iso_buf()), "000000000000006400");
+        assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_iso_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
         let hash_cache_1 = &mut HashCache::new();
 
         // Act
@@ -699,13 +699,13 @@ mod tests {
 
         // Assert
         let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
-        assert_eq!(hex::encode(signature.to_iso_buf()), expected_signature_hex);
+        assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         // Arrange
         // let key = KeyPair::new(private_key);
         // let public_key = key.public_key();
         let hash_cache_2 = &mut HashCache::new();
-        let pub_key_buf = PrivKey::from_iso_buf(private_key)
+        let pub_key_buf = PrivKey::from_buf(private_key)
             .unwrap()
             .to_pub_key_buffer()
             .unwrap();

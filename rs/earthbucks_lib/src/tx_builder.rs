@@ -103,7 +103,7 @@ mod tests {
         for i in 0..5 {
             let key = KeyPair::from_random();
             let pkh = Pkh::from_pub_key_buffer(key.pub_key.buf.to_vec());
-            let script = Script::from_pkh_output(pkh.to_iso_buf());
+            let script = Script::from_pkh_output(pkh.to_buf());
             let tx_out = TxOut::new(100, script);
             let block_num = 0;
             tx_out_bn_map.add(&[0; 32], i, tx_out, block_num);

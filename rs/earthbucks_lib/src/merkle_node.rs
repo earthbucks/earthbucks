@@ -30,7 +30,7 @@ impl MerkleNode {
         }
     }
 
-    pub fn from_iso_bufs(mut datas: Vec<Vec<u8>>) -> Arc<MerkleNode> {
+    pub fn from_bufs(mut datas: Vec<Vec<u8>>) -> Arc<MerkleNode> {
         match datas.len() {
             0 => panic!("Cannot create MerkleNode from empty array"),
             1 => Arc::new(MerkleNode::new(None, None, datas[0].clone())),
@@ -48,8 +48,8 @@ impl MerkleNode {
                     datas.push(datas[datas.len() - 1].clone());
                 }
                 let (left_datas, right_datas) = datas.split_at(datas.len() / 2);
-                let left = MerkleNode::from_iso_bufs(left_datas.to_vec());
-                let right = MerkleNode::from_iso_bufs(right_datas.to_vec());
+                let left = MerkleNode::from_bufs(left_datas.to_vec());
+                let right = MerkleNode::from_bufs(right_datas.to_vec());
                 Arc::new(MerkleNode::new(
                     Some(left.clone()),
                     Some(right.clone()),
@@ -65,9 +65,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn from_iso_bufs_1_data() {
+    fn from_bufs_1_data() {
         let data = double_blake3_hash("data1".as_bytes()).to_vec();
-        let root = MerkleNode::from_iso_bufs(vec![data]);
+        let root = MerkleNode::from_bufs(vec![data]);
         let hex = hex::encode(root.hash());
         assert_eq!(
             hex,
@@ -76,12 +76,12 @@ mod tests {
     }
 
     #[test]
-    fn from_iso_bufs_2_datas() {
+    fn from_bufs_2_datas() {
         let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
         let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
 
         let data = vec![data1, data2];
-        let root = MerkleNode::from_iso_bufs(data);
+        let root = MerkleNode::from_bufs(data);
         let hex = hex::encode(root.hash());
         assert_eq!(
             hex,
@@ -90,14 +90,14 @@ mod tests {
     }
 
     #[test]
-    fn from_iso_bufs_4_datas() {
+    fn from_bufs_4_datas() {
         let data1 = double_blake3_hash("data1".as_bytes()).to_vec();
         let data2 = double_blake3_hash("data2".as_bytes()).to_vec();
         let data3 = double_blake3_hash("data3".as_bytes()).to_vec();
         let data4 = double_blake3_hash("data4".as_bytes()).to_vec();
 
         let data = vec![data1, data2, data3, data4];
-        let root = MerkleNode::from_iso_bufs(data);
+        let root = MerkleNode::from_bufs(data);
         let hex = hex::encode(root.hash());
         assert_eq!(
             hex,

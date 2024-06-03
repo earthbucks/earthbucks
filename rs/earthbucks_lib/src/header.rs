@@ -27,7 +27,7 @@ impl Header {
     pub const SIZE: usize = 220;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
-    pub fn to_iso_buf(&self) -> [u8; Header::SIZE] {
+    pub fn to_buf(&self) -> [u8; Header::SIZE] {
         let mut bw = BufWriter::new();
         bw.write_u32_be(self.version);
         bw.write(self.prev_block_id.to_vec());
@@ -43,7 +43,7 @@ impl Header {
         bw.to_buf().try_into().unwrap()
     }
 
-    pub fn from_iso_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
+    pub fn from_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
         let mut br = BufReader::new(buf.to_vec());
         let version = br.read_u32_be()?;
         let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
@@ -71,7 +71,7 @@ impl Header {
         })
     }
 
-    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Header, EbxError> {
+    pub fn from_buf_reader(br: &mut BufReader) -> Result<Header, EbxError> {
         if br.remainder_len() < Header::SIZE {
             panic!("Invalid block header size");
         }
@@ -101,7 +101,7 @@ impl Header {
         })
     }
 
-    pub fn to_iso_buf_writer(&self) -> BufWriter {
+    pub fn to_buf_writer(&self) -> BufWriter {
         let mut bw = BufWriter::new();
         bw.write_u32_be(self.version);
         bw.write(self.prev_block_id.to_vec());
@@ -118,7 +118,7 @@ impl Header {
     }
 
     pub fn to_iso_hex(&self) -> String {
-        self.to_iso_buf().to_strict_hex()
+        self.to_buf().to_strict_hex()
     }
 
     pub fn from_iso_hex(hex: &str) -> Result<Header, EbxError> {
@@ -126,7 +126,7 @@ impl Header {
             .map_err(|_| EbxError::InvalidHexError { source: None })?
             .try_into()
             .map_err(|_| EbxError::InvalidHexError { source: None })?;
-        Header::from_iso_buf(buf)
+        Header::from_buf(buf)
     }
 
     pub fn to_iso_str(&self) -> String {
@@ -160,7 +160,7 @@ impl Header {
     }
 
     pub fn is_valid_in_isolation(&self) -> bool {
-        let len = self.to_iso_buf().len();
+        let len = self.to_buf().len();
         if len != Header::SIZE {
             return false;
         }
@@ -234,11 +234,11 @@ impl Header {
     }
 
     pub fn hash(&self) -> [u8; 32] {
-        blake3_hash(&self.to_iso_buf())
+        blake3_hash(&self.to_buf())
     }
 
     pub fn id(&self) -> [u8; 32] {
-        double_blake3_hash(&self.to_iso_buf())
+        double_blake3_hash(&self.to_buf())
     }
 
     pub fn get_new_timestamp() -> u64 {
@@ -351,7 +351,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_to_iso_buf_and_from_iso_buf() {
+    fn test_to_buf_and_from_buf() {
         let bh1 = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -365,8 +365,8 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let buf = bh1.to_iso_buf();
-        let bh2 = Header::from_iso_buf(buf).unwrap();
+        let buf = bh1.to_buf();
+        let bh2 = Header::from_buf(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);
@@ -391,8 +391,8 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let buf = bh1.to_iso_buf();
-        let bh2 = Header::from_iso_buf(buf).unwrap();
+        let buf = bh1.to_buf();
+        let bh2 = Header::from_buf(buf).unwrap();
         assert_eq!(bh1.version, bh2.version);
         assert_eq!(bh1.prev_block_id, bh2.prev_block_id);
         assert_eq!(bh1.merkle_root, bh2.merkle_root);

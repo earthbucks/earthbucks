@@ -16,7 +16,7 @@ impl PubKey {
         PubKey { buf: pub_key }
     }
 
-    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
+    pub fn from_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
         if vec.len() > PubKey::SIZE {
             return Err(EbxError::TooMuchDataError { source: None });
         }
@@ -46,7 +46,7 @@ impl PubKey {
 
     pub fn from_iso_hex(hex: &str) -> Result<PubKey, EbxError> {
         let pub_key_buf: Vec<u8> = Vec::<u8>::from_strict_hex(hex)?;
-        PubKey::from_iso_buf(pub_key_buf)
+        PubKey::from_buf(pub_key_buf)
     }
 
     pub fn to_iso_str(&self) -> String {
@@ -69,7 +69,7 @@ impl PubKey {
         if check_buf != check_sum {
             return Err(EbxError::InvalidChecksumError { source: None });
         }
-        PubKey::from_iso_buf(buf)
+        PubKey::from_buf(buf)
     }
 
     pub fn is_valid(&self) -> bool {

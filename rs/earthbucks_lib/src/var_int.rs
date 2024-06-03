@@ -24,7 +24,7 @@ impl VarInt {
         varint
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_buf(&self) -> Vec<u8> {
         self.buf.clone()
     }
 
@@ -32,7 +32,7 @@ impl VarInt {
         BufReader::new(self.buf.clone()).read_var_int()
     }
 
-    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
+    pub fn from_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
         let buf = br.read_var_int_buf()?;
         Ok(VarInt { buf })
     }
@@ -62,9 +62,9 @@ mod tests {
     }
 
     #[test]
-    fn test_to_iso_buf() {
+    fn test_to_buf() {
         let varint = VarInt::from_u64(1234567890);
-        let vec = varint.to_iso_buf();
+        let vec = varint.to_buf();
 
         assert!(!vec.is_empty());
     }

@@ -14,14 +14,14 @@ impl TxSignature {
         Self { hash_type, sig_buf }
     }
 
-    pub fn to_iso_buf(&self) -> [u8; TxSignature::SIZE] {
+    pub fn to_buf(&self) -> [u8; TxSignature::SIZE] {
         let mut result = Vec::new();
         result.push(self.hash_type);
         result.extend(&self.sig_buf);
         result.try_into().unwrap()
     }
 
-    pub fn from_iso_buf(data: Vec<u8>) -> Result<Self, String> {
+    pub fn from_buf(data: Vec<u8>) -> Result<Self, String> {
         if data.len() != TxSignature::SIZE {
             return Err("Invalid buffer length".to_string());
         }

@@ -145,71 +145,71 @@ impl<'a> ScriptInterpreter<'a> {
                 }
                 Opcode::OP_1NEGATE => {
                     let script_num = ScriptNum::new((-1).to_bigint().unwrap());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_1 => {
                     let script_num = ScriptNum::new(1.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_2 => {
                     let script_num = ScriptNum::new(2.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_3 => {
                     let script_num = ScriptNum::new(3.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_4 => {
                     let script_num = ScriptNum::new(4.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_5 => {
                     let script_num = ScriptNum::new(5.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_6 => {
                     let script_num = ScriptNum::new(6.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_7 => {
                     let script_num = ScriptNum::new(7.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_8 => {
                     let script_num = ScriptNum::new(8.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_9 => {
                     let script_num = ScriptNum::new(9.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_10 => {
                     let script_num = ScriptNum::new(10.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_11 => {
                     let script_num = ScriptNum::new(11.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_12 => {
                     let script_num = ScriptNum::new(12.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_13 => {
                     let script_num = ScriptNum::new(13.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_14 => {
                     let script_num = ScriptNum::new(14.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_15 => {
                     let script_num = ScriptNum::new(15.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_16 => {
                     let script_num = ScriptNum::new(16.into());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_VERIFY => {
                     if self.stack.is_empty() {
@@ -315,7 +315,7 @@ impl<'a> ScriptInterpreter<'a> {
                 }
                 Opcode::OP_DEPTH => {
                     let script_num = ScriptNum::new(self.stack.len().to_bigint().unwrap());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_DROP => {
                     if self.stack.is_empty() {
@@ -354,7 +354,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if (script_num.num < 0.to_bigint().unwrap())
                         || (script_num.num >= self.stack.len().to_bigint().unwrap())
                     {
@@ -374,7 +374,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if (script_num.num < 0.to_bigint().unwrap())
                         || (script_num.num >= self.stack.len().to_bigint().unwrap())
                     {
@@ -430,8 +430,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let script_num2_bn = script_num2.clone().num;
                     let script_num1_bn = script_num1.clone().num;
                     let buf = self.stack.pop().unwrap();
@@ -453,7 +453,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let buf = self.stack.pop().unwrap();
                     let len_bn = script_num.clone().num;
                     if len_bn < 0.to_bigint().unwrap() || len_bn > buf.len().to_bigint().unwrap() {
@@ -469,7 +469,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let buf = self.stack.pop().unwrap();
                     let len_bn = script_num.clone().num;
                     if len_bn < 0.to_bigint().unwrap() || len_bn > buf.len().to_bigint().unwrap() {
@@ -487,7 +487,7 @@ impl<'a> ScriptInterpreter<'a> {
                     }
                     let script_num =
                         ScriptNum::new(self.stack[self.stack.len() - 1].len().to_bigint().unwrap());
-                    self.stack.push(script_num.to_iso_buf());
+                    self.stack.push(script_num.to_buf());
                 }
                 Opcode::OP_INVERT => {
                     if self.stack.is_empty() {
@@ -585,168 +585,168 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num.num + 1.to_bigint().unwrap();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_1SUB => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num.num - 1.to_bigint().unwrap();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_2MUL => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num.num * 2.to_bigint().unwrap();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_2DIV => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num.num / 2.to_bigint().unwrap();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_NEGATE => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = -script_num.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_ABS => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let mut script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let mut script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num.num < 0.to_bigint().unwrap() {
                         script_num.num = -script_num.num;
                     }
-                    self.stack.push(ScriptNum::new(script_num.num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(script_num.num).to_buf());
                 }
                 Opcode::OP_NOT => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = if script_num.num == 0.to_bigint().unwrap() {
                         1.to_bigint().unwrap()
                     } else {
                         0.to_bigint().unwrap()
                     };
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_0NOTEQUAL => {
                     if self.stack.is_empty() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = if script_num.num == 0.to_bigint().unwrap() {
                         0.to_bigint().unwrap()
                     } else {
                         1.to_bigint().unwrap()
                     };
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_ADD => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num1.num + script_num2.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_SUB => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num2.num - script_num1.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_MUL => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let new_num = script_num1.num * script_num2.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_DIV => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num1.num == 0.to_bigint().unwrap() {
                         self.err_str = "division by zero".to_string();
                         break;
                     }
                     let new_num = script_num2.num / script_num1.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_MOD => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num1.num == 0.to_bigint().unwrap() {
                         self.err_str = "division by zero".to_string();
                         break;
                     }
                     let new_num = script_num2.num % script_num1.num;
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_LSHIFT => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num1.num < 0.to_bigint().unwrap() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     let new_num = script_num2.num << script_num1.to_u32();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_RSHIFT => {
                     if self.stack.len() < 2 {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num1.num < 0.to_bigint().unwrap() {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
                     let new_num = script_num2.num >> script_num1.to_u32();
-                    self.stack.push(ScriptNum::new(new_num).to_iso_buf());
+                    self.stack.push(ScriptNum::new(new_num).to_buf());
                 }
                 Opcode::OP_BOOLAND => {
                     if self.stack.len() < 2 {
@@ -777,8 +777,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num1.num == script_num2.num {
                         vec![1]
                     } else {
@@ -790,8 +790,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     if script_num1.num != script_num2.num {
                         self.err_str = "NUMEQUALVERIFY failed".to_string();
                         break;
@@ -802,8 +802,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num1.num != script_num2.num {
                         vec![1]
                     } else {
@@ -815,8 +815,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num < script_num1.num {
                         vec![1]
                     } else {
@@ -828,8 +828,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num > script_num1.num {
                         vec![1]
                     } else {
@@ -841,8 +841,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num <= script_num1.num {
                         vec![1]
                     } else {
@@ -854,8 +854,8 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num >= script_num1.num {
                         vec![1]
                     } else {
@@ -867,12 +867,12 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num < script_num1.num {
-                        script_num2.to_iso_buf()
+                        script_num2.to_buf()
                     } else {
-                        script_num1.to_iso_buf()
+                        script_num1.to_buf()
                     });
                 }
                 Opcode::OP_MAX => {
@@ -880,12 +880,12 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num1 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_num2 = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_num1 = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_num2 = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     self.stack.push(if script_num2.num > script_num1.num {
-                        script_num2.to_iso_buf()
+                        script_num2.to_buf()
                     } else {
-                        script_num1.to_iso_buf()
+                        script_num1.to_buf()
                     });
                 }
                 Opcode::OP_WITHIN => {
@@ -894,9 +894,9 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_max = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_min = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
-                    let script_x = ScriptNum::from_iso_buf(&self.stack.pop().unwrap());
+                    let script_max = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_min = ScriptNum::from_buf(&self.stack.pop().unwrap());
+                    let script_x = ScriptNum::from_buf(&self.stack.pop().unwrap());
                     let min = script_min.num;
                     let max = script_max.num;
                     let x = script_x.num;
@@ -936,9 +936,9 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid signature length".to_string();
                         break;
                     }
-                    let signature = TxSignature::from_iso_buf(sig_buf);
+                    let signature = TxSignature::from_buf(sig_buf);
 
-                    let exec_script_buf = self.script.to_iso_buf();
+                    let exec_script_buf = self.script.to_buf();
 
                     let pub_key_arr: [u8; PubKey::SIZE] =
                         pub_key_buf.try_into().unwrap_or_else(|v: Vec<u8>| {
@@ -969,7 +969,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let n_keys = ScriptNum::from_iso_buf(&self.stack.pop().unwrap()).num;
+                    let n_keys = ScriptNum::from_buf(&self.stack.pop().unwrap()).num;
                     if n_keys < BigInt::from(0) || n_keys > BigInt::from(16) {
                         self.err_str = "invalid number of keys".to_string();
                         break;
@@ -987,7 +987,7 @@ impl<'a> ScriptInterpreter<'a> {
                         }
                         pub_keys.push(pub_key_buf);
                     }
-                    let n_sigs = ScriptNum::from_iso_buf(&self.stack.pop().unwrap()).num;
+                    let n_sigs = ScriptNum::from_buf(&self.stack.pop().unwrap()).num;
                     if n_sigs < BigInt::from(0) || n_sigs > n_keys {
                         self.err_str = "invalid number of signatures".to_string();
                         break;
@@ -1005,7 +1005,7 @@ impl<'a> ScriptInterpreter<'a> {
                         }
                         sigs.push(sig_buf);
                     }
-                    let exec_script_buf = self.script.to_iso_buf();
+                    let exec_script_buf = self.script.to_buf();
 
                     let mut matched_sigs = 0;
                     for sig in sigs {
@@ -1013,7 +1013,7 @@ impl<'a> ScriptInterpreter<'a> {
                             let success = self.tx.verify_with_cache(
                                 self.n_in,
                                 pub_keys[j][..PubKey::SIZE].try_into().unwrap(),
-                                TxSignature::from_iso_buf(sig.clone()).unwrap(),
+                                TxSignature::from_buf(sig.clone()).unwrap(),
                                 exec_script_buf.clone(),
                                 self.value,
                                 self.hash_cache,
@@ -1038,7 +1038,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(self.stack.last().unwrap());
+                    let script_num = ScriptNum::from_buf(self.stack.last().unwrap());
                     if script_num.num < 0.into() {
                         self.err_str = "negative lockabs".to_string();
                         break;
@@ -1053,7 +1053,7 @@ impl<'a> ScriptInterpreter<'a> {
                         self.err_str = "invalid stack operation".to_string();
                         break;
                     }
-                    let script_num = ScriptNum::from_iso_buf(self.stack.last().unwrap());
+                    let script_num = ScriptNum::from_buf(self.stack.last().unwrap());
                     if script_num.num < 0.into() {
                         self.err_str = "negative lockrel".to_string();
                         break;
@@ -1193,7 +1193,7 @@ mod tests {
                 "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987"
             );
             let output_pkh = Pkh::from_pub_key_buffer(output_pub_key.to_vec());
-            let output_script = Script::from_pkh_output(output_pkh.to_iso_buf());
+            let output_script = Script::from_pkh_output(output_pkh.to_buf());
             let output_amount = 100;
             let output_tx_id = [0; 32];
             let output_tx_index = 0;
@@ -1213,12 +1213,12 @@ mod tests {
             let sig = tx.sign_no_cache(
                 0,
                 output_priv_key_buf,
-                output_script.to_iso_buf(),
+                output_script.to_buf(),
                 output_amount,
                 TxSignature::SIGHASH_ALL,
             );
 
-            let stack = vec![sig.to_iso_buf().to_vec(), output_pub_key.to_vec()];
+            let stack = vec![sig.to_buf().to_vec(), output_pub_key.to_vec()];
             let mut hash_cache = HashCache::new();
 
             let mut script_interpreter = ScriptInterpreter::from_output_script_tx(
@@ -1255,7 +1255,7 @@ mod tests {
             let pub_keys: Vec<Vec<u8>> = priv_keys_iso_buf
                 .iter()
                 .map(|priv_key| {
-                    PrivKey::from_iso_buf(priv_key.clone())
+                    PrivKey::from_buf(priv_key.clone())
                         .unwrap()
                         .to_pub_key_buffer()
                         .unwrap()
@@ -1292,11 +1292,11 @@ mod tests {
                     tx.sign_no_cache(
                         0,
                         priv_key[..32].try_into().unwrap(),
-                        output_script.to_iso_buf(),
+                        output_script.to_buf(),
                         output_amount,
                         TxSignature::SIGHASH_ALL,
                     )
-                    .to_iso_buf()
+                    .to_buf()
                     .to_vec()
                 })
                 .collect();

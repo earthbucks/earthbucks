@@ -45,7 +45,7 @@ impl PrivKey {
         PrivKey::new(priv_key)
     }
 
-    pub fn from_iso_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
+    pub fn from_buf(vec: Vec<u8>) -> Result<Self, EbxError> {
         if vec.len() > 32 {
             return Err(EbxError::TooMuchDataError { source: None });
         }
@@ -63,7 +63,7 @@ impl PrivKey {
 
     pub fn from_iso_hex(hex: &str) -> Result<Self, EbxError> {
         let priv_key_vec: Vec<u8> = Vec::<u8>::from_strict_hex(hex)?;
-        PrivKey::from_iso_buf(priv_key_vec)
+        PrivKey::from_buf(priv_key_vec)
     }
 
     pub fn to_iso_str(&self) -> String {
@@ -85,7 +85,7 @@ impl PrivKey {
         if check_sum != expected_check_sum {
             return Err(EbxError::InvalidChecksumError { source: None });
         }
-        PrivKey::from_iso_buf(buf)
+        PrivKey::from_buf(buf)
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {

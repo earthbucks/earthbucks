@@ -113,7 +113,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_iso_buf() {
+    fn test_to_buf() {
         let mut writer = BufWriter::new();
         writer.write(vec![1, 2, 3]);
         writer.write(vec![4, 5, 6]);

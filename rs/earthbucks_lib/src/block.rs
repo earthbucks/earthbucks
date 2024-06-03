@@ -15,16 +15,16 @@ impl Block {
         Self { header, txs }
     }
 
-    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
-        let header = Header::from_iso_buf_reader(br)?;
-        let tx_count_varint = VarInt::from_iso_buf_reader(br)?;
+    pub fn from_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
+        let header = Header::from_buf_reader(br)?;
+        let tx_count_varint = VarInt::from_buf_reader(br)?;
         if !tx_count_varint.is_minimal() {
             return Err(EbxError::NonMinimalEncodingError { source: None });
         }
         let tx_count = tx_count_varint.to_u64()? as usize;
         let mut txs = vec![];
         for _ in 0..tx_count {
-            let tx = Tx::from_iso_buf_reader(br)?;
+            let tx = Tx::from_buf_reader(br)?;
             txs.push(tx);
         }
         Ok(Self { header, txs })
@@ -32,21 +32,21 @@ impl Block {
 
     pub fn to_buffer_writer(&self) -> BufWriter {
         let mut bw = BufWriter::new();
-        bw.write(self.header.to_iso_buf().to_vec());
-        bw.write(VarInt::from_u64(self.txs.len() as u64).to_iso_buf());
+        bw.write(self.header.to_buf().to_vec());
+        bw.write(VarInt::from_u64(self.txs.len() as u64).to_buf());
         for tx in &self.txs {
             bw.write(tx.to_buffer_writer().to_buf());
         }
         bw
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_buf(&self) -> Vec<u8> {
         self.to_buffer_writer().to_buf()
     }
 
-    pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
+    pub fn from_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
         let mut br = BufReader::new(buf);
-        Self::from_iso_buf_reader(&mut br)
+        Self::from_buf_reader(&mut br)
     }
 }
 
@@ -76,7 +76,7 @@ mod tests {
     }
 
     #[test]
-    fn test_to_iso_buf_and_from_iso_buf() {
+    fn test_to_buf_and_from_buf() {
         let header = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -92,14 +92,14 @@ mod tests {
         };
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
-        let buf = block1.to_iso_buf();
-        let block2 = Block::from_iso_buf(buf).unwrap();
+        let buf = block1.to_buf();
+        let block2 = Block::from_buf(buf).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);
     }
 
     #[test]
-    fn test_from_iso_buf_reader() {
+    fn test_from_buf_reader() {
         let header = Header {
             version: 1,
             prev_block_id: [0; 32],
@@ -115,9 +115,9 @@ mod tests {
         };
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
-        let buf = block1.to_iso_buf();
+        let buf = block1.to_buf();
         let mut br = BufReader::new(buf);
-        let block2 = Block::from_iso_buf_reader(&mut br).unwrap();
+        let block2 = Block::from_buf_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);
     }

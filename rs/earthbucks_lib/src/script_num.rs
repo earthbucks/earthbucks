@@ -35,7 +35,7 @@ impl ScriptNum {
         }
     }
 
-    pub fn from_iso_buf(buffer: &[u8]) -> Self {
+    pub fn from_buf(buffer: &[u8]) -> Self {
         if buffer.is_empty() {
             return ScriptNum { num: Zero::zero() };
         }
@@ -50,7 +50,7 @@ impl ScriptNum {
         ScriptNum { num }
     }
 
-    pub fn to_iso_buf(&self) -> Vec<u8> {
+    pub fn to_buf(&self) -> Vec<u8> {
         match self.num.cmp(&Zero::zero()) {
             std::cmp::Ordering::Equal => vec![],
             std::cmp::Ordering::Greater => {
@@ -72,11 +72,11 @@ impl ScriptNum {
     }
 
     pub fn from_iso_hex(hex: &str) -> Self {
-        ScriptNum::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
+        ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap())
     }
 
     pub fn to_iso_hex(&self) -> String {
-        hex::encode(self.to_iso_buf())
+        hex::encode(self.to_buf())
     }
 
     pub fn to_iso_str(&self) -> String {
@@ -106,8 +106,8 @@ mod tests {
     #[test]
     fn test_script_num() {
         let original_num = ScriptNum::from_iso_str("123456789");
-        let bytes = original_num.to_iso_buf();
-        let new_num = ScriptNum::from_iso_buf(&bytes);
+        let bytes = original_num.to_buf();
+        let new_num = ScriptNum::from_buf(&bytes);
         assert_eq!(original_num.num, new_num.num);
     }
 
@@ -133,21 +133,20 @@ mod tests {
         ];
 
         for (hex, dec) in test_cases {
-            let num_from_iso_hex =
-                ScriptNum::from_iso_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
+            let num_from_iso_hex = ScriptNum::from_buf(&Vec::<u8>::from_strict_hex(hex).unwrap());
             let num_from_dec = ScriptNum::from_iso_str(dec);
             assert_eq!(num_from_iso_hex.num, num_from_dec.num);
 
-            let hex_from_num = hex::encode(num_from_iso_hex.to_iso_buf());
+            let hex_from_num = hex::encode(num_from_iso_hex.to_buf());
             assert_eq!(hex, &hex_from_num);
         }
     }
 
     #[test]
-    fn test_to_iso_buf() {
+    fn test_to_buf() {
         let num = 128.to_bigint().unwrap(); // 128 is a positive number with the most significant bit set
         let script_num = ScriptNum { num };
-        let bytes = script_num.to_iso_buf();
+        let bytes = script_num.to_buf();
         assert_eq!(bytes, vec![0, 128]); // 128 in hexadecimal is 80, but we expect an extra '00' at the front
     }
 }

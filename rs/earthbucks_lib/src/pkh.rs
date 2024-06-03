@@ -28,11 +28,11 @@ impl Pkh {
         })
     }
 
-    pub fn to_iso_buf(&self) -> &[u8; 32] {
+    pub fn to_buf(&self) -> &[u8; 32] {
         &self.buf
     }
 
-    pub fn from_iso_buf(buf: &[u8; 32]) -> Self {
+    pub fn from_buf(buf: &[u8; 32]) -> Self {
         Self { buf: *buf }
     }
 
@@ -94,7 +94,7 @@ mod tests {
         let pkh = Pkh::from_pub_key_buffer(pub_key);
 
         // Check that the pkh matches the expected pkh
-        assert_eq!(pkh.to_iso_buf(), &expected_pkh);
+        assert_eq!(pkh.to_buf(), &expected_pkh);
     }
 
     #[test]
