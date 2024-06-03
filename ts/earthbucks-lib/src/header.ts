@@ -6,11 +6,6 @@ import { U8, U16, U32, U64 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class Header {
-  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
-  static readonly BLOCK_INTERVAL = new U64(600n); // seconds
-  static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = FixedIsoBuf.alloc(32, 0xff);
-
   version: U32;
   prevBlockId: FixedIsoBuf<32>;
   merkleRoot: FixedIsoBuf<32>;
@@ -22,6 +17,11 @@ export class Header {
   workSerHash: FixedIsoBuf<32>;
   workParAlgo: U32;
   workParHash: FixedIsoBuf<32>;
+
+  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
+  static readonly BLOCK_INTERVAL = new U64(600n); // seconds
+  static readonly BLOCK_HEADER_SIZE = 220;
+  static readonly INITIAL_TARGET = FixedIsoBuf.alloc(32, 0xff);
 
   constructor(
     version: U32,
