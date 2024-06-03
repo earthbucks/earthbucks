@@ -5,7 +5,7 @@ import {
   NonMinimalEncodingError,
   InsufficientPrecisionError,
 } from "./ebx-error.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class IsoBufReader {
   buf: SysBuf;
@@ -82,6 +82,38 @@ export class IsoBufReader {
     }
     this.pos += 8;
     return new U64(val);
+  }
+
+  readU128BE(): U128 {
+    const buf = this.read(16);
+    let val1: bigint;
+    let val2: bigint;
+    try {
+      val1 = buf.readBigUInt64BE(0);
+      val2 = buf.readBigUInt64BE(8);
+    } catch (err) {
+      throw new NotEnoughDataError(err as Error);
+    }
+    const val = (val1 << 64n) + val2;
+    return new U128(val);
+  }
+
+  readU256BE(): U256 {
+    const buf = this.read(32);
+    let val1: bigint;
+    let val2: bigint;
+    let val3: bigint;
+    let val4: bigint;
+    try {
+      val1 = buf.readBigUInt64BE(0);
+      val2 = buf.readBigUInt64BE(8);
+      val3 = buf.readBigUInt64BE(16);
+      val4 = buf.readBigUInt64BE(24);
+    } catch (err) {
+      throw new NotEnoughDataError(err as Error);
+    }
+    const val = (val1 << 192n) + (val2 << 128n) + (val3 << 64n) + val4;
+    return new U256(val);
   }
 
   readVarIntBuf(): SysBuf {

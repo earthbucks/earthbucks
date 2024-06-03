@@ -22,7 +22,7 @@ describe("HeaderMine", () => {
     const headerMine = new HeaderMine(header);
     const lowest = headerMine.getLowestIdForNTimes(10);
     expect(lowest).toBeDefined();
-    expect(lowest.num).toBeDefined();
+    expect(lowest.bn).toBeDefined();
   });
 
   test("getLowestNonceForNTimes", () => {

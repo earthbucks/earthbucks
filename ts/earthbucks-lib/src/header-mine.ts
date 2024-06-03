@@ -1,7 +1,7 @@
 import { Header } from "./header.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { HashNum } from "./hash-num.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
+import { IsoBufReader } from "./iso-buf-reader.js";
 
 export class HeaderMine {
   header: Header;
@@ -17,18 +17,19 @@ export class HeaderMine {
     );
   }
 
-  getIdHashNum(): HashNum {
+  getIdHashNum(): U256 {
     const headerId = this.header.id();
-    const hashNum = HashNum.fromIsoBuf(headerId);
+    const br = new IsoBufReader(headerId);
+    const hashNum = br.readU256BE();
     return hashNum;
   }
 
-  getLowestIdForNTimes(n: number): HashNum {
+  getLowestIdForNTimes(n: number): U256 {
     let lowest = this.getIdHashNum();
     for (let i = 0; i < n; i++) {
       this.randomizeNonce();
       const hashNum = this.getIdHashNum();
-      if (hashNum.num < lowest.num) {
+      if (hashNum.bn < lowest.bn) {
         lowest = hashNum;
       }
     }
@@ -41,7 +42,7 @@ export class HeaderMine {
     for (let i = 0; i < n; i++) {
       this.randomizeNonce();
       const hashNum = this.getIdHashNum();
-      if (hashNum.num < lowest.num) {
+      if (hashNum.bn < lowest.bn) {
         lowest = hashNum;
         nonce = this.header.nonce;
       }
