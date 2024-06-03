@@ -16,7 +16,7 @@ export class BufWriter {
     return len;
   }
 
-  toSysBuf(): SysBuf {
+  toBuf(): SysBuf {
     return SysBuf.concat(this.bufs);
   }
 

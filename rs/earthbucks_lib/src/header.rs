@@ -1,8 +1,8 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
+use crate::ebx_buf::IsoBuf;
 use crate::ebx_error::EbxError;
 use crate::hash::{blake3_hash, double_blake3_hash};
-use crate::iso_buf::IsoBuf;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 use num_bigint::BigUint;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -28,7 +28,7 @@ impl Header {
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn to_iso_buf(&self) -> [u8; Header::SIZE] {
-        let mut bw = IsoBufWriter::new();
+        let mut bw = BufWriter::new();
         bw.write_u32_be(self.version);
         bw.write(self.prev_block_id.to_vec());
         bw.write(self.merkle_root.to_vec());
@@ -40,11 +40,11 @@ impl Header {
         bw.write(self.work_ser_hash.to_vec());
         bw.write_u32_be(self.work_par_algo);
         bw.write(self.work_par_hash.to_vec());
-        bw.to_iso_buf().try_into().unwrap()
+        bw.to_buf().try_into().unwrap()
     }
 
     pub fn from_iso_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
-        let mut br = IsoBufReader::new(buf.to_vec());
+        let mut br = BufReader::new(buf.to_vec());
         let version = br.read_u32_be()?;
         let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
         let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
@@ -71,7 +71,7 @@ impl Header {
         })
     }
 
-    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Header, EbxError> {
+    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Header, EbxError> {
         if br.remainder_len() < Header::SIZE {
             panic!("Invalid block header size");
         }
@@ -101,8 +101,8 @@ impl Header {
         })
     }
 
-    pub fn to_iso_buf_writer(&self) -> IsoBufWriter {
-        let mut bw = IsoBufWriter::new();
+    pub fn to_iso_buf_writer(&self) -> BufWriter {
+        let mut bw = BufWriter::new();
         bw.write_u32_be(self.version);
         bw.write(self.prev_block_id.to_vec());
         bw.write(self.merkle_root.to_vec());

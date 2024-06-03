@@ -17,7 +17,7 @@ export class PermissionToken {
     const writer = new BufWriter();
     writer.write(this.randValue);
     writer.writeU64BE(this.timestamp);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 
   static fromEbxBuf(buf: SysBuf): PermissionToken {

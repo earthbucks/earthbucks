@@ -1,7 +1,7 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
+use crate::ebx_buf::IsoBuf;
 use crate::hash::double_blake3_hash;
-use crate::iso_buf::IsoBuf;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 
 #[derive(Debug, Clone)]
 pub struct MerkleProof {
@@ -108,18 +108,18 @@ impl MerkleProof {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut bw = IsoBufWriter::new();
+        let mut bw = BufWriter::new();
         bw.write(self.root.to_vec());
         bw.write_var_int(self.proof.len() as u64);
         for (sibling, is_left) in &self.proof {
             bw.write(sibling.to_vec());
             bw.write_u8(if *is_left { 1 } else { 0 });
         }
-        bw.to_iso_buf()
+        bw.to_buf()
     }
 
     pub fn from_iso_buf(u8: &[u8]) -> Result<MerkleProof, String> {
-        let mut br = IsoBufReader::new(u8.to_vec());
+        let mut br = BufReader::new(u8.to_vec());
         let root: [u8; 32] = br.read(32).map_err(|e| e.to_string())?.try_into().unwrap();
         let mut proof = vec![];
         let proof_length = br.read_var_int().map_err(|e| e.to_string())? as usize;
@@ -143,7 +143,7 @@ impl MerkleProof {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::iso_buf::IsoBuf;
+    use crate::ebx_buf::IsoBuf;
 
     #[test]
     fn generate_proofs_and_root_with_1_data() {

@@ -1,7 +1,7 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
 use crate::ebx_error::EbxError;
 use crate::header::Header;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 use crate::tx::Tx;
 use crate::var_int::VarInt;
 
@@ -15,7 +15,7 @@ impl Block {
         Self { header, txs }
     }
 
-    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, EbxError> {
+    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
         let header = Header::from_iso_buf_reader(br)?;
         let tx_count_varint = VarInt::from_iso_buf_reader(br)?;
         if !tx_count_varint.is_minimal() {
@@ -30,22 +30,22 @@ impl Block {
         Ok(Self { header, txs })
     }
 
-    pub fn to_buffer_writer(&self) -> IsoBufWriter {
-        let mut bw = IsoBufWriter::new();
+    pub fn to_buffer_writer(&self) -> BufWriter {
+        let mut bw = BufWriter::new();
         bw.write(self.header.to_iso_buf().to_vec());
         bw.write(VarInt::from_u64(self.txs.len() as u64).to_iso_buf());
         for tx in &self.txs {
-            bw.write(tx.to_buffer_writer().to_iso_buf());
+            bw.write(tx.to_buffer_writer().to_buf());
         }
         bw
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        self.to_buffer_writer().to_iso_buf()
+        self.to_buffer_writer().to_buf()
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
-        let mut br = IsoBufReader::new(buf);
+        let mut br = BufReader::new(buf);
         Self::from_iso_buf_reader(&mut br)
     }
 }
@@ -72,7 +72,7 @@ mod tests {
         let tx = Tx::new(1, vec![], vec![], 1);
         let block = Block::new(header, vec![tx]);
         let bw = block.to_buffer_writer();
-        assert!(!bw.to_iso_buf().is_empty());
+        assert!(!bw.to_buf().is_empty());
     }
 
     #[test]
@@ -116,7 +116,7 @@ mod tests {
         let tx = Tx::new(1, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_iso_buf();
-        let mut br = IsoBufReader::new(buf);
+        let mut br = BufReader::new(buf);
         let block2 = Block::from_iso_buf_reader(&mut br).unwrap();
         assert_eq!(block1.header.version, block2.header.version);
         assert_eq!(block1.txs[0].version, block2.txs[0].version);

@@ -100,7 +100,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA2))
         .writeU16BE(new U16(buffer.length))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       expect(scriptChunk.toEbxBuf()).toEqual(expected);
     });
 
@@ -111,7 +111,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA4))
         .writeU32BE(new U32(buffer.length))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       expect(scriptChunk.toEbxBuf()).toEqual(expected);
     });
 
@@ -144,7 +144,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA2))
         .writeU16BE(new U16(buffer.length))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       const scriptChunk = ScriptChunk.fromEbxBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA2);
       expect(scriptChunk.buf).toEqual(SysBuf.from(buffer));
@@ -156,7 +156,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA4))
         .writeU32BE(new U32(buffer.length))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       const scriptChunk = ScriptChunk.fromEbxBuf(arr);
       expect(scriptChunk.opcode).toBe(OP.PUSHDATA4);
       expect(scriptChunk.buf).toEqual(SysBuf.from(buffer));
@@ -174,7 +174,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA2))
         .writeU16BE(new U16(200))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       expect(() => ScriptChunk.fromEbxBuf(arr)).toThrow(
         NonMinimalEncodingError,
       );
@@ -186,7 +186,7 @@ describe("ScriptChunk", () => {
         .writeU8(new U8(OP.PUSHDATA4))
         .writeU32BE(new U32(200))
         .write(buffer)
-        .toSysBuf();
+        .toBuf();
       expect(() => ScriptChunk.fromEbxBuf(arr)).toThrow(
         NonMinimalEncodingError,
       );

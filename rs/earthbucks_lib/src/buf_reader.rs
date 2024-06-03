@@ -3,13 +3,13 @@ use crate::numbers::u256;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 
-pub struct IsoBufReader {
+pub struct BufReader {
     buf: Cursor<Vec<u8>>,
 }
 
-impl IsoBufReader {
-    pub fn new(buf: Vec<u8>) -> IsoBufReader {
-        IsoBufReader {
+impl BufReader {
+    pub fn new(buf: Vec<u8>) -> BufReader {
+        BufReader {
             buf: Cursor::new(buf),
         }
     }
@@ -133,28 +133,28 @@ impl IsoBufReader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::iso_buf::IsoBuf;
+    use crate::ebx_buf::IsoBuf;
     use byteorder::{BigEndian, WriteBytesExt};
     use serde::Deserialize;
     use std::fs;
 
     #[test]
     fn test_read() {
-        let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
+        let mut reader = BufReader::new(vec![1, 2, 3, 4, 5]);
         assert_eq!(reader.read(3).unwrap(), vec![1, 2, 3]);
         assert_eq!(reader.read(2).unwrap(), vec![4, 5]);
     }
 
     #[test]
     fn test_read_u8() {
-        let mut reader = IsoBufReader::new(vec![1, 2, 3, 4, 5]);
+        let mut reader = BufReader::new(vec![1, 2, 3, 4, 5]);
         assert_eq!(reader.read_u8().unwrap(), 1);
         assert_eq!(reader.read_u8().unwrap(), 2);
     }
 
     #[test]
     fn test_read_u16_be() {
-        let mut buffer_reader = IsoBufReader::new(vec![0x01, 0x23]);
+        let mut buffer_reader = BufReader::new(vec![0x01, 0x23]);
         assert_eq!(buffer_reader.read_u16_be().unwrap(), 0x0123);
     }
 
@@ -164,7 +164,7 @@ mod tests {
         data.write_u32::<BigEndian>(1234567890).unwrap();
         data.write_u32::<BigEndian>(987654321).unwrap();
 
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_u32_be().unwrap(), 1234567890);
         assert_eq!(reader.read_u32_be().unwrap(), 987654321);
     }
@@ -175,7 +175,7 @@ mod tests {
         data.write_u64::<BigEndian>(12345678901234567890).unwrap();
         data.write_u64::<BigEndian>(9876543210987654321).unwrap();
 
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_u64_be().unwrap(), 12345678901234567890);
         assert_eq!(reader.read_u64_be().unwrap(), 9876543210987654321);
     }
@@ -183,44 +183,44 @@ mod tests {
     #[test]
     fn test_read_var_int_buf() {
         let data = vec![0xfd, 0x01, 0x00];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int_buf().unwrap(), vec![0xfd, 0x01, 0x00]);
 
         let data = vec![0xfe, 0x01, 0x00, 0x00, 0x00];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(
             reader.read_var_int_buf().unwrap(),
             vec![0xfe, 0x01, 0x00, 0x00, 0x00]
         );
 
         let data = vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(
             reader.read_var_int_buf().unwrap(),
             vec![0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         );
 
         let data = vec![0x01];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int_buf().unwrap(), vec![0x01]);
     }
 
     #[test]
     fn test_read_var_int() {
         let data = vec![0xfd, 0x10, 0x01];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int().unwrap(), 0x1000 + 1);
 
         let data = vec![0xfe, 0x10, 0x00, 0x00, 0x01];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int().unwrap(), 0x10000000 + 1);
 
         let data = vec![0xff, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int().unwrap(), 0x1000000000000000 + 1);
 
         let data = vec![0x01];
-        let mut reader = IsoBufReader::new(data);
+        let mut reader = BufReader::new(data);
         assert_eq!(reader.read_var_int().unwrap(), 1);
     }
 
@@ -268,7 +268,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read(test_vector.len);
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -285,7 +285,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u8.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_u8();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -302,7 +302,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u16_be.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_u16_be();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -319,7 +319,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u32_be.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_u32_be();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -336,7 +336,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u64_be.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_u64_be();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -353,7 +353,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int_buf.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_var_int_buf();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),
@@ -370,7 +370,7 @@ mod tests {
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int.errors {
             let buf = Vec::<u8>::from_strict_hex(&test_vector.hex).expect("Failed to decode hex");
-            let mut reader = IsoBufReader::new(buf);
+            let mut reader = BufReader::new(buf);
             let result = reader.read_var_int();
             match result {
                 Ok(_) => panic!("Expected an error, but got Ok(_)"),

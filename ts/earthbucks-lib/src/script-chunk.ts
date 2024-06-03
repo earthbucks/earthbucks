@@ -86,19 +86,19 @@ export class ScriptChunk {
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new BufWriter().writeU8(new U8(this.buf.length)).toSysBuf(),
+        new BufWriter().writeU8(new U8(this.buf.length)).toBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new BufWriter().writeU16BE(new U16(this.buf.length)).toSysBuf(),
+        new BufWriter().writeU16BE(new U16(this.buf.length)).toBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new BufWriter().writeU32BE(new U32(this.buf.length)).toSysBuf(),
+        new BufWriter().writeU32BE(new U32(this.buf.length)).toBuf(),
         this.buf,
       ]);
     }

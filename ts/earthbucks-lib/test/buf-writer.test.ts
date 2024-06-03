@@ -14,7 +14,7 @@ describe("BufWriter", () => {
     it("should write an unsigned 8-bit integer", () => {
       const u8: U8 = new U8(123);
       bufferWriter.writeU8(u8);
-      const result = bufferWriter.toSysBuf();
+      const result = bufferWriter.toBuf();
       expect(result[0]).toEqual(u8.n);
     });
   });
@@ -23,7 +23,7 @@ describe("BufWriter", () => {
     it("should write an unsigned 16-bit integer in big-endian format", () => {
       const u16: U16 = new U16(12345);
       bufferWriter.writeU16BE(u16);
-      const result = bufferWriter.toSysBuf();
+      const result = bufferWriter.toBuf();
       expect(result.readUInt16BE(0)).toEqual(u16.n);
     });
   });
@@ -32,7 +32,7 @@ describe("BufWriter", () => {
     it("should write an unsigned 32-bit integer in big-endian format", () => {
       const u32: U32 = new U32(1234567890);
       bufferWriter.writeU32BE(u32);
-      const result = bufferWriter.toSysBuf();
+      const result = bufferWriter.toBuf();
       expect(result.readUInt32BE(0)).toEqual(u32.n);
     });
   });
@@ -41,7 +41,7 @@ describe("BufWriter", () => {
     it("should write an unsigned 64-bit integer in big-endian format", () => {
       const u64: U64 = new U64(1234567890123456789n);
       bufferWriter.writeU64BE(u64);
-      const result = bufferWriter.toSysBuf();
+      const result = bufferWriter.toBuf();
       expect(result.readBigInt64BE(0)).toEqual(u64.bn);
     });
   });
@@ -50,7 +50,7 @@ describe("BufWriter", () => {
     it("should write a variable length bigint", () => {
       const bn: U64 = new U64(1234567890123456789n);
       bufferWriter.writeVarInt(bn);
-      const result = bufferWriter.toSysBuf();
+      const result = bufferWriter.toBuf();
       expect(result.toString("hex")).toBe("ff112210f47de98115");
     });
   });

@@ -12,12 +12,12 @@ export class VarInt {
   }
 
   static fromU64(u64: U64) {
-    const buf = new BufWriter().writeVarInt(u64).toSysBuf();
+    const buf = new BufWriter().writeVarInt(u64).toBuf();
     return new VarInt(buf);
   }
 
   static fromU32(u32: U32) {
-    const buf = new BufWriter().writeVarInt(new U64(u32.n)).toSysBuf();
+    const buf = new BufWriter().writeVarInt(new U64(u32.n)).toBuf();
     return new VarInt(buf);
   }
 

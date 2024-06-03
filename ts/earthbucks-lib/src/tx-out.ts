@@ -34,6 +34,6 @@ export class TxOut {
     const scriptBuf = this.script.toEbxBuf();
     writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toEbxBuf());
     writer.write(scriptBuf);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 }

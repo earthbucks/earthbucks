@@ -2,7 +2,7 @@
 
 extern crate num_bigint;
 extern crate num_traits;
-use crate::iso_buf::IsoBuf;
+use crate::ebx_buf::IsoBuf;
 use num_bigint::BigInt;
 use num_traits::ToPrimitive;
 use num_traits::Zero;

@@ -62,7 +62,7 @@ export class Header {
     bw.write(this.workSerHash);
     bw.writeU32BE(this.workParAlgo);
     bw.write(this.workParHash);
-    return bw.toSysBuf();
+    return bw.toBuf();
   }
 
   static fromEbxBuf(buf: SysBuf): Header {
@@ -259,7 +259,7 @@ export class Header {
 
     const newTargetBuf = new BufWriter()
       .writeU256BE(new U256(newTarget))
-      .toSysBuf();
+      .toBuf();
     return FixedBuf.fromBuf(32, newTargetBuf);
   }
 }

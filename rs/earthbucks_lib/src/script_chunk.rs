@@ -1,7 +1,7 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
+use crate::ebx_buf::IsoBuf;
 use crate::ebx_error::EbxError;
-use crate::iso_buf::IsoBuf;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 use crate::opcode::{Opcode, OP, OPCODE_TO_NAME};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -82,19 +82,19 @@ impl ScriptChunk {
             Some(buffer) => {
                 let len = buffer.len();
                 if self.opcode == Opcode::OP_PUSHDATA1 {
-                    let mut writer = IsoBufWriter::new();
+                    let mut writer = BufWriter::new();
                     writer.write_u8(len as u8);
-                    result.extend_from_slice(&writer.to_iso_buf());
+                    result.extend_from_slice(&writer.to_buf());
                     result.extend_from_slice(buffer);
                 } else if self.opcode == Opcode::OP_PUSHDATA2 {
-                    let mut writer = IsoBufWriter::new();
+                    let mut writer = BufWriter::new();
                     writer.write_u16_be(len as u16);
-                    result.extend_from_slice(&writer.to_iso_buf());
+                    result.extend_from_slice(&writer.to_buf());
                     result.extend_from_slice(buffer);
                 } else if self.opcode == Opcode::OP_PUSHDATA4 {
-                    let mut writer = IsoBufWriter::new();
+                    let mut writer = BufWriter::new();
                     writer.write_u32_be(len as u32);
-                    result.extend_from_slice(&writer.to_iso_buf());
+                    result.extend_from_slice(&writer.to_buf());
                     result.extend_from_slice(buffer);
                 }
             }
@@ -104,11 +104,11 @@ impl ScriptChunk {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<ScriptChunk, EbxError> {
-        let mut reader = IsoBufReader::new(buf);
+        let mut reader = BufReader::new(buf);
         ScriptChunk::from_iso_buf_reader(&mut reader)
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<ScriptChunk, EbxError> {
+    pub fn from_iso_buf_reader(reader: &mut BufReader) -> Result<ScriptChunk, EbxError> {
         let opcode = reader.read_u8()?;
         let mut chunk = ScriptChunk::new(opcode, None);
         if opcode == Opcode::OP_PUSHDATA1 {

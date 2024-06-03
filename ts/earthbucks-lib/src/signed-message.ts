@@ -77,6 +77,6 @@ export class SignedMessage {
     writer.write(this.pubKey);
     writer.write(this.mac);
     writer.write(this.message);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 }

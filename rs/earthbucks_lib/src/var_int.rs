@@ -1,6 +1,6 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
 use crate::ebx_error::EbxError;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 
 #[derive(Default)]
 pub struct VarInt {
@@ -14,13 +14,13 @@ impl VarInt {
 
     pub fn from_u64(bn: u64) -> Self {
         let mut varint = Self::new();
-        varint.buf = IsoBufWriter::new().write_var_int(bn).to_iso_buf();
+        varint.buf = BufWriter::new().write_var_int(bn).to_buf();
         varint
     }
 
     pub fn from_u32(num: u32) -> Self {
         let mut varint = Self::new();
-        varint.buf = IsoBufWriter::new().write_var_int(num as u64).to_iso_buf();
+        varint.buf = BufWriter::new().write_var_int(num as u64).to_buf();
         varint
     }
 
@@ -29,10 +29,10 @@ impl VarInt {
     }
 
     pub fn to_u64(&self) -> Result<u64, EbxError> {
-        IsoBufReader::new(self.buf.clone()).read_var_int()
+        BufReader::new(self.buf.clone()).read_var_int()
     }
 
-    pub fn from_iso_buf_reader(br: &mut IsoBufReader) -> Result<Self, EbxError> {
+    pub fn from_iso_buf_reader(br: &mut BufReader) -> Result<Self, EbxError> {
         let buf = br.read_var_int_buf()?;
         Ok(VarInt { buf })
     }

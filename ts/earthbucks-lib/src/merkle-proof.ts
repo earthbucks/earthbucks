@@ -79,7 +79,7 @@ export class MerkleProof {
       bw.write(sibling);
       bw.writeU8(new U8(isLeft ? 1 : 0));
     }
-    return bw.toSysBuf();
+    return bw.toBuf();
   }
 
   static fromEbxBuf(buf: SysBuf): MerkleProof {

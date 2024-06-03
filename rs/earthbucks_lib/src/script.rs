@@ -1,5 +1,5 @@
+use crate::buf_reader::BufReader;
 use crate::ebx_error::EbxError;
-use crate::iso_buf_reader::IsoBufReader;
 use crate::opcode::Opcode;
 use crate::pub_key::PubKey;
 use crate::script_chunk::ScriptChunk;
@@ -47,11 +47,11 @@ impl Script {
     }
 
     pub fn from_iso_buf(arr: &[u8]) -> Result<Self, EbxError> {
-        let mut reader = IsoBufReader::new(arr.to_vec());
+        let mut reader = BufReader::new(arr.to_vec());
         Self::from_iso_buf_reader(&mut reader)
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+    pub fn from_iso_buf_reader(reader: &mut BufReader) -> Result<Self, EbxError> {
         let mut script = Self::new(Vec::new());
 
         while !reader.eof() {
@@ -534,7 +534,7 @@ impl Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::iso_buf::IsoBuf;
+    use crate::ebx_buf::IsoBuf;
     use crate::script_chunk::ScriptChunk;
     use serde::Deserialize;
 

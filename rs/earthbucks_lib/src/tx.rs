@@ -1,9 +1,9 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
+use crate::ebx_buf::IsoBuf;
 use crate::ebx_error::EbxError;
 use crate::hash::blake3_hash;
 use crate::hash::double_blake3_hash;
-use crate::iso_buf::IsoBuf;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 use crate::pub_key::PubKey;
 use crate::script::Script;
 use crate::tx_in::TxIn;
@@ -50,15 +50,15 @@ impl Tx {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
-        let mut reader = IsoBufReader::new(buf);
+        let mut reader = BufReader::new(buf);
         Self::from_iso_buf_reader(&mut reader)
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        self.to_buffer_writer().to_iso_buf()
+        self.to_buffer_writer().to_buf()
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+    pub fn from_iso_buf_reader(reader: &mut BufReader) -> Result<Self, EbxError> {
         let version = reader.read_u8()?;
         let input_count = reader.read_var_int()? as usize;
         let mut inputs = Vec::new();
@@ -74,8 +74,8 @@ impl Tx {
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
-    pub fn to_buffer_writer(&self) -> IsoBufWriter {
-        let mut writer = IsoBufWriter::new();
+    pub fn to_buffer_writer(&self) -> BufWriter {
+        let mut writer = BufWriter::new();
         writer.write_u8(self.version);
         writer.write(VarInt::from_u64(self.inputs.len() as u64).to_iso_buf());
         for input in &self.inputs {
@@ -206,7 +206,7 @@ impl Tx {
             outputs_hash = double_blake3_hash(&self.outputs[input_index].to_iso_buf());
         }
 
-        let mut bw = IsoBufWriter::new();
+        let mut bw = BufWriter::new();
         bw.write_u8(self.version);
         bw.write(prevouts_hash.to_vec());
         bw.write(lock_rel_hash.to_vec());
@@ -219,7 +219,7 @@ impl Tx {
         bw.write(outputs_hash.to_vec());
         bw.write_u64_be(self.lock_abs);
         bw.write_u8(hash_type);
-        bw.to_iso_buf()
+        bw.to_buf()
     }
 
     pub fn sighash_no_cache(
@@ -402,7 +402,7 @@ mod tests {
         let tx = Tx::new(version, inputs, outputs, lock_num);
 
         let buf = tx.to_iso_buf();
-        let mut reader = IsoBufReader::new(buf);
+        let mut reader = BufReader::new(buf);
         let tx2 = Tx::from_iso_buf_reader(&mut reader).unwrap();
         assert_eq!(tx.version, tx2.version);
         assert_eq!(tx.inputs.len(), tx2.inputs.len());

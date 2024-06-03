@@ -1,6 +1,6 @@
+use crate::buf_reader::BufReader;
+use crate::buf_writer::BufWriter;
 use crate::ebx_error::EbxError;
-use crate::iso_buf_reader::IsoBufReader;
-use crate::iso_buf_writer::IsoBufWriter;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
@@ -29,7 +29,7 @@ impl TxIn {
     }
 
     pub fn from_iso_buf(buf: Vec<u8>) -> Result<Self, EbxError> {
-        let mut reader = IsoBufReader::new(buf);
+        let mut reader = BufReader::new(buf);
         let input_tx_id: [u8; 32] = reader.read(32)?.try_into().unwrap();
         let input_tx_index = reader.read_u32_be()?;
         let size = reader.read_u8()? as usize;
@@ -38,7 +38,7 @@ impl TxIn {
         Ok(Self::new(input_tx_id, input_tx_index, script, lock_rel))
     }
 
-    pub fn from_iso_buf_reader(reader: &mut IsoBufReader) -> Result<Self, EbxError> {
+    pub fn from_iso_buf_reader(reader: &mut BufReader) -> Result<Self, EbxError> {
         let input_tx_id: [u8; 32] = reader.read(32)?.try_into().unwrap();
         let input_tx_index = reader.read_u32_be()?;
         let size = reader.read_var_int()? as usize;
@@ -48,14 +48,14 @@ impl TxIn {
     }
 
     pub fn to_iso_buf(&self) -> Vec<u8> {
-        let mut writer = IsoBufWriter::new();
+        let mut writer = BufWriter::new();
         writer.write(self.input_tx_id.clone().to_vec());
         writer.write_u32_be(self.input_tx_out_num);
         let script_buf = self.script.to_iso_buf();
         writer.write(VarInt::from_u64(script_buf.len() as u64).to_iso_buf());
         writer.write(script_buf);
         writer.write_u32_be(self.lock_rel);
-        writer.to_iso_buf()
+        writer.to_buf()
     }
 
     pub fn is_null(&self) -> bool {
@@ -129,14 +129,14 @@ mod tests {
             Err(_) => panic!("Failed to convert script to u8 vec"),
         };
 
-        let mut writer = IsoBufWriter::new();
+        let mut writer = BufWriter::new();
         writer.write(input_tx_id.clone().to_vec());
         writer.write_u32_be(input_tx_index);
         writer.write_var_int(script_v8_vec.len() as u64);
         writer.write(script_v8_vec);
         writer.write_u32_be(lock_rel);
 
-        let mut reader = IsoBufReader::new(writer.to_iso_buf());
+        let mut reader = BufReader::new(writer.to_buf());
         let tx_input = TxIn::from_iso_buf_reader(&mut reader).unwrap();
 
         let script2 = tx_input.script;

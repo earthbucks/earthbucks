@@ -65,7 +65,7 @@ export class Tx {
       writer.write(output.toEbxBuf());
     }
     writer.writeU64BE(this.lockAbs);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 
   toIsoHex(): string {
@@ -107,7 +107,7 @@ export class Tx {
       writer.write(input.inputTxId);
       writer.writeU32BE(input.inputTxNOut);
     }
-    return Hash.doubleBlake3Hash(writer.toSysBuf());
+    return Hash.doubleBlake3Hash(writer.toBuf());
   }
 
   hashLockRel(): FixedBuf<32> {
@@ -115,7 +115,7 @@ export class Tx {
     for (const input of this.inputs) {
       writer.writeU32BE(input.lockRel);
     }
-    return Hash.doubleBlake3Hash(writer.toSysBuf());
+    return Hash.doubleBlake3Hash(writer.toBuf());
   }
 
   hashOutputs(): FixedBuf<32> {
@@ -123,7 +123,7 @@ export class Tx {
     for (const output of this.outputs) {
       writer.write(output.toEbxBuf());
     }
-    return Hash.doubleBlake3Hash(writer.toSysBuf());
+    return Hash.doubleBlake3Hash(writer.toBuf());
   }
 
   sighashPreimage(
@@ -189,7 +189,7 @@ export class Tx {
     writer.write(outputsHash);
     writer.writeU64BE(this.lockAbs);
     writer.writeU8(hashType);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 
   sighashNoCache(

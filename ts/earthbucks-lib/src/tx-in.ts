@@ -47,7 +47,7 @@ export class TxIn {
     writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toEbxBuf());
     writer.write(scriptBuf);
     writer.writeU32BE(this.lockRel);
-    return writer.toSysBuf();
+    return writer.toBuf();
   }
 
   isNull(): boolean {

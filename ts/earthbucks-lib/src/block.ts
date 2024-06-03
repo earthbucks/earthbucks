@@ -37,7 +37,7 @@ export class Block {
   }
 
   toEbxBuf(): SysBuf {
-    return this.toEbxBufWriter(new BufWriter()).toSysBuf();
+    return this.toEbxBufWriter(new BufWriter()).toBuf();
   }
 
   static fromEbxBuf(buf: SysBuf): Block {

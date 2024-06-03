@@ -25,7 +25,7 @@ describe("Block", () => {
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bw = block.toEbxBufWriter(new BufWriter());
-    expect(bw.toSysBuf().length).toBeGreaterThan(0);
+    expect(bw.toBuf().length).toBeGreaterThan(0);
   });
 
   test("toEbxBuf", () => {
@@ -65,7 +65,7 @@ describe("Block", () => {
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bw = block.toEbxBufWriter(new BufWriter());
-    const buf = bw.toSysBuf();
+    const buf = bw.toBuf();
     const br = new BufReader(buf);
     const block2 = Block.fromEbxBufReader(br);
     expect(block2.header.version.n).toBe(bh.version.n);
