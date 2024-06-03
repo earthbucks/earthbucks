@@ -1,8 +1,8 @@
 import { Header } from "./header.js";
 import { Tx } from "./tx.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { SysBuf } from "./iso-buf.js";
+import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { SysBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Block {
@@ -14,34 +14,34 @@ export class Block {
     this.txs = txs;
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Block {
-    const header = Header.fromIsoBufReader(br);
+  static fromEbxBufReader(br: BufReader): Block {
+    const header = Header.fromEbxBufReader(br);
     const txCount = br.readVarInt().n;
 
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
-      const tx = Tx.fromIsoBufReader(br);
+      const tx = Tx.fromEbxBufReader(br);
       txs.push(tx);
     }
 
     return new Block(header, txs);
   }
 
-  toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
-    bw.write(this.header.toIsoBuf());
+  toEbxBufWriter(bw: BufWriter): BufWriter {
+    bw.write(this.header.toEbxBuf());
     bw.writeVarInt(new U64(this.txs.length));
     this.txs.forEach((tx) => {
-      bw.write(tx.toIsoBuf());
+      bw.write(tx.toEbxBuf());
     });
     return bw;
   }
 
-  toIsoBuf(): SysBuf {
-    return this.toIsoBufWriter(new IsoBufWriter()).toIsoBuf();
+  toEbxBuf(): SysBuf {
+    return this.toEbxBufWriter(new BufWriter()).toSysBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): Block {
-    return Block.fromIsoBufReader(new IsoBufReader(buf));
+  static fromEbxBuf(buf: SysBuf): Block {
+    return Block.fromEbxBufReader(new BufReader(buf));
   }
 
   isGenesis(): boolean {

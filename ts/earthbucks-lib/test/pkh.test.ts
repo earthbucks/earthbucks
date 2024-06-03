@@ -3,13 +3,13 @@ import { KeyPair } from "../src/key-pair.js";
 import fs from "fs";
 import path from "path";
 import { Pkh } from "../src/pkh.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 import { PubKey } from "../src/pub-key.js";
 
 describe("Pkh", () => {
   test("Pkh", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toEbxBuf());
     expect(pkh.buf).toBeDefined();
   });
 

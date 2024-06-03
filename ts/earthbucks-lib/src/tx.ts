@@ -1,21 +1,21 @@
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { VarInt } from "./var-int.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class HashCache {
-  public hashPrevouts?: FixedIsoBuf<32>;
-  public hashLockRel?: FixedIsoBuf<32>;
-  public hashOutputs?: FixedIsoBuf<32>;
+  public hashPrevouts?: FixedEbxBuf<32>;
+  public hashLockRel?: FixedEbxBuf<32>;
+  public hashOutputs?: FixedEbxBuf<32>;
 }
 
 export class Tx {
@@ -31,50 +31,50 @@ export class Tx {
     this.lockAbs = lockAbs;
   }
 
-  static fromIsoBuf(buf: SysBuf): Tx {
-    return Tx.fromIsoBufReader(new IsoBufReader(buf));
+  static fromEbxBuf(buf: SysBuf): Tx {
+    return Tx.fromEbxBufReader(new BufReader(buf));
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Tx {
+  static fromEbxBufReader(reader: BufReader): Tx {
     const version = reader.readU8();
     const numInputs = reader.readVarInt();
     const inputs = [];
     for (let i = 0; i < numInputs.n; i++) {
-      const txIn = TxIn.fromIsoBufReader(reader);
+      const txIn = TxIn.fromEbxBufReader(reader);
       inputs.push(txIn);
     }
     const numOutputs = reader.readVarInt();
     const outputs = [];
     for (let i = 0; i < numOutputs.n; i++) {
-      const txOut = TxOut.fromIsoBufReader(reader);
+      const txOut = TxOut.fromEbxBufReader(reader);
       outputs.push(txOut);
     }
     const lockNum = reader.readU64BE();
     return new Tx(version, inputs, outputs, lockNum);
   }
 
-  toIsoBuf(): SysBuf {
-    const writer = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const writer = new BufWriter();
     writer.writeU8(this.version);
-    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toEbxBuf());
     for (const input of this.inputs) {
-      writer.write(input.toIsoBuf());
+      writer.write(input.toEbxBuf());
     }
-    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toIsoBuf());
+    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toEbxBuf());
     for (const output of this.outputs) {
-      writer.write(output.toIsoBuf());
+      writer.write(output.toEbxBuf());
     }
     writer.writeU64BE(this.lockAbs);
-    return writer.toIsoBuf();
+    return writer.toSysBuf();
   }
 
   toIsoHex(): string {
-    return this.toIsoBuf().toString("hex");
+    return this.toEbxBuf().toString("hex");
   }
 
   static fromIsoHex(hex: string): Tx {
-    const buf = FixedIsoBuf.fromStrictHex(hex.length / 2, hex);
-    return Tx.fromIsoBuf(buf);
+    const buf = FixedEbxBuf.fromStrictHex(hex.length / 2, hex);
+    return Tx.fromEbxBuf(buf);
   }
 
   static fromCoinbase(
@@ -93,37 +93,37 @@ export class Tx {
     return this.inputs.length === 1 && this.inputs[0].isCoinbase();
   }
 
-  blake3Hash(): FixedIsoBuf<32> {
-    return Hash.blake3Hash(this.toIsoBuf());
+  blake3Hash(): FixedEbxBuf<32> {
+    return Hash.blake3Hash(this.toEbxBuf());
   }
 
-  id(): FixedIsoBuf<32> {
-    return Hash.doubleBlake3Hash(this.toIsoBuf());
+  id(): FixedEbxBuf<32> {
+    return Hash.doubleBlake3Hash(this.toEbxBuf());
   }
 
-  hashPrevouts(): FixedIsoBuf<32> {
-    const writer = new IsoBufWriter();
+  hashPrevouts(): FixedEbxBuf<32> {
+    const writer = new BufWriter();
     for (const input of this.inputs) {
       writer.write(input.inputTxId);
       writer.writeU32BE(input.inputTxNOut);
     }
-    return Hash.doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toSysBuf());
   }
 
-  hashLockRel(): FixedIsoBuf<32> {
-    const writer = new IsoBufWriter();
+  hashLockRel(): FixedEbxBuf<32> {
+    const writer = new BufWriter();
     for (const input of this.inputs) {
       writer.writeU32BE(input.lockRel);
     }
-    return Hash.doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toSysBuf());
   }
 
-  hashOutputs(): FixedIsoBuf<32> {
-    const writer = new IsoBufWriter();
+  hashOutputs(): FixedEbxBuf<32> {
+    const writer = new BufWriter();
     for (const output of this.outputs) {
-      writer.write(output.toIsoBuf());
+      writer.write(output.toEbxBuf());
     }
-    return Hash.doubleBlake3Hash(writer.toIsoBuf());
+    return Hash.doubleBlake3Hash(writer.toSysBuf());
   }
 
   sighashPreimage(
@@ -137,9 +137,9 @@ export class Tx {
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
 
-    let prevoutsHash = FixedIsoBuf.alloc(32);
-    let lockRelHash = FixedIsoBuf.alloc(32);
-    let outputsHash = FixedIsoBuf.alloc(32);
+    let prevoutsHash = FixedEbxBuf.alloc(32);
+    let lockRelHash = FixedEbxBuf.alloc(32);
+    let outputsHash = FixedEbxBuf.alloc(32);
 
     if (!(hashType.n & SIGHASH_ANYONECANPAY)) {
       if (!hashCache.hashPrevouts) {
@@ -172,11 +172,11 @@ export class Tx {
       inputIndex.n < this.outputs.length
     ) {
       outputsHash = Hash.doubleBlake3Hash(
-        this.outputs[inputIndex.n].toIsoBuf(),
+        this.outputs[inputIndex.n].toEbxBuf(),
       );
     }
 
-    const writer = new IsoBufWriter();
+    const writer = new BufWriter();
     writer.writeU8(this.version);
     writer.write(prevoutsHash);
     writer.write(lockRelHash);
@@ -189,7 +189,7 @@ export class Tx {
     writer.write(outputsHash);
     writer.writeU64BE(this.lockAbs);
     writer.writeU8(hashType);
-    return writer.toIsoBuf();
+    return writer.toSysBuf();
   }
 
   sighashNoCache(
@@ -236,7 +236,7 @@ export class Tx {
     hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = FixedIsoBuf.fromBuf(
+    const sigBuf = FixedEbxBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
     );
@@ -259,7 +259,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = FixedIsoBuf.fromBuf(
+    const sigBuf = FixedEbxBuf.fromBuf(
       64,
       SysBuf.from(ecdsaSign(hash, privateKey).signature),
     );

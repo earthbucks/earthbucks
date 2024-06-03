@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleProof } from "../src/merkle-proof.js";
 import * as Hash from "../src/hash.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 
 describe("MerkleProof", () => {
   test("generateProofsAndRoot with 1 data", () => {
@@ -121,9 +121,9 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
     const proof1 = proofs[0];
-    const buf1 = proof1.toIsoBuf();
-    const proof1FromBuf = MerkleProof.fromIsoBuf(buf1);
-    const buf2 = proof1FromBuf.toIsoBuf();
+    const buf1 = proof1.toEbxBuf();
+    const proof1FromBuf = MerkleProof.fromEbxBuf(buf1);
+    const buf2 = proof1FromBuf.toEbxBuf();
     expect(SysBuf.compare(buf1, buf2)).toBe(0);
   });
 

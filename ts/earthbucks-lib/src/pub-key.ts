@@ -1,4 +1,4 @@
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { PrivKey } from "./priv-key.js";
 import * as Hash from "./hash.js";
 import {
@@ -11,19 +11,19 @@ import {
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
-  buf: FixedIsoBuf<33>;
+  buf: FixedEbxBuf<33>;
 
-  constructor(buf: FixedIsoBuf<33>) {
+  constructor(buf: FixedEbxBuf<33>) {
     this.buf = buf;
   }
 
   static fromPrivKey(privKey: PrivKey): PubKey {
-    const buf = privKey.toPubKeyIsoBuf();
-    const isoBuf33 = (FixedIsoBuf<33>).fromBuf(33, buf);
+    const buf = privKey.toPubKeyEbxBuf();
+    const isoBuf33 = (FixedEbxBuf<33>).fromBuf(33, buf);
     return new PubKey(isoBuf33);
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<33>): PubKey {
+  static fromEbxBuf(buf: FixedEbxBuf<33>): PubKey {
     if (buf.length > PubKey.SIZE) {
       throw new TooMuchDataError();
     }
@@ -33,7 +33,7 @@ export class PubKey {
     return new PubKey(buf);
   }
 
-  toIsoBuf(): FixedIsoBuf<33> {
+  toEbxBuf(): FixedEbxBuf<33> {
     return this.buf;
   }
 
@@ -42,8 +42,8 @@ export class PubKey {
   }
 
   static fromIsoHex(hex: string): PubKey {
-    const buf = FixedIsoBuf.fromStrictHex(PubKey.SIZE, hex);
-    return PubKey.fromIsoBuf(buf);
+    const buf = FixedEbxBuf.fromStrictHex(PubKey.SIZE, hex);
+    return PubKey.fromEbxBuf(buf);
   }
 
   toIsoStr(): string {
@@ -58,14 +58,14 @@ export class PubKey {
       throw new InvalidEncodingError();
     }
     const checkHex = str.slice(6, 14);
-    const checkBuf = FixedIsoBuf.fromStrictHex(4, checkHex);
-    const decoded33 = FixedIsoBuf.fromBase58(33, str.slice(14));
+    const checkBuf = FixedEbxBuf.fromStrictHex(4, checkHex);
+    const decoded33 = FixedEbxBuf.fromBase58(33, str.slice(14));
     const checkHash = Hash.blake3Hash(decoded33);
     const checkSum = checkHash.subarray(0, 4);
     if (!checkBuf.equals(checkSum)) {
       throw new InvalidChecksumError();
     }
-    return PubKey.fromIsoBuf(decoded33);
+    return PubKey.fromEbxBuf(decoded33);
   }
 
   static isValidStringFmt(str: string): boolean {

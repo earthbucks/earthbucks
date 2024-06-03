@@ -1,4 +1,4 @@
-import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
+import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxSignature {
@@ -9,23 +9,23 @@ export class TxSignature {
   static readonly SIZE = 65;
 
   hashType: U8;
-  sigBuf: FixedIsoBuf<64>;
+  sigBuf: FixedEbxBuf<64>;
 
-  constructor(hashType: U8, sigBuf: FixedIsoBuf<64>) {
+  constructor(hashType: U8, sigBuf: FixedEbxBuf<64>) {
     this.hashType = hashType;
     this.sigBuf = sigBuf;
   }
 
-  toIsoBuf(): SysBuf {
+  toEbxBuf(): SysBuf {
     const hashTypeBuf = SysBuf.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType.n);
     return SysBuf.concat([hashTypeBuf, this.sigBuf]);
   }
 
-  static fromIsoBuf(buf: SysBuf): TxSignature {
+  static fromEbxBuf(buf: SysBuf): TxSignature {
     const hashType = new U8(buf[0]);
     const sigBuf = buf.subarray(1);
-    const sigFixedIsoBuf = FixedIsoBuf.fromBuf(64, sigBuf);
-    return new TxSignature(hashType, sigFixedIsoBuf);
+    const sigFixedEbxBuf = FixedEbxBuf.fromBuf(64, sigBuf);
+    return new TxSignature(hashType, sigFixedEbxBuf);
   }
 }

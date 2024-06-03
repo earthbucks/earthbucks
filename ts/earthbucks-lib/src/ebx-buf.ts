@@ -31,8 +31,8 @@ function decodeHex(hex: string): SysBuf {
   return sysBuf;
 }
 
-class IsoBuf extends SysBuf {
-  static fromBuf<N extends number>(size: N, buf: SysBuf): IsoBuf {
+class EbxBuf extends SysBuf {
+  static fromBuf<N extends number>(size: N, buf: SysBuf): EbxBuf {
     if (buf.length !== size) {
       throw new InvalidSizeError();
     }
@@ -40,28 +40,28 @@ class IsoBuf extends SysBuf {
     // that is actually deprecated
     const newBuf = SysBuf.alloc(size);
     newBuf.set(buf);
-    Object.setPrototypeOf(newBuf, IsoBuf.prototype);
-    const isoBuf = newBuf as IsoBuf;
+    Object.setPrototypeOf(newBuf, EbxBuf.prototype);
+    const isoBuf = newBuf as EbxBuf;
     return isoBuf;
   }
 
-  static alloc(size: number, fill?: number): IsoBuf {
-    return IsoBuf.fromBuf(size, SysBuf.alloc(size, fill));
+  static alloc(size: number, fill?: number): EbxBuf {
+    return EbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex(size: number, hex: string): IsoBuf {
+  static fromStrictHex(size: number, hex: string): EbxBuf {
     const buf = decodeHex(hex);
-    return IsoBuf.fromBuf(size, buf);
+    return EbxBuf.fromBuf(size, buf);
   }
 
   toStrictHex(): string {
     return encodeHex(this);
   }
 
-  static fromBase58(size: number, base58: string): IsoBuf {
+  static fromBase58(size: number, base58: string): EbxBuf {
     try {
       const buf = SysBuf.from(bs58.decode(base58));
-      return IsoBuf.fromBuf(size, buf);
+      return EbxBuf.fromBuf(size, buf);
     } catch (err) {
       throw new InvalidEncodingError();
     }
@@ -74,7 +74,7 @@ class IsoBuf extends SysBuf {
 
 const sizeSymbol = Symbol("size");
 
-class FixedIsoBuf<N extends number> extends IsoBuf {
+class FixedEbxBuf<N extends number> extends EbxBuf {
   [sizeSymbol]: N;
 
   constructor(size: N, ...args: ConstructorParameters<typeof SysBuf>) {
@@ -85,7 +85,7 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     this[sizeSymbol] = size;
   }
 
-  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedIsoBuf<N> {
+  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedEbxBuf<N> {
     if (buf.length !== size) {
       throw new InvalidSizeError();
     }
@@ -93,28 +93,28 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
     // that is actually deprecated
     const newBuf = Buffer.alloc(size);
     newBuf.set(buf);
-    Object.setPrototypeOf(newBuf, FixedIsoBuf.prototype);
-    const fixedIsoBufN = newBuf as FixedIsoBuf<N>;
-    fixedIsoBufN[sizeSymbol] = size;
-    return fixedIsoBufN;
+    Object.setPrototypeOf(newBuf, FixedEbxBuf.prototype);
+    const fixedEbxBufN = newBuf as FixedEbxBuf<N>;
+    fixedEbxBufN[sizeSymbol] = size;
+    return fixedEbxBufN;
   }
 
-  static alloc<N extends number>(size: N, fill?: number): FixedIsoBuf<N> {
-    return FixedIsoBuf.fromBuf(size, SysBuf.alloc(size, fill));
+  static alloc<N extends number>(size: N, fill?: number): FixedEbxBuf<N> {
+    return FixedEbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex<N extends number>(size: N, hex: string): FixedIsoBuf<N> {
+  static fromStrictHex<N extends number>(size: N, hex: string): FixedEbxBuf<N> {
     const buf = decodeHex(hex);
-    return FixedIsoBuf.fromBuf(size, buf);
+    return FixedEbxBuf.fromBuf(size, buf);
   }
 
   toStrictHex(): string {
     return encodeHex(this);
   }
 
-  static fromBase58<N extends number>(size: N, base58: string): FixedIsoBuf<N> {
+  static fromBase58<N extends number>(size: N, base58: string): FixedEbxBuf<N> {
     const buf = SysBuf.from(bs58.decode(base58));
-    return FixedIsoBuf.fromBuf(size, buf);
+    return FixedEbxBuf.fromBuf(size, buf);
   }
 
   toBase58(): string {
@@ -122,4 +122,4 @@ class FixedIsoBuf<N extends number> extends IsoBuf {
   }
 }
 
-export { SysBuf, FixedIsoBuf, IsoBuf };
+export { SysBuf, FixedEbxBuf, EbxBuf as EbxBuf };

@@ -4,7 +4,7 @@ import { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
 import * as Hash from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 import { PubKey } from "./pub-key.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -193,103 +193,103 @@ export class ScriptInterpreter {
         case Opcode.OP_1NEGATE:
           {
             const scriptNum = new ScriptNum(BigInt(-1));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_1:
           {
             const scriptNum = new ScriptNum(BigInt(1));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_2:
           {
             const scriptNum = new ScriptNum(BigInt(2));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_3:
           {
             const scriptNum = new ScriptNum(BigInt(3));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_4:
           {
             const scriptNum = new ScriptNum(BigInt(4));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_5:
           {
             const scriptNum = new ScriptNum(BigInt(5));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_6:
           {
             const scriptNum = new ScriptNum(BigInt(6));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_7:
           {
             const scriptNum = new ScriptNum(BigInt(7));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_8:
           {
             const scriptNum = new ScriptNum(BigInt(8));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_9:
           {
             const scriptNum = new ScriptNum(BigInt(9));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_10:
           {
             const scriptNum = new ScriptNum(BigInt(10));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_11:
           {
             const scriptNum = new ScriptNum(BigInt(11));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_12:
           {
             const scriptNum = new ScriptNum(BigInt(12));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_13:
           {
             const scriptNum = new ScriptNum(BigInt(13));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_14:
           {
             const scriptNum = new ScriptNum(BigInt(14));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_15:
           {
             const scriptNum = new ScriptNum(BigInt(15));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_16:
           {
             const scriptNum = new ScriptNum(BigInt(16));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_VERIFY:
@@ -408,7 +408,7 @@ export class ScriptInterpreter {
         case Opcode.OP_DEPTH:
           {
             const scriptNum = new ScriptNum(BigInt(this.stack.length));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_DROP:
@@ -455,7 +455,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(
+            const scriptNum = ScriptNum.fromEbxBuf(
               this.stack.pop() as SysBuf,
             ).num;
             if (scriptNum < 0 || scriptNum >= this.stack.length) {
@@ -472,7 +472,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(
+            const scriptNum = ScriptNum.fromEbxBuf(
               this.stack.pop() as SysBuf,
             ).num;
             if (scriptNum < 0 || scriptNum >= this.stack.length) {
@@ -537,8 +537,8 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const len = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
-            const offset = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
+            const len = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
+            const offset = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
             const buf = this.stack.pop() as SysBuf;
             if (offset < 0 || len < 0 || offset + len > buf.length) {
               this.errStr = "invalid stack operation";
@@ -553,7 +553,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const len = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
+            const len = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
             const buf = this.stack.pop() as SysBuf;
             if (len < 0 || len > buf.length) {
               this.errStr = "invalid stack operation";
@@ -568,7 +568,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const len = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
+            const len = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
             const buf = this.stack.pop() as SysBuf;
             if (len < 0 || len > buf.length) {
               this.errStr = "invalid stack operation";
@@ -585,7 +585,7 @@ export class ScriptInterpreter {
             }
             const buf = this.stack[this.stack.length - 1];
             const scriptNum = new ScriptNum(BigInt(buf.length));
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_INVERT:
@@ -690,9 +690,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num++;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_1SUB:
@@ -701,9 +701,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num--;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_2MUL:
@@ -712,9 +712,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num *= BigInt(2);
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_2DIV:
@@ -723,9 +723,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num /= BigInt(2);
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_NEGATE:
@@ -734,9 +734,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num = -scriptNum.num;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_ABS:
@@ -745,9 +745,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num = scriptNum.num < 0 ? -scriptNum.num : scriptNum.num;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_NOT:
@@ -756,9 +756,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num = scriptNum.num === 0n ? 1n : 0n;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_0NOTEQUAL:
@@ -767,9 +767,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum.num = scriptNum.num === 0n ? 0n : 1n;
-            this.stack.push(scriptNum.toIsoBuf());
+            this.stack.push(scriptNum.toEbxBuf());
           }
           break;
         case Opcode.OP_ADD:
@@ -778,10 +778,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num += scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_SUB:
@@ -790,10 +790,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num -= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_MUL:
@@ -802,10 +802,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num *= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_DIV:
@@ -814,14 +814,14 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             if (scriptNum2.num === 0n) {
               this.errStr = "division by zero";
               break loop;
             }
             scriptNum1.num /= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_MOD:
@@ -830,14 +830,14 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             if (scriptNum2.num === 0n) {
               this.errStr = "division by zero";
               break loop;
             }
             scriptNum1.num %= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_LSHIFT:
@@ -846,14 +846,14 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             if (scriptNum2.num < 0n) {
               this.errStr = "invalid shift";
               break loop;
             }
             scriptNum1.num <<= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_RSHIFT:
@@ -862,14 +862,14 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             if (scriptNum2.num < 0n) {
               this.errStr = "invalid shift";
               break loop;
             }
             scriptNum1.num >>= scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_BOOLAND:
@@ -878,11 +878,11 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num =
               scriptNum1.num !== 0n && scriptNum2.num !== 0n ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_BOOLOR:
@@ -891,11 +891,11 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num =
               scriptNum1.num !== 0n || scriptNum2.num !== 0n ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_NUMEQUAL:
@@ -904,10 +904,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num === scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_NUMEQUALVERIFY:
@@ -916,8 +916,8 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             if (scriptNum1.num !== scriptNum2.num) {
               this.errStr = "NUMEQUALVERIFY failed";
               break loop;
@@ -930,10 +930,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num !== scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_LESSTHAN:
@@ -942,10 +942,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num < scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_GREATERTHAN:
@@ -954,10 +954,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num > scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_LESSTHANOREQUAL:
@@ -966,10 +966,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num <= scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_GREATERTHANOREQUAL:
@@ -978,10 +978,10 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num = scriptNum1.num >= scriptNum2.num ? 1n : 0n;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_MIN:
@@ -990,11 +990,11 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num =
               scriptNum1.num < scriptNum2.num ? scriptNum1.num : scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_MAX:
@@ -1003,11 +1003,11 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum2 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
-            const scriptNum1 = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNum2 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
+            const scriptNum1 = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             scriptNum1.num =
               scriptNum1.num > scriptNum2.num ? scriptNum1.num : scriptNum2.num;
-            this.stack.push(scriptNum1.toIsoBuf());
+            this.stack.push(scriptNum1.toEbxBuf());
           }
           break;
         case Opcode.OP_WITHIN:
@@ -1017,13 +1017,13 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNumMax = ScriptNum.fromIsoBuf(
+            const scriptNumMax = ScriptNum.fromEbxBuf(
               this.stack.pop() as SysBuf,
             );
-            const scriptNumMin = ScriptNum.fromIsoBuf(
+            const scriptNumMin = ScriptNum.fromEbxBuf(
               this.stack.pop() as SysBuf,
             );
-            const scriptNumX = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf);
+            const scriptNumX = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf);
             const within =
               scriptNumX.num >= scriptNumMin.num &&
               scriptNumX.num < scriptNumMax.num;
@@ -1067,9 +1067,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid signature length";
               break loop;
             }
-            const signature = TxSignature.fromIsoBuf(sigBuf);
+            const signature = TxSignature.fromEbxBuf(sigBuf);
 
-            const execScriptBuf = this.script.toIsoBuf();
+            const execScriptBuf = this.script.toEbxBuf();
 
             const success = this.tx.verifyWithCache(
               this.nIn,
@@ -1094,7 +1094,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const nKeys = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
+            const nKeys = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
             if (nKeys < 0 || nKeys > 16) {
               this.errStr = "invalid number of keys";
               break loop;
@@ -1112,7 +1112,7 @@ export class ScriptInterpreter {
               }
               pubKeys.push(pubKeyBuf);
             }
-            const nSigs = ScriptNum.fromIsoBuf(this.stack.pop() as SysBuf).num;
+            const nSigs = ScriptNum.fromEbxBuf(this.stack.pop() as SysBuf).num;
             if (nSigs < 0 || nSigs > nKeys) {
               this.errStr = "invalid number of signatures";
               break loop;
@@ -1130,7 +1130,7 @@ export class ScriptInterpreter {
               }
               sigs.push(sigBuf);
             }
-            const execScriptBuf = this.script.toIsoBuf();
+            const execScriptBuf = this.script.toEbxBuf();
 
             let matchedSigs = 0n;
             for (let i = 0; i < nSigs; i++) {
@@ -1138,7 +1138,7 @@ export class ScriptInterpreter {
                 const success = this.tx.verifyWithCache(
                   this.nIn,
                   pubKeys[j],
-                  TxSignature.fromIsoBuf(sigs[i]),
+                  TxSignature.fromEbxBuf(sigs[i]),
                   execScriptBuf,
                   this.value,
                   this.hashCache,
@@ -1165,7 +1165,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(
+            const scriptNum = ScriptNum.fromEbxBuf(
               this.stack[this.stack.length - 1],
             );
             if (scriptNum.num < 0n) {
@@ -1184,7 +1184,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const scriptNum = ScriptNum.fromIsoBuf(
+            const scriptNum = ScriptNum.fromEbxBuf(
               this.stack[this.stack.length - 1],
             );
             if (scriptNum.num < 0n) {

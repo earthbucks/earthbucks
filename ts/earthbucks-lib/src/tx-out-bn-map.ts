@@ -1,5 +1,5 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxOutBnMap {
@@ -16,8 +16,8 @@ export class TxOutBnMap {
     return `${txIdStr}:${outputIndexStr}`;
   }
 
-  static nameToTxId(name: string): FixedIsoBuf<32> {
-    return FixedIsoBuf.fromStrictHex(32, name.split(":")[0]);
+  static nameToTxId(name: string): FixedEbxBuf<32> {
+    return FixedEbxBuf.fromStrictHex(32, name.split(":")[0]);
   }
 
   static nameToOutputIndex(name: string): U32 {
@@ -25,17 +25,17 @@ export class TxOutBnMap {
     return new U32(parseInt(name.split(":")[1]));
   }
 
-  add(txOutBn: TxOutBn, txId: FixedIsoBuf<32>, outputIndex: U32): void {
+  add(txOutBn: TxOutBn, txId: FixedEbxBuf<32>, outputIndex: U32): void {
     const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     this.map.set(name, txOutBn);
   }
 
-  remove(txId: FixedIsoBuf<32>, outputIndex: U32): void {
+  remove(txId: FixedEbxBuf<32>, outputIndex: U32): void {
     const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     this.map.delete(name);
   }
 
-  get(txId: FixedIsoBuf<32>, outputIndex: U32): TxOutBn | undefined {
+  get(txId: FixedEbxBuf<32>, outputIndex: U32): TxOutBn | undefined {
     const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
     return this.map.get(name);
   }

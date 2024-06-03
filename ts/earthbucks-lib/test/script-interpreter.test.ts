@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { FixedIsoBuf, SysBuf } from "../src/iso-buf.js";
+import { FixedEbxBuf, SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("ScriptInterpreter", () => {
@@ -21,7 +21,7 @@ describe("ScriptInterpreter", () => {
       new U8(1),
       [
         new TxIn(
-          FixedIsoBuf.alloc(32, 0),
+          FixedEbxBuf.alloc(32, 0),
           new U32(0),
           new Script(),
           new U32(0xffffffff),
@@ -143,16 +143,16 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = FixedIsoBuf.fromStrictHex(32, outputPrivKeyHex);
-      const outputKey = KeyPair.fromPrivKeyIsoBuf(outputPrivKeyBuf);
-      const outputPubKey = outputKey.pubKey.toIsoBuf();
+      const outputPrivKeyBuf = FixedEbxBuf.fromStrictHex(32, outputPrivKeyHex);
+      const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
+      const outputPubKey = outputKey.pubKey.toEbxBuf();
       expect(SysBuf.from(outputPubKey).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
       const outputScript = Script.fromPkhOutput(outputAddress.buf);
       const outputAmount = new U64(100);
-      const outputTxId = FixedIsoBuf.alloc(32, 0);
+      const outputTxId = FixedEbxBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
 
       const tx = new Tx(
@@ -172,12 +172,12 @@ describe("ScriptInterpreter", () => {
       const sig = tx.signNoCache(
         new U32(0),
         outputPrivKeyBuf,
-        outputScript.toIsoBuf(),
+        outputScript.toEbxBuf(),
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
 
-      const stack = [sig.toIsoBuf(), outputPubKey];
+      const stack = [sig.toEbxBuf(), outputPubKey];
       const hashCache = new HashCache();
 
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
@@ -203,14 +203,14 @@ describe("ScriptInterpreter", () => {
         "b78467b0ea6afa6c42c94333dcece978829bdb7ba7b97a2273b72cdc6be8c553",
       ];
 
-      // Convert private keys to IsoBuf format
+      // Convert private keys to EbxBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedIsoBuf.fromBuf(32, SysBuf.from(hex, "hex")),
+        FixedEbxBuf.fromBuf(32, SysBuf.from(hex, "hex")),
       );
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map((privKey) =>
-        PrivKey.fromIsoBuf(privKey).toPubKeyIsoBuf(),
+        PrivKey.fromEbxBuf(privKey).toPubKeyEbxBuf(),
       );
 
       // Create a multisig output script
@@ -218,7 +218,7 @@ describe("ScriptInterpreter", () => {
 
       // Other tx parameters
       const outputAmount = new U64(100);
-      const outputTxId = FixedIsoBuf.alloc(32, 0);
+      const outputTxId = FixedEbxBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
 
       // Create a tx
@@ -244,11 +244,11 @@ describe("ScriptInterpreter", () => {
             .signNoCache(
               new U32(0),
               privKey,
-              outputScript.toIsoBuf(),
+              outputScript.toEbxBuf(),
               outputAmount,
               TxSignature.SIGHASH_ALL,
             )
-            .toIsoBuf(),
+            .toEbxBuf(),
         );
 
       // Create a stack with the signatures
@@ -295,7 +295,7 @@ describe("ScriptInterpreter", () => {
           new U8(1),
           [
             new TxIn(
-              FixedIsoBuf.alloc(32, 0),
+              FixedEbxBuf.alloc(32, 0),
               new U32(0),
               new Script(),
               new U32(0xffffffff),

@@ -1,7 +1,7 @@
 import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { SysBuf } from "./iso-buf.js";
+import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { SysBuf } from "./ebx-buf.js";
 import {
   EbxError,
   InvalidOpcodeError,
@@ -81,36 +81,36 @@ export class ScriptChunk {
     return scriptChunk;
   }
 
-  toIsoBuf(): SysBuf {
+  toEbxBuf(): SysBuf {
     const opcode = this.opcode;
     if (opcode === OP.PUSHDATA1 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU8(new U8(this.buf.length)).toIsoBuf(),
+        new BufWriter().writeU8(new U8(this.buf.length)).toSysBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA2 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU16BE(new U16(this.buf.length)).toIsoBuf(),
+        new BufWriter().writeU16BE(new U16(this.buf.length)).toSysBuf(),
         this.buf,
       ]);
     } else if (opcode === OP.PUSHDATA4 && this.buf) {
       return SysBuf.concat([
         SysBuf.from([opcode]),
-        new IsoBufWriter().writeU32BE(new U32(this.buf.length)).toIsoBuf(),
+        new BufWriter().writeU32BE(new U32(this.buf.length)).toSysBuf(),
         this.buf,
       ]);
     }
     return SysBuf.from([opcode]);
   }
 
-  static fromIsoBuf(buf: SysBuf): ScriptChunk {
-    const reader = new IsoBufReader(buf);
-    return ScriptChunk.fromIsoBufReader(reader);
+  static fromEbxBuf(buf: SysBuf): ScriptChunk {
+    const reader = new BufReader(buf);
+    return ScriptChunk.fromEbxBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): ScriptChunk {
+  static fromEbxBufReader(reader: BufReader): ScriptChunk {
     const opcode = reader.readU8().n;
     const chunk = new ScriptChunk(opcode);
     if (opcode === OP.PUSHDATA1) {

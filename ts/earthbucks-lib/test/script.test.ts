@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 import fs from "fs";
 import path from "path";
 import {
@@ -37,29 +37,29 @@ describe("Script", () => {
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toIsoBuf and fromIsoBuf", () => {
+  test("toEbxBuf and fromEbxBuf", () => {
     const originalScript = Script.fromIsoStr("DUP DOUBLEBLAKE3");
-    const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr);
+    const arr = originalScript.toEbxBuf();
+    const script = Script.fromEbxBuf(arr);
     expect(script.toIsoStr()).toBe("DUP DOUBLEBLAKE3");
   });
 
-  test("toIsoBuf and fromIsoBuf with PUSHDATA1", () => {
+  test("toEbxBuf and fromEbxBuf with PUSHDATA1", () => {
     const originalScript = Script.fromIsoStr("0xff 0xff");
-    const arr = originalScript.toIsoBuf();
-    const script = Script.fromIsoBuf(arr);
+    const arr = originalScript.toEbxBuf();
+    const script = Script.fromEbxBuf(arr);
     expect(script.toIsoStr()).toBe("0xff 0xff");
   });
 
-  it("should correctly convert between string and IsoBuf for two PUSHDATA2 operations", () => {
+  it("should correctly convert between string and EbxBuf for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
     const initialScript = Script.fromIsoStr("0xffff 0xffff");
 
-    // Convert the Script to a IsoBuf
-    const arr = initialScript.toIsoBuf();
+    // Convert the Script to a EbxBuf
+    const arr = initialScript.toEbxBuf();
 
-    // Create a new Script from the IsoBuf
-    const finalScript = Script.fromIsoBuf(arr);
+    // Create a new Script from the EbxBuf
+    const finalScript = Script.fromEbxBuf(arr);
 
     // Convert the final Script back to a string
     const finalString = finalScript.toIsoStr();
@@ -121,7 +121,7 @@ describe("Script", () => {
             : test.error === "not enough bytes in the buffer to read"
               ? NotEnoughDataError
               : GenericError;
-        expect(() => Script.fromIsoBuf(arr)).toThrow(errorType);
+        expect(() => Script.fromEbxBuf(arr)).toThrow(errorType);
       }
     });
   });

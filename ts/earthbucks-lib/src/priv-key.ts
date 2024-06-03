@@ -1,5 +1,5 @@
 import secp256k1 from "secp256k1";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import * as Hash from "./hash.js";
 import {
   EbxError,
@@ -11,16 +11,16 @@ import {
 } from "./ebx-error.js";
 
 export class PrivKey {
-  buf: FixedIsoBuf<32>;
+  buf: FixedEbxBuf<32>;
 
-  constructor(buf: FixedIsoBuf<32>) {
+  constructor(buf: FixedEbxBuf<32>) {
     this.buf = buf;
   }
 
   static fromRandom(): PrivKey {
     let privateKey;
     do {
-      privateKey = (FixedIsoBuf<32>).fromBuf(
+      privateKey = (FixedEbxBuf<32>).fromBuf(
         32,
         crypto.getRandomValues(SysBuf.alloc(32)),
       );
@@ -28,22 +28,22 @@ export class PrivKey {
     return new PrivKey(privateKey);
   }
 
-  toIsoBuf(): FixedIsoBuf<32> {
+  toEbxBuf(): FixedEbxBuf<32> {
     return this.buf;
   }
 
-  toPubKeyIsoBuf(): FixedIsoBuf<33> {
-    return FixedIsoBuf.fromBuf(
+  toPubKeyEbxBuf(): FixedEbxBuf<33> {
+    return FixedEbxBuf.fromBuf(
       33,
       SysBuf.from(secp256k1.publicKeyCreate(this.buf)),
     );
   }
 
   toPubKeyHex(): string {
-    return this.toPubKeyIsoBuf().toStrictHex();
+    return this.toPubKeyEbxBuf().toStrictHex();
   }
 
-  static fromIsoBuf(buf: FixedIsoBuf<32>): PrivKey {
+  static fromEbxBuf(buf: FixedEbxBuf<32>): PrivKey {
     if (buf.length > 32) {
       throw new TooMuchDataError();
     }
@@ -61,9 +61,9 @@ export class PrivKey {
   }
 
   static fromIsoHex(hex: string): PrivKey {
-    const buf = FixedIsoBuf.fromStrictHex(32, hex);
-    const buf32: FixedIsoBuf<32> = FixedIsoBuf.fromBuf(32, buf);
-    return PrivKey.fromIsoBuf(buf32);
+    const buf = FixedEbxBuf.fromStrictHex(32, hex);
+    const buf32: FixedEbxBuf<32> = FixedEbxBuf.fromBuf(32, buf);
+    return PrivKey.fromEbxBuf(buf32);
   }
 
   toIsoStr(): string {
@@ -78,14 +78,14 @@ export class PrivKey {
       throw new InvalidEncodingError();
     }
     const hexStr = str.slice(6, 14);
-    const checkBuf = FixedIsoBuf.fromStrictHex(4, hexStr);
-    const decoded32 = (FixedIsoBuf<32>).fromBase58(32, str.slice(14));
+    const checkBuf = FixedEbxBuf.fromStrictHex(4, hexStr);
+    const decoded32 = (FixedEbxBuf<32>).fromBase58(32, str.slice(14));
     const hashBuf = Hash.blake3Hash(decoded32);
     const checkBuf2 = hashBuf.subarray(0, 4);
     if (!checkBuf.equals(checkBuf2)) {
       throw new InvalidChecksumError();
     }
-    return PrivKey.fromIsoBuf(decoded32);
+    return PrivKey.fromEbxBuf(decoded32);
   }
 
   static isValidIsoStr(str: string): boolean {

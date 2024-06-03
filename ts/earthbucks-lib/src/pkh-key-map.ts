@@ -1,5 +1,5 @@
 import { KeyPair } from "./key-pair.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 
 export class PkhKeyMap {
   public map: Map<string, KeyPair>;
@@ -13,13 +13,13 @@ export class PkhKeyMap {
     this.map.set(pkhHex, key);
   }
 
-  remove(pkhIsoBuf: SysBuf): void {
-    const pkhHex = pkhIsoBuf.toString("hex");
+  remove(pkhEbxBuf: SysBuf): void {
+    const pkhHex = pkhEbxBuf.toString("hex");
     this.map.delete(pkhHex);
   }
 
-  get(pkhIsoBuf: SysBuf): KeyPair | undefined {
-    const pkhHex = pkhIsoBuf.toString("hex");
+  get(pkhEbxBuf: SysBuf): KeyPair | undefined {
+    const pkhHex = pkhEbxBuf.toString("hex");
     return this.map.get(pkhHex);
   }
 

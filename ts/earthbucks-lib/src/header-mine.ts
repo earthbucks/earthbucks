@@ -1,7 +1,7 @@
 import { Header } from "./header.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
+import { BufReader } from "./buf-reader.js";
 
 export class HeaderMine {
   header: Header;
@@ -11,7 +11,7 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = (FixedIsoBuf<32>).fromBuf(
+    this.header.nonce = (FixedEbxBuf<32>).fromBuf(
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );
@@ -19,7 +19,7 @@ export class HeaderMine {
 
   getIdHashNum(): U256 {
     const headerId = this.header.id();
-    const br = new IsoBufReader(headerId);
+    const br = new BufReader(headerId);
     const hashNum = br.readU256BE();
     return hashNum;
   }

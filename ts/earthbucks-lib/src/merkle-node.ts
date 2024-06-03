@@ -1,23 +1,23 @@
 import { GenericError } from "./ebx-error.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;
   public right: MerkleNode | null;
-  public hashedData: FixedIsoBuf<32>;
+  public hashedData: FixedEbxBuf<32>;
 
   constructor(
     left: MerkleNode | null,
     right: MerkleNode | null,
-    hashedData: FixedIsoBuf<32>,
+    hashedData: FixedEbxBuf<32>,
   ) {
     this.left = left;
     this.right = right;
     this.hashedData = hashedData;
   }
 
-  public hash(): FixedIsoBuf<32> {
+  public hash(): FixedEbxBuf<32> {
     if (this.left || this.right) {
       const leftData = this.left ? this.left.hash() : SysBuf.alloc(0);
       const rightData = this.right ? this.right.hash() : leftData;
@@ -27,7 +27,7 @@ export class MerkleNode {
     }
   }
 
-  static fromIsoBufs(hashedDatas: FixedIsoBuf<32>[]): MerkleNode {
+  static fromEbxBufs(hashedDatas: FixedEbxBuf<32>[]): MerkleNode {
     if (hashedDatas.length === 0) {
       throw new GenericError("Cannot create MerkleNode from empty array");
     }
@@ -47,10 +47,10 @@ export class MerkleNode {
     while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
       hashedDatas.push(hashedDatas[hashedDatas.length - 1]);
     }
-    const left = MerkleNode.fromIsoBufs(
+    const left = MerkleNode.fromEbxBufs(
       hashedDatas.slice(0, hashedDatas.length / 2),
     );
-    const right = MerkleNode.fromIsoBufs(
+    const right = MerkleNode.fromEbxBufs(
       hashedDatas.slice(hashedDatas.length / 2),
     );
 

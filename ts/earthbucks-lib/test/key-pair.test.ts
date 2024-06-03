@@ -3,13 +3,13 @@ import { KeyPair } from "../src/key-pair.js";
 import { PrivKey } from "../src/priv-key.js";
 import fs from "fs";
 import path from "path";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {
     const keypair = KeyPair.fromRandom();
-    expect(keypair.privKey.toIsoBuf()).toBeDefined();
-    expect(keypair.pubKey.toIsoBuf()).toBeDefined();
+    expect(keypair.privKey.toEbxBuf()).toBeDefined();
+    expect(keypair.pubKey.toEbxBuf()).toBeDefined();
   });
 
   describe("standard test vectors: key_pair.json", () => {

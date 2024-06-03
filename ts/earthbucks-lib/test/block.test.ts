@@ -2,72 +2,72 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
 import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
-import { IsoBufWriter } from "../src/iso-buf-writer.js";
-import { IsoBufReader } from "../src/iso-buf-reader.js";
-import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { BufWriter } from "../src/buf-writer.js";
+import { BufReader } from "../src/buf-reader.js";
+import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Block", () => {
-  test("toIsoBufWriter", () => {
+  test("toEbxBufWriter", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const bw = block.toIsoBufWriter(new IsoBufWriter());
-    expect(bw.toIsoBuf().length).toBeGreaterThan(0);
+    const bw = block.toEbxBufWriter(new BufWriter());
+    expect(bw.toSysBuf().length).toBeGreaterThan(0);
   });
 
-  test("toIsoBuf", () => {
+  test("toEbxBuf", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const u8vec = block.toIsoBuf();
+    const u8vec = block.toEbxBuf();
     expect(u8vec.length).toBeGreaterThan(0);
   });
 
-  test("fromIsoBufReader", () => {
+  test("fromEbxBufReader", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
-    const bw = block.toIsoBufWriter(new IsoBufWriter());
-    const buf = bw.toIsoBuf();
-    const br = new IsoBufReader(buf);
-    const block2 = Block.fromIsoBufReader(br);
+    const bw = block.toEbxBufWriter(new BufWriter());
+    const buf = bw.toSysBuf();
+    const br = new BufReader(buf);
+    const block2 = Block.fromEbxBufReader(br);
     expect(block2.header.version.n).toBe(bh.version.n);
     expect(block2.header.prevBlockId.toString("hex")).toEqual(
       bh.prevBlockId.toString("hex"),
@@ -82,16 +82,16 @@ describe("Block", () => {
   test("isGenesis", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);

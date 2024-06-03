@@ -1,23 +1,23 @@
-import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
+import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
 import * as Hash from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "./buf-writer.js";
 
 export class SignedMessage {
-  sig: FixedIsoBuf<64>;
-  pubKey: FixedIsoBuf<33>;
-  mac: FixedIsoBuf<32>;
+  sig: FixedEbxBuf<64>;
+  pubKey: FixedEbxBuf<33>;
+  mac: FixedEbxBuf<32>;
   message: SysBuf;
   keyStr: string;
 
   constructor(
-    sig: FixedIsoBuf<64>,
-    pubKey: FixedIsoBuf<33>,
-    mac: FixedIsoBuf<32>,
+    sig: FixedEbxBuf<64>,
+    pubKey: FixedEbxBuf<33>,
+    mac: FixedEbxBuf<32>,
     message: SysBuf,
     keyStr: string,
   ) {
@@ -39,9 +39,9 @@ export class SignedMessage {
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
-    const sigObj = ecdsaSign(mac, privKey.toIsoBuf());
-    const sigBuf = (FixedIsoBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
-    const pubKey = privKey.toPubKeyIsoBuf();
+    const sigObj = ecdsaSign(mac, privKey.toEbxBuf());
+    const sigBuf = (FixedEbxBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
+    const pubKey = privKey.toPubKeyEbxBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 
@@ -53,7 +53,7 @@ export class SignedMessage {
     if (!mac.equals(this.mac)) {
       return false;
     }
-    if (!pubKey.toIsoBuf().equals(this.pubKey)) {
+    if (!pubKey.toEbxBuf().equals(this.pubKey)) {
       return false;
     }
     if (!ecdsaVerify(this.sig, mac, this.pubKey)) {
@@ -62,8 +62,8 @@ export class SignedMessage {
     return true;
   }
 
-  static fromIsoBuf(buf: SysBuf, keyStr: string): SignedMessage {
-    const reader = new IsoBufReader(buf);
+  static fromEbxBuf(buf: SysBuf, keyStr: string): SignedMessage {
+    const reader = new BufReader(buf);
     const sig = reader.readFixed(64);
     const pubKey = reader.readFixed(PubKey.SIZE);
     const mac = reader.readFixed(32);
@@ -71,12 +71,12 @@ export class SignedMessage {
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
-  toIsoBuf(): SysBuf {
-    const writer = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const writer = new BufWriter();
     writer.write(this.sig);
     writer.write(this.pubKey);
     writer.write(this.mac);
     writer.write(this.message);
-    return writer.toIsoBuf();
+    return writer.toSysBuf();
   }
 }

@@ -1,4 +1,4 @@
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export class ScriptNum {
@@ -14,7 +14,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  static fromIsoBuf(buffer: SysBuf): ScriptNum {
+  static fromEbxBuf(buffer: SysBuf): ScriptNum {
     const scriptNum = new ScriptNum();
     if (buffer.length === 0) {
       scriptNum.num = 0n;
@@ -23,11 +23,11 @@ export class ScriptNum {
     const isNegative = buffer[0] & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
-      const invertedIsoBuf = SysBuf.alloc(buffer.length);
+      const invertedEbxBuf = SysBuf.alloc(buffer.length);
       for (let i = 0; i < buffer.length; i++) {
-        invertedIsoBuf[i] = ~buffer[i]; // Invert all bits
+        invertedEbxBuf[i] = ~buffer[i]; // Invert all bits
       }
-      const invertedBigInt = BigInt("0x" + invertedIsoBuf.toString("hex"));
+      const invertedBigInt = BigInt("0x" + invertedEbxBuf.toString("hex"));
       scriptNum.num = -(invertedBigInt + 1n); // Add one and negate to get the original number
     } else {
       // If the number is positive
@@ -36,7 +36,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  toIsoBuf(): SysBuf {
+  toEbxBuf(): SysBuf {
     const num = this.num;
     if (num === 0n) {
       return SysBuf.alloc(0);

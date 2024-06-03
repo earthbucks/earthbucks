@@ -9,7 +9,7 @@ import { PkhKeyMap } from "../src/pkh-key-map.js";
 import { TxSigner } from "../src/tx-signer.js";
 import { ScriptInterpreter } from "../src/script-interpreter.js";
 import { HashCache } from "../src/tx.js";
-import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
@@ -25,12 +25,12 @@ describe("TxSigner", () => {
     // generate 5 keys, 5 outputs, and add them to the txOutMap
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
-      const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
+      const pkh = Pkh.fromPubKeyBuf(key.pubKey.toEbxBuf());
       pkhKeyMap.add(key, pkh.buf);
       const script = Script.fromPkhOutput(pkh.buf);
       const txOut = new TxOut(new U64(100), script);
       const txOutBn = new TxOutBn(txOut, new U64(0n));
-      txOutBnMap.add(txOutBn, FixedIsoBuf.alloc(32), new U32(i));
+      txOutBnMap.add(txOutBn, FixedEbxBuf.alloc(32), new U32(i));
     }
 
     const changeScript = Script.fromEmpty();
@@ -39,7 +39,7 @@ describe("TxSigner", () => {
 
   test("should sign a tx", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toEbxBuf());
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
@@ -79,7 +79,7 @@ describe("TxSigner", () => {
 
   test("should sign two inputs", () => {
     const key = KeyPair.fromRandom();
-    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toIsoBuf());
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toEbxBuf());
     const script = Script.fromPkhOutput(pkh.buf);
     const output = new TxOut(new U64(100), script);
     txBuilder.addOutput(output);

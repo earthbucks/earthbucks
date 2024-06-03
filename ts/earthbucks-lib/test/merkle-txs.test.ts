@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleTxs } from "../src/merkle-txs.js";
 import { Tx } from "../src/tx.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("MerkleTxs", () => {

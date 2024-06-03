@@ -1,40 +1,40 @@
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class Header {
   version: U32;
-  prevBlockId: FixedIsoBuf<32>;
-  merkleRoot: FixedIsoBuf<32>;
+  prevBlockId: FixedEbxBuf<32>;
+  merkleRoot: FixedEbxBuf<32>;
   timestamp: U64; // seconds
   blockNum: U64;
-  target: FixedIsoBuf<32>;
-  nonce: FixedIsoBuf<32>;
+  target: FixedEbxBuf<32>;
+  nonce: FixedEbxBuf<32>;
   workSerAlgo: U32;
-  workSerHash: FixedIsoBuf<32>;
+  workSerHash: FixedEbxBuf<32>;
   workParAlgo: U32;
-  workParHash: FixedIsoBuf<32>;
+  workParHash: FixedEbxBuf<32>;
 
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
   static readonly BLOCK_INTERVAL = new U64(600n); // seconds
   static readonly BLOCK_HEADER_SIZE = 220;
-  static readonly INITIAL_TARGET = FixedIsoBuf.alloc(32, 0xff);
+  static readonly INITIAL_TARGET = FixedEbxBuf.alloc(32, 0xff);
 
   constructor(
     version: U32,
-    prevBlockId: FixedIsoBuf<32>,
-    merkleRoot: FixedIsoBuf<32>,
+    prevBlockId: FixedEbxBuf<32>,
+    merkleRoot: FixedEbxBuf<32>,
     timestamp: U64,
     blockNum: U64,
-    target: FixedIsoBuf<32>,
-    nonce: FixedIsoBuf<32>,
+    target: FixedEbxBuf<32>,
+    nonce: FixedEbxBuf<32>,
     workSerAlgo: U32,
-    workSerHash: FixedIsoBuf<32>,
+    workSerHash: FixedEbxBuf<32>,
     workParAlgo: U32,
-    workParHash: FixedIsoBuf<32>,
+    workParHash: FixedEbxBuf<32>,
   ) {
     this.version = version;
     this.prevBlockId = prevBlockId;
@@ -49,8 +49,8 @@ export class Header {
     this.workParHash = workParHash;
   }
 
-  toIsoBuf(): SysBuf {
-    const bw = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const bw = new BufWriter();
     bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
@@ -62,14 +62,14 @@ export class Header {
     bw.write(this.workSerHash);
     bw.writeU32BE(this.workParAlgo);
     bw.write(this.workParHash);
-    return bw.toIsoBuf();
+    return bw.toSysBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): Header {
-    return Header.fromIsoBufReader(new IsoBufReader(buf));
+  static fromEbxBuf(buf: SysBuf): Header {
+    return Header.fromEbxBufReader(new BufReader(buf));
   }
 
-  static fromIsoBufReader(br: IsoBufReader): Header {
+  static fromEbxBufReader(br: BufReader): Header {
     const version = br.readU32BE();
     const previousBlockId = br.readFixed<32>(32);
     const merkleRoot = br.readFixed(32);
@@ -96,7 +96,7 @@ export class Header {
     );
   }
 
-  toIsoBufWriter(bw: IsoBufWriter): IsoBufWriter {
+  toEbxBufWriter(bw: BufWriter): BufWriter {
     bw.writeU32BE(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
@@ -112,11 +112,11 @@ export class Header {
   }
 
   toIsoHex(): string {
-    return this.toIsoBuf().toString("hex");
+    return this.toEbxBuf().toString("hex");
   }
 
   static fromIsoHex(str: string): Header {
-    return Header.fromIsoBuf(SysBuf.from(str, "hex"));
+    return Header.fromEbxBuf(SysBuf.from(str, "hex"));
   }
 
   toIsoString(): string {
@@ -127,20 +127,20 @@ export class Header {
     return Header.fromIsoHex(str);
   }
 
-  static fromGenesis(initialTarget: FixedIsoBuf<32>): Header {
+  static fromGenesis(initialTarget: FixedEbxBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       timestamp,
       new U64(0n),
       initialTarget,
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
   }
 
@@ -171,15 +171,15 @@ export class Header {
     }
     const prevBlockId = prevBlockHeader.id();
     const timestamp = new U64(BigInt(Math.floor(Date.now() / 1000))); // seconds
-    const nonce = FixedIsoBuf.alloc(32);
+    const nonce = FixedEbxBuf.alloc(32);
     const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = FixedIsoBuf.alloc(32);
+    const workSerHash = FixedEbxBuf.alloc(32);
     const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = FixedIsoBuf.alloc(32);
+    const workParHash = FixedEbxBuf.alloc(32);
     return new Header(
       new U32(1),
       prevBlockId,
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       timestamp,
       blockNum,
       target,
@@ -212,7 +212,7 @@ export class Header {
   }
 
   isValid(): boolean {
-    const len = this.toIsoBuf().length;
+    const len = this.toEbxBuf().length;
     if (len !== Header.BLOCK_HEADER_SIZE) {
       return false;
     }
@@ -231,16 +231,16 @@ export class Header {
     );
   }
 
-  hash(): FixedIsoBuf<32> {
-    return Hash.blake3Hash(this.toIsoBuf());
+  hash(): FixedEbxBuf<32> {
+    return Hash.blake3Hash(this.toEbxBuf());
   }
 
-  id(): FixedIsoBuf<32> {
-    return Hash.doubleBlake3Hash(this.toIsoBuf());
+  id(): FixedEbxBuf<32> {
+    return Hash.doubleBlake3Hash(this.toEbxBuf());
   }
 
-  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedIsoBuf<32> {
-    const target = new IsoBufReader(targetBuf).readU256BE().bn;
+  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedEbxBuf<32> {
+    const target = new BufReader(targetBuf).readU256BE().bn;
     const twoWeeks: bigint = Header.BLOCKS_PER_TARGET_ADJ_PERIOD.mul(
       Header.BLOCK_INTERVAL,
     ).bn;
@@ -257,9 +257,9 @@ export class Header {
 
     const newTarget = (target * timeDiff.bn) / twoWeeks; // seconds
 
-    const newTargetBuf = new IsoBufWriter()
+    const newTargetBuf = new BufWriter()
       .writeU256BE(new U256(newTarget))
-      .toIsoBuf();
-    return FixedIsoBuf.fromBuf(32, newTargetBuf);
+      .toSysBuf();
+    return FixedEbxBuf.fromBuf(32, newTargetBuf);
   }
 }

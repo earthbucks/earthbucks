@@ -1,8 +1,8 @@
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "./buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 import { EbxError } from "./ebx-error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
@@ -15,25 +15,25 @@ export class TxOut {
     this.script = script;
   }
 
-  static fromIsoBuf(buf: SysBuf): TxOut {
-    const reader = new IsoBufReader(buf);
-    return TxOut.fromIsoBufReader(reader);
+  static fromEbxBuf(buf: SysBuf): TxOut {
+    const reader = new BufReader(buf);
+    return TxOut.fromEbxBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): TxOut {
+  static fromEbxBufReader(reader: BufReader): TxOut {
     const value = reader.readU64BE();
     const scriptLen = reader.readVarInt().n;
     const scriptArr = reader.read(scriptLen);
-    const script = Script.fromIsoBuf(scriptArr);
+    const script = Script.fromEbxBuf(scriptArr);
     return new TxOut(value, script);
   }
 
-  toIsoBuf(): SysBuf {
-    const writer = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const writer = new BufWriter();
     writer.writeU64BE(this.value);
-    const scriptBuf = this.script.toIsoBuf();
-    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toIsoBuf());
+    const scriptBuf = this.script.toEbxBuf();
+    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toEbxBuf());
     writer.write(scriptBuf);
-    return writer.toIsoBuf();
+    return writer.toSysBuf();
   }
 }

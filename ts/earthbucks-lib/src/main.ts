@@ -1,6 +1,6 @@
 import { KeyPair } from "./key-pair.js";
 import { Pkh } from "./pkh.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 
 function main() {
   const args = process.argv.slice(2);
@@ -14,10 +14,10 @@ function main() {
     case "key":
       {
         const key = KeyPair.fromRandom();
-        const privateKeyHex = SysBuf.from(key.privKey.toIsoBuf()).toString(
+        const privateKeyHex = SysBuf.from(key.privKey.toEbxBuf()).toString(
           "hex",
         );
-        const publicKeyHex = SysBuf.from(key.pubKey.toIsoBuf()).toString("hex");
+        const publicKeyHex = SysBuf.from(key.pubKey.toEbxBuf()).toString("hex");
 
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
@@ -27,13 +27,13 @@ function main() {
       {
         // Generate a new private key
         const key = KeyPair.fromRandom();
-        const publicKey = key.pubKey.toIsoBuf();
+        const publicKey = key.pubKey.toEbxBuf();
 
         // Get the corresponding pkh
         const pkh = Pkh.fromPubKeyBuf(publicKey);
 
         // Print them out
-        const privateKeyHex = SysBuf.from(key.privKey.toIsoBuf()).toString(
+        const privateKeyHex = SysBuf.from(key.privKey.toEbxBuf()).toString(
           "hex",
         );
         const publicKeyHex = SysBuf.from(publicKey).toString("hex");

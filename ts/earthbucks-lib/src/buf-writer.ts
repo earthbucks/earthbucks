@@ -1,7 +1,7 @@
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
-export class IsoBufWriter {
+export class BufWriter {
   bufs: SysBuf[];
 
   constructor(bufs?: SysBuf[]) {
@@ -16,7 +16,7 @@ export class IsoBufWriter {
     return len;
   }
 
-  toIsoBuf(): SysBuf {
+  toSysBuf(): SysBuf {
     return SysBuf.concat(this.bufs);
   }
 
@@ -78,7 +78,7 @@ export class IsoBufWriter {
   }
 
   writeVarInt(u64: U64): this {
-    const buf = IsoBufWriter.varIntBuf(u64);
+    const buf = BufWriter.varIntBuf(u64);
     this.write(buf);
     return this;
   }

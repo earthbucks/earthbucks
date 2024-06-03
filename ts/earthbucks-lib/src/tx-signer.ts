@@ -2,7 +2,7 @@ import { Tx } from "./tx.js";
 import { PkhKeyMap } from "./pkh-key-map.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
-import { SysBuf } from "./iso-buf.js";
+import { SysBuf } from "./ebx-buf.js";
 import { PubKey } from "./pub-key.js";
 import { Script } from "./script.js";
 import { KeyPair } from "./key-pair.js";
@@ -48,18 +48,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
+      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
 
-      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputScriptBuf = txOut.script.toEbxBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toIsoBuf(),
+        keyPair.privKey.toEbxBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toIsoBuf();
+      const sigBuf = sig.toEbxBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -85,18 +85,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
+      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
 
-      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputScriptBuf = txOut.script.toEbxBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toIsoBuf(),
+        keyPair.privKey.toEbxBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toIsoBuf();
+      const sigBuf = sig.toEbxBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -122,18 +122,18 @@ export class TxSigner {
       if (!keyPair) {
         throw new GenericError("key not found");
       }
-      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
+      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
 
-      const outputScriptBuf = txOut.script.toIsoBuf();
+      const outputScriptBuf = txOut.script.toEbxBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toIsoBuf(),
+        keyPair.privKey.toEbxBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toIsoBuf();
+      const sigBuf = sig.toEbxBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -180,17 +180,17 @@ export class TxSigner {
         throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
-      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
-      const outputScriptBuf = txOut.script.toIsoBuf();
+      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
+      const outputScriptBuf = txOut.script.toEbxBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toIsoBuf(),
+        keyPair.privKey.toEbxBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toIsoBuf();
+      const sigBuf = sig.toEbxBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
@@ -237,17 +237,17 @@ export class TxSigner {
         throw new GenericError("expected unexpired pkhx input placeholder");
       }
 
-      const pubKeyBuf = keyPair.pubKey.toIsoBuf();
-      const outputScriptBuf = txOut.script.toIsoBuf();
+      const pubKeyBuf = keyPair.pubKey.toEbxBuf();
+      const outputScriptBuf = txOut.script.toEbxBuf();
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toIsoBuf(),
+        keyPair.privKey.toEbxBuf(),
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
-      const sigBuf = sig.toIsoBuf();
+      const sigBuf = sig.toEbxBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
       inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);

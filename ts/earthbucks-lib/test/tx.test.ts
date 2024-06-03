@@ -3,12 +3,12 @@ import { Tx, HashCache } from "../src/tx.js";
 import { TxIn } from "../src/tx-in.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { IsoBufReader } from "../src/iso-buf-reader.js";
-import { IsoBufWriter } from "../src/iso-buf-writer.js";
+import { BufReader } from "../src/buf-reader.js";
+import { BufWriter } from "../src/buf-writer.js";
 import * as Hash from "../src/hash.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
-import { FixedIsoBuf, SysBuf } from "../src/iso-buf.js";
+import { FixedEbxBuf, SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Tx", () => {
@@ -30,15 +30,15 @@ describe("Tx", () => {
   test("to/from u8Vec", () => {
     const version = new U8(1);
     const inputs: TxIn[] = [
-      new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+      new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
     ];
     const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
     const lockAbs = new U64(0);
 
     const tx = new Tx(version, inputs, outputs, lockAbs);
-    const result = Tx.fromIsoBuf(tx.toIsoBuf());
-    expect(tx.toIsoBuf().toString("hex")).toEqual(
-      result.toIsoBuf().toString("hex"),
+    const result = Tx.fromEbxBuf(tx.toEbxBuf());
+    expect(tx.toEbxBuf().toString("hex")).toEqual(
+      result.toEbxBuf().toString("hex"),
     );
   });
 
@@ -46,14 +46,14 @@ describe("Tx", () => {
     test("fromU8Vec", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const result = Tx.fromIsoBuf(tx.toIsoBuf());
+      const result = Tx.fromEbxBuf(tx.toEbxBuf());
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
@@ -61,19 +61,19 @@ describe("Tx", () => {
     });
   });
 
-  describe("fromIsoBufReader", () => {
-    test("fromIsoBufReader", () => {
+  describe("fromEbxBufReader", () => {
+    test("fromEbxBufReader", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
-      const reader = new IsoBufReader(tx.toIsoBuf());
-      const result = Tx.fromIsoBufReader(reader);
+      const reader = new BufReader(tx.toEbxBuf());
+      const result = Tx.fromEbxBufReader(reader);
       expect(result.version).toEqual(version);
       expect(result.inputs.length).toEqual(inputs.length);
       expect(result.outputs.length).toEqual(outputs.length);
@@ -85,7 +85,7 @@ describe("Tx", () => {
     test("to/from string", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -116,7 +116,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedIsoBuf.alloc(32),
+          FixedEbxBuf.alloc(32),
           new U32(0xffffffff),
           new Script(),
           new U32(0),
@@ -132,7 +132,7 @@ describe("Tx", () => {
     test("is not coinbase", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -153,13 +153,13 @@ describe("Tx", () => {
     it("should return the hash of the tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
-      const expectedHash = Hash.blake3Hash(tx.toIsoBuf());
+      const expectedHash = Hash.blake3Hash(tx.toEbxBuf());
       expect(tx.blake3Hash()).toEqual(expectedHash);
     });
   });
@@ -168,13 +168,13 @@ describe("Tx", () => {
     it("should return the hash of the hash of the tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
-      const expectedHash = Hash.blake3Hash(Hash.blake3Hash(tx.toIsoBuf()));
+      const expectedHash = Hash.blake3Hash(Hash.blake3Hash(tx.toEbxBuf()));
       expect(tx.id()).toEqual(expectedHash);
     });
   });
@@ -183,7 +183,7 @@ describe("Tx", () => {
     test("hashPrevouts", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -200,7 +200,7 @@ describe("Tx", () => {
     test("hashLockRel", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -217,7 +217,7 @@ describe("Tx", () => {
     test("hashOutputs", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
-        new TxIn(FixedIsoBuf.alloc(32), new U32(0), new Script(), new U32(0)),
+        new TxIn(FixedEbxBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
       const outputs: TxOut[] = [new TxOut(new U64(100), new Script())];
       const lockAbs = new U64(0);
@@ -235,7 +235,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedIsoBuf.alloc(32),
+          FixedEbxBuf.alloc(32),
           new U32(0),
           Script.fromEmpty(),
           new U32(0),
@@ -247,7 +247,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const script = Script.fromEmpty();
-      const scriptU8Vec = script.toIsoBuf();
+      const scriptU8Vec = script.toEbxBuf();
       const result = tx.sighashNoCache(
         new U32(0),
         scriptU8Vec,
@@ -264,7 +264,7 @@ describe("Tx", () => {
       const version = new U8(1);
       const inputs: TxIn[] = [
         new TxIn(
-          FixedIsoBuf.alloc(32),
+          FixedEbxBuf.alloc(32),
           new U32(0),
           Script.fromEmpty(),
           new U32(0),
@@ -276,7 +276,7 @@ describe("Tx", () => {
       const tx = new Tx(version, inputs, outputs, lockAbs);
 
       const script = Script.fromEmpty();
-      const scriptU8Vec = script.toIsoBuf();
+      const scriptU8Vec = script.toEbxBuf();
       const hashCache = new HashCache();
       const result = tx.sighashWithCache(
         new U32(0),
@@ -304,7 +304,7 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedIsoBuf.alloc(32),
+            FixedEbxBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),
@@ -325,7 +325,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(SysBuf.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(SysBuf.from(signature.toEbxBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
       });
@@ -333,7 +333,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature", () => {
         // Arrange
         const inputIndex = new U32(0);
-        const privateKey = FixedIsoBuf.fromStrictHex(
+        const privateKey = FixedEbxBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
@@ -342,22 +342,22 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedIsoBuf.alloc(32),
+            FixedEbxBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),
           ),
         ];
         // expect tx output to equal hext
-        expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
+        expect(inputs[0].toEbxBuf().toString("hex")).toEqual(
           "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
         const outputs: TxOut[] = [new TxOut(new U64(100), Script.fromEmpty())];
-        expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
+        expect(outputs[0].toEbxBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
         const tx = new Tx(new U8(1), inputs, outputs, new U64(0));
-        expect(tx.toIsoBuf().toString("hex")).toEqual(
+        expect(tx.toEbxBuf().toString("hex")).toEqual(
           "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
 
@@ -373,12 +373,12 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(SysBuf.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(SysBuf.from(signature.toEbxBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = KeyPair.fromPrivKeyIsoBuf(privateKey)
+        const publicKey = KeyPair.fromPrivKeyEbxBuf(privateKey)
 
-          .pubKey.toIsoBuf();
+          .pubKey.toEbxBuf();
         const result = tx.verifyNoCache(
           inputIndex,
           publicKey,
@@ -392,7 +392,7 @@ describe("Tx", () => {
       it("should verify a deterministic signature with hash cache", () => {
         // Arrange
         const inputIndex = new U32(0);
-        const privateKey = FixedIsoBuf.fromStrictHex(
+        const privateKey = FixedEbxBuf.fromStrictHex(
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
@@ -401,22 +401,22 @@ describe("Tx", () => {
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
           new TxIn(
-            FixedIsoBuf.alloc(32),
+            FixedEbxBuf.alloc(32),
             new U32(0),
             Script.fromEmpty(),
             new U32(0),
           ),
         ];
         // expect tx output to equal hext
-        expect(inputs[0].toIsoBuf().toString("hex")).toEqual(
+        expect(inputs[0].toEbxBuf().toString("hex")).toEqual(
           "0000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         );
         const outputs: TxOut[] = [new TxOut(new U64(100), Script.fromEmpty())];
-        expect(outputs[0].toIsoBuf().toString("hex")).toEqual(
+        expect(outputs[0].toEbxBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
         const tx = new Tx(new U8(1), inputs, outputs, new U64(0));
-        expect(tx.toIsoBuf().toString("hex")).toEqual(
+        expect(tx.toEbxBuf().toString("hex")).toEqual(
           "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
         const hashCache1 = new HashCache();
@@ -434,12 +434,12 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
-        expect(SysBuf.from(signature.toIsoBuf()).toString("hex")).toEqual(
+        expect(SysBuf.from(signature.toEbxBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
-        const publicKey = KeyPair.fromPrivKeyIsoBuf(privateKey)
+        const publicKey = KeyPair.fromPrivKeyEbxBuf(privateKey)
 
-          .pubKey.toIsoBuf();
+          .pubKey.toEbxBuf();
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,

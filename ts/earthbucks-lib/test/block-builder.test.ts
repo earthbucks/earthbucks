@@ -2,27 +2,27 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
 import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
-import { IsoBufWriter } from "../src/iso-buf-writer.js";
-import { IsoBufReader } from "../src/iso-buf-reader.js";
+import { BufWriter } from "../src/buf-writer.js";
+import { BufReader } from "../src/buf-reader.js";
 import { BlockBuilder } from "../src/block-builder.js";
 import { Script } from "../src/script.js";
-import { SysBuf, FixedIsoBuf } from "../src/iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
@@ -35,12 +35,12 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = FixedIsoBuf.alloc(32);
+    const target = FixedEbxBuf.alloc(32);
     const outputScript = new Script();
     const outputAmount = new U64(0n);
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version.n).toEqual(1);
-    expect(bb.header.prevBlockId).toEqual(FixedIsoBuf.alloc(32));
+    expect(bb.header.prevBlockId).toEqual(FixedEbxBuf.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp.n).toBeLessThanOrEqual(
       new Date().getTime() / 1000,
@@ -51,19 +51,19 @@ describe("BlockBuilder", () => {
   test("fromPrevBlockHeader", () => {
     const outputScript = new Script();
     const outputAmount = new U64(0n);
-    const target = FixedIsoBuf.alloc(32);
+    const target = FixedEbxBuf.alloc(32);
     const prevBlockHeader = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
       target,
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const bb = BlockBuilder.fromPrevBlockHeader(
       prevBlockHeader,
@@ -83,16 +83,16 @@ describe("BlockBuilder", () => {
   test("toBlock", () => {
     const bh = new Header(
       new U32(1),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U64(0n),
       new U64(0n),
-      FixedIsoBuf.alloc(32),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
       new U32(0),
-      FixedIsoBuf.alloc(32),
+      FixedEbxBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
     const block = new Block(bh, [tx]);

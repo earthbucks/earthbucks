@@ -1,37 +1,37 @@
 import { InvalidSizeError } from "./ebx-error.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "./buf-writer.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class PermissionToken {
-  randValue: FixedIsoBuf<32>;
+  randValue: FixedEbxBuf<32>;
   timestamp: U64; // milliseconds
 
-  constructor(randValue: FixedIsoBuf<32>, timestamp: U64) {
+  constructor(randValue: FixedEbxBuf<32>, timestamp: U64) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
 
-  toIsoBuf(): SysBuf {
-    const writer = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const writer = new BufWriter();
     writer.write(this.randValue);
     writer.writeU64BE(this.timestamp);
-    return writer.toIsoBuf();
+    return writer.toSysBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): PermissionToken {
+  static fromEbxBuf(buf: SysBuf): PermissionToken {
     if (buf.length !== 32 + 8) {
       throw new InvalidSizeError();
     }
-    const reader = new IsoBufReader(buf);
+    const reader = new BufReader(buf);
     const randValue = reader.readFixed(32);
     const timestamp = reader.readU64BE();
     return new PermissionToken(randValue, timestamp);
   }
 
   static fromRandom(): PermissionToken {
-    const randValue: FixedIsoBuf<32> = (FixedIsoBuf<32>).fromBuf(
+    const randValue: FixedEbxBuf<32> = (FixedEbxBuf<32>).fromBuf(
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );

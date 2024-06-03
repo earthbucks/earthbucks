@@ -1,41 +1,41 @@
 import { hash, createKeyed } from "blake3";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { blake3 as blake3browser } from "@noble/hashes/blake3"; // eslint-disable-line
 
-type IsoBufFunction = (input: SysBuf) => FixedIsoBuf<32>;
-type MacFunction = (key: SysBuf, data: SysBuf) => FixedIsoBuf<32>;
+type EbxBufFunction = (input: SysBuf) => FixedEbxBuf<32>;
+type MacFunction = (key: SysBuf, data: SysBuf) => FixedEbxBuf<32>;
 
-let blake3Hash: IsoBufFunction;
-let doubleBlake3Hash: IsoBufFunction;
+let blake3Hash: EbxBufFunction;
+let doubleBlake3Hash: EbxBufFunction;
 let blake3Mac: MacFunction;
 
 if (typeof document === "undefined") {
   // running in a server environment
-  blake3Hash = function blake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return FixedIsoBuf.fromBuf(32, hash(data) as SysBuf);
+  blake3Hash = function blake3Hash(data: SysBuf): FixedEbxBuf<32> {
+    return FixedEbxBuf.fromBuf(32, hash(data) as SysBuf);
   };
 
-  doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return FixedIsoBuf.fromBuf(32, blake3Hash(blake3Hash(data)));
+  doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedEbxBuf<32> {
+    return FixedEbxBuf.fromBuf(32, blake3Hash(blake3Hash(data)));
   };
 
-  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(
+  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedEbxBuf<32> {
+    return (FixedEbxBuf<32>).fromBuf(
       32,
       createKeyed(key).update(data).digest() as SysBuf,
     );
   };
 } else {
-  blake3Hash = function blake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(32, SysBuf.from(blake3browser(data)));
+  blake3Hash = function blake3Hash(data: SysBuf): FixedEbxBuf<32> {
+    return (FixedEbxBuf<32>).fromBuf(32, SysBuf.from(blake3browser(data)));
   };
 
-  doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedIsoBuf<32> {
-    return FixedIsoBuf.fromBuf(32, blake3Hash(blake3Hash(data)));
+  doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedEbxBuf<32> {
+    return FixedEbxBuf.fromBuf(32, blake3Hash(blake3Hash(data)));
   };
 
-  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedIsoBuf<32> {
-    return (FixedIsoBuf<32>).fromBuf(
+  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedEbxBuf<32> {
+    return (FixedEbxBuf<32>).fromBuf(
       32,
       SysBuf.from(blake3browser(data, { key: key })),
     );

@@ -1,6 +1,6 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { FixedIsoBuf, SysBuf } from "./iso-buf.js";
+import { FixedEbxBuf, SysBuf } from "./ebx-buf.js";
 
 export class KeyPair {
   privKey: PrivKey;
@@ -16,8 +16,8 @@ export class KeyPair {
     return new KeyPair(privKey, pubKey);
   }
 
-  static fromPrivKeyIsoBuf(privKeyBuf: FixedIsoBuf<32>): KeyPair {
-    const privKey = PrivKey.fromIsoBuf(privKeyBuf);
+  static fromPrivKeyEbxBuf(privKeyBuf: FixedEbxBuf<32>): KeyPair {
+    const privKey = PrivKey.fromEbxBuf(privKeyBuf);
     const pubKey = PubKey.fromPrivKey(privKey);
     return new KeyPair(privKey, pubKey);
   }

@@ -1,15 +1,15 @@
 import * as Hash from "./hash.js";
-import { IsoBufWriter } from "./iso-buf-writer.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
+import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "./buf-reader.js";
+import { SysBuf, FixedEbxBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class MerkleProof {
-  public root: FixedIsoBuf<32>;
-  public proof: Array<[FixedIsoBuf<32>, boolean]>;
+  public root: FixedEbxBuf<32>;
+  public proof: Array<[FixedEbxBuf<32>, boolean]>;
 
-  constructor(root: FixedIsoBuf<32>, proof: Array<[FixedIsoBuf<32>, boolean]>) {
+  constructor(root: FixedEbxBuf<32>, proof: Array<[FixedEbxBuf<32>, boolean]>) {
     this.root = root;
     this.proof = proof;
   }
@@ -29,8 +29,8 @@ export class MerkleProof {
   }
 
   static generateProofsAndRoot(
-    hashedDatas: FixedIsoBuf<32>[],
-  ): [FixedIsoBuf<32>, MerkleProof[]] {
+    hashedDatas: FixedEbxBuf<32>[],
+  ): [FixedEbxBuf<32>, MerkleProof[]] {
     if (hashedDatas.length === 0) {
       throw new GenericError("Cannot create Merkle tree from empty array");
     }
@@ -71,21 +71,21 @@ export class MerkleProof {
     return [root, proofs];
   }
 
-  toIsoBuf(): SysBuf {
-    const bw = new IsoBufWriter();
+  toEbxBuf(): SysBuf {
+    const bw = new BufWriter();
     bw.write(this.root);
     bw.writeVarInt(new U64(this.proof.length));
     for (const [sibling, isLeft] of this.proof) {
       bw.write(sibling);
       bw.writeU8(new U8(isLeft ? 1 : 0));
     }
-    return bw.toIsoBuf();
+    return bw.toSysBuf();
   }
 
-  static fromIsoBuf(buf: SysBuf): MerkleProof {
-    const br = new IsoBufReader(buf);
+  static fromEbxBuf(buf: SysBuf): MerkleProof {
+    const br = new BufReader(buf);
     const root = br.readFixed(32);
-    const proof: Array<[FixedIsoBuf<32>, boolean]> = [];
+    const proof: Array<[FixedEbxBuf<32>, boolean]> = [];
     const proofLength = br.readVarInt().n;
     for (let i = 0; i < proofLength; i++) {
       const sibling = br.readFixed(32);
@@ -96,13 +96,13 @@ export class MerkleProof {
   }
 
   toIsoStr(): string {
-    const u8vec = this.toIsoBuf();
+    const u8vec = this.toEbxBuf();
     const hex = SysBuf.from(u8vec).toString("hex");
     return hex;
   }
 
   static fromIsoStr(hex: string): MerkleProof {
     const u8vec = SysBuf.from(hex, "hex");
-    return MerkleProof.fromIsoBuf(u8vec);
+    return MerkleProof.fromEbxBuf(u8vec);
   }
 }

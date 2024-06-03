@@ -1,7 +1,7 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
-import { IsoBufReader } from "./iso-buf-reader.js";
-import { SysBuf } from "./iso-buf.js";
+import { BufReader } from "./buf-reader.js";
+import { SysBuf } from "./ebx-buf.js";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
@@ -34,20 +34,20 @@ export class Script {
     return script;
   }
 
-  toIsoBuf(): SysBuf {
-    const bufArray = this.chunks.map((chunk) => chunk.toIsoBuf());
+  toEbxBuf(): SysBuf {
+    const bufArray = this.chunks.map((chunk) => chunk.toEbxBuf());
     return SysBuf.concat(bufArray);
   }
 
-  static fromIsoBuf(arr: SysBuf): Script {
-    const reader = new IsoBufReader(arr);
-    return Script.fromIsoBufReader(reader);
+  static fromEbxBuf(arr: SysBuf): Script {
+    const reader = new BufReader(arr);
+    return Script.fromEbxBufReader(reader);
   }
 
-  static fromIsoBufReader(reader: IsoBufReader): Script {
+  static fromEbxBufReader(reader: BufReader): Script {
     const script = new Script();
     while (!reader.eof()) {
-      const chunk = ScriptChunk.fromIsoBufReader(reader);
+      const chunk = ScriptChunk.fromEbxBufReader(reader);
       script.chunks.push(chunk);
     }
     return script;
@@ -128,7 +128,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHX_90D_LOCK_REL.n).toIsoBuf(),
+        ScriptNum.fromNumber(Script.PKHX_90D_LOCK_REL.n).toEbxBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),
@@ -179,7 +179,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_ELSE),
       new ScriptChunk(Opcode.OP_IF),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHXR_90D_60D_R_LOCK_REL.n).toIsoBuf(),
+        ScriptNum.fromNumber(Script.PKHXR_90D_60D_R_LOCK_REL.n).toEbxBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),
@@ -190,7 +190,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
       ScriptChunk.fromData(
-        ScriptNum.fromNumber(Script.PKHXR_90D_60D_X_LOCK_REL.n).toIsoBuf(),
+        ScriptNum.fromNumber(Script.PKHXR_90D_60D_X_LOCK_REL.n).toEbxBuf(),
       ),
       new ScriptChunk(Opcode.OP_CHECKLOCKRELVERIFY),
       new ScriptChunk(Opcode.OP_DROP),

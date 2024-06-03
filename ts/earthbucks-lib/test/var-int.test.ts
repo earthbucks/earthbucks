@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { VarInt } from "../src/var-int.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("VarInt", () => {
@@ -34,11 +34,11 @@ describe("VarInt", () => {
     });
   });
 
-  describe("toIsoBuf", () => {
-    it("should return a IsoBuf", () => {
+  describe("toEbxBuf", () => {
+    it("should return a EbxBuf", () => {
       const u32: U32 = new U32(123);
       varInt = VarInt.fromU32(u32);
-      expect(varInt.toIsoBuf().toString("hex")).toEqual("7b");
+      expect(varInt.toEbxBuf().toString("hex")).toEqual("7b");
     });
   });
 

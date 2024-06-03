@@ -1,4 +1,4 @@
-import { SysBuf, IsoBuf, FixedIsoBuf } from "./iso-buf.js";
+import { SysBuf, EbxBuf, FixedEbxBuf } from "./ebx-buf.js";
 import {
   EbxError,
   NotEnoughDataError,
@@ -7,7 +7,7 @@ import {
 } from "./ebx-error.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
-export class IsoBufReader {
+export class BufReader {
   buf: SysBuf;
   pos: number;
 
@@ -31,9 +31,9 @@ export class IsoBufReader {
     return newBuf;
   }
 
-  readFixed<N extends number>(len: N): FixedIsoBuf<N> {
+  readFixed<N extends number>(len: N): FixedEbxBuf<N> {
     const isoBuf = this.read(len);
-    return FixedIsoBuf.fromBuf(len, isoBuf) as FixedIsoBuf<N>;
+    return FixedEbxBuf.fromBuf(len, isoBuf) as FixedEbxBuf<N>;
   }
 
   readRemainder(): SysBuf {

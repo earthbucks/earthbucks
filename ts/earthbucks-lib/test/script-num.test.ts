@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { ScriptNum } from "../src/script-num.js";
-import { SysBuf } from "../src/iso-buf.js";
+import { SysBuf } from "../src/ebx-buf.js";
 
 describe("ScriptNum", () => {
   const testCases = [
@@ -23,25 +23,25 @@ describe("ScriptNum", () => {
   ];
 
   testCases.forEach(({ hex, dec }) => {
-    test(`fromIsoBuf correctly converts ${hex} to ${dec}`, () => {
+    test(`fromEbxBuf correctly converts ${hex} to ${dec}`, () => {
       const buffer = SysBuf.from(hex, "hex");
-      const scriptNum = ScriptNum.fromIsoBuf(buffer);
+      const scriptNum = ScriptNum.fromEbxBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });
   });
 
   testCases.forEach(({ hex, dec }) => {
-    test(`toIsoBuf correctly converts ${dec} to ${hex}`, () => {
+    test(`toEbxBuf correctly converts ${dec} to ${hex}`, () => {
       const scriptNum = new ScriptNum();
       scriptNum.num = BigInt(dec);
-      const buffer = scriptNum.toIsoBuf();
+      const buffer = scriptNum.toEbxBuf();
       expect(buffer.toString("hex")).toBe(hex);
     });
   });
 
   it("should correctly output positive numbers with the most significant bit set", () => {
     const num = ScriptNum.fromIsoStr("128"); // 128 is a positive number with the most significant bit set
-    const buffer = num.toIsoBuf();
+    const buffer = num.toEbxBuf();
     const hex = buffer.toString("hex");
     expect(hex).toEqual("0080"); // 128 in hexadecimal is 80, but we expect an extra '00' at the front
   });

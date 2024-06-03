@@ -2,7 +2,7 @@ import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { SignedMessage } from "./signed-message.js";
 import { SigninChallenge } from "./signin-challenge.js";
-import { SysBuf, IsoBuf } from "./iso-buf.js";
+import { SysBuf, EbxBuf } from "./ebx-buf.js";
 
 export class SigninResponse {
   signedMessage: SignedMessage;
@@ -26,7 +26,7 @@ export class SigninResponse {
       domain,
     );
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
-    const message = signinChallenge.toIsoBuf();
+    const message = signinChallenge.toEbxBuf();
     const signedMessage = SignedMessage.fromSignMessage(
       userPrivKey,
       message,
@@ -35,23 +35,23 @@ export class SigninResponse {
     return new SigninResponse(signedMessage);
   }
 
-  static toIsoBuf(buf: SysBuf, domain: string): SigninResponse {
+  static toEbxBuf(buf: SysBuf, domain: string): SigninResponse {
     const signInResponseStr = SigninResponse.signinResponseKeyString(domain);
-    const signedMessage = SignedMessage.fromIsoBuf(buf, signInResponseStr);
+    const signedMessage = SignedMessage.fromEbxBuf(buf, signInResponseStr);
     return new SigninResponse(signedMessage);
   }
 
   static fromIsoHex(hex: string, domain: string): SigninResponse {
-    const buf = IsoBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninResponse.toIsoBuf(buf, domain);
+    const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
+    return SigninResponse.toEbxBuf(buf, domain);
   }
 
-  toIsoBuf(): SysBuf {
-    return this.signedMessage.toIsoBuf();
+  toEbxBuf(): SysBuf {
+    return this.signedMessage.toEbxBuf();
   }
 
   toIsoHex(): string {
-    return this.toIsoBuf().toString("hex");
+    return this.toEbxBuf().toString("hex");
   }
 
   isValid(userPubKey: PubKey, domain: string): boolean {

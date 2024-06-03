@@ -2,7 +2,7 @@ import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { PermissionToken } from "./permission-token.js";
 import { SignedMessage } from "./signed-message.js";
-import { SysBuf, IsoBuf } from "./iso-buf.js";
+import { SysBuf, EbxBuf } from "./ebx-buf.js";
 
 export class SigninChallenge {
   signedMessage: SignedMessage;
@@ -19,7 +19,7 @@ export class SigninChallenge {
     const signInPermissionStr =
       SigninChallenge.signinChallengeKeyString(domain);
     const permissionToken = PermissionToken.fromRandom();
-    const message = permissionToken.toIsoBuf();
+    const message = permissionToken.toEbxBuf();
     const signedMessage = SignedMessage.fromSignMessage(
       domainPrivKey,
       message,
@@ -28,30 +28,30 @@ export class SigninChallenge {
     return new SigninChallenge(signedMessage);
   }
 
-  static fromIsoBuf(buf: SysBuf, domain: string): SigninChallenge {
+  static fromEbxBuf(buf: SysBuf, domain: string): SigninChallenge {
     const signinChallengeKeyStr =
       SigninChallenge.signinChallengeKeyString(domain);
-    const signedMessage = SignedMessage.fromIsoBuf(buf, signinChallengeKeyStr);
+    const signedMessage = SignedMessage.fromEbxBuf(buf, signinChallengeKeyStr);
     return new SigninChallenge(signedMessage);
   }
 
   static fromIsoHex(hex: string, domain: string): SigninChallenge {
     // TODO: Fix return type (do not throw error)
-    const buf = IsoBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninChallenge.fromIsoBuf(buf, domain);
+    const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
+    return SigninChallenge.fromEbxBuf(buf, domain);
   }
 
-  toIsoBuf(): SysBuf {
-    return this.signedMessage.toIsoBuf();
+  toEbxBuf(): SysBuf {
+    return this.signedMessage.toEbxBuf();
   }
 
   toIsoHex(): string {
-    return this.toIsoBuf().toString("hex");
+    return this.toEbxBuf().toString("hex");
   }
 
   isValid(domainPubKey: PubKey, domain: string): boolean {
     const message = this.signedMessage.message;
-    const permissionToken = PermissionToken.fromIsoBuf(message);
+    const permissionToken = PermissionToken.fromEbxBuf(message);
     if (!permissionToken.isValid()) {
       return false;
     }
