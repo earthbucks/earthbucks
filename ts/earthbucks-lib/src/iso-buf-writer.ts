@@ -1,5 +1,5 @@
 import { SysBuf } from "./iso-buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class IsoBufWriter {
   bufs: SysBuf[];
@@ -49,6 +49,30 @@ export class IsoBufWriter {
   writeU64BE(u64: U64): this {
     const buf = SysBuf.alloc(8);
     buf.writeBigInt64BE(u64.bn);
+    this.write(buf);
+    return this;
+  }
+
+  writeU128BE(u128: U128): this {
+    const val1: bigint = u128.bn >> 64n;
+    const val2: bigint = u128.bn & 0xffffffffffffffffn;
+    const buf = SysBuf.alloc(16);
+    buf.writeBigUInt64BE(val1, 0);
+    buf.writeBigUInt64BE(val2, 8);
+    this.write(buf);
+    return this;
+  }
+
+  writeU256BE(u256: U256): this {
+    const val1: bigint = u256.bn >> 192n;
+    const val2: bigint = (u256.bn >> 128n) & 0xffffffffffffffffn;
+    const val3: bigint = (u256.bn >> 64n) & 0xffffffffffffffffn;
+    const val4: bigint = u256.bn & 0xffffffffffffffffn;
+    const buf = SysBuf.alloc(32);
+    buf.writeBigUInt64BE(val1, 0);
+    buf.writeBigUInt64BE(val2, 8);
+    buf.writeBigUInt64BE(val3, 16);
+    buf.writeBigUInt64BE(val4, 24);
     this.write(buf);
     return this;
   }

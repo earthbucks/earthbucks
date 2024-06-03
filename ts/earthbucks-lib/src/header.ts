@@ -2,7 +2,7 @@ import { IsoBufReader } from "./iso-buf-reader.js";
 import { IsoBufWriter } from "./iso-buf-writer.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedIsoBuf } from "./iso-buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class Header {
@@ -240,7 +240,7 @@ export class Header {
   }
 
   static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedIsoBuf<32> {
-    const target = BigInt("0x" + SysBuf.from(targetBuf).toString("hex"));
+    const target = new IsoBufReader(targetBuf).readU256BE().bn;
     const twoWeeks: bigint = Header.BLOCKS_PER_TARGET_ADJ_PERIOD.mul(
       Header.BLOCK_INTERVAL,
     ).bn;
@@ -257,10 +257,9 @@ export class Header {
 
     const newTarget = (target * timeDiff.bn) / twoWeeks; // seconds
 
-    const newTargetBuf = SysBuf.from(
-      newTarget.toString(16).padStart(64, "0"),
-      "hex",
-    );
+    const newTargetBuf = new IsoBufWriter()
+      .writeU256BE(new U256(newTarget))
+      .toIsoBuf();
     return FixedIsoBuf.fromBuf(32, newTargetBuf);
   }
 }
