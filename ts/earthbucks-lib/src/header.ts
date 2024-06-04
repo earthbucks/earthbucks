@@ -184,11 +184,25 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
-  // static newTargetFromOldTargets(
-  //   targetSum: bigint,
-  //   realTimeDiff: U64,
-  //   len: U32,
-  // ): bigint
+  static newTargetFromOldTargets(
+    targetSum: bigint,
+    realTimeDiff: U64,
+    len: U32,
+  ): U256 {
+    // - target_sum is sum of all targets in the adjustment period
+    // - real_time_diff is the time difference between the first block in
+    //   the adjustment period and now (the new block)
+    // new target = average target * real time diff / intended time diff
+    // let new_target = (target_sum / len) * real_time_diff / intended_time_diff;
+    // let new_target = (target_sum * real_time_diff) / intended_time_diff / len;
+    // let new_target = (target_sum * real_time_diff) / len / intended_time_diff;
+    // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
+    // the fewest divisions is the most accurate in integer arithmetic...
+    const intendedTimeDiff = len.bn * Header.BLOCK_INTERVAL.bn;
+    const resBigInt =
+      (targetSum * realTimeDiff.bn) / (len.bn * intendedTimeDiff);
+    return new U256(resBigInt);
+  }
 
   static coinbaseAmount(blockNum: U32): U64 {
     // shift every 210,000 blocks ("halving")
