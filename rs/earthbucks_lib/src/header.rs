@@ -26,7 +26,7 @@ impl Header {
     pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016;
 
     // 600_000 milliseconds = 600 seconds = 10 minutes
-    pub const BLOCK_INTERVAL: u32 = 600_000;
+    pub const BLOCK_INTERVAL: u64 = 600_000;
 
     pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
@@ -294,8 +294,8 @@ impl Header {
         // let new_target = (target_sum * real_time_diff) / len / intended_time_diff;
         // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
         // the fewest divisions is the most accurate in integer arithmetic...
-        let intended_time_diff = len * Header::BLOCK_INTERVAL;
-        (target_sum * real_time_diff) / (len * intended_time_diff)
+        let intended_time_diff = len as u64 * Header::BLOCK_INTERVAL;
+        (target_sum * real_time_diff) / (len as u64 * intended_time_diff)
     }
 
     pub fn coinbase_amount(block_num: u32) -> u64 {

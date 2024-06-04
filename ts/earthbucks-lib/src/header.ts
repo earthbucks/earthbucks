@@ -22,7 +22,7 @@ export class Header {
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U32(2016n);
 
   // 600_000 milliseconds = 600 seconds = 10 minutes
-  static readonly BLOCK_INTERVAL = new U32(600_000);
+  static readonly BLOCK_INTERVAL = new U64(600_000);
 
   static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly INITIAL_TARGET = FixedBuf.alloc(32, 0xff);
