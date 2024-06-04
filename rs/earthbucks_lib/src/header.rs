@@ -127,10 +127,7 @@ impl Header {
     }
 
     pub fn is_timestamp_valid_at(&self, timestamp: u64) -> bool {
-        if self.timestamp > timestamp {
-            return false;
-        }
-        true
+        self.timestamp <= timestamp
     }
 
     pub fn is_valid_in_lch(&self, lch: &[Header]) -> bool {
@@ -162,12 +159,11 @@ impl Header {
     }
 
     pub fn is_valid_at(&self, lch: &[Header], timestamp: u64) -> bool {
-        self.is_valid_in_lch(lch) && self.is_timestamp_valid_at(timestamp)
+        self.is_timestamp_valid_at(timestamp) && self.is_valid_in_lch(lch)
     }
 
     pub fn is_valid_now(&self, lch: &[Header]) -> bool {
-        let now = Header::get_new_timestamp();
-        self.is_valid_at(lch, now)
+        self.is_valid_at(lch, Header::get_new_timestamp())
     }
 
     pub fn is_genesis(&self) -> bool {

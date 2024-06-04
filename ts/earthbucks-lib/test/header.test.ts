@@ -60,23 +60,6 @@ describe("Header", () => {
     expect(bh1.blockNum.bn).toEqual(bh2.blockNum.bn);
   });
 
-  test("isValid", () => {
-    const bh1 = new Header(
-      new U8(0),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
-      new U64(0),
-      new U32(0),
-      new U256(0),
-      new U256(0),
-      new U16(0),
-      FixedBuf.alloc(32),
-      new U16(0),
-      FixedBuf.alloc(32),
-    );
-    expect(bh1.isValid()).toBe(true);
-  });
-
   test("isGenesis", () => {
     const bh1 = new Header(
       new U8(0),

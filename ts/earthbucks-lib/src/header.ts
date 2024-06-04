@@ -119,39 +119,64 @@ export class Header {
     return Header.fromStrictHex(str);
   }
 
-  static isValidVersion(version: U8): boolean {
-    return version.n === 0;
-  }
-
-  static isValidPreviousBlockHash(previousBlockHash: SysBuf): boolean {
-    return previousBlockHash.length === 32;
-  }
-
-  static isValidMerkleRoot(merkleRoot: SysBuf): boolean {
-    return merkleRoot.length === 32;
-  }
-
-  static isValidNonce(nonce: U256): boolean {
-    return true;
-  }
-
-  static isValidTarget(target: U256): boolean {
-    // TODO: Fix this
-    return true;
-  }
-
-  isValid(): boolean {
-    const len = this.toBuf().length;
-    if (len !== Header.SIZE) {
+  isTargetValid(lch: Header[]): boolean {
+    let newTarget: U256;
+    try {
+      newTarget = Header.newTargetFromLch(lch, this.timestamp);
+    } catch (e) {
       return false;
     }
-    return (
-      Header.isValidVersion(this.version) &&
-      Header.isValidPreviousBlockHash(this.prevBlockId) &&
-      Header.isValidMerkleRoot(this.merkleRoot) &&
-      Header.isValidNonce(this.nonce) &&
-      Header.isValidTarget(this.target)
-    );
+    return this.target.bn === newTarget.bn;
+  }
+
+  isPowValid(): boolean {
+    const id = this.id();
+    const idNum = new BufReader(id).readU256BE();
+    return idNum.bn < this.target.bn;
+  }
+
+  isVersionValid(): boolean {
+    return this.version.n === 0;
+  }
+
+  isTimestampValidAt(timestamp: U64): boolean {
+    return this.timestamp.n <= timestamp.n;
+  }
+
+  isValidInLch(lch: Header[]): boolean {
+    if (!this.isVersionValid()) {
+      return false;
+    }
+    if (this.blockNum.bn === 0n) {
+      return this.isGenesis();
+    }
+    if (lch.length === 0) {
+      return false;
+    }
+    if (this.blockNum.n !== lch.length) {
+      return false;
+    }
+    if (this.prevBlockId !== lch[lch.length - 1].id()) {
+      return false;
+    }
+    if (this.timestamp.n <= lch[lch.length - 1].timestamp.n) {
+      return false;
+    }
+    if (!this.isTargetValid(lch)) {
+      return false;
+    }
+    if (!this.isPowValid()) {
+      return false;
+    }
+    return true;
+  }
+
+  isValidAt(lch: Header[], timestamp: U64): boolean {
+    return this.isTimestampValidAt(timestamp) && this.isValidInLch(lch);
+  }
+
+  isValidNow(lch: Header[]): boolean {
+    return this.isValidAt(lch, Header.getNewTimestamp());
   }
 
   isGenesis(): boolean {
