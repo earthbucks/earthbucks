@@ -10,11 +10,11 @@ pub struct TxBuilder {
     tx: Tx,
     change_script: Script,
     input_amount: u64,
-    lock_abs: u64,
+    lock_abs: u32,
 }
 
 impl TxBuilder {
-    pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_abs: u64) -> Self {
+    pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_abs: u32) -> Self {
         Self {
             tx: Tx::new(1, vec![], vec![], 0),
             input_tx_out_bn_map: input_tx_out_bn_map.clone(),

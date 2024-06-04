@@ -6,11 +6,11 @@ pub struct TxVerifier<'a> {
     tx: Tx,
     tx_out_bn_map: &'a TxOutBnMap,
     hash_cache: HashCache,
-    block_num: u64,
+    block_num: u32,
 }
 
 impl<'a> TxVerifier<'a> {
-    pub fn new(tx: Tx, tx_out_bn_map: &'a TxOutBnMap, block_num: u64) -> Self {
+    pub fn new(tx: Tx, tx_out_bn_map: &'a TxOutBnMap, block_num: u32) -> Self {
         let hash_cache = HashCache::new();
         Self {
             tx,
@@ -59,7 +59,7 @@ impl<'a> TxVerifier<'a> {
         match tx_out {
             None => false,
             Some(tx_out_bn) => {
-                let lock_rel: u64 = tx_input.lock_rel as u64;
+                let lock_rel = tx_input.lock_rel;
                 let prev_block_num = tx_out_bn.block_num;
                 self.block_num >= prev_block_num + lock_rel
             }
@@ -369,7 +369,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhx_1h() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHX_1H_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHX_1H_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -479,7 +479,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhx_90d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHX_90D_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHX_90D_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -589,7 +589,7 @@ mod tests {
     fn should_sign_and_verify_recoverable_pkhxr_1h_40m() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHXR_1H_40M_R_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHXR_1H_40M_R_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -651,7 +651,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhxr_1h_40m() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHXR_1H_40M_X_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHXR_1H_40M_X_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -764,7 +764,7 @@ mod tests {
     fn should_sign_and_verify_recoverable_pkhxr_90d_60d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHXR_90D_60D_R_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHXR_90D_60D_R_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();
@@ -826,7 +826,7 @@ mod tests {
     fn should_sign_and_verify_expired_pkhxr_90d_60d() {
         let mut tx_out_bn_map = TxOutBnMap::new();
         let mut pkh_key_map = PkhKeyMap::new();
-        let working_block_num: u64 = Script::PKHXR_90D_60D_X_LOCK_REL as u64;
+        let working_block_num: u32 = Script::PKHXR_90D_60D_X_LOCK_REL;
         // generate 5 keys, 5 outputs, and add them to the tx_out_map
         for i in 0..5 {
             let key = KeyPair::from_random();

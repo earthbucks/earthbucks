@@ -178,8 +178,8 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
-    pub fn is_pkhx_90d_expired(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL as u64
+    pub fn is_pkhx_90d_expired(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHX_90D_LOCK_REL
     }
 
     // PKHXR 90D 60D = PubKey Hash with Expiry: 90 Days
@@ -263,12 +263,12 @@ impl Script {
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
-    pub fn is_pkhxr_90d_60d_expired(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_X_LOCK_REL as u64
+    pub fn is_pkhxr_90d_60d_expired(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_X_LOCK_REL
     }
 
-    pub fn is_pkhxr_90d_60d_recoverable(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_R_LOCK_REL as u64
+    pub fn is_pkhxr_90d_60d_recoverable(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_90D_60D_R_LOCK_REL
     }
 
     // PKHX 1H = PubKey Hash Expiry: 1 Hour
@@ -310,8 +310,8 @@ impl Script {
             && self.chunks[11].opcode == Opcode::OP_ENDIF
     }
 
-    pub fn is_pkhx_1h_expired(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHX_1H_LOCK_REL as u64
+    pub fn is_pkhx_1h_expired(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHX_1H_LOCK_REL
     }
 
     // PKHXR 1h 40m = PubKey Hash with Expiry: 1 Hour
@@ -383,12 +383,12 @@ impl Script {
             && self.chunks[21].opcode == Opcode::OP_ENDIF
     }
 
-    pub fn is_pkhxr_1h_40m_expired(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_X_LOCK_REL as u64
+    pub fn is_pkhxr_1h_40m_expired(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_X_LOCK_REL
     }
 
-    pub fn is_pkhxr_1h_40m_recoverable(new_block_num: u64, prev_block_num: u64) -> bool {
-        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_R_LOCK_REL as u64
+    pub fn is_pkhxr_1h_40m_recoverable(new_block_num: u32, prev_block_num: u32) -> bool {
+        new_block_num >= prev_block_num + Script::PKHXR_1H_40M_R_LOCK_REL
     }
 
     pub fn from_expired_pkhx_input() -> Self {

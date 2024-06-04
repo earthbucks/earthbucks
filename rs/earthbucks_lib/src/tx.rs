@@ -36,11 +36,11 @@ pub struct Tx {
     pub version: u8,
     pub inputs: Vec<TxIn>,
     pub outputs: Vec<TxOut>,
-    pub lock_abs: u64,
+    pub lock_abs: u32,
 }
 
 impl Tx {
-    pub fn new(version: u8, inputs: Vec<TxIn>, outputs: Vec<TxOut>, lock_abs: u64) -> Self {
+    pub fn new(version: u8, inputs: Vec<TxIn>, outputs: Vec<TxOut>, lock_abs: u32) -> Self {
         Self {
             version,
             inputs,
@@ -70,7 +70,7 @@ impl Tx {
         for _ in 0..output_count {
             outputs.push(TxOut::from_buf_reader(reader)?);
         }
-        let lock_num = reader.read_u64_be()?;
+        let lock_num = reader.read_u32_be()?;
         Ok(Self::new(version, inputs, outputs, lock_num))
     }
 
@@ -85,7 +85,7 @@ impl Tx {
         for output in &self.outputs {
             writer.write(output.to_buf());
         }
-        writer.write_u64_be(self.lock_abs);
+        writer.write_u32_be(self.lock_abs);
         writer
     }
 
@@ -109,7 +109,7 @@ impl Tx {
         input_script: Script,
         output_script: Script,
         output_amount: u64,
-        block_num: u64,
+        block_num: u32,
     ) -> Self {
         let version = 1;
         let inputs = vec![TxIn::from_coinbase(input_script)];
@@ -217,7 +217,7 @@ impl Tx {
         bw.write_u64_be(amount);
         bw.write_u32_be(self.inputs[input_index].lock_rel);
         bw.write(outputs_hash.to_vec());
-        bw.write_u64_be(self.lock_abs);
+        bw.write_u32_be(self.lock_abs);
         bw.write_u8(hash_type);
         bw.to_buf()
     }
@@ -590,12 +590,12 @@ mod tests {
         let script = Script::from_empty();
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
-        let sighash = tx.sighash_no_cache(0, script.to_buf(), amount, hash_type);
+        let sighash = tx
+            .sighash_no_cache(0, script.to_buf(), amount, hash_type)
+            .to_strict_hex();
 
-        let expected = <[u8; 32]>::from_strict_hex(
-            "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
-        )
-        .unwrap();
+        let expected = "2c45591d9f58f6f8b464a429cfefae28b06684bd34c5ffa95cb1ce3551e3dfbf";
+
         assert_eq!(sighash, expected);
     }
 
@@ -611,17 +611,16 @@ mod tests {
         let amount = 1;
         let hash_type = TxSignature::SIGHASH_ALL;
         let hash_cache = &mut HashCache::new();
-        let sighash = tx.sighash_with_cache(0, script.to_buf(), amount, hash_type, hash_cache);
+        let sighash = tx
+            .sighash_with_cache(0, script.to_buf(), amount, hash_type, hash_cache)
+            .to_strict_hex();
 
-        let expected = <[u8; 32]>::from_strict_hex(
-            "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
-        )
-        .unwrap();
+        let expected = "2c45591d9f58f6f8b464a429cfefae28b06684bd34c5ffa95cb1ce3551e3dfbf";
         assert_eq!(sighash, expected);
     }
 
     #[test]
-    fn sign_and_verify() {
+    fn test_sign_and_verify() {
         // Arrange
         let input_index = 0;
         let private_key = Vec::<u8>::from_strict_hex(
@@ -639,7 +638,7 @@ mod tests {
         let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
 
         // Act
         let signature = tx.sign_no_cache(
@@ -651,7 +650,7 @@ mod tests {
         );
 
         // Assert
-        let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
+        let expected_signature_hex = "01783d02ae53dec22410bf031fb8b95456d467f7593acd75b099b59b883e78ab7c4263338e08aea20e4bb061c4aa8c99abdd909881ade317480e4d695129c41e3c";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         // Arrange
@@ -670,7 +669,7 @@ mod tests {
     }
 
     #[test]
-    fn sign_and_verify_with_cache() {
+    fn test_sign_and_verify_with_cache() {
         // Arrange
         let input_index = 0;
         let private_key = Vec::<u8>::from_strict_hex(
@@ -688,7 +687,7 @@ mod tests {
         let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
         let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_buf()), "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000");
+        assert_eq!(hex::encode(tx.to_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
         let hash_cache_1 = &mut HashCache::new();
 
         // Act
@@ -702,7 +701,7 @@ mod tests {
         );
 
         // Assert
-        let expected_signature_hex = "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d";
+        let expected_signature_hex = "01783d02ae53dec22410bf031fb8b95456d467f7593acd75b099b59b883e78ab7c4263338e08aea20e4bb061c4aa8c99abdd909881ade317480e4d695129c41e3c";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         // Arrange

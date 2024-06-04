@@ -35,18 +35,13 @@ impl HeaderChain {
     }
 
     pub fn get_next_coinbase_tx(&self, pkh: &Pkh, domain: &String) -> Tx {
-        let building_block_n = self.headers.len();
+        let building_block_n: u32 = self.headers.len() as u32;
         let domain_buf = domain.as_bytes();
         let script_chunk_domain = ScriptChunk::from_data(domain_buf.to_vec());
         let input_script = Script::new(vec![script_chunk_domain]);
         let output_script = Script::from_pkh_output(&pkh.buf);
-        let output_amount = Header::coinbase_amount(building_block_n as u64);
-        Tx::from_coinbase(
-            input_script,
-            output_script,
-            output_amount,
-            building_block_n as u64,
-        )
+        let output_amount = Header::coinbase_amount(building_block_n);
+        Tx::from_coinbase(input_script, output_script, output_amount, building_block_n)
     }
 
     pub fn get_next_header(

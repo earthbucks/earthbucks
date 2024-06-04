@@ -8,39 +8,28 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone)]
 pub struct Header {
-    pub version: u32,
+    pub version: u8,
     pub prev_block_id: [u8; 32],
     pub timestamp: u64, // seconds
-    pub block_num: u64,
+    pub block_num: u32,
     pub merkle_root: [u8; 32],
     pub target: [u8; 32],
     pub nonce: [u8; 32],
-    pub work_ser_algo: u32,
+    pub work_ser_algo: u16,
     pub work_ser_hash: [u8; 32],
-    pub work_par_algo: u32,
+    pub work_par_algo: u16,
     pub work_par_hash: [u8; 32],
 }
 
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
-    pub const BLOCK_INTERVAL: u64 = 600; // 600 seconds = 10 minutes
-    pub const SIZE: usize = 220;
+    pub const BLOCK_INTERVAL: u32 = 600; // 600 seconds = 10 minutes
+                                         // pub const SIZE: usize = 220;
+    pub const SIZE: usize = 1 + 32 + 8 + 4 + 32 + 32 + 32 + 2 + 32 + 2 + 32;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn to_buf(&self) -> [u8; Header::SIZE] {
-        let mut bw = BufWriter::new();
-        bw.write_u32_be(self.version);
-        bw.write(self.prev_block_id.to_vec());
-        bw.write(self.merkle_root.to_vec());
-        bw.write_u64_be(self.timestamp);
-        bw.write_u64_be(self.block_num);
-        bw.write(self.target.to_vec());
-        bw.write(self.nonce.to_vec());
-        bw.write_u32_be(self.work_ser_algo);
-        bw.write(self.work_ser_hash.to_vec());
-        bw.write_u32_be(self.work_par_algo);
-        bw.write(self.work_par_hash.to_vec());
-        bw.to_buf().try_into().unwrap()
+        self.to_buf_writer().to_buf().try_into().unwrap()
     }
 
     pub fn from_buf(buf: [u8; Header::SIZE]) -> Result<Header, EbxError> {
@@ -52,16 +41,16 @@ impl Header {
         if br.remainder_len() < Header::SIZE {
             panic!("Invalid block header size");
         }
-        let version = br.read_u32_be()?;
+        let version = br.read_u8()?;
         let prev_block_id: [u8; 32] = br.read(32)?.try_into().unwrap();
         let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
         let timestamp = br.read_u64_be()?;
-        let block_num = br.read_u64_be()?;
+        let block_num = br.read_u32_be()?;
         let target: [u8; 32] = br.read(32)?.try_into().unwrap();
         let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_ser_algo: u32 = br.read_u32_be()?;
+        let work_ser_algo = br.read_u16_be()?;
         let work_ser_hash: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let work_par_algo: u32 = br.read_u32_be()?;
+        let work_par_algo = br.read_u16_be()?;
         let work_par_hash: [u8; 32] = br.read(32)?.try_into().unwrap();
         Ok(Self {
             version,
@@ -80,16 +69,16 @@ impl Header {
 
     pub fn to_buf_writer(&self) -> BufWriter {
         let mut bw = BufWriter::new();
-        bw.write_u32_be(self.version);
+        bw.write_u8(self.version);
         bw.write(self.prev_block_id.to_vec());
         bw.write(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
-        bw.write_u64_be(self.block_num);
+        bw.write_u32_be(self.block_num);
         bw.write(self.target.to_vec());
         bw.write(self.nonce.to_vec());
-        bw.write_u32_be(self.work_ser_algo);
+        bw.write_u16_be(self.work_ser_algo);
         bw.write(self.work_ser_hash.to_vec());
-        bw.write_u32_be(self.work_par_algo);
+        bw.write_u16_be(self.work_par_algo);
         bw.write(self.work_par_hash.to_vec());
         bw
     }
@@ -153,7 +142,7 @@ impl Header {
         if lch.is_empty() {
             return false;
         }
-        if self.block_num != lch.len() as u64 {
+        if self.block_num != lch.len() as u32 {
             return false;
         }
         if self.prev_block_id != lch.last().unwrap().id() {
@@ -228,7 +217,7 @@ impl Header {
         let prev_block = lch.last().unwrap();
         let new_target = new_target_res.unwrap();
         let prev_block_id = prev_block.id();
-        let block_num = lch.len() as u64;
+        let block_num = lch.len() as u32;
         let timestamp = new_timestamp;
         let nonce = [0u8; 32];
         let work_ser_algo = prev_block.work_ser_algo;
@@ -259,7 +248,7 @@ impl Header {
         };
 
         // convert all targets into big numbers
-        let len = adjh.len();
+        let len: u32 = adjh.len() as u32;
         if len == 0 {
             return Ok(Header::INITIAL_TARGET);
         }
@@ -275,8 +264,7 @@ impl Header {
             // error
             return Err("timestamps must be increasing".to_string());
         }
-        let real_time_diff: BigUint =
-            BigUint::from(new_timestamp) - BigUint::from(first_header.timestamp);
+        let real_time_diff: u64 = new_timestamp - first_header.timestamp;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
 
         let mut new_target_bytes = new_target.to_bytes_be();
@@ -291,8 +279,8 @@ impl Header {
 
     pub fn new_target_from_old_targets(
         target_sum: BigUint,
-        real_time_diff: BigUint,
-        len_usize: usize,
+        real_time_diff: u64,
+        len: u32,
     ) -> BigUint {
         // - target_sum is sum of all targets in the adjustment period
         // - real_time_diff is the time difference between the first block in
@@ -303,12 +291,11 @@ impl Header {
         // let new_target = (target_sum * real_time_diff) / len / intended_time_diff;
         // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
         // the fewest divisions is the most accurate in integer arithmetic...
-        let intended_time_diff = BigUint::from(len_usize as u64 * Header::BLOCK_INTERVAL);
-        let len = BigUint::from(len_usize);
+        let intended_time_diff = len * Header::BLOCK_INTERVAL;
         (target_sum * real_time_diff) / (len * intended_time_diff)
     }
 
-    pub fn coinbase_amount(block_num: u64) -> u64 {
+    pub fn coinbase_amount(block_num: u32) -> u64 {
         // shift every 210,000 blocks
         let shift_by = block_num / 210_000;
         (100 * 100_000_000) >> shift_by
@@ -426,7 +413,7 @@ mod tests {
         let hex = hash.to_strict_hex();
         assert_eq!(
             hex,
-            "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00"
+            "d0e76639ce57406739699a5c74798bed388149bfe68014a1c72ea5ae45271a08"
         );
     }
 
@@ -449,7 +436,7 @@ mod tests {
         let hex = id.to_strict_hex();
         assert_eq!(
             hex,
-            "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e"
+            "35f00a35959646aa706a20c45dd46570a4469d8418ff28ab6e5aab291555eaf7"
         );
     }
 
@@ -478,9 +465,8 @@ mod tests {
 
         let target_sum = target_1;
         let real_time_diff: u64 = 600;
-        let len: usize = 1;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 1;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
@@ -494,9 +480,8 @@ mod tests {
 
         let target_sum = target_1;
         let real_time_diff: u64 = 300;
-        let len: usize = 1;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 1;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
@@ -510,9 +495,8 @@ mod tests {
 
         let target_sum = target_1;
         let real_time_diff: u64 = 600;
-        let len: usize = 1;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 1;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "8000000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
@@ -526,9 +510,8 @@ mod tests {
 
         let target_sum = target_1;
         let real_time_diff: u64 = 300;
-        let len: usize = 1;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 1;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "4000000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
@@ -542,9 +525,8 @@ mod tests {
 
         let target_sum = target_1;
         let real_time_diff: u64 = 1200;
-        let len: usize = 1;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 1;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "0100000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
@@ -560,9 +542,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 600;
-        let len: usize = 2;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 2;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
@@ -578,9 +559,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 300;
-        let len: usize = 2;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 2;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
         let expected_hex = "0060000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
@@ -596,9 +576,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
         let real_time_diff: u64 = 600 + 1200;
-        let len: usize = 2;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 2;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
         let expected_hex = "00c0000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
@@ -617,9 +596,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 600;
-        let len: usize = 3;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 3;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
@@ -638,9 +616,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 601;
-        let len: usize = 3;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 3;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
         let expected_hex = "0080123456789abcdf0123456789abcdf0123456789abcdf0123456789abcdf0";
         assert_eq!(new_target_hex, expected_hex);
@@ -659,9 +636,8 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
         let real_time_diff: u64 = 600 + 600 + 599;
-        let len: usize = 3;
-        let new_target =
-            Header::new_target_from_old_targets(target_sum, real_time_diff.into(), len);
+        let len: u32 = 3;
+        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
         let expected_hex = "007fedcba987654320fedcba987654320fedcba987654320fedcba987654320f";
         assert_eq!(new_target_hex, expected_hex);

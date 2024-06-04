@@ -9,7 +9,7 @@ pub struct TxSigner {
     pub tx: Tx,
     pub pkh_key_map: PkhKeyMap,
     pub tx_out_bn_map: TxOutBnMap,
-    pub working_block_num: u64,
+    pub working_block_num: u32,
 }
 
 impl TxSigner {
@@ -17,7 +17,7 @@ impl TxSigner {
         tx: Tx,
         tx_out_bn_map: &TxOutBnMap,
         pkh_key_map: &PkhKeyMap,
-        working_block_num: u64,
+        working_block_num: u32,
     ) -> Self {
         Self {
             tx,
