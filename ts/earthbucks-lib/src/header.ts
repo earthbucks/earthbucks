@@ -132,54 +132,6 @@ export class Header {
     );
   }
 
-  static fromPrevBlockHeader(
-    prevBlockHeader: Header,
-    prevAdjustmentBlockHeader: Header | null,
-  ): Header {
-    let target = null;
-    const blockNum = prevBlockHeader.blockNum.add(new U32(1n));
-    if (blockNum.bn % Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn === 0n) {
-      if (
-        !prevAdjustmentBlockHeader ||
-        prevAdjustmentBlockHeader.blockNum.add(
-          Header.BLOCKS_PER_TARGET_ADJ_PERIOD,
-        ).bn !== blockNum.bn
-      ) {
-        throw new GenericError(
-          "must provide previous adjustment block header 2016 blocks before",
-        );
-      }
-      const timeDiff: U64 = prevBlockHeader.timestamp.sub(
-        prevAdjustmentBlockHeader!.timestamp,
-      );
-      const prevTarget = prevBlockHeader.target;
-      target = Header.adjustTarget(prevTarget, timeDiff);
-    } else {
-      target = prevBlockHeader.target;
-    }
-    const prevBlockVersion = prevBlockHeader.version;
-    const prevBlockId = prevBlockHeader.id();
-    const timestamp = new U64(BigInt(Math.floor(Date.now() / 1000))); // seconds
-    const nonce = FixedBuf.alloc(32);
-    const workSerAlgo = prevBlockHeader.workSerAlgo;
-    const workSerHash = FixedBuf.alloc(32);
-    const workParAlgo = prevBlockHeader.workParAlgo;
-    const workParHash = FixedBuf.alloc(32);
-    return new Header(
-      prevBlockVersion,
-      prevBlockId,
-      FixedBuf.alloc(32),
-      timestamp,
-      blockNum,
-      target,
-      nonce,
-      workSerAlgo,
-      workSerHash,
-      workParAlgo,
-      workParHash,
-    );
-  }
-
   static isValidVersion(version: U8): boolean {
     return version.n === 0;
   }
@@ -226,29 +178,5 @@ export class Header {
 
   id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toBuf());
-  }
-
-  static adjustTarget(targetBuf: SysBuf, timeDiff: U64): FixedBuf<32> {
-    const target = new BufReader(targetBuf).readU256BE().bn;
-    const twoWeeks: bigint = Header.BLOCKS_PER_TARGET_ADJ_PERIOD.mul(
-      Header.BLOCK_INTERVAL,
-    ).bn;
-
-    // To prevent extreme difficulty adjustments, if it took less than 1 week or
-    // more than 8 weeks, we still consider it as 1 week or 8 weeks
-    // respectively.
-    if (timeDiff.bn < twoWeeks / 2n) {
-      timeDiff = new U64(twoWeeks / 2n); // seconds
-    }
-    if (timeDiff.bn > twoWeeks * 2n) {
-      timeDiff = new U64(twoWeeks * 2n); // seconds
-    }
-
-    const newTarget = (target * timeDiff.bn) / twoWeeks; // seconds
-
-    const newTargetBuf = new BufWriter()
-      .writeU256BE(new U256(newTarget))
-      .toBuf();
-    return FixedBuf.fromBuf(32, newTargetBuf);
   }
 }

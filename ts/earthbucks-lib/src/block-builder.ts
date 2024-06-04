@@ -43,28 +43,6 @@ export class BlockBuilder {
     return new BlockBuilder(header, txs, merkleTxs);
   }
 
-  static fromPrevBlockHeader(
-    prevBlockHeader: Header,
-    prevAdjustmentBlockHeader: Header | null, // exactly 2016 blocks before
-    outputScript: Script,
-    outputAmount: U64,
-  ): BlockBuilder {
-    const header = Header.fromPrevBlockHeader(
-      prevBlockHeader,
-      prevAdjustmentBlockHeader,
-    );
-
-    const txs = [];
-    const txInput = TxIn.fromCoinbase(outputScript);
-    const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(new U8(0), [txInput], [txOutput], new U64(0n));
-    txs.push(coinbaseTx);
-    const merkleTxs = new MerkleTxs(txs);
-    const root = merkleTxs.root;
-    header.merkleRoot = root;
-    return new BlockBuilder(header, txs, merkleTxs);
-  }
-
   toBlock(): Block {
     return new Block(this.header, this.txs);
   }

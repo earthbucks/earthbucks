@@ -48,38 +48,6 @@ describe("BlockBuilder", () => {
     expect(bb.header.target).toEqual(target);
   });
 
-  test("fromPrevBlockHeader", () => {
-    const outputScript = new Script();
-    const outputAmount = new U64(0n);
-    const target = FixedBuf.alloc(32);
-    const prevBlockHeader = new Header(
-      new U8(0),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
-      new U64(0n),
-      new U32(0n),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
-      new U16(0),
-      FixedBuf.alloc(32),
-      new U16(0),
-      FixedBuf.alloc(32),
-    );
-    const bb = BlockBuilder.fromPrevBlockHeader(
-      prevBlockHeader,
-      null,
-      outputScript,
-      outputAmount,
-    );
-    expect(bb.header.version.n).toBe(0);
-    expect(bb.header.prevBlockId).toEqual(prevBlockHeader.id());
-    expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
-    expect(bb.header.timestamp.n).toBeLessThanOrEqual(
-      new Date().getTime() / 1000,
-    );
-    expect(bb.header.target).toEqual(target);
-  });
-
   test("toBlock", () => {
     const bh = new Header(
       new U8(0),
