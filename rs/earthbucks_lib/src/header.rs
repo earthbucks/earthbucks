@@ -246,7 +246,7 @@ impl Header {
         let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize {
             lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize..].to_vec()
         } else {
-            lch.to_vec().clone()
+            lch.to_vec()
         };
         let len: u32 = adjh.len() as u32;
         if len == 0 {

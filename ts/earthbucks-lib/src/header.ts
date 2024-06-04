@@ -3,6 +3,7 @@ import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
+import { GenericError } from "./ebx-error.js";
 
 export class Header {
   version: U8;
@@ -24,7 +25,7 @@ export class Header {
   static readonly BLOCK_INTERVAL = new U64(600_000);
 
   static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
-  static readonly MAX_TARGET = FixedBuf.alloc(32, 0xff);
+  static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
 
   constructor(
     version: U8,
@@ -182,6 +183,31 @@ export class Header {
 
   id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toBuf());
+  }
+
+  static newTargetFromLch(lch: Header[], newTimestamp: U64): U256 {
+    let adjh: Header[];
+    if (lch.length > Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n) {
+      adjh = lch.slice(lch.length - Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n);
+    } else {
+      adjh = lch;
+    }
+    const len = new U32(adjh.length);
+    if (len.n === 0) {
+      return new BufReader(Header.MAX_TARGET_BYTES).readU256BE();
+    }
+    const firstHeader = adjh[0];
+    const targets: bigint[] = [];
+    for (const header of adjh) {
+      const target = header.target.bn;
+      targets.push(target);
+    }
+    const targetSum = targets.reduce((a, b) => a + b);
+    if (newTimestamp <= firstHeader.timestamp) {
+      throw new GenericError("timestamps must be increasing");
+    }
+    const realTimeDiff = newTimestamp.sub(firstHeader.timestamp);
+    return Header.newTargetFromOldTargets(targetSum, realTimeDiff, len);
   }
 
   static newTargetFromOldTargets(
