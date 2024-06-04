@@ -393,5 +393,35 @@ describe("Header", () => {
         "0080123456789abcdf0123456789abcdf0123456789abcdf0123456789abcdf0";
       expect(newTargetHex).toBe(expectedHex);
     });
+
+    test("newTargetFromOldTargets 3,3", () => {
+      const target1Hex =
+        "0080000000000000000000000000000000000000000000000000000000000000";
+      const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
+      const target1 = new BufReader(target1Buf).readU256BE();
+      const target2Hex =
+        "0080000000000000000000000000000000000000000000000000000000000000";
+      const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
+      const target2 = new BufReader(target2Buf).readU256BE();
+      const target3Hex =
+        "0080000000000000000000000000000000000000000000000000000000000000";
+      const target3Buf = EbxBuf.fromStrictHex(32, target3Hex);
+      const target3 = new BufReader(target3Buf).readU256BE();
+      const targetSum = target1.bn + target2.bn + target3.bn;
+      const realTimeDiff = new U64(600_000 + 600_000 + 599_000);
+      const len = new U32(3);
+      const newTarget = Header.newTargetFromOldTargets(
+        targetSum,
+        realTimeDiff,
+        len,
+      );
+      const newTargetHex = new BufWriter()
+        .writeU256BE(newTarget)
+        .toBuf()
+        .toString("hex");
+      const expectedHex =
+        "007fedcba987654320fedcba987654320fedcba987654320fedcba987654320f";
+      expect(newTargetHex).toBe(expectedHex);
+    });
   });
 });
