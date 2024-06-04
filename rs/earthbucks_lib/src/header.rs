@@ -242,15 +242,12 @@ impl Header {
         })
     }
 
-    pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<u256, String> {
-        // get slice of max length BLOCKS_PER_TARGET_ADJ
+    pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<u256, EbxError> {
         let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize {
             lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize..].to_vec()
         } else {
             lch.to_vec().clone()
         };
-
-        // convert all targets into big numbers
         let len: u32 = adjh.len() as u32;
         if len == 0 {
             return Ok(BufReader::new(Header::MAX_TARGET_BYTES.to_vec())
@@ -258,7 +255,6 @@ impl Header {
                 .unwrap());
         }
         let first_header = adjh[0].clone();
-        // let last_header = adjh[len - 1].clone();
         let mut targets: Vec<BigUint> = Vec::new();
         for header in adjh {
             let target =
@@ -267,13 +263,13 @@ impl Header {
         }
         let target_sum: BigUint = targets.iter().sum();
         if new_timestamp <= first_header.timestamp {
-            // error
-            return Err("timestamps must be increasing".to_string());
+            return Err(EbxError::GenericError {
+                source: None,
+                message: "timestamps must be increasing".to_string(),
+            });
         }
         let real_time_diff: u64 = new_timestamp - first_header.timestamp;
         let new_target: u256 = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-
-        //let new_target_bytes = BufWriter::new().write_u256_be(new_target).to_buf();
         Ok(new_target)
     }
 
