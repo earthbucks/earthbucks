@@ -1,3 +1,4 @@
+use crate::ebx_error::EbxError;
 use crate::header::Header;
 use crate::pkh::Pkh;
 use crate::script::Script;
@@ -52,7 +53,7 @@ impl HeaderChain {
         &self,
         merkle_root: [u8; 32],
         new_timestamp: u64,
-    ) -> Result<Header, String> {
+    ) -> Result<Header, EbxError> {
         // valid block header, except for PoW
         let mut block_header: Header = Header::from_lch(&self.headers, new_timestamp)?;
         block_header.merkle_root = merkle_root;

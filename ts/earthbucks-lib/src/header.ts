@@ -185,6 +185,35 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
+  static fromLch(lch: Header[], newTimestamp: U64): Header {
+    if (lch.length === 0) {
+      return Header.fromGenesis(new U256(0));
+    }
+    const newTarget = Header.newTargetFromLch(lch, newTimestamp);
+    const prevBlock = lch[lch.length - 1];
+    const prevBlockId = prevBlock.id();
+    const blockNum = new U32(lch.length);
+    const timestamp = newTimestamp;
+    const nonce = new U256(0);
+    const workSerAlgo = prevBlock.workSerAlgo;
+    const workSerHash = FixedBuf.alloc(32);
+    const workParAlgo = prevBlock.workParAlgo;
+    const workParHash = FixedBuf.alloc(32);
+    return new Header(
+      new U8(0),
+      prevBlockId,
+      FixedBuf.alloc(32),
+      timestamp,
+      blockNum,
+      newTarget,
+      nonce,
+      workSerAlgo,
+      workSerHash,
+      workParAlgo,
+      workParHash,
+    );
+  }
+
   static newTargetFromLch(lch: Header[], newTimestamp: U64): U256 {
     let adjh: Header[];
     if (lch.length > Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n) {

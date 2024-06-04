@@ -209,16 +209,12 @@ impl Header {
             .as_millis() as u64
     }
 
-    pub fn from_lch(lch: &[Header], new_timestamp: u64) -> Result<Self, String> {
+    pub fn from_lch(lch: &[Header], new_timestamp: u64) -> Result<Self, EbxError> {
         if lch.is_empty() {
             return Ok(Header::from_genesis(new_timestamp));
         }
-        let new_target_res = Header::new_target_from_lch(lch, new_timestamp);
-        if new_target_res.is_err() {
-            return Err("new target error".to_string());
-        }
+        let new_target = Header::new_target_from_lch(lch, new_timestamp)?;
         let prev_block = lch.last().unwrap();
-        let new_target = new_target_res.unwrap();
         let prev_block_id = prev_block.id();
         let block_num = lch.len() as u32;
         let timestamp = new_timestamp;
