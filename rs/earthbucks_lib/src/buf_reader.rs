@@ -70,13 +70,10 @@ impl BufReader {
     }
 
     pub fn read_u256_be(&mut self) -> Result<u256, EbxError> {
-        let buf = self
-            .read(32)
-            .map_err(|_| EbxError::NotEnoughDataError { source: None })?;
-        let val1 = Cursor::new(&buf[0..8]).read_u64::<BigEndian>().unwrap();
-        let val2 = Cursor::new(&buf[8..16]).read_u64::<BigEndian>().unwrap();
-        let val3 = Cursor::new(&buf[16..24]).read_u64::<BigEndian>().unwrap();
-        let val4 = Cursor::new(&buf[24..32]).read_u64::<BigEndian>().unwrap();
+        let val1 = self.read_u64_be()?;
+        let val2 = self.read_u64_be()?;
+        let val3 = self.read_u64_be()?;
+        let val4 = self.read_u64_be()?;
 
         // from_digits is little endian, so we need to reverse the order
         let val = u256::from_digits([val4, val3, val2, val1]);
