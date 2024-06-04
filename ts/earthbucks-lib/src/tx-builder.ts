@@ -15,7 +15,7 @@ export class TxBuilder {
   public lockAbs: U64;
 
   constructor(inputTxOutMap: TxOutBnMap, changeScript: Script, lockAbs: U64) {
-    this.tx = new Tx(new U8(1), [], [], new U64(0));
+    this.tx = new Tx(new U8(0), [], [], new U64(0));
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = new U64(0);

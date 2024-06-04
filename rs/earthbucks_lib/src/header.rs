@@ -24,7 +24,6 @@ pub struct Header {
 impl Header {
     pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCK_INTERVAL: u32 = 600; // 600 seconds = 10 minutes
-                                         // pub const SIZE: usize = 220;
     pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
@@ -122,7 +121,7 @@ impl Header {
     }
 
     pub fn is_version_valid(&self) -> bool {
-        self.version == 1
+        self.version == 0
     }
 
     pub fn is_timestamp_valid_at(&self, timestamp: u64) -> bool {
@@ -177,7 +176,7 @@ impl Header {
         let initial_target = Header::INITIAL_TARGET;
         let timestamp = now;
         Self {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp,
@@ -225,7 +224,7 @@ impl Header {
         let work_par_algo = prev_block.work_par_algo;
         let work_par_hash = [0u8; 32];
         Ok(Self {
-            version: 1,
+            version: 0,
             prev_block_id,
             merkle_root: [0u8; 32],
             timestamp,
@@ -309,7 +308,7 @@ mod tests {
     #[test]
     fn test_to_buf_and_from_buf() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -335,7 +334,7 @@ mod tests {
     #[test]
     fn test_to_buffer() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -361,7 +360,7 @@ mod tests {
     #[test]
     fn test_is_version_valid() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -379,7 +378,7 @@ mod tests {
     #[test]
     fn test_is_genesis() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -397,7 +396,7 @@ mod tests {
     #[test]
     fn test_hash() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -413,14 +412,14 @@ mod tests {
         let hex = hash.to_strict_hex();
         assert_eq!(
             hex,
-            "d0e76639ce57406739699a5c74798bed388149bfe68014a1c72ea5ae45271a08"
+            "c62d5bb11ed250524c2a602a51c865b2a9fc9e3e7fa25958bd9ebf4b080d08eb"
         );
     }
 
     #[test]
     fn test_id() {
         let bh1 = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -436,7 +435,7 @@ mod tests {
         let hex = id.to_strict_hex();
         assert_eq!(
             hex,
-            "35f00a35959646aa706a20c45dd46570a4469d8418ff28ab6e5aab291555eaf7"
+            "dd4a2cc754029811082c3bf7316c1ef46e198bd2312020f9c61577d693348434"
         );
     }
 

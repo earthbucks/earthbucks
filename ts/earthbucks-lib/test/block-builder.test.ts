@@ -12,7 +12,7 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -24,7 +24,7 @@ describe("BlockBuilder", () => {
       new U16(0),
       FixedBuf.alloc(32),
     );
-    const tx = new Tx(new U8(1), [], [], new U64(0n));
+    const tx = new Tx(new U8(0), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     expect(bb.header.version).toBe(bh.version);
@@ -39,7 +39,7 @@ describe("BlockBuilder", () => {
     const outputScript = new Script();
     const outputAmount = new U64(0n);
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
-    expect(bb.header.version.n).toEqual(1);
+    expect(bb.header.version.n).toEqual(0);
     expect(bb.header.prevBlockId).toEqual(FixedBuf.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp.n).toBeLessThanOrEqual(
@@ -53,7 +53,7 @@ describe("BlockBuilder", () => {
     const outputAmount = new U64(0n);
     const target = FixedBuf.alloc(32);
     const prevBlockHeader = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -71,7 +71,7 @@ describe("BlockBuilder", () => {
       outputScript,
       outputAmount,
     );
-    expect(bb.header.version.n).toBe(1);
+    expect(bb.header.version.n).toBe(0);
     expect(bb.header.prevBlockId).toEqual(prevBlockHeader.id());
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
     expect(bb.header.timestamp.n).toBeLessThanOrEqual(
@@ -82,7 +82,7 @@ describe("BlockBuilder", () => {
 
   test("toBlock", () => {
     const bh = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -94,7 +94,7 @@ describe("BlockBuilder", () => {
       new U16(0),
       FixedBuf.alloc(32),
     );
-    const tx = new Tx(new U8(1), [], [], new U64(0n));
+    const tx = new Tx(new U8(0), [], [], new U64(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     const block2 = bb.toBlock();

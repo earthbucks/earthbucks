@@ -35,7 +35,7 @@ export class BlockBuilder {
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(new U8(1), [txInput], [txOutput], new U64(0n));
+    const coinbaseTx = new Tx(new U8(0), [txInput], [txOutput], new U64(0n));
     txs.push(coinbaseTx);
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;
@@ -57,7 +57,7 @@ export class BlockBuilder {
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(new U8(1), [txInput], [txOutput], new U64(0n));
+    const coinbaseTx = new Tx(new U8(0), [txInput], [txOutput], new U64(0n));
     txs.push(coinbaseTx);
     const merkleTxs = new MerkleTxs(txs);
     const root = merkleTxs.root;

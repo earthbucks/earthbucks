@@ -14,7 +14,7 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("Tx", () => {
   describe("constructor", () => {
     test("should create a Tx", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [];
       const outputs: TxOut[] = [];
       const lockAbs = new U64(0);
@@ -28,7 +28,7 @@ describe("Tx", () => {
   });
 
   test("to/from u8Vec", () => {
-    const version = new U8(1);
+    const version = new U8(0);
     const inputs: TxIn[] = [
       new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
     ];
@@ -42,7 +42,7 @@ describe("Tx", () => {
 
   describe("fromU8Vec", () => {
     test("fromU8Vec", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -61,7 +61,7 @@ describe("Tx", () => {
 
   describe("fromBufReader", () => {
     test("fromBufReader", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -81,7 +81,7 @@ describe("Tx", () => {
 
   describe("to/from string", () => {
     test("to/from string", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -111,7 +111,7 @@ describe("Tx", () => {
 
   describe("isCoinbase", () => {
     test("isCoinbase", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(
           FixedBuf.alloc(32),
@@ -128,7 +128,7 @@ describe("Tx", () => {
     });
 
     test("is not coinbase", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -142,14 +142,14 @@ describe("Tx", () => {
     test("fromCoinbase -> isCoinbase", () => {
       const script = Script.fromStrictStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
-      const tx = new Tx(new U8(1), [txInput], [], new U64(0));
+      const tx = new Tx(new U8(0), [txInput], [], new U64(0));
       expect(tx.isCoinbase()).toBe(true);
     });
   });
 
   describe("hashonce", () => {
     it("should return the hash of the tx", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -164,7 +164,7 @@ describe("Tx", () => {
 
   describe("hash", () => {
     it("should return the hash of the hash of the tx", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -179,7 +179,7 @@ describe("Tx", () => {
 
   describe("sighash", () => {
     test("hashPrevouts", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -196,7 +196,7 @@ describe("Tx", () => {
     });
 
     test("hashLockRel", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -213,7 +213,7 @@ describe("Tx", () => {
     });
 
     test("hashOutputs", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(FixedBuf.alloc(32), new U32(0), new Script(), new U32(0)),
       ];
@@ -230,7 +230,7 @@ describe("Tx", () => {
     });
 
     test("sighash", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(
           FixedBuf.alloc(32),
@@ -254,12 +254,12 @@ describe("Tx", () => {
       );
 
       expect(SysBuf.from(result).toString("hex")).toEqual(
-        "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
+        "3430c67343563b322d5fd8121ab44a88fa66b87d9553e49fa47552bbf3279e5b",
       );
     });
 
     test("sighash with cache", () => {
-      const version = new U8(1);
+      const version = new U8(0);
       const inputs: TxIn[] = [
         new TxIn(
           FixedBuf.alloc(32),
@@ -285,7 +285,7 @@ describe("Tx", () => {
       );
 
       expect(SysBuf.from(result).toString("hex")).toEqual(
-        "a4f4519c65fedfaf43b7cc989f1bcdd55b802738d70f06ea359f411315b71c51",
+        "3430c67343563b322d5fd8121ab44a88fa66b87d9553e49fa47552bbf3279e5b",
       );
     });
 
@@ -309,7 +309,7 @@ describe("Tx", () => {
           ),
         ];
         const outputs: TxOut[] = [new TxOut(new U64(100), Script.fromEmpty())];
-        const tx = new Tx(new U8(1), inputs, outputs, new U64(0));
+        const tx = new Tx(new U8(0), inputs, outputs, new U64(0));
 
         // Act
         const signature = tx.signNoCache(
@@ -322,7 +322,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
+          "01dd0236c4f662dab7e24985e394ceee9936bf316146e3dd5c4d26f20545acfcc20118c8e50e0402892ef6f7883270de48bb1c6f3719fd75a06bd7efe537f3397b"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -354,9 +354,9 @@ describe("Tx", () => {
         expect(outputs[0].toBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
-        const tx = new Tx(new U8(1), inputs, outputs, new U64(0));
+        const tx = new Tx(new U8(0), inputs, outputs, new U64(0));
         expect(tx.toBuf().toString("hex")).toEqual(
-          "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
+          "00010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
 
         // Act
@@ -370,7 +370,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
+          "01dd0236c4f662dab7e24985e394ceee9936bf316146e3dd5c4d26f20545acfcc20118c8e50e0402892ef6f7883270de48bb1c6f3719fd75a06bd7efe537f3397b"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -413,9 +413,9 @@ describe("Tx", () => {
         expect(outputs[0].toBuf().toString("hex")).toEqual(
           "000000000000006400",
         );
-        const tx = new Tx(new U8(1), inputs, outputs, new U64(0));
+        const tx = new Tx(new U8(0), inputs, outputs, new U64(0));
         expect(tx.toBuf().toString("hex")).toEqual(
-          "01010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
+          "00010000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000064000000000000000000",
         );
         const hashCache1 = new HashCache();
 
@@ -431,7 +431,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0125c1e7312e2811c13952ea01e39f186cbc3077bef710ef11a363f88eae64ef0c657a1a6fd4bb488b69485f1ce7513fb3bab3cad418bc4f5093f648572f7fc89d"; // your expected signature in hex
+          "01dd0236c4f662dab7e24985e394ceee9936bf316146e3dd5c4d26f20545acfcc20118c8e50e0402892ef6f7883270de48bb1c6f3719fd75a06bd7efe537f3397b"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );

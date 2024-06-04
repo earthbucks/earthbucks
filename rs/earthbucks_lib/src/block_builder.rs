@@ -32,7 +32,7 @@ impl BlockBuilder {
         let mut header = Header::from_genesis(new_timestamp);
         let tx_input = TxIn::from_coinbase(output_script.clone());
         let tx_output = TxOut::new(output_amount, output_script.clone());
-        let coinbase_tx = Tx::new(1, vec![tx_input], vec![tx_output], 0);
+        let coinbase_tx = Tx::new(0, vec![tx_input], vec![tx_output], 0);
         let txs = vec![coinbase_tx];
         let merkle_txs = MerkleTxs::new(txs.clone());
         let root: [u8; 32] = merkle_txs.root;
@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn test_from_block() {
         let bh = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -63,7 +63,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let tx = Tx::new(1, vec![], vec![], 0);
+        let tx = Tx::new(0, vec![], vec![], 0);
         let block = Block::new(bh.clone(), vec![tx]);
         let bb = BlockBuilder::from_block(block);
         assert_eq!(bb.header.version, bh.version);

@@ -82,7 +82,7 @@ export class Tx {
     outputScript: Script,
     outputAmount: U64,
   ): Tx {
-    const version = new U8(1);
+    const version = new U8(0);
     const inputs = [TxIn.fromCoinbase(inputScript)];
     const outputs = [new TxOut(outputAmount, outputScript)];
     const lockNum = new U64(0);

@@ -621,7 +621,6 @@ mod tests {
 
     #[test]
     fn test_sign_and_verify() {
-        // Arrange
         let input_index = 0;
         let private_key = Vec::<u8>::from_strict_hex(
             "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
@@ -637,10 +636,9 @@ mod tests {
         );
         let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
-        let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
+        let mut tx = Tx::new(0, inputs, outputs, 0);
+        assert_eq!(hex::encode(tx.to_buf()), "000100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
 
-        // Act
         let signature = tx.sign_no_cache(
             input_index,
             private_key.as_slice().try_into().unwrap(),
@@ -649,28 +647,20 @@ mod tests {
             hash_type,
         );
 
-        // Assert
-        let expected_signature_hex = "01783d02ae53dec22410bf031fb8b95456d467f7593acd75b099b59b883e78ab7c4263338e08aea20e4bb061c4aa8c99abdd909881ade317480e4d695129c41e3c";
+        let expected_signature_hex = "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
-
-        // Arrange
-        // let key = KeyPair::new(private_key);
-        // let public_key = key.public_key();
 
         let priv_key = PrivKey::from_buf(private_key).unwrap();
         let pub_key_buf = priv_key.to_pub_key_buffer().unwrap();
 
-        // Act
         let result =
             tx.verify_no_cache(input_index, pub_key_buf, signature, script.clone(), amount);
 
-        // Assert
         assert!(result);
     }
 
     #[test]
     fn test_sign_and_verify_with_cache() {
-        // Arrange
         let input_index = 0;
         let private_key = Vec::<u8>::from_strict_hex(
             "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
@@ -686,11 +676,10 @@ mod tests {
         );
         let outputs = vec![TxOut::new(100, Script::from_empty())];
         assert_eq!(hex::encode(outputs[0].to_buf()), "000000000000006400");
-        let mut tx = Tx::new(1, inputs, outputs, 0);
-        assert_eq!(hex::encode(tx.to_buf()), "010100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
+        let mut tx = Tx::new(0, inputs, outputs, 0);
+        assert_eq!(hex::encode(tx.to_buf()), "000100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000");
         let hash_cache_1 = &mut HashCache::new();
 
-        // Act
         let signature = tx.sign_with_cache(
             input_index,
             private_key.as_slice().try_into().unwrap(),
@@ -700,20 +689,15 @@ mod tests {
             hash_cache_1,
         );
 
-        // Assert
-        let expected_signature_hex = "01783d02ae53dec22410bf031fb8b95456d467f7593acd75b099b59b883e78ab7c4263338e08aea20e4bb061c4aa8c99abdd909881ade317480e4d695129c41e3c";
+        let expected_signature_hex = "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
-        // Arrange
-        // let key = KeyPair::new(private_key);
-        // let public_key = key.public_key();
         let hash_cache_2 = &mut HashCache::new();
         let pub_key_buf = PrivKey::from_buf(private_key)
             .unwrap()
             .to_pub_key_buffer()
             .unwrap();
 
-        // Act
         let result = tx.verify_with_cache(
             input_index,
             pub_key_buf,
@@ -723,7 +707,6 @@ mod tests {
             hash_cache_2,
         );
 
-        // Assert
         assert!(result);
     }
 }

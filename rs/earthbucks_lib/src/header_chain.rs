@@ -65,7 +65,7 @@ mod tests {
     fn test_add() {
         let mut chain = HeaderChain::new();
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -85,7 +85,7 @@ mod tests {
     fn test_get_tip() {
         let mut chain = HeaderChain::new();
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -98,6 +98,6 @@ mod tests {
             work_par_hash: [0; 32],
         };
         chain.add(header);
-        assert_eq!(chain.get_tip().unwrap().version, 1);
+        assert_eq!(chain.get_tip().unwrap().version, 0);
     }
 }

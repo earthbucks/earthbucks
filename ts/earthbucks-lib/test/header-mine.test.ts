@@ -7,7 +7,7 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("HeaderMine", () => {
   test("getLowestIdForNTimes", () => {
     const header = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -27,7 +27,7 @@ describe("HeaderMine", () => {
 
   test("getLowestNonceForNTimes", () => {
     const header = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),

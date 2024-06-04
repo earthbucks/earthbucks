@@ -16,7 +16,7 @@ pub struct TxBuilder {
 impl TxBuilder {
     pub fn new(input_tx_out_bn_map: &TxOutBnMap, change_script: Script, lock_abs: u32) -> Self {
         Self {
-            tx: Tx::new(1, vec![], vec![], 0),
+            tx: Tx::new(0, vec![], vec![], 0),
             input_tx_out_bn_map: input_tx_out_bn_map.clone(),
             change_script,
             input_amount: 0,

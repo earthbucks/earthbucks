@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn test_to_buffer_writer() {
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -69,7 +69,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let tx = Tx::new(1, vec![], vec![], 1);
+        let tx = Tx::new(0, vec![], vec![], 1);
         let block = Block::new(header, vec![tx]);
         let bw = block.to_buffer_writer();
         assert!(!bw.to_buf().is_empty());
@@ -78,7 +78,7 @@ mod tests {
     #[test]
     fn test_to_buf_and_from_buf() {
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -90,7 +90,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let tx = Tx::new(1, vec![], vec![], 1);
+        let tx = Tx::new(0, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_buf();
         let block2 = Block::from_buf(buf).unwrap();
@@ -101,7 +101,7 @@ mod tests {
     #[test]
     fn test_from_buf_reader() {
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -113,7 +113,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let tx = Tx::new(1, vec![], vec![], 1);
+        let tx = Tx::new(0, vec![], vec![], 1);
         let block1 = Block::new(header, vec![tx]);
         let buf = block1.to_buf();
         let mut br = BufReader::new(buf);
@@ -125,7 +125,7 @@ mod tests {
     #[test]
     fn test_is_genesis() {
         let header = Header {
-            version: 1,
+            version: 0,
             prev_block_id: [0; 32],
             merkle_root: [0; 32],
             timestamp: 0,
@@ -137,7 +137,7 @@ mod tests {
             work_par_algo: 0,
             work_par_hash: [0; 32],
         };
-        let tx = Tx::new(1, vec![], vec![], 0);
+        let tx = Tx::new(0, vec![], vec![], 0);
         let block = Block::new(header, vec![tx]);
         assert!(block.header.is_genesis());
     }

@@ -18,7 +18,7 @@ describe("ScriptInterpreter", () => {
 
   beforeEach(() => {
     tx = new Tx(
-      new U8(1),
+      new U8(0),
       [
         new TxIn(
           FixedBuf.alloc(32, 0),
@@ -156,7 +156,7 @@ describe("ScriptInterpreter", () => {
       const outputTxIndex = new U32(0);
 
       const tx = new Tx(
-        new U8(1),
+        new U8(0),
         [
           new TxIn(
             outputTxId,
@@ -223,7 +223,7 @@ describe("ScriptInterpreter", () => {
 
       // Create a tx
       const tx = new Tx(
-        new U8(1),
+        new U8(0),
         [
           new TxIn(
             outputTxId,
@@ -292,7 +292,7 @@ describe("ScriptInterpreter", () => {
 
       beforeEach(() => {
         tx = new Tx(
-          new U8(1),
+          new U8(0),
           [
             new TxIn(
               FixedBuf.alloc(32, 0),

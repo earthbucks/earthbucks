@@ -6,7 +6,7 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("Header", () => {
   test("toBuf and fromBuf", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -33,7 +33,7 @@ describe("Header", () => {
 
   test("toBuf", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -60,7 +60,7 @@ describe("Header", () => {
 
   test("isValid", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -77,7 +77,7 @@ describe("Header", () => {
 
   test("isGenesis", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -94,7 +94,7 @@ describe("Header", () => {
 
   test("hash", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -107,13 +107,13 @@ describe("Header", () => {
       FixedBuf.alloc(32),
     );
     expect(bh1.hash().toStrictHex()).toBe(
-      "d0e76639ce57406739699a5c74798bed388149bfe68014a1c72ea5ae45271a08",
+      "c62d5bb11ed250524c2a602a51c865b2a9fc9e3e7fa25958bd9ebf4b080d08eb",
     );
   });
 
   test("id", () => {
     const bh1 = new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
@@ -126,14 +126,14 @@ describe("Header", () => {
       FixedBuf.alloc(32),
     );
     expect(bh1.id().toStrictHex()).toBe(
-      "35f00a35959646aa706a20c45dd46570a4469d8418ff28ab6e5aab291555eaf7",
+      "dd4a2cc754029811082c3bf7316c1ef46e198bd2312020f9c61577d693348434",
     );
   });
 
   describe("fromPrevBlockHeader", () => {
     test("fromPrevBlockHeader", () => {
       const prevBlockHeader = new Header(
-        new U8(1),
+        new U8(0),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),
@@ -150,7 +150,7 @@ describe("Header", () => {
         prevBlockHeader,
         prevAdjustmentBlockHeader,
       );
-      expect(bh.version.n).toBe(1);
+      expect(bh.version.n).toBe(0);
       expect(bh.prevBlockId).toEqual(prevBlockHeader.id());
       expect(bh.merkleRoot).toEqual(FixedBuf.alloc(32));
       expect(bh.timestamp.n).toBeLessThanOrEqual(new Date().getTime() / 1000);
@@ -159,7 +159,7 @@ describe("Header", () => {
 
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
       const prevBlockHeader = new Header(
-        new U8(1),
+        new U8(0),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64((Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n) * 600n),
@@ -172,7 +172,7 @@ describe("Header", () => {
         FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        new U8(1),
+        new U8(0),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),
@@ -201,7 +201,7 @@ describe("Header", () => {
       );
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
-        new U8(1),
+        new U8(0),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(timeDiff - 1n),
@@ -214,7 +214,7 @@ describe("Header", () => {
         FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        new U8(1),
+        new U8(0),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),

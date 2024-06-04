@@ -118,7 +118,7 @@ export class Header {
   static fromGenesis(initialTarget: FixedBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
-      new U8(1),
+      new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       timestamp,
@@ -157,6 +157,7 @@ export class Header {
     } else {
       target = prevBlockHeader.target;
     }
+    const prevBlockVersion = prevBlockHeader.version;
     const prevBlockId = prevBlockHeader.id();
     const timestamp = new U64(BigInt(Math.floor(Date.now() / 1000))); // seconds
     const nonce = FixedBuf.alloc(32);
@@ -165,7 +166,7 @@ export class Header {
     const workParAlgo = prevBlockHeader.workParAlgo;
     const workParHash = FixedBuf.alloc(32);
     return new Header(
-      new U8(1),
+      prevBlockVersion,
       prevBlockId,
       FixedBuf.alloc(32),
       timestamp,
@@ -180,7 +181,7 @@ export class Header {
   }
 
   static isValidVersion(version: U8): boolean {
-    return version.n === 1;
+    return version.n === 0;
   }
 
   static isValidPreviousBlockHash(previousBlockHash: SysBuf): boolean {
