@@ -129,4 +129,20 @@ describe("Header", () => {
       "dd4a2cc754029811082c3bf7316c1ef46e198bd2312020f9c61577d693348434",
     );
   });
+
+  test("coinbaseAmount", () => {
+    expect(Header.coinbaseAmount(new U32(0n)).n).toEqual(10_000_000_000);
+    expect(Header.coinbaseAmount(new U32(210_000n)).n).toEqual(5_000_000_000);
+    expect(Header.coinbaseAmount(new U32(420_000n)).n).toEqual(2_500_000_000);
+    expect(Header.coinbaseAmount(new U32(630_000n)).n).toEqual(1_250_000_000);
+    expect(Header.coinbaseAmount(new U32(840_000n)).n).toEqual(625_000_000);
+    expect(Header.coinbaseAmount(new U32(1_050_000n)).n).toEqual(312_500_000);
+    expect(Header.coinbaseAmount(new U32(1_260_000n)).n).toEqual(156_250_000);
+
+    let sum = 0;
+    for (let i = 0; i < 2_000_000; i++) {
+      sum += Header.coinbaseAmount(new U32(i)).n;
+    }
+    expect(sum).toBe(4_193_945_312_500_000);
+  });
 });

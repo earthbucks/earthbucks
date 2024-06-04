@@ -299,8 +299,10 @@ impl Header {
     }
 
     pub fn coinbase_amount(block_num: u32) -> u64 {
-        // shift every 210,000 blocks
+        // shift every 210,000 blocks ("halving")
         let shift_by = block_num / 210_000;
+        // 100_000_000 satoshis = 1 earthbuck
+        // 100 earthbucks per block for the first 210,000 blocks
         (100 * 100_000_000) >> shift_by
     }
 }
@@ -457,7 +459,7 @@ mod tests {
         for i in 0..2_000_000 {
             sum += Header::coinbase_amount(i);
         }
-        assert_eq!(sum, 4193945312500000);
+        assert_eq!(sum, 4_193_945_312_500_000);
     }
 
     #[test]

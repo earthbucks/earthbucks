@@ -3,7 +3,6 @@ import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
 import { SysBuf, FixedBuf } from "./ebx-buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
-import { GenericError } from "./ebx-error.js";
 
 export class Header {
   version: U8;
@@ -182,5 +181,13 @@ export class Header {
 
   id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toBuf());
+  }
+
+  static coinbaseAmount(blockNum: U32): U64 {
+    // shift every 210,000 blocks ("halving")
+    const shiftBy = blockNum.bn / 210_000n;
+    // 100_000_000 satoshis = 1 earthbuck
+    // 100 earthbucks per block for the first 210,000 blocks
+    return new U64((100n * 100_000_000n) >> shiftBy);
   }
 }
