@@ -1,4 +1,8 @@
-use crate::{header::Header, pkh::Pkh, script::Script, script_chunk::ScriptChunk, tx::Tx};
+use crate::header::Header;
+use crate::pkh::Pkh;
+use crate::script::Script;
+use crate::script_chunk::ScriptChunk;
+use crate::tx::Tx;
 
 // add Default
 #[derive(Default, Clone)]
@@ -60,7 +64,7 @@ impl HeaderChain {
 mod tests {
     use super::*;
     use crate::header::Header;
-
+    use crate::numbers::u256;
     #[test]
     fn test_add() {
         let mut chain = HeaderChain::new();
@@ -70,8 +74,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -90,8 +94,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,

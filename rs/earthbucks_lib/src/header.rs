@@ -14,8 +14,8 @@ pub struct Header {
     pub merkle_root: [u8; 32],
     pub timestamp: u64, // milliseconds
     pub block_num: u32,
-    pub target: [u8; 32],
-    pub nonce: [u8; 32],
+    pub target: u256,
+    pub nonce: u256,
     pub work_ser_algo: u16,
     pub work_ser_hash: [u8; 32],
     pub work_par_algo: u16,
@@ -30,7 +30,7 @@ impl Header {
     pub const BLOCK_INTERVAL: u64 = 600_000;
 
     pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
-    pub const MAX_TARGET: [u8; 32] = [0xff; 32];
+    pub const MAX_TARGET_BYTES: [u8; 32] = [0xff; 32];
 
     pub fn to_buf(&self) -> [u8; Header::SIZE] {
         self.to_buf_writer().to_buf().try_into().unwrap()
@@ -50,8 +50,8 @@ impl Header {
         let merkle_root: [u8; 32] = br.read(32)?.try_into().unwrap();
         let timestamp = br.read_u64_be()?;
         let block_num = br.read_u32_be()?;
-        let target: [u8; 32] = br.read(32)?.try_into().unwrap();
-        let nonce: [u8; 32] = br.read(32)?.try_into().unwrap();
+        let target: u256 = br.read_u256_be()?;
+        let nonce: u256 = br.read_u256_be()?;
         let work_ser_algo = br.read_u16_be()?;
         let work_ser_hash: [u8; 32] = br.read(32)?.try_into().unwrap();
         let work_par_algo = br.read_u16_be()?;
@@ -78,8 +78,8 @@ impl Header {
         bw.write(self.merkle_root.to_vec());
         bw.write_u64_be(self.timestamp);
         bw.write_u32_be(self.block_num);
-        bw.write(self.target.to_vec());
-        bw.write(self.nonce.to_vec());
+        bw.write_u256_be(self.target);
+        bw.write_u256_be(self.nonce);
         bw.write_u16_be(self.work_ser_algo);
         bw.write(self.work_ser_hash.to_vec());
         bw.write_u16_be(self.work_par_algo);
@@ -113,16 +113,13 @@ impl Header {
             return false;
         }
         let new_target = new_target_res.unwrap();
-        let target = BigUint::from_bytes_be(&self.target);
-        let new_target_num = BigUint::from_bytes_be(&new_target);
-        target == new_target_num
+        self.target == new_target
     }
 
     pub fn is_pow_valid(&self) -> bool {
         let id: [u8; 32] = self.id();
-        let target = BigUint::from_bytes_be(&self.target);
-        let id_num = BigUint::from_bytes_be(&id);
-        id_num < target
+        let id_num = u256::from_be_bytes(&id);
+        id_num < self.target
     }
 
     pub fn is_version_valid(&self) -> bool {
@@ -178,7 +175,7 @@ impl Header {
     }
 
     pub fn from_genesis(now: u64) -> Self {
-        let initial_target = Header::MAX_TARGET;
+        let initial_target = u256::from_be_bytes(&Header::MAX_TARGET_BYTES);
         let timestamp = now;
         Self {
             version: 0,
@@ -187,7 +184,7 @@ impl Header {
             timestamp,
             block_num: 0,
             target: initial_target,
-            nonce: [0; 32],
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -223,7 +220,7 @@ impl Header {
         let prev_block_id = prev_block.id();
         let block_num = lch.len() as u32;
         let timestamp = new_timestamp;
-        let nonce = [0u8; 32];
+        let nonce = u256::from(0u8);
         let work_ser_algo = prev_block.work_ser_algo;
         let work_ser_hash = [0u8; 32];
         let work_par_algo = prev_block.work_par_algo;
@@ -243,7 +240,7 @@ impl Header {
         })
     }
 
-    pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<[u8; 32], String> {
+    pub fn new_target_from_lch(lch: &[Header], new_timestamp: u64) -> Result<u256, String> {
         // get slice of max length BLOCKS_PER_TARGET_ADJ
         let adjh: Vec<Header> = if lch.len() > Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize {
             lch[lch.len() - Header::BLOCKS_PER_TARGET_ADJ_PERIOD as usize..].to_vec()
@@ -254,13 +251,13 @@ impl Header {
         // convert all targets into big numbers
         let len: u32 = adjh.len() as u32;
         if len == 0 {
-            return Ok(Header::MAX_TARGET);
+            return Ok(u256::from_be_bytes(&Header::MAX_TARGET_BYTES));
         }
         let first_header = adjh[0].clone();
         // let last_header = adjh[len - 1].clone();
         let mut targets: Vec<BigUint> = Vec::new();
         for header in adjh {
-            let target = BigUint::from_bytes_be(&header.target);
+            let target = BigUint::from_bytes_be(&header.target.to_be_bytes());
             targets.push(target);
         }
         let target_sum: BigUint = targets.iter().sum();
@@ -272,7 +269,7 @@ impl Header {
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
 
         let new_target_bytes = new_target.to_be_bytes();
-        Ok(new_target_bytes)
+        Ok(u256::from_be_bytes(&new_target_bytes))
     }
 
     pub fn new_target_from_old_targets(target_sum: BigUint, real_time_diff: u64, len: u32) -> u256 {
@@ -311,8 +308,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -337,8 +334,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -363,8 +360,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -381,8 +378,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -399,8 +396,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -422,8 +419,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,

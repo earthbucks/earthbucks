@@ -53,6 +53,7 @@ impl Block {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::numbers::u256;
 
     #[test]
     fn test_to_buffer_writer() {
@@ -62,8 +63,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -83,8 +84,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -106,8 +107,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
@@ -130,8 +131,8 @@ mod tests {
             merkle_root: [0; 32],
             timestamp: 0,
             block_num: 0,
-            target: [0; 32],
-            nonce: [0; 32],
+            target: u256::from(0u8),
+            nonce: u256::from(0u8),
             work_ser_algo: 0,
             work_ser_hash: [0; 32],
             work_par_algo: 0,
