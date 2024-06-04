@@ -183,6 +183,12 @@ export class Header {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
+  // static newTargetFromOldTargets(
+  //   targetSum: bigint,
+  //   realTimeDiff: U64,
+  //   len: U32,
+  // ): bigint 
+
   static coinbaseAmount(blockNum: U32): U64 {
     // shift every 210,000 blocks ("halving")
     const shiftBy = blockNum.bn / 210_000n;
