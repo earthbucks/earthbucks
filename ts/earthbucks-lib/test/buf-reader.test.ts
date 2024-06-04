@@ -142,7 +142,7 @@ describe("BufReader", () => {
 
     const filePath = path.resolve(
       __dirname,
-      "../test-vectors/iso_buf_reader.json",
+      "../test-vectors/buf_reader.json",
     );
     const jsonString = fs.readFileSync(filePath, "utf-8");
     const testVector: TestVectorEbxBufReader = JSON.parse(jsonString);

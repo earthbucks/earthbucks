@@ -263,7 +263,7 @@ mod tests {
     #[test]
     fn test_vectors_read() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read.errors {
@@ -280,7 +280,7 @@ mod tests {
     #[test]
     fn test_vectors_read_u8() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u8.errors {
@@ -297,7 +297,7 @@ mod tests {
     #[test]
     fn test_vectors_read_u16_be() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u16_be.errors {
@@ -314,7 +314,7 @@ mod tests {
     #[test]
     fn test_vectors_read_u32_be() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u32_be.errors {
@@ -331,7 +331,7 @@ mod tests {
     #[test]
     fn test_vectors_read_u64_be() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_u64_be.errors {
@@ -348,7 +348,7 @@ mod tests {
     #[test]
     fn test_vectors_read_var_int_buf() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int_buf.errors {
@@ -365,7 +365,7 @@ mod tests {
     #[test]
     fn test_vectors_read_var_int() {
         let data =
-            fs::read_to_string("./test_vectors/iso_buf_reader.json").expect("Unable to read file");
+            fs::read_to_string("./test_vectors/buf_reader.json").expect("Unable to read file");
         let test_vectors: TestVectorIsoBufReader =
             serde_json::from_str(&data).expect("Unable to parse JSON");
         for test_vector in test_vectors.read_var_int.errors {
