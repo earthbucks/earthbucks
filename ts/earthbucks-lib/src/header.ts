@@ -9,7 +9,7 @@ export class Header {
   version: U8;
   prevBlockId: FixedBuf<32>;
   merkleRoot: FixedBuf<32>;
-  timestamp: U64; // seconds
+  timestamp: U64; // milliseconds
   blockNum: U32;
   target: FixedBuf<32>;
   nonce: FixedBuf<32>;
@@ -18,8 +18,12 @@ export class Header {
   workParAlgo: U16;
   workParHash: FixedBuf<32>;
 
+  // exactly two weeks if block interval is 10 minutes
   static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U32(2016n);
-  static readonly BLOCK_INTERVAL = new U32(600n); // seconds
+
+  // 600_000 milliseconds = 600 seconds = 10 minutes
+  static readonly BLOCK_INTERVAL = new U32(600_000);
+
   static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly INITIAL_TARGET = FixedBuf.alloc(32, 0xff);
 
@@ -116,7 +120,7 @@ export class Header {
   }
 
   static fromGenesis(initialTarget: FixedBuf<32>): Header {
-    const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
+    const timestamp = new U64(Math.floor(Date.now())); // milliseconds
     return new Header(
       new U8(0),
       FixedBuf.alloc(32),

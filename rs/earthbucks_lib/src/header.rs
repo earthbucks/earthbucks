@@ -11,7 +11,7 @@ pub struct Header {
     pub version: u8,
     pub prev_block_id: [u8; 32],
     pub merkle_root: [u8; 32],
-    pub timestamp: u64, // seconds
+    pub timestamp: u64, // milliseconds
     pub block_num: u32,
     pub target: [u8; 32],
     pub nonce: [u8; 32],
@@ -22,8 +22,12 @@ pub struct Header {
 }
 
 impl Header {
-    pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
-    pub const BLOCK_INTERVAL: u32 = 600; // 600 seconds = 10 minutes
+    // exactly two weeks if block interval is 10 minutes
+    pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016;
+
+    // 600_000 milliseconds = 600 seconds = 10 minutes
+    pub const BLOCK_INTERVAL: u32 = 600_000;
+
     pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
@@ -202,7 +206,7 @@ impl Header {
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards")
-            .as_secs()
+            .as_millis() as u64
     }
 
     pub fn from_lch(lch: &[Header], new_timestamp: u64) -> Result<Self, String> {
@@ -463,7 +467,7 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
-        let real_time_diff: u64 = 600;
+        let real_time_diff: u64 = 600_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -478,7 +482,7 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
-        let real_time_diff: u64 = 300;
+        let real_time_diff: u64 = 300_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -493,7 +497,7 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
-        let real_time_diff: u64 = 600;
+        let real_time_diff: u64 = 600_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -508,7 +512,7 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
-        let real_time_diff: u64 = 300;
+        let real_time_diff: u64 = 300_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -523,7 +527,7 @@ mod tests {
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_1_hex).unwrap());
 
         let target_sum = target_1;
-        let real_time_diff: u64 = 1200;
+        let real_time_diff: u64 = 1_200_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -540,7 +544,7 @@ mod tests {
         let target_2: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
-        let real_time_diff: u64 = 600 + 600;
+        let real_time_diff: u64 = 600_000 + 600_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -557,7 +561,7 @@ mod tests {
         let target_2: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
-        let real_time_diff: u64 = 600 + 300;
+        let real_time_diff: u64 = 600_000 + 300_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
@@ -574,7 +578,7 @@ mod tests {
         let target_2: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_2_hex).unwrap());
         let target_sum = target_1 + target_2;
-        let real_time_diff: u64 = 600 + 1200;
+        let real_time_diff: u64 = 600_000 + 1_200_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
@@ -594,7 +598,7 @@ mod tests {
         let target_3: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
-        let real_time_diff: u64 = 600 + 600 + 600;
+        let real_time_diff: u64 = 600_000 + 600_000 + 600_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex = hex::encode(new_target.to_bytes_be());
@@ -614,7 +618,7 @@ mod tests {
         let target_3: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
-        let real_time_diff: u64 = 600 + 600 + 601;
+        let real_time_diff: u64 = 600_000 + 600_000 + 601_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));
@@ -634,7 +638,7 @@ mod tests {
         let target_3: BigUint =
             BigUint::from_bytes_be(&Vec::<u8>::from_strict_hex(target_3_hex).unwrap());
         let target_sum = target_1 + target_2 + target_3;
-        let real_time_diff: u64 = 600 + 600 + 599;
+        let real_time_diff: u64 = 600_000 + 600_000 + 599_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
         let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_bytes_be()));

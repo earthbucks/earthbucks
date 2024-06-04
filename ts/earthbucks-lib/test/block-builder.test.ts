@@ -42,9 +42,7 @@ describe("BlockBuilder", () => {
     expect(bb.header.version.n).toEqual(0);
     expect(bb.header.prevBlockId).toEqual(FixedBuf.alloc(32));
     expect(bb.header.merkleRoot).toEqual(bb.merkleTxs.root);
-    expect(bb.header.timestamp.n).toBeLessThanOrEqual(
-      new Date().getTime() / 1000,
-    );
+    expect(bb.header.timestamp.n).toBeLessThanOrEqual(new Date().getTime());
     expect(bb.header.target).toEqual(target);
   });
 
