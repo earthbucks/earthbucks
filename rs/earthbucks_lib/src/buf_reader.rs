@@ -1,7 +1,7 @@
 use crate::ebx_error::EbxError;
 use crate::numbers::u256;
 use byteorder::{BigEndian, ReadBytesExt};
-use std::io::Cursor;
+use std::{io::Cursor, vec};
 
 pub struct BufReader {
     buf: Cursor<Vec<u8>>,
@@ -70,12 +70,18 @@ impl BufReader {
     }
 
     pub fn read_u256_be(&mut self) -> Result<u256, EbxError> {
-        let num = u256::from_be_bytes(
-            &self
-                .read(32)
-                .map_err(|_| EbxError::NotEnoughDataError { source: None })?,
-        );
-        Ok(num)
+        let buf = self
+            .read(32)
+            .map_err(|_| EbxError::NotEnoughDataError { source: None })?;
+        let val1 = Cursor::new(&buf[0..8]).read_u64::<BigEndian>().unwrap();
+        let val2 = Cursor::new(&buf[8..16]).read_u64::<BigEndian>().unwrap();
+        let val3 = Cursor::new(&buf[16..24]).read_u64::<BigEndian>().unwrap();
+        let val4 = Cursor::new(&buf[24..32]).read_u64::<BigEndian>().unwrap();
+
+        // from_digits is little endian, so we need to reverse the order
+        let val = u256::from_digits([val4, val3, val2, val1]);
+
+        Ok(val)
     }
 
     pub fn read_var_int_buf(&mut self) -> Result<Vec<u8>, EbxError> {

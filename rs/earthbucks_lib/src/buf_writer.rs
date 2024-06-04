@@ -28,48 +28,65 @@ impl BufWriter {
         result
     }
 
-    pub fn write(&mut self, buf: Vec<u8>) {
+    pub fn write(&mut self, buf: Vec<u8>) -> &mut Self {
         self.bufs.push(buf);
+        self
     }
 
-    pub fn write_reverse(&mut self, buf: Vec<u8>) {
+    pub fn write_reverse(&mut self, buf: Vec<u8>) -> &mut Self {
         let mut buf2 = vec![0; buf.len()];
         for (i, &item) in buf.iter().rev().enumerate() {
             buf2[i] = item;
         }
         self.bufs.push(buf2);
+        self
     }
 
-    pub fn write_u8(&mut self, n: u8) {
+    pub fn write_u8(&mut self, n: u8) -> &mut Self {
         self.bufs.push(vec![n]);
+        self
     }
 
-    pub fn write_u16_be(&mut self, n: u16) {
+    pub fn write_u16_be(&mut self, n: u16) -> &mut Self {
         let mut buf = vec![0; 2];
         buf.as_mut_slice().write_u16::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
+        self
     }
 
-    pub fn write_u32_be(&mut self, n: u32) {
+    pub fn write_u32_be(&mut self, n: u32) -> &mut Self {
         let mut buf = vec![0; 4];
         buf.as_mut_slice().write_u32::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
+        self
     }
 
-    pub fn write_u64_be(&mut self, n: u64) {
+    pub fn write_u64_be(&mut self, n: u64) -> &mut Self {
         let mut buf = vec![0; 8];
         buf.as_mut_slice().write_u64::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
+        self
     }
 
-    pub fn write_u128_be(&mut self, n: u128) {
+    pub fn write_u128_be(&mut self, n: u128) -> &mut Self {
         let mut buf = vec![0; 16];
         buf.as_mut_slice().write_u128::<BigEndian>(n).unwrap();
         self.bufs.push(buf);
+        self
     }
 
-    pub fn write_u256_be(&mut self, n: u256) {
-        self.bufs.push(n.to_be_bytes().to_vec());
+    pub fn write_u256_be(&mut self, n: u256) -> &mut Self {
+        // digits() is little endian, so we need to reverse the order
+        let digits = n.digits();
+        let val1 = digits[0];
+        let val2 = digits[1];
+        let val3 = digits[2];
+        let val4 = digits[3];
+        self.write_u64_be(val4);
+        self.write_u64_be(val3);
+        self.write_u64_be(val2);
+        self.write_u64_be(val1);
+        self
     }
 
     pub fn var_int_buf(n: u64) -> Vec<u8> {

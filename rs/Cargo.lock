@@ -44,12 +44,9 @@ dependencies = [
 
 [[package]]
 name = "bnum"
-version = "0.5.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29ed1ec45f6ef6e8d1125cc2c2fec8f8fe7d4fa5b262f15885fdccb9e26f0f15"
-dependencies = [
- "num-traits",
-]
+checksum = "3e31ea183f6ee62ac8b8a8cf7feddd766317adfb13ff469de57ce033efd6a790"
 
 [[package]]
 name = "bs58"
@@ -89,6 +86,7 @@ name = "earthbucks_lib"
 version = "0.1.1"
 dependencies = [
  "blake3",
+ "bnum",
  "bs58",
  "byteorder",
  "hex",
@@ -97,7 +95,6 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
- "num256",
  "rand",
  "regex",
  "secp256k1",
@@ -204,17 +201,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "num256"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac4d0cdb15f1e6bf76376510d4c2c6b059df1449f2e3717367988460f2467404"
-dependencies = [
- "bnum",
- "num-traits",
- "serde",
 ]
 
 [[package]]

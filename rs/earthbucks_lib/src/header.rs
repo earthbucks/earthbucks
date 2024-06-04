@@ -118,7 +118,7 @@ impl Header {
 
     pub fn is_pow_valid(&self) -> bool {
         let id: [u8; 32] = self.id();
-        let id_num = u256::from_be_bytes(&id);
+        let id_num = BufReader::new(id.to_vec()).read_u256_be().unwrap();
         id_num < self.target
     }
 
@@ -175,7 +175,9 @@ impl Header {
     }
 
     pub fn from_genesis(now: u64) -> Self {
-        let initial_target = u256::from_be_bytes(&Header::MAX_TARGET_BYTES);
+        let initial_target = BufReader::new(Header::MAX_TARGET_BYTES.to_vec())
+            .read_u256_be()
+            .unwrap();
         let timestamp = now;
         Self {
             version: 0,
@@ -251,13 +253,16 @@ impl Header {
         // convert all targets into big numbers
         let len: u32 = adjh.len() as u32;
         if len == 0 {
-            return Ok(u256::from_be_bytes(&Header::MAX_TARGET_BYTES));
+            return Ok(BufReader::new(Header::MAX_TARGET_BYTES.to_vec())
+                .read_u256_be()
+                .unwrap());
         }
         let first_header = adjh[0].clone();
         // let last_header = adjh[len - 1].clone();
         let mut targets: Vec<BigUint> = Vec::new();
         for header in adjh {
-            let target = BigUint::from_bytes_be(&header.target.to_be_bytes());
+            let target =
+                BigUint::from_bytes_be(&BufWriter::new().write_u256_be(header.target).to_buf());
             targets.push(target);
         }
         let target_sum: BigUint = targets.iter().sum();
@@ -266,10 +271,10 @@ impl Header {
             return Err("timestamps must be increasing".to_string());
         }
         let real_time_diff: u64 = new_timestamp - first_header.timestamp;
-        let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
+        let new_target: u256 = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
 
-        let new_target_bytes = new_target.to_be_bytes();
-        Ok(u256::from_be_bytes(&new_target_bytes))
+        //let new_target_bytes = BufWriter::new().write_u256_be(new_target).to_buf();
+        Ok(new_target)
     }
 
     pub fn new_target_from_old_targets(target_sum: BigUint, real_time_diff: u64, len: u32) -> u256 {
@@ -283,8 +288,9 @@ impl Header {
         // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
         // the fewest divisions is the most accurate in integer arithmetic...
         let intended_time_diff = len as u64 * Header::BLOCK_INTERVAL;
-        let res = (target_sum * real_time_diff) / (len as u64 * intended_time_diff);
-        u256::from_be_bytes(&res.to_bytes_be())
+        let res: BigUint = (target_sum * real_time_diff) / (len as u64 * intended_time_diff);
+        u256::from_be_slice(&res.to_bytes_be()).unwrap()
+        //u256::from_be_bytes(&res.to_bytes_be())
     }
 
     pub fn coinbase_amount(block_num: u32) -> u64 {
@@ -461,7 +467,7 @@ mod tests {
         let real_time_diff: u64 = 600_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -476,7 +482,7 @@ mod tests {
         let real_time_diff: u64 = 300_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -491,7 +497,7 @@ mod tests {
         let real_time_diff: u64 = 600_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "8000000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -506,7 +512,7 @@ mod tests {
         let real_time_diff: u64 = 300_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "4000000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -521,7 +527,7 @@ mod tests {
         let real_time_diff: u64 = 1_200_000;
         let len: u32 = 1;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "0100000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -538,7 +544,7 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 600_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -555,7 +561,10 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 300_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_be_bytes()));
+        let new_target_hex: String = format!(
+            "{:0>64}",
+            hex::encode(BufWriter::new().write_u256_be(new_target).to_buf())
+        );
         let expected_hex = "0060000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -572,7 +581,10 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 1_200_000;
         let len: u32 = 2;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_be_bytes()));
+        let new_target_hex: String = format!(
+            "{:0>64}",
+            hex::encode(BufWriter::new().write_u256_be(new_target).to_buf())
+        );
         let expected_hex = "00c0000000000000000000000000000000000000000000000000000000000000";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -592,7 +604,7 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 600_000 + 600_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex = hex::encode(new_target.to_be_bytes());
+        let new_target_hex = hex::encode(BufWriter::new().write_u256_be(new_target).to_buf());
         let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -612,7 +624,10 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 600_000 + 601_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_be_bytes()));
+        let new_target_hex: String = format!(
+            "{:0>64}",
+            hex::encode(BufWriter::new().write_u256_be(new_target).to_buf())
+        );
         let expected_hex = "0080123456789abcdf0123456789abcdf0123456789abcdf0123456789abcdf0";
         assert_eq!(new_target_hex, expected_hex);
     }
@@ -632,7 +647,10 @@ mod tests {
         let real_time_diff: u64 = 600_000 + 600_000 + 599_000;
         let len: u32 = 3;
         let new_target = Header::new_target_from_old_targets(target_sum, real_time_diff, len);
-        let new_target_hex: String = format!("{:0>64}", hex::encode(new_target.to_be_bytes()));
+        let new_target_hex: String = format!(
+            "{:0>64}",
+            hex::encode(BufWriter::new().write_u256_be(new_target).to_buf())
+        );
         let expected_hex = "007fedcba987654320fedcba987654320fedcba987654320fedcba987654320f";
         assert_eq!(new_target_hex, expected_hex);
     }
