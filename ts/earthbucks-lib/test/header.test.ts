@@ -255,5 +255,31 @@ describe("Header", () => {
         "0100000000000000000000000000000000000000000000000000000000000000";
       expect(newTargetHex).toBe(expectedHex);
     });
+
+    test("newTargetFromOldTargets 2", () => {
+      const target1Hex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
+      const target1 = new BufReader(target1Buf).readU256BE();
+      const target2Hex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
+      const target2 = new BufReader(target2Buf).readU256BE();
+      const targetSum = target1.bn + target2.bn;
+      const realTimeDiff = new U64(600_000 + 600_000);
+      const len = new U32(2);
+      const newTarget = Header.newTargetFromOldTargets(
+        targetSum,
+        realTimeDiff,
+        len,
+      );
+      const newTargetHex = new BufWriter()
+        .writeU256BE(newTarget)
+        .toBuf()
+        .toString("hex");
+      const expectedHex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      expect(newTargetHex).toBe(expectedHex);
+    });
   });
 });
