@@ -119,23 +119,6 @@ export class Header {
     return Header.fromStrictHex(str);
   }
 
-  static fromGenesis(initialTarget: U256): Header {
-    const timestamp = new U64(Math.floor(Date.now())); // milliseconds
-    return new Header(
-      new U8(0),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
-      timestamp,
-      new U32(0n),
-      initialTarget,
-      new U256(0),
-      new U16(0),
-      FixedBuf.alloc(32),
-      new U16(0),
-      FixedBuf.alloc(32),
-    );
-  }
-
   static isValidVersion(version: U8): boolean {
     return version.n === 0;
   }
@@ -177,12 +160,33 @@ export class Header {
     );
   }
 
+  static fromGenesis(initialTarget: U256): Header {
+    const timestamp = new U64(Math.floor(Date.now())); // milliseconds
+    return new Header(
+      new U8(0),
+      FixedBuf.alloc(32),
+      FixedBuf.alloc(32),
+      timestamp,
+      new U32(0n),
+      initialTarget,
+      new U256(0),
+      new U16(0),
+      FixedBuf.alloc(32),
+      new U16(0),
+      FixedBuf.alloc(32),
+    );
+  }
+
   hash(): FixedBuf<32> {
     return Hash.blake3Hash(this.toBuf());
   }
 
   id(): FixedBuf<32> {
     return Hash.doubleBlake3Hash(this.toBuf());
+  }
+
+  static getNewTimestamp(): U64 {
+    return new U64(Math.floor(Date.now()));
   }
 
   static fromLch(lch: Header[], newTimestamp: U64): Header {
