@@ -24,7 +24,7 @@ export class Header {
   static readonly BLOCK_INTERVAL = new U64(600_000);
 
   static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
-  static readonly INITIAL_TARGET = FixedBuf.alloc(32, 0xff);
+  static readonly MAX_TARGET = FixedBuf.alloc(32, 0xff);
 
   constructor(
     version: U8,

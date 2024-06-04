@@ -30,7 +30,7 @@ impl Header {
     pub const BLOCK_INTERVAL: u64 = 600_000;
 
     pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
-    pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
+    pub const MAX_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn to_buf(&self) -> [u8; Header::SIZE] {
         self.to_buf_writer().to_buf().try_into().unwrap()
@@ -178,7 +178,7 @@ impl Header {
     }
 
     pub fn from_genesis(now: u64) -> Self {
-        let initial_target = Header::INITIAL_TARGET;
+        let initial_target = Header::MAX_TARGET;
         let timestamp = now;
         Self {
             version: 0,
@@ -254,7 +254,7 @@ impl Header {
         // convert all targets into big numbers
         let len: u32 = adjh.len() as u32;
         if len == 0 {
-            return Ok(Header::INITIAL_TARGET);
+            return Ok(Header::MAX_TARGET);
         }
         let first_header = adjh[0].clone();
         // let last_header = adjh[len - 1].clone();
