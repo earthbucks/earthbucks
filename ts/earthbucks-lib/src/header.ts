@@ -6,34 +6,34 @@ import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./ebx-error.js";
 
 export class Header {
-  version: U32;
+  version: U8;
   prevBlockId: FixedBuf<32>;
   merkleRoot: FixedBuf<32>;
   timestamp: U64; // seconds
-  blockNum: U64;
+  blockNum: U32;
   target: FixedBuf<32>;
   nonce: FixedBuf<32>;
-  workSerAlgo: U32;
+  workSerAlgo: U16;
   workSerHash: FixedBuf<32>;
-  workParAlgo: U32;
+  workParAlgo: U16;
   workParHash: FixedBuf<32>;
 
-  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U64(2016n);
-  static readonly BLOCK_INTERVAL = new U64(600n); // seconds
-  static readonly BLOCK_HEADER_SIZE = 220;
+  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U32(2016n);
+  static readonly BLOCK_INTERVAL = new U32(600n); // seconds
+  static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly INITIAL_TARGET = FixedBuf.alloc(32, 0xff);
 
   constructor(
-    version: U32,
+    version: U8,
     prevBlockId: FixedBuf<32>,
     merkleRoot: FixedBuf<32>,
     timestamp: U64,
-    blockNum: U64,
+    blockNum: U32,
     target: FixedBuf<32>,
     nonce: FixedBuf<32>,
-    workSerAlgo: U32,
+    workSerAlgo: U16,
     workSerHash: FixedBuf<32>,
-    workParAlgo: U32,
+    workParAlgo: U16,
     workParHash: FixedBuf<32>,
   ) {
     this.version = version;
@@ -50,19 +50,7 @@ export class Header {
   }
 
   toBuf(): SysBuf {
-    const bw = new BufWriter();
-    bw.writeU32BE(this.version);
-    bw.write(this.prevBlockId);
-    bw.write(this.merkleRoot);
-    bw.writeU64BE(this.timestamp);
-    bw.writeU64BE(this.blockNum);
-    bw.write(this.target);
-    bw.write(this.nonce);
-    bw.writeU32BE(this.workSerAlgo);
-    bw.write(this.workSerHash);
-    bw.writeU32BE(this.workParAlgo);
-    bw.write(this.workParHash);
-    return bw.toBuf();
+    return this.toBufWriter(new BufWriter()).toBuf();
   }
 
   static fromBuf(buf: SysBuf): Header {
@@ -70,16 +58,16 @@ export class Header {
   }
 
   static fromBufReader(br: BufReader): Header {
-    const version = br.readU32BE();
-    const previousBlockId = br.readFixed<32>(32);
+    const version = br.readU8();
+    const previousBlockId = br.readFixed(32);
     const merkleRoot = br.readFixed(32);
     const timestamp = br.readU64BE();
-    const blockNum = br.readU64BE();
+    const blockNum = br.readU32BE();
     const target = br.readFixed(32);
     const nonce = br.readFixed(32);
-    const workSerAlgo = br.readU32BE();
+    const workSerAlgo = br.readU16BE();
     const workSerHash = br.readFixed(32);
-    const workParAlgo = br.readU32BE();
+    const workParAlgo = br.readU16BE();
     const workParHash = br.readFixed(32);
     return new Header(
       version,
@@ -97,16 +85,16 @@ export class Header {
   }
 
   toBufWriter(bw: BufWriter): BufWriter {
-    bw.writeU32BE(this.version);
+    bw.writeU8(this.version);
     bw.write(this.prevBlockId);
     bw.write(this.merkleRoot);
     bw.writeU64BE(this.timestamp);
-    bw.writeU64BE(this.blockNum);
+    bw.writeU32BE(this.blockNum);
     bw.write(this.target);
     bw.write(this.nonce);
-    bw.writeU32BE(this.workSerAlgo);
+    bw.writeU16BE(this.workSerAlgo);
     bw.write(this.workSerHash);
-    bw.writeU32BE(this.workParAlgo);
+    bw.writeU16BE(this.workParAlgo);
     bw.write(this.workParHash);
     return bw;
   }
@@ -130,16 +118,16 @@ export class Header {
   static fromGenesis(initialTarget: FixedBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now() / 1000)); // seconds
     return new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       timestamp,
-      new U64(0n),
+      new U32(0n),
       initialTarget,
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
   }
@@ -149,7 +137,7 @@ export class Header {
     prevAdjustmentBlockHeader: Header | null,
   ): Header {
     let target = null;
-    const blockNum = prevBlockHeader.blockNum.add(new U64(1n));
+    const blockNum = prevBlockHeader.blockNum.add(new U32(1n));
     if (blockNum.bn % Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn === 0n) {
       if (
         !prevAdjustmentBlockHeader ||
@@ -177,7 +165,7 @@ export class Header {
     const workParAlgo = prevBlockHeader.workParAlgo;
     const workParHash = FixedBuf.alloc(32);
     return new Header(
-      new U32(1),
+      new U8(1),
       prevBlockId,
       FixedBuf.alloc(32),
       timestamp,
@@ -191,7 +179,7 @@ export class Header {
     );
   }
 
-  static isValidVersion(version: U32): boolean {
+  static isValidVersion(version: U8): boolean {
     return version.n === 1;
   }
 
@@ -213,7 +201,7 @@ export class Header {
 
   isValid(): boolean {
     const len = this.toBuf().length;
-    if (len !== Header.BLOCK_HEADER_SIZE) {
+    if (len !== Header.SIZE) {
       return false;
     }
     return (

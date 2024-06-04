@@ -157,7 +157,6 @@ describe("BufReader", () => {
             : test.error === "not enough bytes in the buffer to read"
               ? NotEnoughDataError
               : GenericError;
-        console.log(test.error);
         expect(() => bufferReader.read(test.len)).toThrow(errorType);
       });
     });

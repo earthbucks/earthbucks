@@ -6,16 +6,16 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("Header", () => {
   test("toBuf and fromBuf", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const buf = bh1.toBuf();
@@ -33,16 +33,16 @@ describe("Header", () => {
 
   test("toBuf", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const buf = bh1.toBuf();
@@ -60,16 +60,16 @@ describe("Header", () => {
 
   test("isValid", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     expect(bh1.isValid()).toBe(true);
@@ -77,16 +77,16 @@ describe("Header", () => {
 
   test("isGenesis", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     expect(bh1.isGenesis()).toBe(true);
@@ -94,55 +94,55 @@ describe("Header", () => {
 
   test("hash", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
-    expect(SysBuf.from(bh1.hash()).toString("hex")).toBe(
-      "207308090b4e6af2f1b46b22b849506534536fb39ca5976548f1032e2360ff00",
+    expect(bh1.hash().toStrictHex()).toBe(
+      "d0e76639ce57406739699a5c74798bed388149bfe68014a1c72ea5ae45271a08",
     );
   });
 
   test("id", () => {
     const bh1 = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
-    expect(SysBuf.from(bh1.id()).toString("hex")).toBe(
-      "24f3f2f083a1accdbc64581b928fbde7f623756c45a17f5730ff7019b424360e",
+    expect(bh1.id().toStrictHex()).toBe(
+      "35f00a35959646aa706a20c45dd46570a4469d8418ff28ab6e5aab291555eaf7",
     );
   });
 
   describe("fromPrevBlockHeader", () => {
     test("fromPrevBlockHeader", () => {
       const prevBlockHeader = new Header(
-        new U32(1),
+        new U8(1),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),
-        new U64(0n),
+        new U32(0n),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = null;
@@ -159,29 +159,29 @@ describe("Header", () => {
 
     test("should correctly adjust the target if index is a multiple of BLOCKS_PER_ADJUSTMENT", () => {
       const prevBlockHeader = new Header(
-        new U32(1),
+        new U8(1),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
-        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
-        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
+        new U64((Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n) * 600n),
+        new U32(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        new U32(1),
+        new U8(1),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),
-        new U64(0n),
+        new U32(0n),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(
@@ -201,29 +201,29 @@ describe("Header", () => {
       );
       const timeDiff = (2016n * 600n) / 2n; // One week
       const prevBlockHeader = new Header(
-        new U32(1),
+        new U8(1),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(timeDiff - 1n),
-        new U64(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
+        new U32(Header.BLOCKS_PER_TARGET_ADJ_PERIOD.bn - 1n),
         initialTarget,
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
       );
       const prevAdjustmentBlockHeader = new Header(
-        new U32(1),
+        new U8(1),
         FixedBuf.alloc(32),
         FixedBuf.alloc(32),
         new U64(0n),
-        new U64(0n),
+        new U32(0n),
         initialTarget,
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
-        new U32(0),
+        new U16(0),
         FixedBuf.alloc(32),
       );
       const bh = Header.fromPrevBlockHeader(

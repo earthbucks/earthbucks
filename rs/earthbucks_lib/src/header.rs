@@ -10,9 +10,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 pub struct Header {
     pub version: u8,
     pub prev_block_id: [u8; 32],
+    pub merkle_root: [u8; 32],
     pub timestamp: u64, // seconds
     pub block_num: u32,
-    pub merkle_root: [u8; 32],
     pub target: [u8; 32],
     pub nonce: [u8; 32],
     pub work_ser_algo: u16,
@@ -25,7 +25,7 @@ impl Header {
     pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016; // exactly two weeks if block interval is 10 minutes
     pub const BLOCK_INTERVAL: u32 = 600; // 600 seconds = 10 minutes
                                          // pub const SIZE: usize = 220;
-    pub const SIZE: usize = 1 + 32 + 8 + 4 + 32 + 32 + 32 + 2 + 32 + 2 + 32;
+    pub const SIZE: usize = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
     pub const INITIAL_TARGET: [u8; 32] = [0xff; 32];
 
     pub fn to_buf(&self) -> [u8; Header::SIZE] {

@@ -10,16 +10,16 @@ import { U8, U16, U32, U64 } from "../src/numbers.js";
 describe("Block", () => {
   test("toBufWriter", () => {
     const bh = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
@@ -30,16 +30,16 @@ describe("Block", () => {
 
   test("toBuf", () => {
     const bh = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
@@ -50,16 +50,16 @@ describe("Block", () => {
 
   test("fromBufReader", () => {
     const bh = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
@@ -81,16 +81,16 @@ describe("Block", () => {
 
   test("isGenesis", () => {
     const bh = new Header(
-      new U32(1),
+      new U8(1),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
       new U64(0n),
-      new U64(0n),
+      new U32(0n),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
-      new U32(0),
+      new U16(0),
       FixedBuf.alloc(32),
     );
     const tx = new Tx(new U8(1), [], [], new U64(0n));
