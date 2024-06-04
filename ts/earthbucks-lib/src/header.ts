@@ -10,8 +10,8 @@ export class Header {
   merkleRoot: FixedBuf<32>;
   timestamp: U64; // milliseconds
   blockNum: U32;
-  target: FixedBuf<32>;
-  nonce: FixedBuf<32>;
+  target: U256;
+  nonce: U256;
   workSerAlgo: U16;
   workSerHash: FixedBuf<32>;
   workParAlgo: U16;
@@ -32,8 +32,8 @@ export class Header {
     merkleRoot: FixedBuf<32>,
     timestamp: U64,
     blockNum: U32,
-    target: FixedBuf<32>,
-    nonce: FixedBuf<32>,
+    target: U256,
+    nonce: U256,
     workSerAlgo: U16,
     workSerHash: FixedBuf<32>,
     workParAlgo: U16,
@@ -66,8 +66,8 @@ export class Header {
     const merkleRoot = br.readFixed(32);
     const timestamp = br.readU64BE();
     const blockNum = br.readU32BE();
-    const target = br.readFixed(32);
-    const nonce = br.readFixed(32);
+    const target = br.readU256BE();
+    const nonce = br.readU256BE();
     const workSerAlgo = br.readU16BE();
     const workSerHash = br.readFixed(32);
     const workParAlgo = br.readU16BE();
@@ -93,8 +93,8 @@ export class Header {
     bw.write(this.merkleRoot);
     bw.writeU64BE(this.timestamp);
     bw.writeU32BE(this.blockNum);
-    bw.write(this.target);
-    bw.write(this.nonce);
+    bw.writeU256BE(this.target);
+    bw.writeU256BE(this.nonce);
     bw.writeU16BE(this.workSerAlgo);
     bw.write(this.workSerHash);
     bw.writeU16BE(this.workParAlgo);
@@ -118,7 +118,7 @@ export class Header {
     return Header.fromStrictHex(str);
   }
 
-  static fromGenesis(initialTarget: FixedBuf<32>): Header {
+  static fromGenesis(initialTarget: U256): Header {
     const timestamp = new U64(Math.floor(Date.now())); // milliseconds
     return new Header(
       new U8(0),
@@ -127,7 +127,7 @@ export class Header {
       timestamp,
       new U32(0n),
       initialTarget,
-      FixedBuf.alloc(32),
+      new U256(0),
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
@@ -147,12 +147,13 @@ export class Header {
     return merkleRoot.length === 32;
   }
 
-  static isValidNonce(nonce: SysBuf): boolean {
-    return nonce.length === 32;
+  static isValidNonce(nonce: U256): boolean {
+    return true;
   }
 
-  static isValidTarget(target: SysBuf): boolean {
-    return target.length === 32;
+  static isValidTarget(target: U256): boolean {
+    // TODO: Fix this
+    return true;
   }
 
   isValid(): boolean {
@@ -187,7 +188,7 @@ export class Header {
   //   targetSum: bigint,
   //   realTimeDiff: U64,
   //   len: U32,
-  // ): bigint 
+  // ): bigint
 
   static coinbaseAmount(blockNum: U32): U64 {
     // shift every 210,000 blocks ("halving")

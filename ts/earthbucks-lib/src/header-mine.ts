@@ -11,10 +11,11 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    this.header.nonce = (FixedBuf<32>).fromBuf(
+    const buf = (FixedBuf<32>).fromBuf(
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );
+    this.header.nonce = new BufReader(buf).readU256BE();
   }
 
   getIdHashNum(): U256 {
@@ -36,7 +37,7 @@ export class HeaderMine {
     return lowest;
   }
 
-  getLowestNonceForNTimes(n: number): SysBuf {
+  getLowestNonceForNTimes(n: number): U256 {
     let lowest = this.getIdHashNum();
     let nonce = this.header.nonce;
     for (let i = 0; i < n; i++) {

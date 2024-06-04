@@ -5,7 +5,7 @@ import { Tx } from "../src/tx.js";
 import { BufWriter } from "../src/buf-writer.js";
 import { BufReader } from "../src/buf-reader.js";
 import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
-import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
 
 describe("Block", () => {
   test("toBufWriter", () => {
@@ -13,10 +13,10 @@ describe("Block", () => {
       new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U64(0n),
-      new U32(0n),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
+      new U64(0),
+      new U32(0),
+      new U256(0),
+      new U256(0),
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
@@ -33,10 +33,10 @@ describe("Block", () => {
       new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U64(0n),
-      new U32(0n),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
+      new U64(0),
+      new U32(0),
+      new U256(0),
+      new U256(0),
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
@@ -53,10 +53,10 @@ describe("Block", () => {
       new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U64(0n),
-      new U32(0n),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
+      new U64(0),
+      new U32(0),
+      new U256(0),
+      new U256(0),
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
@@ -84,10 +84,10 @@ describe("Block", () => {
       new U8(0),
       FixedBuf.alloc(32),
       FixedBuf.alloc(32),
-      new U64(0n),
-      new U32(0n),
-      FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
+      new U64(0),
+      new U32(0),
+      new U256(0),
+      new U256(0),
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
