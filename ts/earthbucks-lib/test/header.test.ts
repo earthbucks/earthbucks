@@ -168,5 +168,27 @@ describe("Header", () => {
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       expect(newTargetHex).toBe(expectedHex);
     });
+
+    test("newTargetFromOldTargets 1,2", () => {
+      const target1Hex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
+      const target1 = new BufReader(target1Buf).readU256BE();
+      const targetSum = target1.bn;
+      const realTimeDiff = new U64(300_000);
+      const len = new U32(1);
+      const newTarget = Header.newTargetFromOldTargets(
+        targetSum,
+        realTimeDiff,
+        len,
+      );
+      const newTargetHex = new BufWriter()
+        .writeU256BE(newTarget)
+        .toBuf()
+        .toString("hex");
+      const expectedHex =
+        "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      expect(newTargetHex).toBe(expectedHex);
+    });
   });
 });
