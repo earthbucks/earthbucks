@@ -1,7 +1,9 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf, EbxBuf } from "../src/ebx-buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
+import { BufReader } from "../src/buf-reader.js";
+import { BufWriter } from "../src/buf-writer.js";
 
 describe("Header", () => {
   test("toBuf and fromBuf", () => {
@@ -144,5 +146,28 @@ describe("Header", () => {
       sum += Header.coinbaseAmount(new U32(i)).n;
     }
     expect(sum).toBe(4_193_945_312_500_000);
+  });
+
+  describe("newTargetFromOldTargets", () => {
+    test("newTargetFromOldTargets 1", () => {
+      const target1Hex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
+      const target1 = new BufReader(target1Buf).readU256BE();
+      const targetSum = target1.bn;
+      const len = new U32(1);
+      const newTarget = Header.newTargetFromOldTargets(
+        targetSum,
+        new U64(600_000),
+        len,
+      );
+      const newTargetHex = new BufWriter()
+        .writeU256BE(newTarget)
+        .toBuf()
+        .toString("hex");
+      const expectedHex =
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+      expect(newTargetHex).toBe(expectedHex);
+    });
   });
 });
