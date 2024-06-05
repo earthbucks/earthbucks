@@ -1,15 +1,20 @@
 import { Buffer } from "buffer";
 import * as tf from "@tensorflow/tfjs-node";
 
+type TF = typeof tf;
+type TFTensor = tf.Tensor;
+
 type BufferFunction = (input: Buffer) => Buffer;
 type AsyncBufferFunction = (input: Buffer) => Promise<Buffer>;
 
 export default class GpuPow {
   previousBlockIds: Buffer[];
-  workingBlockId: tf.Tensor;
-  recentBlockIds: tf.Tensor;
+  workingBlockId: TFTensor;
+  recentBlockIds: TFTensor;
+  tf: TF;
 
   constructor(workingBlockId: Buffer, recentBlockIds: Buffer[]) {
+    this.tf = tf;
     this.previousBlockIds = recentBlockIds;
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
     this.recentBlockIds = this.tensorFromBufferBits(
@@ -17,7 +22,7 @@ export default class GpuPow {
     );
   }
 
-  tensorFromBufferBits(buffer: Buffer): tf.Tensor {
+  tensorFromBufferBits(buffer: Buffer): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -29,30 +34,30 @@ export default class GpuPow {
         bits.push((bit >> i) & 1);
       }
     }
-    return tf.tensor1d(bits, "int32");
+    return this.tf.tensor1d(bits, "int32");
   }
 
   updateWorkingBlockId(workingBlockId: Buffer) {
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
   }
 
-  tensorSeed(): tf.Tensor {
-    return tf.concat([this.workingBlockId, this.recentBlockIds]);
+  tensorSeed(): TFTensor {
+    return this.tf.concat([this.workingBlockId, this.recentBlockIds]);
   }
 
   tensorSeedReplica(size: number) {
     let seedLength = this.tensorSeed().shape[0];
     let numTimes = Math.ceil((size * size) / seedLength);
-    let result = tf.tile(this.tensorSeed(), [numTimes]);
+    let result = this.tf.tile(this.tensorSeed(), [numTimes]);
     result = result.slice(0, size * size);
     return result;
   }
 
-  seedToMatrix(seed: tf.Tensor, size: number) {
+  seedToMatrix(seed: TFTensor, size: number) {
     return seed.reshape([size, size]);
   }
 
-  matrixCalculations(matrix: tf.Tensor, size: number): tf.Tensor {
+  matrixCalculations(matrix: TFTensor, size: number): TFTensor {
     // The primary goal of this method is to perform a giant integer matrix
     // multiplication which is impractical on any hardware other than a GPU. We
     // use integers because we know they are deterministic when added.
@@ -69,8 +74,8 @@ export default class GpuPow {
     // the ASICs for this computation. There should be no reason to develop an
     // ASIC when the calculations can already be performed optimally with
     // commodity hardware.
-    return tf.tidy(() => {
-      const matrix1 = tf.matMul(matrix, matrix); // int32 matrix square
+    return this.tf.tidy(() => {
+      const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
       const matrix2 = matrix1.toFloat(); // convert to float
       matrix1.dispose();
       const min = matrix2.min();
@@ -99,19 +104,19 @@ export default class GpuPow {
     });
   }
 
-  reduceMatrixToVectorSum(matrix: tf.Tensor): tf.Tensor {
+  reduceMatrixToVectorSum(matrix: TFTensor): TFTensor {
     return matrix.sum(1);
   }
 
-  reduceMatrixToVectorMax(matrix: tf.Tensor): tf.Tensor {
+  reduceMatrixToVectorMax(matrix: TFTensor): TFTensor {
     return matrix.max(1);
   }
 
-  reduceMatrixToVectorMin(matrix: tf.Tensor): tf.Tensor {
+  reduceMatrixToVectorMin(matrix: TFTensor): TFTensor {
     return matrix.min(1);
   }
 
-  reduceMatrixToVectorRnd(matrix: tf.Tensor): tf.Tensor {
+  reduceMatrixToVectorRnd(matrix: TFTensor): TFTensor {
     // We assume the final matrix has values between 0 and the size of the
     // matrix. This known value enables us to select a random value from each
     // row by using the value in the first column of the matrix as an index.
@@ -120,12 +125,12 @@ export default class GpuPow {
     let nCols = matrix.shape[1] as number;
     let nRows = matrix.shape[0] as number;
     let indices = matrix.slice([0, 0], [1, nCols]);
-    indices = tf.clipByValue(indices, 0, nRows - 1);
+    indices = this.tf.clipByValue(indices, 0, nRows - 1);
     return matrix.gather(indices.flatten().toInt());
   }
 
   async matrixReduce(
-    matrix: tf.Tensor,
+    matrix: TFTensor,
   ): Promise<[Buffer, Buffer, Buffer, Buffer]> {
     // Unfortunately, it is not possible to perform hash functions using
     // TensorFlow. We need to find a way to send the result of the computation
@@ -155,7 +160,7 @@ export default class GpuPow {
   }
 
   async algo(size: number): Promise<[Buffer, Buffer, Buffer, Buffer]> {
-    let matrix = tf.tidy(() => {
+    let matrix = this.tf.tidy(() => {
       let seed = this.tensorSeedReplica(size);
       let matrix1 = this.seedToMatrix(seed, size);
       seed.dispose();
@@ -164,7 +169,7 @@ export default class GpuPow {
       return matrix2;
     });
     let reducedBufs = await this.matrixReduce(matrix);
-    tf.tidy(() => {
+    this.tf.tidy(() => {
       matrix.dispose();
     });
     return reducedBufs;
