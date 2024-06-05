@@ -1,0 +1,48 @@
+{
+  "name": "earthbucks-pow",
+  "version": "0.1.0",
+  "description": "EarthBucks Proof-of-Work (PoW) algorithms with big dependencies.",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "main": "tsx src/main.ts",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --ignore-pattern dist --cache --cache-location ./node_modules/.cache/eslint .",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=20.8.0",
+    "pnpm": ">=8.0.0"
+  },
+  "keywords": [],
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
+  "license": "MIT",
+  "type": "module",
+  "prettier": {
+    "semi": true,
+    "singleQuote": false
+  },
+  "packageManager": "pnpm@8.15.4",
+  "dependencies": {
+    "earthbucks-lib": "workspace:^"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "eslint": "^9.4.0",
+    "eslint-plugin-import": "^2.29.1",
+    "globals": "^15.3.0",
+    "prettier": "^3.3.0",
+    "typescript-eslint": "^7.11.0",
+    "vitest": "^1.6.0"
+  }
+}

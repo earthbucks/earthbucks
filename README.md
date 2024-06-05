@@ -23,7 +23,7 @@ apps easier. Other code is TypeScript only if it is only for building web apps.
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks_tf (tensorflow methods for GPU POW)
+- earthbucks_pow (tensorflow methods for GPU POW)
 - earthbucks_mine (build/validate blocks, database, API for mines, API for wallets)
 - earthbucks_archive (archive all blocks / transactions)
 - earthbucks_spv (SPV node, wallet, follows mines)
@@ -33,7 +33,7 @@ apps easier. Other code is TypeScript only if it is only for building web apps.
 Re-implementations:
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks-tf (tensorflow methods for GPU POW)
+- earthbucks-pow (tensorflow methods for GPU POW)
 - earthbucks-mine (build/validate blocks, database, API for mines, API for wallets)
 - earthbucks-archive (archive all blocks / transactions)
 - earthbucks-spv (SPV node, wallet, follows mines)
