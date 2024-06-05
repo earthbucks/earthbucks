@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import * as tf from "@tensorflow/tfjs";
+import * as tf from "@tensorflow/tfjs-node";
 
 type BufferFunction = (input: Buffer) => Buffer;
 type AsyncBufferFunction = (input: Buffer) => Promise<Buffer>;
