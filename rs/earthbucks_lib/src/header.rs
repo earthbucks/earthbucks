@@ -24,7 +24,7 @@ pub struct Header {
 
 impl Header {
     // exactly two weeks if block interval is 10 minutes
-    pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u64 = 2016;
+    pub const BLOCKS_PER_TARGET_ADJ_PERIOD: u32 = 2016;
 
     // 600_000 milliseconds = 600 seconds = 10 minutes
     pub const BLOCK_INTERVAL: u64 = 600_000;
