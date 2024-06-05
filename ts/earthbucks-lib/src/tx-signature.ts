@@ -1,4 +1,4 @@
-import { FixedBuf, SysBuf } from "./ebx-buf.js";
+import { FixedBuf, SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxSignature {

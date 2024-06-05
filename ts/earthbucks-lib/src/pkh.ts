@@ -2,11 +2,11 @@ import {
   EbxError,
   InvalidChecksumError,
   InvalidEncodingError,
-} from "./ebx-error.js";
+} from "./error.js";
 import * as Hash from "./hash.js";
-import { SysBuf, EbxBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, EbxBuf, FixedBuf } from "./buf.js";
 import { PubKey } from "./pub-key.js";
-import { InvalidSizeError } from "./ebx-error.js";
+import { InvalidSizeError } from "./error.js";
 
 // public key hash
 export class Pkh {

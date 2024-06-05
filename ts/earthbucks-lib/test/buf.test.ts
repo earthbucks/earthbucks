@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { SysBuf, EbxBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, EbxBuf, FixedBuf } from "../src/buf.js";
 
 describe("EbxBuf", () => {
   test("to/from buf", () => {

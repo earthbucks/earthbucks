@@ -1,4 +1,4 @@
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { PrivKey } from "./priv-key.js";
 import * as Hash from "./hash.js";
 import {
@@ -7,7 +7,7 @@ import {
   InvalidEncodingError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error.js";
+} from "./error.js";
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x

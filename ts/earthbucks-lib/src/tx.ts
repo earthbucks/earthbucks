@@ -8,8 +8,8 @@ import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
-import { EbxError } from "./ebx-error.js";
+import { SysBuf, FixedBuf } from "./buf.js";
+import { EbxError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class HashCache {

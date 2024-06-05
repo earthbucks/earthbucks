@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use bs58;
 use hex;
 use lazy_static::lazy_static;

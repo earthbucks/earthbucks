@@ -4,7 +4,7 @@ import { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
 import * as Hash from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { PubKey } from "./pub-key.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 

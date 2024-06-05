@@ -2,8 +2,8 @@ import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { FixedBuf, SysBuf } from "./ebx-buf.js";
-import { EbxError } from "./ebx-error.js";
+import { FixedBuf, SysBuf } from "./buf.js";
+import { EbxError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxIn {

@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleNode } from "../src/merkle-node.js";
 import * as Hash from "../src/hash.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 
 describe("MerkleNode", () => {
   test("fromU8Vecs with 1 data", () => {

@@ -1,5 +1,5 @@
 import secp256k1 from "secp256k1";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import * as Hash from "./hash.js";
 import {
   EbxError,
@@ -8,7 +8,7 @@ import {
   InvalidKeyError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error.js";
+} from "./error.js";
 
 export class PrivKey {
   buf: FixedBuf<32>;

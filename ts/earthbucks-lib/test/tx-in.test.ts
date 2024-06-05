@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxIn } from "../src/tx-in.js";
 import { Script } from "../src/script.js";
 import { BufReader } from "../src/buf-reader.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxInput", () => {

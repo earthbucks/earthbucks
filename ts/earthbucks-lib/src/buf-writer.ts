@@ -1,4 +1,4 @@
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class BufWriter {

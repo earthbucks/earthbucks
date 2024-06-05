@@ -1,8 +1,8 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { EbxError } from "./ebx-error.js";
+import { EbxError } from "./error.js";
 
 export class VarInt {
   private buf: SysBuf;

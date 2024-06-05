@@ -1,6 +1,6 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { FixedBuf, SysBuf } from "./ebx-buf.js";
+import { FixedBuf, SysBuf } from "./buf.js";
 
 export class KeyPair {
   privKey: PrivKey;

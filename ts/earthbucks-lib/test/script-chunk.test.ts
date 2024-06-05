@@ -2,13 +2,13 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { ScriptChunk } from "../src/script-chunk.js";
 import { OP } from "../src/opcode.js";
 import { BufWriter } from "../src/buf-writer.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 import {
   InvalidOpcodeError,
   NonMinimalEncodingError,
   NotEnoughDataError,
-} from "../src/ebx-error.js";
+} from "../src/error.js";
 
 describe("ScriptChunk", () => {
   let scriptChunk: ScriptChunk;

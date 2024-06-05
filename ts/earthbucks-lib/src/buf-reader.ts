@@ -1,10 +1,10 @@
-import { SysBuf, EbxBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, EbxBuf, FixedBuf } from "./buf.js";
 import {
   EbxError,
   NotEnoughDataError,
   NonMinimalEncodingError,
   InsufficientPrecisionError,
-} from "./ebx-error.js";
+} from "./error.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class BufReader {

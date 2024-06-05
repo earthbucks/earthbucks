@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::header::Header;
 use crate::pkh::Pkh;
 use crate::script::Script;

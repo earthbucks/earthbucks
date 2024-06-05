@@ -6,7 +6,7 @@ import { Script } from "../src/script.js";
 import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { PkhKeyMap } from "../src/pkh-key-map.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 

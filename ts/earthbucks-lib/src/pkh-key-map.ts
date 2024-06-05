@@ -1,5 +1,5 @@
 import { KeyPair } from "./key-pair.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 
 export class PkhKeyMap {
   public map: Map<string, KeyPair>;

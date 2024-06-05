@@ -1,13 +1,13 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 import fs from "fs";
 import path from "path";
 import {
   GenericError,
   NonMinimalEncodingError,
   NotEnoughDataError,
-} from "../src/ebx-error.js";
+} from "../src/error.js";
 
 describe("Script", () => {
   test("constructor", () => {

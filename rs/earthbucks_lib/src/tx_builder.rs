@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::script::Script;
 use crate::tx::Tx;
 use crate::tx_in::TxIn;

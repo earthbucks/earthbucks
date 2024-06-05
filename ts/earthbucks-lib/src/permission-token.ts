@@ -1,7 +1,7 @@
-import { InvalidSizeError } from "./ebx-error.js";
+import { InvalidSizeError } from "./error.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class PermissionToken {

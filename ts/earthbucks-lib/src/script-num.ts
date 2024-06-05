@@ -1,4 +1,4 @@
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export class ScriptNum {

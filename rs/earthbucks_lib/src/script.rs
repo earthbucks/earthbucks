@@ -1,5 +1,5 @@
 use crate::buf_reader::BufReader;
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::opcode::Opcode;
 use crate::pub_key::PubKey;
 use crate::script_chunk::ScriptChunk;
@@ -533,7 +533,7 @@ impl Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::EbxBuf;
+    use crate::buf::EbxBuf;
     use crate::script_chunk::ScriptChunk;
     use serde::Deserialize;
 

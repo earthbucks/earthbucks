@@ -8,7 +8,7 @@ import { Pkh } from "../src/pkh.js";
 import { PkhKeyMap } from "../src/pkh-key-map.js";
 import { TxSigner } from "../src/tx-signer.js";
 import { TxVerifier } from "../src/tx-verifier.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 import { TxIn } from "../src/tx-in.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";

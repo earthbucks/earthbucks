@@ -1,6 +1,6 @@
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 
 #[derive(Default)]
 pub struct VarInt {

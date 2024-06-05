@@ -1,6 +1,6 @@
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::script::Script;
 use crate::var_int::VarInt;
 
@@ -51,7 +51,7 @@ impl TxOut {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::EbxBuf;
+    use crate::buf::EbxBuf;
     use crate::script::Script;
 
     #[test]

@@ -2,12 +2,12 @@ import { Tx } from "./tx.js";
 import { PkhKeyMap } from "./pkh-key-map.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { PubKey } from "./pub-key.js";
 import { Script } from "./script.js";
 import { KeyPair } from "./key-pair.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { GenericError } from "./ebx-error.js";
+import { GenericError } from "./error.js";
 
 export class TxSigner {
   public tx: Tx;

@@ -1,7 +1,7 @@
 import { Tx, HashCache } from "./tx.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxVerifier {

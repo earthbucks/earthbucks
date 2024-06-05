@@ -4,7 +4,7 @@ import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
 import { BufWriter } from "../src/buf-writer.js";
 import { BufReader } from "../src/buf-reader.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
 
 describe("Block", () => {

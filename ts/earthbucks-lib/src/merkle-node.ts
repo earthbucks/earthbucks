@@ -1,6 +1,6 @@
-import { GenericError } from "./ebx-error.js";
+import { GenericError } from "./error.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;

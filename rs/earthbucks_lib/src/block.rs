@@ -1,6 +1,6 @@
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::header::Header;
 use crate::tx::Tx;
 use crate::var_int::VarInt;

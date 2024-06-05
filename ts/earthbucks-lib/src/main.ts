@@ -1,6 +1,6 @@
 import { KeyPair } from "./key-pair.js";
 import { Pkh } from "./pkh.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 
 function main() {
   const args = process.argv.slice(2);

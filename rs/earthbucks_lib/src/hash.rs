@@ -19,7 +19,7 @@ pub fn blake3_mac(key: &[u8; 32], data: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::EbxBuf;
+    use crate::buf::EbxBuf;
 
     #[test]
     fn test_hash() {

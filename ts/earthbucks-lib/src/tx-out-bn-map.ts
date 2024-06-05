@@ -1,5 +1,5 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxOutBnMap {

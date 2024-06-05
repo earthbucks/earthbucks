@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
 import { BufReader } from "../src/buf-reader.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("TxOutput", () => {

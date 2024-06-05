@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::pkh_key_map::PkhKeyMap;
 use crate::script::Script;
 use crate::tx::Tx;

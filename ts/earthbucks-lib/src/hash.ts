@@ -1,5 +1,5 @@
 import { hash, createKeyed } from "blake3";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { blake3 as blake3browser } from "@noble/hashes/blake3"; // eslint-disable-line
 
 type EbxBufFunction = (input: SysBuf) => FixedBuf<32>;

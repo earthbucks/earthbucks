@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from "vitest";
 import { BufReader } from "../src/buf-reader.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 import fs from "fs";
 import path from "path";
@@ -9,7 +9,7 @@ import {
   GenericError,
   NonMinimalEncodingError,
   NotEnoughDataError,
-} from "../src/ebx-error.js";
+} from "../src/error.js";
 
 describe("BufReader", () => {
   let bufferReader: BufReader;

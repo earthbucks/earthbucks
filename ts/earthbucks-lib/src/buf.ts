@@ -9,7 +9,7 @@ import {
   InvalidSizeError,
   InvalidHexError,
   InvalidEncodingError,
-} from "./ebx-error.js";
+} from "./error.js";
 import bs58 from "bs58";
 
 const SysBuf = Buffer;

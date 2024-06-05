@@ -2,7 +2,7 @@ import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { SignedMessage } from "./signed-message.js";
 import { SigninChallenge } from "./signin-challenge.js";
-import { SysBuf, EbxBuf } from "./ebx-buf.js";
+import { SysBuf, EbxBuf } from "./buf.js";
 
 export class SigninResponse {
   signedMessage: SignedMessage;

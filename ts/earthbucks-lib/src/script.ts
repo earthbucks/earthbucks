@@ -1,11 +1,11 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
-import { EbxError } from "./ebx-error.js";
+import { EbxError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Script {

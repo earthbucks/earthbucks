@@ -1,14 +1,14 @@
 import { OPCODE_TO_NAME, OP, OpcodeName, Opcode } from "./opcode.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf } from "./ebx-buf.js";
+import { SysBuf } from "./buf.js";
 import {
   EbxError,
   InvalidOpcodeError,
   NonMinimalEncodingError,
   NotEnoughDataError,
   TooMuchDataError,
-} from "./ebx-error.js";
+} from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class ScriptChunk {

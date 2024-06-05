@@ -8,7 +8,7 @@ import { BufWriter } from "../src/buf-writer.js";
 import * as Hash from "../src/hash.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
-import { FixedBuf, SysBuf } from "../src/ebx-buf.js";
+import { FixedBuf, SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("Tx", () => {

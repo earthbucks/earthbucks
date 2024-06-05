@@ -1,9 +1,9 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
-import { GenericError } from "./ebx-error.js";
+import { GenericError } from "./error.js";
 
 export class Header {
   version: U8;

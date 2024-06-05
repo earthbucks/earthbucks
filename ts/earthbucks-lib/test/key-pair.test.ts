@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { PrivKey } from "../src/priv-key.js";
 import fs from "fs";
 import path from "path";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {

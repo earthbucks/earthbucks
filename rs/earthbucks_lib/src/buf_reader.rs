@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::numbers::u256;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::{io::Cursor, vec};
@@ -136,7 +136,7 @@ impl BufReader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ebx_buf::EbxBuf;
+    use crate::buf::EbxBuf;
     use byteorder::{BigEndian, WriteBytesExt};
     use serde::Deserialize;
     use std::fs;

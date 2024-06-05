@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { PkhKeyMap } from "../src/pkh-key-map.js";
 import { Pkh } from "../src/pkh.js";
 import { KeyPair } from "../src/key-pair.js";
-import { SysBuf } from "../src/ebx-buf.js";
+import { SysBuf } from "../src/buf.js";
 
 describe("PkhKeyMap", () => {
   let pkhKeyMap: PkhKeyMap;

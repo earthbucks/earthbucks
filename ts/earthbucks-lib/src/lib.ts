@@ -4,7 +4,7 @@ export * from "./block.js";
 export * from "./buf-reader.js";
 export * from "./buf-writer.js";
 export * from "./domain.js";
-export * from "./ebx-error.js";
+export * from "./error.js";
 export * from "./header-mine.js";
 export * from "./header.js";
 export * from "./key-pair.js";

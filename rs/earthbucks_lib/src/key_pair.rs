@@ -1,4 +1,4 @@
-use crate::ebx_error::EbxError;
+use crate::error::EbxError;
 use crate::priv_key::PrivKey;
 use crate::pub_key::PubKey;
 

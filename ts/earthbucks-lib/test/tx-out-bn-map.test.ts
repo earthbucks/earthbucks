@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { SysBuf, FixedBuf } from "../src/ebx-buf.js";
+import { SysBuf, FixedBuf } from "../src/buf.js";
 import { TxOutBn } from "../src/tx-out-bn.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 

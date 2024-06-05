@@ -1,9 +1,9 @@
 import * as Hash from "./hash.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf, FixedBuf } from "./ebx-buf.js";
+import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { GenericError } from "./ebx-error.js";
+import { GenericError } from "./error.js";
 
 export class MerkleProof {
   public root: FixedBuf<32>;
