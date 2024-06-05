@@ -1,22 +1,22 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { GpuPowBrowser } from "../src/pow-gpu-browser";
-import { Buffer } from "buffer";
+import { Buffer as SysBuf } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 
-function blake3Hash(seed: Buffer): Buffer {
-  return Buffer.from(blake3HashRaw(seed));
+function blake3Hash(seed: SysBuf): SysBuf {
+  return SysBuf.from(blake3HashRaw(seed));
 }
 
-function blake3HashAsync(seed: Buffer): Promise<Buffer> {
+function blake3HashAsync(seed: SysBuf): Promise<SysBuf> {
   return new Promise((resolve) => {
-    resolve(Buffer.from(blake3HashRaw(seed)));
+    resolve(SysBuf.from(blake3HashRaw(seed)));
   });
 }
 
 describe("GpuPow", () => {
   test("algo17", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds: Buffer[] = [];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds: SysBuf[] = [];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -26,8 +26,8 @@ describe("GpuPow", () => {
   });
 
   test("algo17 async", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds: Buffer[] = [];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds: SysBuf[] = [];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
@@ -37,8 +37,8 @@ describe("GpuPow", () => {
   });
 
   test("algo257", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -48,8 +48,8 @@ describe("GpuPow", () => {
   });
 
   test("algo257 async", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
@@ -59,8 +59,8 @@ describe("GpuPow", () => {
   });
 
   test.skip("algo1289", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -70,8 +70,8 @@ describe("GpuPow", () => {
   });
 
   test.skip("algo1289 async", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
@@ -81,8 +81,8 @@ describe("GpuPow", () => {
   });
 
   test.skip("algo1627", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -92,8 +92,8 @@ describe("GpuPow", () => {
   });
 
   test.skip("algo1627 async", async () => {
-    const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
     const gpupow = new GpuPowBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);

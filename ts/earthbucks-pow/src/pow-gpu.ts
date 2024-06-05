@@ -1,27 +1,27 @@
-import { Buffer } from "buffer";
+import { Buffer as SysBuf } from "buffer";
 import * as tf from "@tensorflow/tfjs";
 
 type TF = typeof tf;
 type TFTensor = tf.Tensor;
 
-type BufferFunction = (input: Buffer) => Buffer;
-type AsyncBufferFunction = (input: Buffer) => Promise<Buffer>;
+type BufferFunction = (input: SysBuf) => SysBuf;
+type AsyncBufferFunction = (input: SysBuf) => Promise<SysBuf>;
 
 export default class GpuPow {
-  previousBlockIds: Buffer[];
+  previousBlockIds: SysBuf[];
   workingBlockId: TFTensor;
   recentBlockIds: TFTensor;
   tf: TF = tf;
 
-  constructor(workingBlockId: Buffer, recentBlockIds: Buffer[]) {
+  constructor(workingBlockId: SysBuf, recentBlockIds: SysBuf[]) {
     this.previousBlockIds = recentBlockIds;
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
     this.recentBlockIds = this.tensorFromBufferBits(
-      Buffer.concat(recentBlockIds),
+      SysBuf.concat(recentBlockIds),
     );
   }
 
-  tensorFromBufferBits(buffer: Buffer): TFTensor {
+  tensorFromBufferBits(buffer: SysBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -36,7 +36,7 @@ export default class GpuPow {
     return this.tf.tensor1d(bits, "int32");
   }
 
-  updateWorkingBlockId(workingBlockId: Buffer) {
+  updateWorkingBlockId(workingBlockId: SysBuf) {
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
   }
 
@@ -130,7 +130,7 @@ export default class GpuPow {
 
   async matrixReduce(
     matrix: TFTensor,
-  ): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  ): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     // Unfortunately, it is not possible to perform hash functions using
     // TensorFlow. We need to find a way to send the result of the computation
     // back from the GPU to the CPU without using a lot of bandwidth. The idea
@@ -145,11 +145,11 @@ export default class GpuPow {
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
     let reducedMin = this.reduceMatrixToVectorMin(matrix);
     let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
-    let reducedSumBuf = Buffer.from(await reducedSum.data());
-    let reducedMaxBuf = Buffer.from(await reducedMax.data());
-    let reducedMinBuf = Buffer.from(await reducedMin.data());
-    let reducedRndBuf = Buffer.from(await reducedRnd.data());
-    let reducedBufs: [Buffer, Buffer, Buffer, Buffer] = [
+    let reducedSumBuf = SysBuf.from(await reducedSum.data());
+    let reducedMaxBuf = SysBuf.from(await reducedMax.data());
+    let reducedMinBuf = SysBuf.from(await reducedMin.data());
+    let reducedRndBuf = SysBuf.from(await reducedRnd.data());
+    let reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
       reducedSumBuf,
       reducedMaxBuf,
       reducedMinBuf,
@@ -158,7 +158,7 @@ export default class GpuPow {
     return reducedBufs;
   }
 
-  async algo(size: number): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo(size: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     let matrix = this.tf.tidy(() => {
       let seed = this.tensorSeedReplica(size);
       let matrix1 = this.seedToMatrix(seed, size);
@@ -174,7 +174,7 @@ export default class GpuPow {
     return reducedBufs;
   }
 
-  async algo257(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo257(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     // Using a prime number for the size of the matrix guarantees that replicated
     // data does not repeat on subsequent rows. For instance, for 256 bits of
     // pseudorandom data, a 256x256 matrix would have the same data on every row.
@@ -195,51 +195,51 @@ export default class GpuPow {
     return this.algo(257);
   }
 
-  async algo17(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo17(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(17);
   }
 
-  async algo1031(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo1031(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(1031);
   }
 
-  async algo1289(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo1289(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(1289);
   }
 
-  async algo1627(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo1627(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(1627);
   }
 
-  async algo9973(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo9973(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(9973);
   }
 
-  async algo46337(): Promise<[Buffer, Buffer, Buffer, Buffer]> {
+  async algo46337(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     return this.algo(46337);
   }
 
   reducedBufsHash(
-    reducedBufs: [Buffer, Buffer, Buffer, Buffer],
+    reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
     blake3Hash: BufferFunction,
-  ): Buffer {
+  ): SysBuf {
     let hash0 = blake3Hash(reducedBufs[0]);
     let hash1 = blake3Hash(reducedBufs[1]);
     let hash2 = blake3Hash(reducedBufs[2]);
     let hash3 = blake3Hash(reducedBufs[3]);
-    let concatted = Buffer.concat([hash0, hash1, hash2, hash3]);
+    let concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3Hash(concatted);
   }
 
   async reducedBufsHashAsync(
-    reducedBufs: [Buffer, Buffer, Buffer, Buffer],
+    reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
     blake3HashAsync: AsyncBufferFunction,
-  ): Promise<Buffer> {
+  ): Promise<SysBuf> {
     let hash0 = await blake3HashAsync(reducedBufs[0]);
     let hash1 = await blake3HashAsync(reducedBufs[1]);
     let hash2 = await blake3HashAsync(reducedBufs[2]);
     let hash3 = await blake3HashAsync(reducedBufs[3]);
-    let concatted = Buffer.concat([hash0, hash1, hash2, hash3]);
+    let concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3HashAsync(concatted);
   }
 }

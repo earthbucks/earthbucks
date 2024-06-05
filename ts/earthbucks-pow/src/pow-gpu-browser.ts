@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import * as tf from "@tensorflow/tfjs";
 import GpuPow from "./pow-gpu";
 
