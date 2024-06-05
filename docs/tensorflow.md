@@ -29,84 +29,9 @@ pnpm add @tensorflow/tfjs-node
 Error:
 
 ```
-.../node_modules/@tensorflow/tfjs-node install$ node scripts/install.js
-│ CPU-darwin-4.20.0.tar.gz
-│ * Building TensorFlow Node.js bindings
-│ node-pre-gyp install failed with error: Error: Command failed: node-pre-gyp install -…
-│ node-pre-gyp info it worked if it ends with ok
-│ node-pre-gyp info using node-pre-gyp@1.0.9
-│ node-pre-gyp info using node@20.8.1 | darwin | arm64
-│ node-pre-gyp info check checked for "/Users/ryan/dev/earthbucks/ts/node_modules/.pnpm…
-│ node-pre-gyp http GET https://storage.googleapis.com/tf-builds/pre-built-binary/napi-…
-│ node-pre-gyp ERR! install response status 404 Not Found on https://storage.googleapis…
-│ node-pre-gyp WARN Pre-built binaries not installable for @tensorflow/tfjs-node@4.20.0…
-│ node-pre-gyp WARN Hit error response status 404 Not Found on https://storage.googleap…
-│ gyp info it worked if it ends with ok
-│ gyp info using node-gyp@9.4.1
-│ gyp info using node@20.8.1 | darwin | arm64
-│ gyp info ok 
-│ gyp info it worked if it ends with ok
-│ gyp info using node-gyp@9.4.1
-│ gyp info using node@20.8.1 | darwin | arm64
-│ gyp info find Python using Python version 3.12.3 found at "/opt/homebrew/opt/python@3…
-│ gyp info spawn /opt/homebrew/opt/python@3.12/bin/python3.12
-│ gyp info spawn args [
-│ gyp info spawn args   '/Users/ryan/.cache/node/corepack/pnpm/8.15.4/dist/node_modules…
-│ gyp info spawn args   'binding.gyp',
-│ gyp info spawn args   '-f',
-│ gyp info spawn args   'make',
-│ gyp info spawn args   '-I',
-│ gyp info spawn args   '/Users/ryan/dev/earthbucks/ts/node_modules/.pnpm/@tensorflow+t…
-│ gyp info spawn args   '-I',
-│ gyp info spawn args   '/Users/ryan/.cache/node/corepack/pnpm/8.15.4/dist/node_modules…
-│ gyp info spawn args   '-I',
-│ gyp info spawn args   '/Users/ryan/Library/Caches/node-gyp/20.8.1/include/node/common…
-│ gyp info spawn args   '-Dlibrary=shared_library',
-│ gyp info spawn args   '-Dvisibility=default',
-│ gyp info spawn args   '-Dnode_root_dir=/Users/ryan/Library/Caches/node-gyp/20.8.1',
-│ gyp info spawn args   '-Dnode_gyp_dir=/Users/ryan/.cache/node/corepack/pnpm/8.15.4/di…
-│ gyp info spawn args   '-Dnode_lib_file=/Users/ryan/Library/Caches/node-gyp/20.8.1/<(t…
-│ gyp info spawn args   '-Dmodule_root_dir=/Users/ryan/dev/earthbucks/ts/node_modules/.…
-│ gyp info spawn args   '-Dnode_engine=v8',
-│ gyp info spawn args   '--depth=.',
-│ gyp info spawn args   '--no-parallel',
-│ gyp info spawn args   '--generator-output',
-│ gyp info spawn args   'build',
-│ gyp info spawn args   '-Goutput_dir=.'
-│ gyp info spawn args ]
-│ Traceback (most recent call last):
-│   File "/Users/ryan/.cache/node/corepack/pnpm/8.15.4/dist/node_modules/node-gyp/gyp/g…
-│     import gyp  # noqa: E402
-│     ^^^^^^^^^^
-│   File "/Users/ryan/.cache/node/corepack/pnpm/8.15.4/dist/node_modules/node-gyp/gyp/p…
-│     import gyp.input
-│   File "/Users/ryan/.cache/node/corepack/pnpm/8.15.4/dist/node_modules/node-gyp/gyp/p…
-│     from distutils.version import StrictVersion
+...
 │ ModuleNotFoundError: No module named 'distutils'
-│ gyp ERR! configure error 
-│ gyp ERR! stack Error: `gyp` failed with exit code: 1
-│ gyp ERR! stack     at ChildProcess.onCpExit (/Users/ryan/.cache/node/corepack/pnpm/8.…
-│ gyp ERR! stack     at ChildProcess.emit (node:events:514:28)
-│ gyp ERR! stack     at ChildProcess._handle.onexit (node:internal/child_process:294:12)
-│ gyp ERR! System Darwin 23.5.0
-│ gyp ERR! command "/Users/ryan/.nvm/versions/node/v20.8.1/bin/node" "/Users/ryan/.cach…
-│ gyp ERR! cwd /Users/ryan/dev/earthbucks/ts/node_modules/.pnpm/@tensorflow+tfjs-node@4…
-│ gyp ERR! node -v v20.8.1
-│ gyp ERR! node-gyp -v v9.4.1
-│ gyp ERR! not ok 
-│ node-pre-gyp ERR! build error 
-│ node-pre-gyp ERR! stack Error: Failed to execute '/Users/ryan/.nvm/versions/node/v20.…
-│ node-pre-gyp ERR! stack     at ChildProcess.<anonymous> (/Users/ryan/dev/earthbucks/t…
-│ node-pre-gyp ERR! stack     at ChildProcess.emit (node:events:514:28)
-│ node-pre-gyp ERR! stack     at maybeClose (node:internal/child_process:1105:16)
-│ node-pre-gyp ERR! stack     at ChildProcess._handle.onexit (node:internal/child_proce…
-│ node-pre-gyp ERR! System Darwin 23.5.0
-│ node-pre-gyp ERR! command "/Users/ryan/.nvm/versions/node/v20.8.1/bin/node" "/Users/r…
-│ node-pre-gyp ERR! cwd /Users/ryan/dev/earthbucks/ts/node_modules/.pnpm/@tensorflow+tf…
-│ node-pre-gyp ERR! node -v v20.8.1
-│ node-pre-gyp ERR! node-pre-gyp -v v1.0.9
-│ node-pre-gyp ERR! not ok 
-└─ Failed in 758ms at /Users/ryan/dev/earthbucks/ts/node_modules/.pnpm/@tensorflow+tfjs-node@4.20.0_seedrandom@3.0.5/node_modules/@tensorflow/tfjs-node
+...
  ELIFECYCLE  Command failed with exit code 1.
 ```
 
@@ -141,3 +66,259 @@ That worked! For future reference, here is my version of python, installed with 
 ryan ~/dev/earthbucks/ts/earthbucks-pow $ python3 --version
 Python 3.12.3
 ```
+
+#### TensorFlow for rust on macOS
+
+Attempting [simple instructions](https://github.com/tensorflow/rust) first.
+
+The first error I get is this:
+
+```zsh
+cargo:error=Bazel must be installed at version 3.7.2 or greater. (Error: No such file or directory (os error 2))
+```
+
+Now I will attempt to install Bazel. [Instructions for installing bazel are here.](https://bazel.build/install/os-x)
+
+[Bazelisk is recommended](https://bazel.build/install/bazelisk) so I'm trying that first.
+
+Installation instructions:
+
+```zsh
+brew install bazelisk
+```
+
+Cargo.toml:
+
+```zsh
+tensorflow = "0.21.0"
+```
+
+That worked. Trying build:
+
+```zsh
+cargo build
+```
+
+It doesn't work. Some errors:
+
+```zsh
+ModuleNotFoundError: No module named 'numpy'
+Is numpy installed?
+```
+
+Note that numpy is indeed listed as a depdendency. Python dependencies include:
+- Python Dependencies numpy, dev, pip and wheel
+
+Let's try to install all these with homebrew
+
+```zsh
+brew install numpy
+```
+
+dev: can't find this package. skipping for now.
+
+pip: already installed
+
+wheel: can't find this package. skipping for now.
+
+Trying again:
+
+```zsh
+cargo build
+```
+
+Error:
+
+```zsh
+AttributeError: module 'numpy' has no attribute 'get_include'
+```
+
+Searching reveals to attempt this:
+
+```zsh
+brew doctor
+```
+
+Indeed, this reveals an issue:
+
+```zsh
+Warning: You have unlinked kegs in your Cellar.
+Leaving kegs unlinked can lead to build-trouble and cause formulae that depend on
+those kegs to fail to run properly once built. Run `brew link` on these:
+  numpy
+```
+
+Trying this:
+
+```zsh
+brew link --overwrite numpy
+```
+
+Trying again:
+```zsh
+cargo build
+```
+
+Error:
+
+```zsh
+...
+  ERROR: /Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/target/source-v2.13.0/tensorflow/BUILD:1134:21: declared output 'tensorflow/libtensorflow_framework.2.dylib' was not created by genrule. This is probably because the genrule actually didn't create this output, or because the output was a directory and the genrule was run remotely (note that only the contents of declared file outputs are copied from genrules run remotely)
+  ERROR: /Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/target/source-v2.13.0/tensorflow/BUILD:1134:21: Executing genrule //tensorflow:libtensorflow_framework.2.dylib_sym [for host] failed: not all outputs were created or valid
+...
+```
+
+No clear error message here.
+
+I'm going to try to build tensorflow myself, [as suggested by this gist here](https://gist.github.com/lnshi/eb3dea05d99daba5c932bbc786cc3701).
+
+By building it myself first and installing it on my system, supposedly the rust tensorflow library will be able to find it and use it.
+
+... wait. I occurs to me if I can build it and install it, that there might be a build available already. Indeed, there is one on homebrew;
+
+```zsh
+$ brew info libtensorflow
+==> libtensorflow: stable 2.16.1 (bottled)
+C interface for Google's OS library for Machine Intelligence
+https://www.tensorflow.org/
+Not installed
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/lib/libtensorflow.rb
+License: Apache-2.0
+==> Dependencies
+Build: bazelisk ✔, numpy ✔, python@3.12 ✔, gnu-getopt ✘
+==> Analytics
+install: 987 (30 days), 2,051 (90 days), 5,748 (365 days)
+install-on-request: 987 (30 days), 2,045 (90 days), 5,709 (365 days)
+build-error: 48 (30 days)
+```
+
+I'll try installing this:
+
+```zsh
+brew install libtensorflow
+```
+
+That seems to have worked. Let's try building the rust tensorflow library again:
+
+```zsh
+cargo build
+```
+
+That didn't work. But re-reading documentation, I should run this instead:
+
+```zsh
+cargo build -j 1
+```
+
+No. That took longer, but it still didn't work. Errors:
+
+```zsh
+ERROR: /Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/target/source-v2.13.0/tensorflow/BUILD:1134:21: declared output 'tensorflow/libtensorflow_framework.2.dylib' was not created by genrule. This is probably because the genrule actually didn't create this output, or because the output was a directory and the genrule was run remotely (note that only the contents of declared file outputs are copied from genrules run remotely)
+  ERROR: /Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/target/source-v2.13.0/tensorflow/BUILD:1134:21: Executing genrule //tensorflow:libtensorflow_framework.2.dylib_sym [for host] failed: not all outputs were created or valid
+  realpath: illegal option -- -
+  usage: realpath [-q] [path ...]
+  Target //tensorflow:libtensorflow.dylib failed to build
+  Use --verbose_failures to see the command lines of failed build steps.
+  INFO: Elapsed time: 425.315s, Critical Path: 10.52s
+  INFO: 946 processes: 232 internal, 714 local.
+  FAILED: Build did NOT complete successfully
+  FAILED: Build did NOT complete successfully
+  thread 'main' panicked at /Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/build.rs:428:9:
+  failed to execute cd "/Users/ryan/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tensorflow-sys-0.24.0/target/source-v2.13.0" && "bazel" "build" "--jobs=1" "--compilation_mode=opt" "--copt=-march=native" "tensorflow:libtensorflow.dylib"
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```
+
+It looks to me like it is not able to find the libtensorflow package that I have installed with homebrew.
+
+Trying again in a new terminal just to see if some sort of PATH issue is at cause:
+
+```zsh
+cargo build
+```
+
+No. Failed again. Same errors.
+
+I found the homebrew libraries:
+```zsh
+$ ls /opt/homebrew/lib/libtensorflow*
+/opt/homebrew/lib/libtensorflow.2.16.1.dylib           /opt/homebrew/lib/libtensorflow.dylib                  /opt/homebrew/lib/libtensorflow_framework.2.dylib
+/opt/homebrew/lib/libtensorflow.2.dylib                /opt/homebrew/lib/libtensorflow_framework.2.16.1.dylib /opt/homebrew/lib/libtensorflow_framework.dylib
+```
+
+I may need to execute this:
+```zsh
+export LDFLAGS="-L/opt/homebrew/lib"
+export CPPFLAGS="-I/opt/homebrew/include"
+```
+
+Trying to build again:
+
+```zsh
+$ echo $LDFLAGS
+-L/opt/homebrew/lib
+$ echo $CPPFLAGS
+-I/opt/homebrew/include
+$ cargo build
+...
+```
+
+Re-reading [this git](https://gist.github.com/lnshi/eb3dea05d99daba5c932bbc786cc3701), it seems I may need to use pkg-config to get the C++ build process to actually see the tensorflow library.
+
+I'm going to try this before building tensorflow myself, since it does seem to actually be installed by homebrew.
+
+First
+
+```zsh
+brew install pkg-config
+```
+
+Now, create tensorflow.pc:
+```
+libdir=/opt/homebrew/lib
+includedir=/opt/homebrew/include/tensorflow
+
+Name: TensorFlow
+Version: 2.8.0
+Description: Library for computation using data flow graphs for scalable machine learning
+Requires:
+Libs: -L${libdir} -ltensorflow -ltensorflow_framework
+Cflags: -I${includedir}
+```
+
+Now put that file in:
+```
+~/.pkg_configs/tensorflow.pc
+```
+
+Now you should be able to run this:
+
+```zsh
+$ PKG_CONFIG_PATH=~/.pkg_configs/ pkg-config --list-all | grep tensorflow
+tensorflow               TensorFlow - Library for computation using data flow graphs for scalable machine learning
+```
+
+Now set this before running "cargo build":
+
+```zsh
+export PKG_CONFIG_PATH=~/.pkg_configs/
+```
+
+To my shock, this actually worked!
+
+```zsh
+$ cargo build
+   Compiling libz-sys v1.1.18
+   Compiling bzip2-sys v0.1.11+1.0.8
+   Compiling curl-sys v0.4.72+curl-8.6.0
+   Compiling curl v0.4.46
+   Compiling bzip2 v0.4.4
+   Compiling zip v0.6.6
+   Compiling tensorflow-sys v0.24.0
+   Compiling tensorflow v0.21.0
+   Compiling earthbucks_pow v0.1.0 (/Users/ryan/dev/earthbucks/rs/earthbucks_pow)
+    Finished dev [unoptimized + debuginfo] target(s) in 14.03s
+```
+
+It compiled with no errors!
+
+Now ... does it actually work? I'm not sure. I'm going to take a break.
