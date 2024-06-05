@@ -1,6 +1,22 @@
 # Installing TensorFlow on macOS
 
-## 2024-06-05
+## @tensorflow/tfjs-node
+
+Install setuptools from python with homebrew to install tfjs-node:
+
+```zsh
+brew install python-setuptools
+```
+
+Then:
+  
+```zsh
+pnpm add @tensorflow/tfjs-node
+```
+
+## Log
+
+### 2024-06-05
 
 Attempted to install tensorflow for node.js on macOS:
 
