@@ -321,4 +321,14 @@ $ cargo build
 
 It compiled with no errors!
 
-Now ... does it actually work? I'm not sure. I'm going to take a break.
+Confirmed I am able to re-build with:
+
+```zsh
+cargo clean
+```
+
+```zsh
+PKG_CONFIG_PATH=~/.pkg_configs/ cargo build
+```
+
+Now to test it.
