@@ -8,3 +8,4 @@ authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
 earthbucks_lib = { path = "../earthbucks_lib" }
+ndarray = "0.15.6"
