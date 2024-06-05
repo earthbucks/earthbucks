@@ -13,7 +13,7 @@ function blake3HashAsync(seed: SysBuf): Promise<SysBuf> {
   });
 }
 
-describe("GpuPow", () => {
+describe("GpuPowBrowser", () => {
   test("algo17", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds: SysBuf[] = [];
