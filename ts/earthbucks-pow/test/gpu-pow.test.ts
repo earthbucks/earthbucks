@@ -58,7 +58,7 @@ describe("GpuPow", () => {
     );
   });
 
-  test.skip("algo1289", async () => {
+  test("algo1289", async () => {
     const workingBlockId = blake3Hash(Buffer.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(Buffer.from("previousBlockId"))];
     const gpupow = new GpuPow(workingBlockId, previousBlockIds);
