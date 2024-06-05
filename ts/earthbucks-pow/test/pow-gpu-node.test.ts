@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { GpuPowNode } from "../src/pow-gpu-node";
+import { PowGpuNode } from "../src/pow-gpu-node";
 import { Buffer as SysBuf } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 
@@ -17,7 +17,7 @@ describe("GpuPowNode", () => {
   test("algo17", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds: SysBuf[] = [];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
@@ -28,7 +28,7 @@ describe("GpuPowNode", () => {
   test("algo17 async", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds: SysBuf[] = [];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
@@ -39,7 +39,7 @@ describe("GpuPowNode", () => {
   test("algo257", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
@@ -50,7 +50,7 @@ describe("GpuPowNode", () => {
   test("algo257 async", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
@@ -61,7 +61,7 @@ describe("GpuPowNode", () => {
   test("algo1289", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
@@ -72,7 +72,7 @@ describe("GpuPowNode", () => {
   test("algo1289 async", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
@@ -83,7 +83,7 @@ describe("GpuPowNode", () => {
   test("algo1627", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
@@ -94,7 +94,7 @@ describe("GpuPowNode", () => {
   test("algo1627 async", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
-    const gpupow = new GpuPowNode(workingBlockId, previousBlockIds);
+    const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(

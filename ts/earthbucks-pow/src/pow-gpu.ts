@@ -7,7 +7,7 @@ type TFTensor = tf.Tensor;
 type BufferFunction = (input: SysBuf) => SysBuf;
 type AsyncBufferFunction = (input: SysBuf) => Promise<SysBuf>;
 
-export default class GpuPow {
+export default class PowGpu {
   previousBlockIds: SysBuf[];
   workingBlockId: TFTensor;
   recentBlockIds: TFTensor;

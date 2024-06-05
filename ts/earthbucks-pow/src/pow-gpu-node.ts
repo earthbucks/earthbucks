@@ -1,8 +1,8 @@
 import * as tf from "@tensorflow/tfjs-node";
-import GpuPow from "./pow-gpu";
+import PowGpu from "./pow-gpu";
 
 type TF = typeof tf;
 
-export class GpuPowNode extends GpuPow {
+export class PowGpuNode extends PowGpu {
   tf: TF = tf;
 }
