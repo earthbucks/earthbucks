@@ -1,4 +1,4 @@
-# Installing TensorFlow on macOS
+# Installing TensorFlow
 
 ## @tensorflow/tfjs-node
 
@@ -17,6 +17,8 @@ pnpm add @tensorflow/tfjs-node
 ## Log
 
 ### 2024-06-05
+
+#### TensorFlow for Node.js on macOS
 
 Attempted to install tensorflow for node.js on macOS:
 
