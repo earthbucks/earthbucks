@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import PowGpu from "./pow-gpu";
+import { PowGpu } from "./pow-gpu";
 
 type TF = typeof tf;
 
