@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import GpuPowNode from "../src/pow-gpu-node";
+import { GpuPowNode } from "../src/pow-gpu-node";
 import { Buffer } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 

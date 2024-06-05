@@ -4,6 +4,6 @@ import GpuPow from "./pow-gpu";
 
 type TF = typeof tf;
 
-export default class GpuPowBrowser extends GpuPow {
+export class GpuPowNode extends GpuPow {
   tf: TF = tf;
 }
