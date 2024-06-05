@@ -34,6 +34,8 @@
   "dependencies": {
     "@tensorflow/tfjs": "^4.20.0",
     "@tensorflow/tfjs-node": "^4.20.0",
+    "blake3": "2.1.7",
+    "buffer": "^6.0.3",
     "earthbucks-lib": "workspace:^"
   },
   "devDependencies": {
