@@ -1,13 +1,18 @@
+use tensorflow::Graph;
+use tensorflow::Session;
+use tensorflow::SessionOptions;
 use tensorflow::Tensor;
 
-pub struct PowGpu {
+pub struct PowSession {
     prev_block_ids: Vec<[u8; 32]>,
     working_block_id: Tensor<i32>,
     recent_block_ids: Tensor<i32>,
+    session: Session,
 }
 
-impl PowGpu {
+impl PowSession {
     pub fn new(working_block_id: [u8; 32], recent_block_ids: Vec<[u8; 32]>) -> Self {
+        // data stored in main memory
         let working_block_id = Self::tensor_from_buffer_bits(&working_block_id);
         let recent_block_ids_concatted: Vec<u8> = recent_block_ids
             .iter()
@@ -15,10 +20,16 @@ impl PowGpu {
             .cloned()
             .collect();
         let recent_block_ids = Self::tensor_from_buffer_bits(&recent_block_ids_concatted);
-        PowGpu {
+
+        // tensorflow session
+        let graph = Graph::new();
+        let session = Session::new(&SessionOptions::new(), &graph).unwrap();
+
+        PowSession {
             prev_block_ids: Vec::new(),
             working_block_id,
             recent_block_ids,
+            session,
         }
     }
 
@@ -32,6 +43,10 @@ impl PowGpu {
 
     pub fn get_recent_block_ids(&self) -> Tensor<i32> {
         self.recent_block_ids.clone()
+    }
+
+    pub fn get_session(&self) -> &Session {
+        &self.session
     }
 
     pub fn tensor_from_buffer_bits(buffer: &[u8]) -> Tensor<i32> {
