@@ -1,1 +1,1 @@
-extern crate tensorflow;
+pub mod pow_gpu;

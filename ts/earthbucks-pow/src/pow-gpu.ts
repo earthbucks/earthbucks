@@ -13,11 +13,11 @@ export class PowGpu {
   recentBlockIds: TFTensor;
   tf: TF = tf;
 
-  constructor(workingBlockId: SysBuf, recentBlockIds: SysBuf[]) {
-    this.previousBlockIds = recentBlockIds;
+  constructor(workingBlockId: SysBuf, previousBlockIds: SysBuf[]) {
+    this.previousBlockIds = previousBlockIds;
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
     this.recentBlockIds = this.tensorFromBufferBits(
-      SysBuf.concat(recentBlockIds),
+      SysBuf.concat(previousBlockIds),
     );
   }
 
