@@ -7,7 +7,7 @@
   brand, and with a better design (no reorgs).
 - [x] [eCash](https://e.cash): Adds pre-consensus with Avalanche. Like a more
   complicated version of EarthBucks voting. Retains history of Bitcoin
-  blockchain and code like BCH.
+  blockchain and code like BCH. Too much baggage and too little network effect.
 - [x] [ampleforth](https://www.ampleforth.org/): Aims to have price stability,
   i.e. stablecoin. Not in the same market as EarthBucks.
 - [x] [saito](https://saito.io/saito-whitepaper.pdf): Aims to solve similar
