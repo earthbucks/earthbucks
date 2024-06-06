@@ -8,13 +8,11 @@ type BufferFunction = (input: SysBuf) => SysBuf;
 type AsyncBufferFunction = (input: SysBuf) => Promise<SysBuf>;
 
 export class PowGpu {
-  previousBlockIds: SysBuf[];
   workingBlockId: TFTensor;
   recentBlockIds: TFTensor;
   tf: TF = tf;
 
   constructor(workingBlockId: SysBuf, previousBlockIds: SysBuf[]) {
-    this.previousBlockIds = previousBlockIds;
     this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
     this.recentBlockIds = this.tensorFromBufferBits(
       SysBuf.concat(previousBlockIds),

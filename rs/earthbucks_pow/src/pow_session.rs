@@ -4,7 +4,6 @@ use tensorflow::SessionOptions;
 use tensorflow::Tensor;
 
 pub struct PowSession {
-    prev_block_ids: Vec<[u8; 32]>,
     working_block_id: Tensor<i32>,
     recent_block_ids: Tensor<i32>,
     session: Session,
@@ -26,15 +25,10 @@ impl PowSession {
         let session = Session::new(&SessionOptions::new(), &graph).unwrap();
 
         PowSession {
-            prev_block_ids: Vec::new(),
             working_block_id,
             recent_block_ids,
             session,
         }
-    }
-
-    pub fn get_prev_block_ids(&self) -> Vec<[u8; 32]> {
-        self.prev_block_ids.clone()
     }
 
     pub fn get_working_block_id(&self) -> Tensor<i32> {
