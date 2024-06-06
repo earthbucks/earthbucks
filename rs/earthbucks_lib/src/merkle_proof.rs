@@ -1,6 +1,6 @@
+use crate::buf::EbxBuf;
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::buf::EbxBuf;
 use crate::hash::double_blake3_hash;
 
 #[derive(Debug, Clone)]

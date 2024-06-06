@@ -1,10 +1,10 @@
 pub mod block;
 pub mod block_builder;
 pub mod block_verifier;
+pub mod buf;
 pub mod buf_reader;
 pub mod buf_writer;
 pub mod domain;
-pub mod buf;
 pub mod error;
 pub mod hash;
 pub mod header;

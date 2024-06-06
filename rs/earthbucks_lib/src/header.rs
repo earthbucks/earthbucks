@@ -1,6 +1,6 @@
+use crate::buf::EbxBuf;
 use crate::buf_reader::BufReader;
 use crate::buf_writer::BufWriter;
-use crate::buf::EbxBuf;
 use crate::error::EbxError;
 use crate::hash::{blake3_hash, double_blake3_hash};
 use crate::numbers::u256;
@@ -116,7 +116,7 @@ impl Header {
         self.target == new_target
     }
 
-    pub fn is_pow_valid(&self) -> bool {
+    pub fn is_id_valid(&self) -> bool {
         let id: [u8; 32] = self.id();
         let id_num = BufReader::new(id.to_vec()).read_u256_be().unwrap();
         id_num < self.target
@@ -152,7 +152,7 @@ impl Header {
         if !self.is_target_valid(lch) {
             return false;
         }
-        if !self.is_pow_valid() {
+        if !self.is_id_valid() {
             return false;
         }
         true

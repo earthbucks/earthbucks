@@ -129,7 +129,7 @@ export class Header {
     return this.target.bn === newTarget.bn;
   }
 
-  isPowValid(): boolean {
+  isIdValid(): boolean {
     const id = this.id();
     const idNum = new BufReader(id).readU256BE();
     return idNum.bn < this.target.bn;
@@ -165,7 +165,7 @@ export class Header {
     if (!this.isTargetValid(lch)) {
       return false;
     }
-    if (!this.isPowValid()) {
+    if (!this.isIdValid()) {
       return false;
     }
     return true;
