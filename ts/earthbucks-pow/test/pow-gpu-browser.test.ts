@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { PowGpuBrowser } from "../src/pow-gpu-browser";
+import { PowGpuBrowser } from "../src/pow-gpu-browser.js";
 import { Buffer as SysBuf } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 

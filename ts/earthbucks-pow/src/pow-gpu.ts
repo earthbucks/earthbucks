@@ -23,8 +23,8 @@ export class PowGpu {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
-    let bufferIter = buffer.values();
-    let bits: number[] = [];
+    const bufferIter = buffer.values();
+    const bits: number[] = [];
     let bit: number | undefined;
     while ((bit = bufferIter.next().value) !== undefined) {
       for (let i = 7; i >= 0; i--) {
@@ -43,8 +43,8 @@ export class PowGpu {
   }
 
   tensorSeedReplica(n: number) {
-    let seedLength = this.tensorSeed().shape[0];
-    let numTimes = Math.ceil((n * n) / seedLength);
+    const seedLength = this.tensorSeed().shape[0];
+    const numTimes = Math.ceil((n * n) / seedLength);
     let result = this.tf.tile(this.tensorSeed(), [numTimes]);
     result = result.slice(0, n * n);
     return result;
@@ -72,8 +72,8 @@ export class PowGpu {
     // row by using the value in the first column of the matrix as an index.
     // This is a pseudo-random selection, but it is deterministic and does not
     // require any additional random number generation.
-    let nCols = matrix.shape[1] as number;
-    let nRows = matrix.shape[0] as number;
+    const nCols = matrix.shape[1] as number;
+    const nRows = matrix.shape[0] as number;
     let indices = matrix.slice([0, 0], [1, nCols]);
     indices = this.tf.clipByValue(indices, 0, nRows - 1);
     return matrix.gather(indices.flatten().toInt());
@@ -92,15 +92,15 @@ export class PowGpu {
     // calculation. Each of these methods will reduce the matrix to a vector of
     // size n. We can then convert the vector to a buffer and send it back to
     // the CPU. The CPU can then hash the buffers to get the final result.
-    let reducedSum = this.reduceMatrixToVectorSum(matrix);
-    let reducedMax = this.reduceMatrixToVectorMax(matrix);
-    let reducedMin = this.reduceMatrixToVectorMin(matrix);
-    let reducedRnd = this.reduceMatrixToVectorRnd(matrix);
-    let reducedSumBuf = SysBuf.from(await reducedSum.data());
-    let reducedMaxBuf = SysBuf.from(await reducedMax.data());
-    let reducedMinBuf = SysBuf.from(await reducedMin.data());
-    let reducedRndBuf = SysBuf.from(await reducedRnd.data());
-    let reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
+    const reducedSum = this.reduceMatrixToVectorSum(matrix);
+    const reducedMax = this.reduceMatrixToVectorMax(matrix);
+    const reducedMin = this.reduceMatrixToVectorMin(matrix);
+    const reducedRnd = this.reduceMatrixToVectorRnd(matrix);
+    const reducedSumBuf = SysBuf.from(await reducedSum.data());
+    const reducedMaxBuf = SysBuf.from(await reducedMax.data());
+    const reducedMinBuf = SysBuf.from(await reducedMin.data());
+    const reducedRndBuf = SysBuf.from(await reducedRnd.data());
+    const reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
       reducedSumBuf,
       reducedMaxBuf,
       reducedMinBuf,
@@ -214,11 +214,11 @@ export class PowGpu {
     reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
     blake3Hash: BufferFunction,
   ): SysBuf {
-    let hash0 = blake3Hash(reducedBufs[0]);
-    let hash1 = blake3Hash(reducedBufs[1]);
-    let hash2 = blake3Hash(reducedBufs[2]);
-    let hash3 = blake3Hash(reducedBufs[3]);
-    let concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
+    const hash0 = blake3Hash(reducedBufs[0]);
+    const hash1 = blake3Hash(reducedBufs[1]);
+    const hash2 = blake3Hash(reducedBufs[2]);
+    const hash3 = blake3Hash(reducedBufs[3]);
+    const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3Hash(concatted);
   }
 
@@ -226,11 +226,11 @@ export class PowGpu {
     reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
     blake3HashAsync: AsyncBufferFunction,
   ): Promise<SysBuf> {
-    let hash0 = await blake3HashAsync(reducedBufs[0]);
-    let hash1 = await blake3HashAsync(reducedBufs[1]);
-    let hash2 = await blake3HashAsync(reducedBufs[2]);
-    let hash3 = await blake3HashAsync(reducedBufs[3]);
-    let concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
+    const hash0 = await blake3HashAsync(reducedBufs[0]);
+    const hash1 = await blake3HashAsync(reducedBufs[1]);
+    const hash2 = await blake3HashAsync(reducedBufs[2]);
+    const hash3 = await blake3HashAsync(reducedBufs[3]);
+    const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3HashAsync(concatted);
   }
 }
