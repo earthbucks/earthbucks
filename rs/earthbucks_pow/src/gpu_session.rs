@@ -62,14 +62,19 @@ impl GpuSession {
     pub fn update_working_block_id(&mut self, working_block_id: [u8; 32]) {
         self.working_block_id = Self::tensor_from_buffer_bits(&working_block_id);
     }
+}
 
-    // tensorSeed(): TFTensor {
-    //   return this.tf.concat([this.workingBlockId, this.recentBlockIds]);
-    // }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tensorflow::Shape;
 
-    // pub fn tensor_seed(&self) -> Tensor<i32> {
-    //     // concatenate the working block id and the recent block ids into a single tensor
-    //     // by concatenating the two tensors together.
-    //     self.working_block_id.concat(&self.recent_block_ids, 0).unwrap()
-    // }
+    #[test]
+    fn test_tensor_from_buffer_bits() {
+        let buffer = [0xff];
+        let tensor = GpuSession::tensor_from_buffer_bits(&buffer);
+        assert_eq!(tensor.shape(), Shape::from([8]));
+        let tensor_values = tensor.to_vec();
+        assert_eq!(tensor_values, vec![1, 1, 1, 1, 1, 1, 1, 1]);
+    }
 }
