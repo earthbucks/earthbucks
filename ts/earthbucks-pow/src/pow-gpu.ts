@@ -13,8 +13,8 @@ export class PowGpu {
   tf: TF = tf;
 
   constructor(workingBlockId: SysBuf, previousBlockIds: SysBuf[]) {
-    this.workingBlockId = this.tensorFromBufferBitsAlt3(workingBlockId);
-    this.recentBlockIds = this.tensorFromBufferBitsAlt3(
+    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId);
+    this.recentBlockIds = this.tensorFromBufferBitsAlt4(
       SysBuf.concat(previousBlockIds),
     );
   }
@@ -110,7 +110,7 @@ export class PowGpu {
   }
 
   updateWorkingBlockId(workingBlockId: SysBuf) {
-    this.workingBlockId = this.tensorFromBufferBitsAlt3(workingBlockId);
+    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId);
   }
 
   tensorSeed(): TFTensor {
