@@ -78,11 +78,7 @@ export class PowGpu {
     const powersOf2Reshaped = powersOf2.reshape([1, -1]);
 
     // Perform integer division and modulus operation
-    const shiftedBits = bitTensor
-      .toFloat()
-      .div(powersOf2Reshaped)
-      .floor()
-      .toInt();
+    const shiftedBits = bitTensor.div(powersOf2Reshaped);
     const bits = shiftedBits.mod(tf.scalar(2, "int32"));
 
     // Flatten bits tensor to 1D

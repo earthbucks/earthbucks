@@ -27,6 +27,7 @@ describe("GpuPowNode", () => {
       expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
     });
   });
+
   describe("tensorFromBufferBitsAlt2", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff]);
