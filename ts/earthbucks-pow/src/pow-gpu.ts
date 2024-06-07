@@ -54,53 +54,6 @@ export class PowGpu {
     return seed.reshape([size, size]);
   }
 
-  matrixCalculations(matrix: TFTensor, size: number): TFTensor {
-    // The primary goal of this method is to perform a giant integer matrix
-    // multiplication which is impractical on any hardware other than a GPU. We
-    // use integers because we know they are deterministic when added.
-    //
-    // The secondary goal of this method is to use floating point operations to
-    // spread out the values in the matrix, thus requiring the use of floating
-    // point calculations, thus using a larger number of the operations
-    // available on a GPU, and not just integers. Because floating points can be
-    // non-deterministic if added in unpredictable order, we only perform known
-    // deterministic floating point operations on each element separately.
-    //
-    // Why build an ASIC for this algorithm when doing so would simply replicate
-    // the functionality already available on a GPU? The idea is that GPUs *are*
-    // the ASICs for this computation. There should be no reason to develop an
-    // ASIC when the calculations can already be performed optimally with
-    // commodity hardware.
-    return this.tf.tidy(() => {
-      const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
-      const matrix2 = matrix1.toFloat(); // convert to float
-      const min = matrix2.min();
-      const matrix3 = matrix2.sub(min); // subtract min; new min is 0
-      const max = matrix3.max();
-      const matrix4 = matrix3.div(max); // divide by max; new max is 1
-      const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
-      const min2 = matrix5.min();
-      const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
-      const max2 = matrix6.max();
-      const matrix7 = matrix6.div(max2); // divide by max; new max is 1
-      const matrix8 = matrix7.mul(size); // multiply by size; new max is size
-      const matrix9 = matrix8.round(); // round to nearest int
-      const matrix10 = matrix9.toInt(); // convert to int32
-      matrix1.dispose();
-      min.dispose();
-      matrix2.dispose();
-      matrix4.dispose();
-      min2.dispose();
-      matrix5.dispose();
-      max2.dispose();
-      matrix6.dispose();
-      matrix7.dispose();
-      matrix8.dispose();
-      matrix9.dispose();
-      return matrix10;
-    });
-  }
-
   reduceMatrixToVectorSum(matrix: TFTensor): TFTensor {
     return matrix.sum(1);
   }
@@ -157,15 +110,55 @@ export class PowGpu {
   }
 
   async algo(size: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
-    let matrix = this.tf.tidy(() => {
-      let seed = this.tensorSeedReplica(size); // expand seed to fill matrix
-      let matrix = this.seedToMatrix(seed, size); // reshape seed to fill matrix
-      let matrix10 = this.matrixCalculations(matrix, size);
+    // The primary goal of this method is to perform a giant integer matrix
+    // multiplication which is impractical on any hardware other than a GPU. We
+    // use integers because we know they are deterministic when added.
+    //
+    // The secondary goal of this method is to use floating point operations to
+    // spread out the values in the matrix, thus requiring the use of floating
+    // point calculations, thus using a larger number of the operations
+    // available on a GPU, and not just integers. Because floating points can be
+    // non-deterministic if added in unpredictable order, we only perform known
+    // deterministic floating point operations on each element separately.
+    //
+    // Why build an ASIC for this algorithm when doing so would simply replicate
+    // the functionality already available on a GPU? The idea is that GPUs *are*
+    // the ASICs for this computation. There should be no reason to develop an
+    // ASIC when the calculations can already be performed optimally with
+    // commodity hardware.
+    const matrix = this.tf.tidy(() => {
+      const seed = this.tensorSeedReplica(size); // expand seed to fill matrix
+      const matrix = this.seedToMatrix(seed, size); // reshape seed to fill matrix
+      const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
+      const matrix2 = matrix1.toFloat(); // convert to float
+      const min = matrix2.min();
+      const matrix3 = matrix2.sub(min); // subtract min; new min is 0
+      const max = matrix3.max();
+      const matrix4 = matrix3.div(max); // divide by max; new max is 1
+      const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
+      const min2 = matrix5.min();
+      const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
+      const max2 = matrix6.max();
+      const matrix7 = matrix6.div(max2); // divide by max; new max is 1
+      const matrix8 = matrix7.mul(size); // multiply by size; new max is size
+      const matrix9 = matrix8.round(); // round to nearest int
+      const matrix10 = matrix9.toInt(); // convert to int32
+      matrix1.dispose();
+      min.dispose();
+      matrix2.dispose();
+      matrix4.dispose();
+      min2.dispose();
+      matrix5.dispose();
+      max2.dispose();
+      matrix6.dispose();
+      matrix7.dispose();
+      matrix8.dispose();
+      matrix9.dispose();
       seed.dispose();
       matrix.dispose();
       return matrix10;
     });
-    let reducedBufs = await this.matrixReduce(matrix);
+    const reducedBufs = await this.matrixReduce(matrix);
     this.tf.tidy(() => {
       matrix.dispose();
     });
