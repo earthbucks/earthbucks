@@ -66,6 +66,19 @@ export class PowGpu {
     // uses integer operations. these are less efficient, but it doesn't matter,
     // because it's all running on the GPU. the biggest bottleneck is the amount
     // of data sent to the GPU, not the operations performed on the GPU.
+    //
+    // note that we may be able to save even more bandwidth using uint16 or
+    // uint32 or int32, but there are issues:
+    // - with uint16, now you have to deal with endianness. using a uint16array
+    //   does not allow you to specify the endianness, meaning you are dependent
+    //   on the host system, whatever that is.
+    // - with uint32, values are too big to be represented as int32 values.
+    // - with int32, now you have negative values, which can't be computed the
+    //   same way as with the positive values.
+    //
+    // so the simplest answer for now is to use uint8 values, i.e. Uint8Array,
+    // i.e. SysBuf. that saves 8x bandwidth vs. sending each bit separately, but
+    // is also simpler than uint16 or int32.
 
     // Convert buffer to tensor
     let bitTensor = tf.tensor1d(buffer, "int32");
@@ -86,34 +99,6 @@ export class PowGpu {
 
     return flattenedBits;
   }
-
-  // tensorFromBufferBitsAlt4(buffer: SysBuf): TFTensor {
-  //   // this is the same as above, except we are sending even less data to the
-  //   // GPU by using Uint16Array. note that using uint32array would not work
-  //   // because the values are too large to be represented as int32 values.
-  //   if (buffer.length % 2 !== 0) {
-  //     throw new Error("buffer length must be a multiple of 2");
-  //   }
-  //   const uint16array = new Uint16Array(
-  //     buffer.buffer,
-  //     buffer.byteOffset,
-  //     buffer.byteLength / 2,
-  //   );
-  //   let bitTensor = tf.tensor1d(Array.from(uint16array), "int32");
-  //   const powersOf2 = tf.tensor1d(
-  //     [
-  //       32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4,
-  //       2, 1,
-  //     ],
-  //     "int32",
-  //   );
-  //   bitTensor = bitTensor.reshape([-1, 1]);
-  //   const powersOf2Reshaped = powersOf2.reshape([1, -1]);
-  //   const shiftedBits = bitTensor.div(powersOf2Reshaped);
-  //   const bits = shiftedBits.mod(tf.scalar(2, "int32"));
-  //   const flattenedBits = bits.flatten();
-  //   return flattenedBits;
-  // }
 
   updateWorkingBlockId(workingBlockId: SysBuf) {
     this.workingBlockId = this.tensorFromBufferBitsAlt3(workingBlockId);
