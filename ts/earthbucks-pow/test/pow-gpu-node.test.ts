@@ -14,6 +14,47 @@ function blake3HashAsync(seed: SysBuf): Promise<SysBuf> {
 }
 
 describe("GpuPowNode", () => {
+  describe("tensorFromBufferBitsAlt1", () => {
+    it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
+      const buffer = SysBuf.from([0xff]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBitsAlt1(buffer);
+      expect(result.shape).toEqual([8]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
+    });
+  });
+  describe("tensorFromBufferBitsAlt2", () => {
+    it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
+      const buffer = SysBuf.from([0xff]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBitsAlt2(buffer);
+      expect(result.shape).toEqual([8]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
+    });
+  });
+
+  describe("tensorFromBufferBits", () => {
+    it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
+      const buffer = SysBuf.from([0xff]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBits(buffer);
+      expect(result.shape).toEqual([8]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
+    });
+  });
+
   test("algo17", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
     const previousBlockIds: SysBuf[] = [];

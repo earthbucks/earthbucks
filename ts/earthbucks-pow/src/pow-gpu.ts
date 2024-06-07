@@ -19,10 +19,13 @@ export class PowGpu {
     );
   }
 
-  tensorFromBufferBits(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt1(buffer: SysBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
+    //
+    // this method sends 32 times the amount of data to the GPU than strictly
+    // necessary. this is why i have two other implementations below.
     const bufferIter = buffer.values();
     const bits: number[] = [];
     let bit: number | undefined;
@@ -32,6 +35,60 @@ export class PowGpu {
       }
     }
     return this.tf.tensor1d(bits, "int32");
+  }
+
+  tensorFromBufferBitsAlt2(buffer: SysBuf): TFTensor {
+    // create a tensor by extracting every bit from the buffer into a new int32
+    // value in a tensor. the new tensor has a bunch of int32 values that are
+    // all either 0 or 1.
+    //
+    // this method is not efficient, but it shows the basic idea of using
+    // arthmetic operations to do the same thing as bitwise operations.
+    const bufferIter = buffer.values();
+    const bits: number[] = [];
+    let bit: number | undefined;
+    while ((bit = bufferIter.next().value) !== undefined) {
+      for (let i = 7; i >= 0; i--) {
+        const shiftedBit = Math.floor(bit / Math.pow(2, i));
+        bits.push(shiftedBit % 2);
+      }
+    }
+    return this.tf.tensor1d(bits, "int32");
+  }
+
+  tensorFromBufferBits(buffer: SysBuf): TFTensor {
+    // create a tensor by extracting every bit from the buffer into a new int32
+    // value in a tensor. the new tensor has a bunch of int32 values that are
+    // all either 0 or 1.
+    //
+    // this method could be simpler with bitwise operations, but the goal is to
+    // send less data to the GPU. thus it is written in a more complex way that
+    // uses integer operations. these are less efficient, but it doesn't matter,
+    // because it's all running on the GPU. the biggest bottleneck is the amount
+    // of data sent to the GPU, not the operations performed on the GPU.
+
+    // Convert buffer to tensor
+    let bitTensor = tf.tensor1d(buffer, "int32");
+
+    // Create array of powers of 2
+    const powersOf2 = tf.tensor1d([128, 64, 32, 16, 8, 4, 2, 1], "int32");
+
+    // Reshape tensors for broadcasting
+    bitTensor = bitTensor.reshape([-1, 1]);
+    const powersOf2Reshaped = powersOf2.reshape([1, -1]);
+
+    // Perform integer division and modulus operation
+    const shiftedBits = bitTensor
+      .toFloat()
+      .div(powersOf2Reshaped)
+      .floor()
+      .toInt();
+    const bits = shiftedBits.mod(tf.scalar(2, "int32"));
+
+    // Flatten bits tensor to 1D
+    const flattenedBits = bits.flatten();
+
+    return flattenedBits;
   }
 
   updateWorkingBlockId(workingBlockId: SysBuf) {
