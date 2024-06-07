@@ -54,6 +54,24 @@ export class PowGpu {
     return seed.reshape([n, n]);
   }
 
+  matrixCalculations(matrix: TFTensor, n: number) {
+    const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
+    const matrix2 = matrix1.toFloat(); // convert to float
+    const min = matrix2.min();
+    const matrix3 = matrix2.sub(min); // subtract min; new min is 0
+    const max = matrix3.max();
+    const matrix4 = matrix3.div(max); // divide by max; new max is 1
+    const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
+    const min2 = matrix5.min();
+    const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
+    const max2 = matrix6.max();
+    const matrix7 = matrix6.div(max2); // divide by max; new max is 1
+    const matrix8 = matrix7.mul(n); // multiply by N; new max is N
+    const matrix9 = matrix8.round(); // round to nearest int
+    const matrix10 = matrix9.toInt(); // convert to int32
+    return matrix10;
+  }
+
   reduceMatrixToVectorSum(matrix: TFTensor): TFTensor {
     return matrix.sum(1);
   }
@@ -129,20 +147,7 @@ export class PowGpu {
     const matrix = this.tf.tidy(() => {
       const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
       const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
-      const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
-      const matrix2 = matrix1.toFloat(); // convert to float
-      const min = matrix2.min();
-      const matrix3 = matrix2.sub(min); // subtract min; new min is 0
-      const max = matrix3.max();
-      const matrix4 = matrix3.div(max); // divide by max; new max is 1
-      const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
-      const min2 = matrix5.min();
-      const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
-      const max2 = matrix6.max();
-      const matrix7 = matrix6.div(max2); // divide by max; new max is 1
-      const matrix8 = matrix7.mul(n); // multiply by N; new max is N
-      const matrix9 = matrix8.round(); // round to nearest int
-      const matrix10 = matrix9.toInt(); // convert to int32
+      const matrix10 = this.matrixCalculations(matrix, n);
       return matrix10;
     });
     const reducedBufs = await this.matrixReduce(matrix);
