@@ -75,12 +75,33 @@ export class PowGpu {
     // - with uint32, values are too big to be represented as int32 values.
     // - with int32, now you have negative values, which can't be computed the
     //   same way as with the positive values.
-    //
-    // so the simplest answer for now is to use uint8 values, i.e. Uint8Array,
-    // i.e. SysBuf. that saves 8x bandwidth vs. sending each bit separately, but
-    // is also simpler than uint16 or int32.
     let bitTensor = tf.tensor1d(buffer, "int32");
     const powersOf2 = tf.tensor1d([128, 64, 32, 16, 8, 4, 2, 1], "int32");
+    bitTensor = bitTensor.reshape([-1, 1]);
+    const powersOf2Reshaped = powersOf2.reshape([1, -1]);
+    const shiftedBits = bitTensor.div(powersOf2Reshaped);
+    const bits = shiftedBits.mod(tf.scalar(2, "int32"));
+    return bits.flatten();
+  }
+
+  tensorFromBufferBitsAlt4(buffer: SysBuf): TFTensor {
+    // same as tensorFromBufferBitsAlt3, but uses a Uint16Array to reduce the
+    // amount of data sent to the GPU by half compared to Uint8Array.
+    if (buffer.length % 2 !== 0) {
+      throw new Error("buffer length must be a multiple of 2");
+    }
+    const u16array = new Uint16Array(buffer.length / 2);
+    for (let i = 0; i < buffer.length; i += 2) {
+      u16array[i / 2] = buffer.readUInt16BE(i);
+    }
+    let bitTensor = tf.tensor1d(new Int32Array(u16array), "int32");
+    const powersOf2 = tf.tensor1d(
+      [
+        32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4,
+        2, 1,
+      ],
+      "int32",
+    );
     bitTensor = bitTensor.reshape([-1, 1]);
     const powersOf2Reshaped = powersOf2.reshape([1, -1]);
     const shiftedBits = bitTensor.div(powersOf2Reshaped);
@@ -196,8 +217,7 @@ export class PowGpu {
       const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
       const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
       const matrix10 = this.matrixCalculations(matrix, n);
-      const reduced = this.matrixReduce(matrix10);
-      return reduced;
+      return this.matrixReduce(matrix10);
     });
     const reducedBuf = SysBuf.from(await reduced.data());
     const reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
