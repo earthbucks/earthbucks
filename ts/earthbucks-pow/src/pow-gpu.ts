@@ -143,19 +143,6 @@ export class PowGpu {
       const matrix8 = matrix7.mul(n); // multiply by N; new max is N
       const matrix9 = matrix8.round(); // round to nearest int
       const matrix10 = matrix9.toInt(); // convert to int32
-      matrix1.dispose();
-      min.dispose();
-      matrix2.dispose();
-      matrix4.dispose();
-      min2.dispose();
-      matrix5.dispose();
-      max2.dispose();
-      matrix6.dispose();
-      matrix7.dispose();
-      matrix8.dispose();
-      matrix9.dispose();
-      seed.dispose();
-      matrix.dispose();
       return matrix10;
     });
     const reducedBufs = await this.matrixReduce(matrix);
