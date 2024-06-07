@@ -42,16 +42,16 @@ export class PowGpu {
     return this.tf.concat([this.workingBlockId, this.recentBlockIds]);
   }
 
-  tensorSeedReplica(size: number) {
+  tensorSeedReplica(n: number) {
     let seedLength = this.tensorSeed().shape[0];
-    let numTimes = Math.ceil((size * size) / seedLength);
+    let numTimes = Math.ceil((n * n) / seedLength);
     let result = this.tf.tile(this.tensorSeed(), [numTimes]);
-    result = result.slice(0, size * size);
+    result = result.slice(0, n * n);
     return result;
   }
 
-  seedToMatrix(seed: TFTensor, size: number) {
-    return seed.reshape([size, size]);
+  seedToMatrix(seed: TFTensor, n: number) {
+    return seed.reshape([n, n]);
   }
 
   reduceMatrixToVectorSum(matrix: TFTensor): TFTensor {
@@ -90,7 +90,7 @@ export class PowGpu {
     // cryptographic hash function, by using four of them, we make it very
     // unlikely to produce fake output without just doing the matrix
     // calculation. Each of these methods will reduce the matrix to a vector of
-    // size N. We can then convert the vector to a buffer and send it back to
+    // size n. We can then convert the vector to a buffer and send it back to
     // the CPU. The CPU can then hash the buffers to get the final result.
     let reducedSum = this.reduceMatrixToVectorSum(matrix);
     let reducedMax = this.reduceMatrixToVectorMax(matrix);
@@ -109,7 +109,7 @@ export class PowGpu {
     return reducedBufs;
   }
 
-  async algo(size: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo(n: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     // The primary goal of this method is to perform a giant integer matrix
     // multiplication which is impractical on any hardware other than a GPU. We
     // use integers because we know they are deterministic when added.
@@ -127,8 +127,8 @@ export class PowGpu {
     // ASIC when the calculations can already be performed optimally with
     // commodity hardware.
     const matrix = this.tf.tidy(() => {
-      const seed = this.tensorSeedReplica(size); // expand seed to fill matrix
-      const matrix = this.seedToMatrix(seed, size); // reshape seed to fill matrix
+      const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
+      const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
       const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
       const matrix2 = matrix1.toFloat(); // convert to float
       const min = matrix2.min();
@@ -140,7 +140,7 @@ export class PowGpu {
       const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
       const max2 = matrix6.max();
       const matrix7 = matrix6.div(max2); // divide by max; new max is 1
-      const matrix8 = matrix7.mul(size); // multiply by size; new max is size
+      const matrix8 = matrix7.mul(n); // multiply by N; new max is N
       const matrix9 = matrix8.round(); // round to nearest int
       const matrix10 = matrix9.toInt(); // convert to int32
       matrix1.dispose();
