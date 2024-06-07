@@ -67,16 +67,16 @@ export class PowGpu {
   }
 
   reduceMatrixToVectorRnd(matrix: TFTensor): TFTensor {
-    // We assume the final matrix has values between 0 and the size of the
-    // matrix. This known value enables us to select a random value from each
-    // row by using the value in the first column of the matrix as an index.
-    // This is a pseudo-random selection, but it is deterministic and does not
-    // require any additional random number generation.
-    const nCols = matrix.shape[1] as number;
-    const nRows = matrix.shape[0] as number;
-    let indices = matrix.slice([0, 0], [1, nCols]);
-    indices = this.tf.clipByValue(indices, 0, nRows - 1);
-    return matrix.gather(indices.flatten().toInt());
+    // This method returns a specific row from the input matrix. The row index
+    // is determined by the value at the first position of the matrix (0,0). The
+    // value is clipped to ensure it's within the valid range of row indices.
+    // The result is a 1D tensor representing the selected row. Because the
+    // matrix is filled with pseudo random values from 0 to N, the chosen row is
+    // also pseudo random, i.e. the result is a pseudo random vector. i.e., this
+    // method returns a random row from the matrix.
+    const nRows = matrix.shape[0];
+    const indexTensor = matrix.slice([0, 0], [1, 1]).clipByValue(0, nRows - 1);
+    return matrix.gather(indexTensor).reshape([-1]);
   }
 
   async matrixReduce(

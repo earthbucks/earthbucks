@@ -21,7 +21,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo17();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
-      "2b6755925a1f56a1e5bcc96ff68ee57fa4a44ec354c43861877cd46380133994",
+      "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
     );
   });
 
@@ -32,7 +32,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo17();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
-      "2b6755925a1f56a1e5bcc96ff68ee57fa4a44ec354c43861877cd46380133994",
+      "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
     );
   });
 
@@ -43,7 +43,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
-      "3099d3091310e878231efe2ce31db4dc78fb91203987b5416e31ab90c01bb812",
+      "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
     );
   });
 
@@ -54,7 +54,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
-      "3099d3091310e878231efe2ce31db4dc78fb91203987b5416e31ab90c01bb812",
+      "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
     );
   });
 
@@ -65,7 +65,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
-      "56a298c46c3288bd16fddc207c6d98bb9c95f261341327d6c2a26686e68c3012",
+      "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
     );
   });
 
@@ -76,7 +76,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
-      "56a298c46c3288bd16fddc207c6d98bb9c95f261341327d6c2a26686e68c3012",
+      "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
     );
   });
 
@@ -87,7 +87,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toString("hex")).toBe(
-      "73ab9279437bc7e7fdc2f96f0a93cb1ccba82634c76adadea74cfd2406bb2a89",
+      "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
     );
   });
 
@@ -98,7 +98,7 @@ describe("GpuPowBrowser", () => {
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toString("hex")).toBe(
-      "73ab9279437bc7e7fdc2f96f0a93cb1ccba82634c76adadea74cfd2406bb2a89",
+      "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
     );
   });
 });
