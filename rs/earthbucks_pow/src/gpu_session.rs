@@ -1,6 +1,9 @@
+use tensorflow::ops;
 use tensorflow::Graph;
+use tensorflow::Scope;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
+use tensorflow::SessionRunArgs;
 use tensorflow::Tensor;
 
 pub struct GpuSession {
@@ -63,25 +66,6 @@ impl GpuSession {
             .unwrap()
     }
 
-    // tensorFromBufferBitsAlt2(buffer: SysBuf): TFTensor {
-    //     // create a tensor by extracting every bit from the buffer into a new int32
-    //     // value in a tensor. the new tensor has a bunch of int32 values that are
-    //     // all either 0 or 1.
-    //     //
-    //     // this method is not efficient, but it shows the basic idea of using
-    //     // arthmetic operations to do the same thing as bitwise operations.
-    //     const bufferIter = buffer.values();
-    //     const bits: number[] = [];
-    //     let bit: number | undefined;
-    //     while ((bit = bufferIter.next().value) !== undefined) {
-    //       for (let i = 7; i >= 0; i--) {
-    //         const shiftedBit = Math.floor(bit / Math.pow(2, i));
-    //         bits.push(shiftedBit % 2);
-    //       }
-    //     }
-    //     return this.tf.tensor1d(bits, "int32");
-    //   }
-
     pub fn tensor_from_buffer_bits_alt2(buffer: &[u8]) -> Tensor<i32> {
         // create a tensor by extracting every bit from the buffer into a new int32
         // value in a tensor. the new tensor has a bunch of int32 values that are
@@ -100,6 +84,49 @@ impl GpuSession {
         Tensor::new(&[bits.len() as u64])
             .with_values(&bits)
             .unwrap()
+    }
+
+    // test method that takes a 1d tensor, creates a new session, sends it to
+    // the GPU, replicates the tensor to fill a matrix, meaning that each row in
+    // the matrix is the same as the original tensor, then squares the matrix,
+    // and returns the result as a vector of i32.
+    pub fn test_double_buffer_bits(tensor: Tensor<i32>) -> Vec<i32> {
+        let graph = Graph::new();
+        let session = Session::new(&SessionOptions::new(), &graph).unwrap();
+
+        let mut root = Scope::new_root_scope();
+        // confirm tensor is 1d
+        // the tensor is of size N
+        // replicate the tensor N times to create a matrix of size NxN
+        // square the matrix
+
+        // Confirm tensor is 1D
+        assert_eq!(tensor.dims().len(), 1);
+
+        // The tensor is of size N
+        let n = tensor.dims()[0] as usize;
+
+        // Replicate the tensor N times to create a matrix of size NxN
+        let op_tensor = ops::constant(tensor, &mut root).unwrap();
+        let op_n = ops::constant(
+            Tensor::new(&[2])
+                .with_values(&[n as i32, n as i32])
+                .unwrap(),
+            &mut root,
+        )
+        .unwrap();
+        let op_tiled = ops::tile(op_tensor, op_n, &mut root).unwrap();
+        let matrix = op_tiled;
+
+        // Square the matrix
+        let output = ops::square(matrix, &mut root).unwrap();
+
+        let mut args = SessionRunArgs::new();
+        args.add_target(&output);
+        session.run(&mut args).unwrap();
+        let token = args.request_fetch(&output, 0);
+        let result_tensor: Tensor<i32> = args.fetch(token).unwrap();
+        result_tensor.to_vec()
     }
 }
 
