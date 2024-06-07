@@ -1,1 +1,1 @@
-pub mod pow_session;
+pub mod gpu_session;

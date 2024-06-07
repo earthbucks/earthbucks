@@ -3,13 +3,13 @@ use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::Tensor;
 
-pub struct PowSession {
+pub struct GpuSession {
     working_block_id: Tensor<i32>,
     recent_block_ids: Tensor<i32>,
     session: Session,
 }
 
-impl PowSession {
+impl GpuSession {
     pub fn new(working_block_id: [u8; 32], recent_block_ids: Vec<[u8; 32]>) -> Self {
         // data stored in main memory
         let working_block_id = Self::tensor_from_buffer_bits(&working_block_id);
@@ -24,7 +24,7 @@ impl PowSession {
         let graph = Graph::new();
         let session = Session::new(&SessionOptions::new(), &graph).unwrap();
 
-        PowSession {
+        GpuSession {
             working_block_id,
             recent_block_ids,
             session,
