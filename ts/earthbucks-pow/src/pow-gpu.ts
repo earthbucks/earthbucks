@@ -55,6 +55,22 @@ export class PowGpu {
   }
 
   matrixCalculations(matrix: TFTensor, n: number) {
+    // The primary goal of this method is to perform a giant integer matrix
+    // multiplication which is impractical on any hardware other than a GPU. We
+    // use integers because we know they are deterministic when added.
+    //
+    // The secondary goal of this method is to use floating point operations to
+    // spread out the values in the matrix, thus requiring the use of floating
+    // point calculations, thus using a larger number of the operations
+    // available on a GPU, and not just integers. Because floating points can be
+    // non-deterministic if added in unpredictable order, we only perform known
+    // deterministic floating point operations on each element separately.
+    //
+    // Why build an ASIC for this algorithm when doing so would simply replicate
+    // the functionality already available on a GPU? The idea is that GPUs *are*
+    // the ASICs for this computation. There should be no reason to develop an
+    // ASIC when the calculations can already be performed optimally with
+    // commodity hardware.
     const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
     const matrix2 = matrix1.toFloat(); // convert to float
     const min = matrix2.min();
@@ -97,9 +113,7 @@ export class PowGpu {
     return matrix.gather(indexTensor).reshape([-1]);
   }
 
-  async matrixReduce(
-    matrix: TFTensor,
-  ): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  matrixReduce(matrix: TFTensor): TFTensor {
     // Unfortunately, it is not possible to perform hash functions using
     // TensorFlow. We need to find a way to send the result of the computation
     // back from the GPU to the CPU without using a lot of bandwidth. The idea
@@ -114,46 +128,31 @@ export class PowGpu {
     const reducedMax = this.reduceMatrixToVectorMax(matrix);
     const reducedMin = this.reduceMatrixToVectorMin(matrix);
     const reducedRnd = this.reduceMatrixToVectorRnd(matrix);
-    const reducedSumBuf = SysBuf.from(await reducedSum.data());
-    const reducedMaxBuf = SysBuf.from(await reducedMax.data());
-    const reducedMinBuf = SysBuf.from(await reducedMin.data());
-    const reducedRndBuf = SysBuf.from(await reducedRnd.data());
-    const reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
-      reducedSumBuf,
-      reducedMaxBuf,
-      reducedMinBuf,
-      reducedRndBuf,
-    ];
-    return reducedBufs;
+    const concatted = this.tf.concat([
+      reducedSum,
+      reducedMax,
+      reducedMin,
+      reducedRnd,
+    ]);
+    return concatted;
   }
 
   async algo(n: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
-    // The primary goal of this method is to perform a giant integer matrix
-    // multiplication which is impractical on any hardware other than a GPU. We
-    // use integers because we know they are deterministic when added.
-    //
-    // The secondary goal of this method is to use floating point operations to
-    // spread out the values in the matrix, thus requiring the use of floating
-    // point calculations, thus using a larger number of the operations
-    // available on a GPU, and not just integers. Because floating points can be
-    // non-deterministic if added in unpredictable order, we only perform known
-    // deterministic floating point operations on each element separately.
-    //
-    // Why build an ASIC for this algorithm when doing so would simply replicate
-    // the functionality already available on a GPU? The idea is that GPUs *are*
-    // the ASICs for this computation. There should be no reason to develop an
-    // ASIC when the calculations can already be performed optimally with
-    // commodity hardware.
-    const matrix = this.tf.tidy(() => {
+    const reduced = this.tf.tidy(() => {
       const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
       const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
       const matrix10 = this.matrixCalculations(matrix, n);
-      return matrix10;
+      const reduced = this.matrixReduce(matrix10);
+      return reduced;
     });
-    const reducedBufs = await this.matrixReduce(matrix);
-    this.tf.tidy(() => {
-      matrix.dispose();
-    });
+    const reducedBuf = SysBuf.from(await reduced.data());
+    const reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
+      SysBuf.from(reducedBuf.subarray(0, n)),
+      SysBuf.from(reducedBuf.subarray(n, n * 2)),
+      SysBuf.from(reducedBuf.subarray(n * 2, n * 3)),
+      SysBuf.from(reducedBuf.subarray(n * 3, n * 4)),
+    ];
+    reduced.dispose();
     return reducedBufs;
   }
 
