@@ -13,8 +13,8 @@ export class PowGpu {
   tf: TF = tf;
 
   constructor(workingBlockId: SysBuf, previousBlockIds: SysBuf[]) {
-    this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
-    this.recentBlockIds = this.tensorFromBufferBits(
+    this.workingBlockId = this.tensorFromBufferBitsAlt3(workingBlockId);
+    this.recentBlockIds = this.tensorFromBufferBitsAlt3(
       SysBuf.concat(previousBlockIds),
     );
   }
@@ -56,7 +56,7 @@ export class PowGpu {
     return this.tf.tensor1d(bits, "int32");
   }
 
-  tensorFromBufferBits(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt3(buffer: SysBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -87,8 +87,53 @@ export class PowGpu {
     return flattenedBits;
   }
 
+  tensorFromBufferBitsAlt4(uint8array: Uint8Array): TFTensor {
+    // this is the same as above, except we are sending even less data to the
+    // GPU by using Uint16Array
+    if (uint8array.length % 2 !== 0) {
+      throw new Error("buffer length must be a multiple of 2");
+    }
+    let bitTensor = tf.tensor1d(
+      Array.from(new Uint16Array(uint8array.buffer)),
+      "int32",
+    );
+    const powersOf2 = tf.tensor1d(
+      [
+        32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4,
+        2, 1,
+      ],
+      "int32",
+    );
+    bitTensor = bitTensor.reshape([-1, 1]);
+    const powersOf2Reshaped = powersOf2.reshape([1, -1]);
+    const shiftedBits = bitTensor.div(powersOf2Reshaped);
+    const bits = shiftedBits.mod(tf.scalar(2, "int32"));
+    const flattenedBits = bits.flatten();
+    return flattenedBits;
+  }
+
+  // tensorFromBufferBitsAlt5(uint8array: Uint8Array): tf.Tensor {
+  //   // we may be able to send even less data to the GPU by using Int32Array, but
+  //   // we run into an issue where some values are negative. i have not yet
+  //   // gotten this logic to work.
+  //   const powersOf2 = tf.tensor1d(
+  //     Array.from({ length: 32 }, (_, i) => Math.pow(2, i)),
+  //     "int32",
+  //   );
+  //   const bitTensor = tf.tensor1d(
+  //     Array.from(new Int32Array(uint8array.buffer)),
+  //     "int32",
+  //   );
+  //   const bitTensorReshaped = bitTensor.reshape([-1, 1]);
+  //   const powersOf2Reshaped = powersOf2.reshape([1, -1]);
+  //   const bits = bitTensorReshaped
+  //     .div(powersOf2Reshaped)
+  //     .mod(tf.scalar(2, "int32"));
+  //   return bits.flatten();
+  // }
+
   updateWorkingBlockId(workingBlockId: SysBuf) {
-    this.workingBlockId = this.tensorFromBufferBits(workingBlockId);
+    this.workingBlockId = this.tensorFromBufferBitsAlt3(workingBlockId);
   }
 
   tensorSeed(): TFTensor {

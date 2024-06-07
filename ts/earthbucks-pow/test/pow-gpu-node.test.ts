@@ -42,19 +42,71 @@ describe("GpuPowNode", () => {
     });
   });
 
-  describe("tensorFromBufferBits", () => {
+  describe("tensorFromBufferBitsAlt3", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
       const previousBlockIds: SysBuf[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
-      const result = gpupow.tensorFromBufferBits(buffer);
+      const result = gpupow.tensorFromBufferBitsAlt3(buffer);
       expect(result.shape).toEqual([8]);
       expect(result.dtype).toBe("int32");
       const res = result.arraySync();
       expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
     });
+
+    it("should return a tensor with 16 values that are all int32 value 1 when passed a buffer of 0xffff", () => {
+      const buffer = SysBuf.from([0xff, 0xff]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBitsAlt3(buffer);
+      expect(result.shape).toEqual([16]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    });
+
+    it("should return a tensor with binary data", () => {
+      const buffer = SysBuf.from([0x80, 0x80]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBitsAlt3(buffer);
+      expect(result.shape).toEqual([16]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
+    });
   });
+
+  describe("tensorFromBufferBitsAlt4", () => {
+    it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
+      const buffer = new Uint8Array([0xff, 0xff]);
+      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const previousBlockIds: SysBuf[] = [];
+      const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+      const result = gpupow.tensorFromBufferBitsAlt4(buffer);
+      expect(result.shape).toEqual([16]);
+      expect(result.dtype).toBe("int32");
+      const res = result.arraySync();
+      expect(res).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    });
+  });
+
+  // describe.only("tensorFromBufferBitsAlt5", () => {
+  //   it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
+  //     const buffer = new Uint8Array([0x00, 0xff, 0xff, 0xff]);
+  //     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+  //     const previousBlockIds: SysBuf[] = [];
+  //     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
+  //     const result = gpupow.tensorFromBufferBitsAlt5(buffer);
+  //     expect(result.shape).toEqual([32]);
+  //     expect(result.dtype).toBe("int32");
+  //     const res = result.arraySync();
+  //     expect(res).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+  //   });
+  // });
 
   test("algo17", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));

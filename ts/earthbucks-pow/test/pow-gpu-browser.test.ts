@@ -48,7 +48,7 @@ describe("GpuPowBrowser", () => {
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
       const previousBlockIds: SysBuf[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
-      const result = gpupow.tensorFromBufferBits(buffer);
+      const result = gpupow.tensorFromBufferBitsAlt3(buffer);
       expect(result.shape).toEqual([8]);
       expect(result.dtype).toBe("int32");
       const res = result.arraySync();
