@@ -79,25 +79,13 @@ export class PowGpu {
     // so the simplest answer for now is to use uint8 values, i.e. Uint8Array,
     // i.e. SysBuf. that saves 8x bandwidth vs. sending each bit separately, but
     // is also simpler than uint16 or int32.
-
-    // Convert buffer to tensor
     let bitTensor = tf.tensor1d(buffer, "int32");
-
-    // Create array of powers of 2
     const powersOf2 = tf.tensor1d([128, 64, 32, 16, 8, 4, 2, 1], "int32");
-
-    // Reshape tensors for broadcasting
     bitTensor = bitTensor.reshape([-1, 1]);
     const powersOf2Reshaped = powersOf2.reshape([1, -1]);
-
-    // Perform integer division and modulus operation
     const shiftedBits = bitTensor.div(powersOf2Reshaped);
     const bits = shiftedBits.mod(tf.scalar(2, "int32"));
-
-    // Flatten bits tensor to 1D
-    const flattenedBits = bits.flatten();
-
-    return flattenedBits;
+    return bits.flatten();
   }
 
   updateWorkingBlockId(workingBlockId: SysBuf) {
