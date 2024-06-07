@@ -87,49 +87,32 @@ export class PowGpu {
     return flattenedBits;
   }
 
-  tensorFromBufferBitsAlt4(uint8array: Uint8Array): TFTensor {
-    // this is the same as above, except we are sending even less data to the
-    // GPU by using Uint16Array
-    if (uint8array.length % 2 !== 0) {
-      throw new Error("buffer length must be a multiple of 2");
-    }
-    let bitTensor = tf.tensor1d(
-      Array.from(new Uint16Array(uint8array.buffer)),
-      "int32",
-    );
-    const powersOf2 = tf.tensor1d(
-      [
-        32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4,
-        2, 1,
-      ],
-      "int32",
-    );
-    bitTensor = bitTensor.reshape([-1, 1]);
-    const powersOf2Reshaped = powersOf2.reshape([1, -1]);
-    const shiftedBits = bitTensor.div(powersOf2Reshaped);
-    const bits = shiftedBits.mod(tf.scalar(2, "int32"));
-    const flattenedBits = bits.flatten();
-    return flattenedBits;
-  }
-
-  // tensorFromBufferBitsAlt5(uint8array: Uint8Array): tf.Tensor {
-  //   // we may be able to send even less data to the GPU by using Int32Array, but
-  //   // we run into an issue where some values are negative. i have not yet
-  //   // gotten this logic to work.
+  // tensorFromBufferBitsAlt4(buffer: SysBuf): TFTensor {
+  //   // this is the same as above, except we are sending even less data to the
+  //   // GPU by using Uint16Array. note that using uint32array would not work
+  //   // because the values are too large to be represented as int32 values.
+  //   if (buffer.length % 2 !== 0) {
+  //     throw new Error("buffer length must be a multiple of 2");
+  //   }
+  //   const uint16array = new Uint16Array(
+  //     buffer.buffer,
+  //     buffer.byteOffset,
+  //     buffer.byteLength / 2,
+  //   );
+  //   let bitTensor = tf.tensor1d(Array.from(uint16array), "int32");
   //   const powersOf2 = tf.tensor1d(
-  //     Array.from({ length: 32 }, (_, i) => Math.pow(2, i)),
+  //     [
+  //       32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4,
+  //       2, 1,
+  //     ],
   //     "int32",
   //   );
-  //   const bitTensor = tf.tensor1d(
-  //     Array.from(new Int32Array(uint8array.buffer)),
-  //     "int32",
-  //   );
-  //   const bitTensorReshaped = bitTensor.reshape([-1, 1]);
+  //   bitTensor = bitTensor.reshape([-1, 1]);
   //   const powersOf2Reshaped = powersOf2.reshape([1, -1]);
-  //   const bits = bitTensorReshaped
-  //     .div(powersOf2Reshaped)
-  //     .mod(tf.scalar(2, "int32"));
-  //   return bits.flatten();
+  //   const shiftedBits = bitTensor.div(powersOf2Reshaped);
+  //   const bits = shiftedBits.mod(tf.scalar(2, "int32"));
+  //   const flattenedBits = bits.flatten();
+  //   return flattenedBits;
   // }
 
   updateWorkingBlockId(workingBlockId: SysBuf) {
