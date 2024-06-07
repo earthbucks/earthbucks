@@ -74,28 +74,28 @@ export class PowGpu {
     return this.tf.tidy(() => {
       const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
       const matrix2 = matrix1.toFloat(); // convert to float
-      matrix1.dispose();
       const min = matrix2.min();
       const matrix3 = matrix2.sub(min); // subtract min; new min is 0
-      min.dispose();
-      matrix2.dispose();
       const max = matrix3.max();
       const matrix4 = matrix3.div(max); // divide by max; new max is 1
       const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
-      matrix4.dispose();
       const min2 = matrix5.min();
       const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
-      min2.dispose();
-      matrix5.dispose();
       const max2 = matrix6.max();
       const matrix7 = matrix6.div(max2); // divide by max; new max is 1
+      const matrix8 = matrix7.mul(size); // multiply by size; new max is size
+      const matrix9 = matrix8.round(); // round to nearest int
+      const matrix10 = matrix9.toInt(); // convert to int32
+      matrix1.dispose();
+      min.dispose();
+      matrix2.dispose();
+      matrix4.dispose();
+      min2.dispose();
+      matrix5.dispose();
       max2.dispose();
       matrix6.dispose();
-      const matrix8 = matrix7.mul(size); // multiply by size; new max is size
       matrix7.dispose();
-      const matrix9 = matrix8.round(); // round to nearest int
       matrix8.dispose();
-      const matrix10 = matrix9.toInt(); // convert to int32
       matrix9.dispose();
       return matrix10;
     });
@@ -158,12 +158,12 @@ export class PowGpu {
 
   async algo(size: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
     let matrix = this.tf.tidy(() => {
-      let seed = this.tensorSeedReplica(size);
-      let matrix1 = this.seedToMatrix(seed, size);
+      let seed = this.tensorSeedReplica(size); // expand seed to fill matrix
+      let matrix = this.seedToMatrix(seed, size); // reshape seed to fill matrix
+      let matrix10 = this.matrixCalculations(matrix, size);
       seed.dispose();
-      let matrix2 = this.matrixCalculations(matrix1, size);
-      matrix1.dispose();
-      return matrix2;
+      matrix.dispose();
+      return matrix10;
     });
     let reducedBufs = await this.matrixReduce(matrix);
     this.tf.tidy(() => {
