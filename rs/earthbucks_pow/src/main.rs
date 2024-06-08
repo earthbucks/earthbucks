@@ -6,7 +6,7 @@ use tensorflow::SessionOptions;
 use tensorflow::SessionRunArgs;
 use tensorflow::Tensor;
 
-fn main() {
+fn add() {
     // our goal is to write a test program using rust tensorflow
     // it is very simple: we want to add two numbers together
 
@@ -38,4 +38,8 @@ fn main() {
 
     // now we need to print the result
     println!("result: {}", result[0]);
+}
+
+fn main() {
+    add();
 }
