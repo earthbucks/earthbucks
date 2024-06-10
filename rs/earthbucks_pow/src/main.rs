@@ -145,6 +145,28 @@ fn mat_mul() {
     println!("result: {:?}", result);
 }
 
+fn algo17() {
+    // let scope = &mut Scope::new_root_scope();
+    let hex = "80".to_string().repeat(32);
+    let buf = hex.as_bytes();
+
+    // create a tensor by extracting every bit from the buffer into a new int32
+    // value in a tensor. the new tensor has a bunch of int32 values that are
+    // all either 0 or 1.
+    let mut bits: Vec<i32> = Vec::new();
+    for byte in buf {
+        let byte = *byte as i32;
+        for i in (0..8).rev() {
+            bits.push((byte >> i) & 1);
+        }
+    }
+    let tensor: Tensor<i32> = Tensor::new(&[bits.len() as u64])
+        .with_values(&bits)
+        .unwrap();
+
+    println!("{}", tensor.len())
+}
+
 fn main() {
     // Get the command-line arguments
     let args: Vec<String> = env::args().collect();
@@ -156,6 +178,7 @@ fn main() {
             "mul" => mul(),
             "mat_add" => mat_add(),
             "mat_mul" => mat_mul(),
+            "algo17" => algo17(),
             _ => println!("Unknown command"),
         }
     } else {
