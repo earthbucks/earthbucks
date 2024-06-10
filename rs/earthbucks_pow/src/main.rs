@@ -148,7 +148,7 @@ fn mat_mul() {
 fn algo17() {
     // let scope = &mut Scope::new_root_scope();
     let hex = "80".to_string().repeat(32);
-    let buf = hex.as_bytes();
+    let buf = &hex::decode(hex).unwrap();
 
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are

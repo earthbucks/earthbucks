@@ -8,5 +8,6 @@ authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
 
 [dependencies]
 earthbucks_lib = { path = "../earthbucks_lib" }
+hex = "0.4.3"
 ndarray = "0.15.6"
 tensorflow = "0.21.0"
