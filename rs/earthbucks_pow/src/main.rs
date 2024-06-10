@@ -145,11 +145,14 @@ fn mat_mul() {
     println!("result: {:?}", result);
 }
 
+// unfinished test implmentation of algo17
 fn algo17() {
-    // let scope = &mut Scope::new_root_scope();
+    let n: i32 = 17;
+    let scope = &mut Scope::new_root_scope();
     let hex = "80".to_string().repeat(32);
     let buf = &hex::decode(hex).unwrap();
 
+    // tensor_from_buffer_bits
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -163,8 +166,37 @@ fn algo17() {
     let tensor: Tensor<i32> = Tensor::new(&[bits.len() as u64])
         .with_values(&bits)
         .unwrap();
+    let tensor_len = tensor.len() as i32;
 
-    println!("{}", tensor.len())
+    // println!("{}", tensor.len())
+
+    let seed = ops::constant(tensor, scope).unwrap();
+    // let seed_length = ops::constant(tensor.len() as u32, scope).unwrap();
+    let n_replica = (n * n + tensor_len - 1) / tensor_len;
+    let n_replica_op = ops::constant([n_replica], scope).unwrap();
+    let seed_replica = ops::tile(seed, n_replica_op, scope).unwrap();
+    let zero_op = ops::constant([0], scope).unwrap();
+    let n_n_op = ops::constant([n * n], scope).unwrap();
+    let seed_replica = ops::slice(seed_replica, zero_op, n_n_op, scope).unwrap();
+    let matrix_shape_op = ops::constant([n as i64, n as i64], scope).unwrap();
+    let matrix = ops::reshape(seed_replica, matrix_shape_op, scope).unwrap();
+    let matrix = ops::mat_mul(matrix.clone(), matrix, scope).unwrap();
+    // TODO: Fill in the rest of the operations
+    let axis_op = ops::constant(1, scope).unwrap();
+    let reduce_sum = ops::sum(matrix, axis_op, scope).unwrap();
+
+    let graph = scope.graph();
+    let session = Session::new(&SessionOptions::new(), &graph).unwrap();
+
+    let mut args = SessionRunArgs::new();
+
+    let token = args.request_fetch(&reduce_sum, 0);
+
+    session.run(&mut args).unwrap();
+
+    let result: Tensor<i32> = args.fetch(token).unwrap();
+
+    println!("result: {:?}", result);
 }
 
 fn main() {
