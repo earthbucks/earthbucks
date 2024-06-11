@@ -88,7 +88,7 @@ export class PrivKey {
     return PrivKey.fromBuf(decoded32);
   }
 
-  static isValidIsoStr(str: string): boolean {
+  static isValidStrictStr(str: string): boolean {
     try {
       PrivKey.fromStrictStr(str);
     } catch (e) {

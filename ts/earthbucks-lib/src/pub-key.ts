@@ -68,7 +68,7 @@ export class PubKey {
     return PubKey.fromBuf(decoded33);
   }
 
-  static isValidStringFmt(str: string): boolean {
+  static isValidStrictStr(str: string): boolean {
     try {
       PubKey.fromStrictStr(str);
     } catch (e) {
