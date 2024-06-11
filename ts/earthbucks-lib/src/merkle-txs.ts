@@ -22,7 +22,7 @@ export class MerkleTxs {
     for (let i = 0; i < this.txs.length; i++) {
       const tx = this.txs[i];
       const proof = this.proofs[i];
-      if (!MerkleProof.verifyProof(tx.id(), proof, this.root)) {
+      if (!MerkleProof.verifyProof(tx.id().buf, proof, this.root.buf)) {
         return false;
       }
     }

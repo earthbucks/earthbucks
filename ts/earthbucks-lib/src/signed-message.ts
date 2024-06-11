@@ -30,7 +30,7 @@ export class SignedMessage {
 
   static createMac(message: SysBuf, keyStr: string) {
     const key = Hash.blake3Hash(SysBuf.from(keyStr));
-    return Hash.blake3Mac(key, message);
+    return Hash.blake3Mac(key.buf, message);
   }
 
   static fromSignMessage(
@@ -39,7 +39,7 @@ export class SignedMessage {
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
-    const sigObj = ecdsaSign(mac, privKey.toBuf());
+    const sigObj = ecdsaSign(mac.buf, privKey.toBuf().buf);
     const sigBuf = (FixedBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
     const pubKey = privKey.toPubKeyEbxBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
@@ -50,13 +50,13 @@ export class SignedMessage {
       return false;
     }
     const mac = SignedMessage.createMac(this.message, this.keyStr);
-    if (!mac.equals(this.mac)) {
+    if (!mac.buf.equals(this.mac.buf)) {
       return false;
     }
-    if (!pubKey.toBuf().equals(this.pubKey)) {
+    if (!pubKey.toBuf().buf.equals(this.pubKey.buf)) {
       return false;
     }
-    if (!ecdsaVerify(this.sig, mac, this.pubKey)) {
+    if (!ecdsaVerify(this.sig.buf, mac.buf, this.pubKey.buf)) {
       return false;
     }
     return true;
@@ -73,9 +73,9 @@ export class SignedMessage {
 
   toBuf(): SysBuf {
     const writer = new BufWriter();
-    writer.write(this.sig);
-    writer.write(this.pubKey);
-    writer.write(this.mac);
+    writer.write(this.sig.buf);
+    writer.write(this.pubKey.buf);
+    writer.write(this.mac.buf);
     writer.write(this.message);
     return writer.toBuf();
   }

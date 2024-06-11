@@ -15,7 +15,7 @@ export class PermissionToken {
 
   toBuf(): SysBuf {
     const writer = new BufWriter();
-    writer.write(this.randValue);
+    writer.write(this.randValue.buf);
     writer.writeU64BE(this.timestamp);
     return writer.toBuf();
   }

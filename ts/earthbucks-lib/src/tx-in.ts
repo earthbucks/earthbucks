@@ -41,7 +41,7 @@ export class TxIn {
 
   toBuf(): SysBuf {
     const writer = new BufWriter();
-    writer.write(this.inputTxId);
+    writer.write(this.inputTxId.buf);
     writer.writeU32BE(this.inputTxNOut);
     const scriptBuf = this.script.toBuf();
     writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toBuf());
@@ -52,7 +52,7 @@ export class TxIn {
 
   isNull(): boolean {
     return (
-      this.inputTxId.every((byte) => byte === 0) &&
+      this.inputTxId.buf.every((byte) => byte === 0) &&
       this.inputTxNOut.n === 0xffffffff
     );
   }

@@ -22,8 +22,8 @@ describe("TxBuilder", () => {
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-      pkhKeyMap.add(key, pkh.buf);
-      const script = Script.fromPkhOutput(pkh.buf);
+      pkhKeyMap.add(key, pkh.buf.buf);
+      const script = Script.fromPkhOutput(pkh.buf.buf);
       const txOut = new TxOut(new U64(100), script);
       const txOutBn = new TxOutBn(txOut, new U64(0n));
       txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -36,7 +36,7 @@ describe("TxBuilder", () => {
   test("should build a valid tx when input is enough to cover the output", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-    const script = Script.fromPkhOutput(pkh.buf);
+    const script = Script.fromPkhOutput(pkh.buf.buf);
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 

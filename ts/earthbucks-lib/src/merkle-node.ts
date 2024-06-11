@@ -19,8 +19,8 @@ export class MerkleNode {
 
   public hash(): FixedBuf<32> {
     if (this.left || this.right) {
-      const leftData = this.left ? this.left.hash() : SysBuf.alloc(0);
-      const rightData = this.right ? this.right.hash() : leftData;
+      const leftData = this.left ? this.left.hash().buf : SysBuf.alloc(0);
+      const rightData = this.right ? this.right.hash().buf : leftData;
       return Hash.doubleBlake3Hash(SysBuf.concat([leftData, rightData]));
     } else {
       return this.hashedData;
@@ -40,7 +40,9 @@ export class MerkleNode {
       return new MerkleNode(
         left,
         right,
-        Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
+        Hash.doubleBlake3Hash(
+          SysBuf.concat([left.hash().buf, right.hash().buf]),
+        ),
       );
     }
     // Make sure the number of elements is a power of two
@@ -57,7 +59,7 @@ export class MerkleNode {
     return new MerkleNode(
       left,
       right,
-      Hash.doubleBlake3Hash(SysBuf.concat([left.hash(), right.hash()])),
+      Hash.doubleBlake3Hash(SysBuf.concat([left.hash().buf, right.hash().buf])),
     );
   }
 }

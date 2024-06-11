@@ -9,7 +9,7 @@ describe("MerkleNode", () => {
 
     const data = [data1];
     const root = MerkleNode.fromBufs(data);
-    const hex = SysBuf.from(root.hash()).toString("hex");
+    const hex = SysBuf.from(root.hash().buf).toString("hex");
     expect(hex).toBe(
       "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244",
     );
@@ -21,7 +21,7 @@ describe("MerkleNode", () => {
 
     const data = [data1, data2];
     const root = MerkleNode.fromBufs(data);
-    const hex = SysBuf.from(root.hash()).toString("hex");
+    const hex = SysBuf.from(root.hash().buf).toString("hex");
     expect(hex).toBe(
       "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde",
     );
@@ -35,7 +35,7 @@ describe("MerkleNode", () => {
 
     const data = [data1, data2, data3, data4];
     const root = MerkleNode.fromBufs(data);
-    const hex = SysBuf.from(root.hash()).toString("hex");
+    const hex = SysBuf.from(root.hash().buf).toString("hex");
     expect(hex).toBe(
       "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187",
     );

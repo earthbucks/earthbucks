@@ -69,8 +69,8 @@ describe("Block", () => {
     const br = new BufReader(buf);
     const block2 = Block.fromBufReader(br);
     expect(block2.header.version.n).toBe(bh.version.n);
-    expect(block2.header.prevBlockId.toString("hex")).toEqual(
-      bh.prevBlockId.toString("hex"),
+    expect(block2.header.prevBlockId.buf.toString("hex")).toEqual(
+      bh.prevBlockId.buf.toString("hex"),
     );
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
     expect(block2.header.timestamp.bn).toBe(bh.timestamp.bn);

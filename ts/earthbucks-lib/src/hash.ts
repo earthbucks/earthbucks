@@ -16,7 +16,7 @@ if (typeof document === "undefined") {
   };
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedBuf<32> {
-    return FixedBuf.fromBuf(32, blake3Hash(blake3Hash(data)));
+    return FixedBuf.fromBuf(32, blake3Hash(blake3Hash(data).buf).buf);
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedBuf<32> {
@@ -36,7 +36,7 @@ if (typeof document === "undefined") {
 
   doubleBlake3Hash = function doubleBlake3Hash(data: SysBuf): FixedBuf<32> {
     data = SysBuf.from(data.buffer, data.byteOffset, data.length);
-    return blake3Hash(blake3Hash(data));
+    return blake3Hash(blake3Hash(data).buf);
   };
 
   blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedBuf<32> {

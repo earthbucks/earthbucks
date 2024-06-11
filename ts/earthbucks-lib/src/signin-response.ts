@@ -43,7 +43,7 @@ export class SigninResponse {
 
   static fromStrictHex(hex: string, domain: string): SigninResponse {
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninResponse.toBuf(buf, domain);
+    return SigninResponse.toBuf(buf.buf, domain);
   }
 
   toBuf(): SysBuf {

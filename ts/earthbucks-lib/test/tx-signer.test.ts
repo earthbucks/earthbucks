@@ -26,8 +26,8 @@ describe("TxSigner", () => {
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-      pkhKeyMap.add(key, pkh.buf);
-      const script = Script.fromPkhOutput(pkh.buf);
+      pkhKeyMap.add(key, pkh.buf.buf);
+      const script = Script.fromPkhOutput(pkh.buf.buf);
       const txOut = new TxOut(new U64(100), script);
       const txOutBn = new TxOutBn(txOut, new U64(0n));
       txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -40,7 +40,7 @@ describe("TxSigner", () => {
   test("should sign a tx", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-    const script = Script.fromPkhOutput(pkh.buf);
+    const script = Script.fromPkhOutput(pkh.buf.buf);
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 
@@ -80,7 +80,7 @@ describe("TxSigner", () => {
   test("should sign two inputs", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-    const script = Script.fromPkhOutput(pkh.buf);
+    const script = Script.fromPkhOutput(pkh.buf.buf);
     const output = new TxOut(new U64(100), script);
     txBuilder.addOutput(output);
     txBuilder.addOutput(output);

@@ -31,18 +31,22 @@ function decodeHex(hex: string): SysBuf {
   return sysBuf;
 }
 
-class EbxBuf extends SysBuf {
-  static fromBuf<N extends number>(size: N, buf: SysBuf): EbxBuf {
+class EbxBuf {
+  private _buf: SysBuf;
+
+  constructor(size: number, buf: SysBuf) {
     if (buf.length !== size) {
       throw new InvalidSizeError();
     }
-    // weird roundabout prototype code to avoid calling "new" because on Buffer
-    // that is actually deprecated
-    const newBuf = SysBuf.alloc(size);
-    newBuf.set(buf);
-    Object.setPrototypeOf(newBuf, EbxBuf.prototype);
-    const isoBuf = newBuf as EbxBuf;
-    return isoBuf;
+    this._buf = buf;
+  }
+
+  get buf(): SysBuf {
+    return this._buf;
+  }
+
+  static fromBuf<N extends number>(size: N, buf: SysBuf): EbxBuf {
+    return new EbxBuf(size, buf);
   }
 
   static alloc(size: number, fill?: number): EbxBuf {
@@ -55,7 +59,7 @@ class EbxBuf extends SysBuf {
   }
 
   toStrictHex(): string {
-    return encodeHex(this);
+    return encodeHex(this._buf);
   }
 
   static fromBase58(size: number, base58: string): EbxBuf {
@@ -68,7 +72,7 @@ class EbxBuf extends SysBuf {
   }
 
   toBase58(): string {
-    return bs58.encode(this);
+    return bs58.encode(this._buf);
   }
 }
 
@@ -77,26 +81,13 @@ const sizeSymbol = Symbol("size");
 class FixedBuf<N extends number> extends EbxBuf {
   [sizeSymbol]: N;
 
-  constructor(size: N, ...args: ConstructorParameters<typeof SysBuf>) {
-    super(...args);
-    if (this.length !== size) {
-      throw new InvalidSizeError();
-    }
+  constructor(size: N, buf: SysBuf) {
+    super(size, buf);
     this[sizeSymbol] = size;
   }
 
   static fromBuf<N extends number>(size: N, buf: SysBuf): FixedBuf<N> {
-    if (buf.length !== size) {
-      throw new InvalidSizeError();
-    }
-    // weird roundabout prototype code to avoid calling "new" because on Buffer
-    // that is actually deprecated
-    const newBuf = Buffer.alloc(size);
-    newBuf.set(buf);
-    Object.setPrototypeOf(newBuf, FixedBuf.prototype);
-    const fixedEbxBufN = newBuf as FixedBuf<N>;
-    fixedEbxBufN[sizeSymbol] = size;
-    return fixedEbxBufN;
+    return new FixedBuf(size, buf);
   }
 
   static alloc<N extends number>(size: N, fill?: number): FixedBuf<N> {
@@ -108,17 +99,9 @@ class FixedBuf<N extends number> extends EbxBuf {
     return FixedBuf.fromBuf(size, buf);
   }
 
-  toStrictHex(): string {
-    return encodeHex(this);
-  }
-
   static fromBase58<N extends number>(size: N, base58: string): FixedBuf<N> {
     const buf = SysBuf.from(bs58.decode(base58));
     return FixedBuf.fromBuf(size, buf);
-  }
-
-  toBase58(): string {
-    return bs58.encode(this);
   }
 }
 

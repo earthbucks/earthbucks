@@ -18,14 +18,14 @@ export class MerkleProof {
     let hash = hashedData;
     for (const [sibling, isLeft] of this.proof) {
       hash = isLeft
-        ? Hash.doubleBlake3Hash(SysBuf.concat([sibling, hash]))
-        : Hash.doubleBlake3Hash(SysBuf.concat([hash, sibling]));
+        ? Hash.doubleBlake3Hash(SysBuf.concat([sibling.buf, hash])).buf
+        : Hash.doubleBlake3Hash(SysBuf.concat([hash, sibling.buf])).buf;
     }
-    return SysBuf.compare(hash, this.root) === 0;
+    return SysBuf.compare(hash, this.root.buf) === 0;
   }
 
   static verifyProof(data: SysBuf, proof: MerkleProof, root: SysBuf) {
-    return SysBuf.compare(proof.root, root) === 0 || proof.verify(data);
+    return SysBuf.compare(proof.root.buf, root) === 0 || proof.verify(data);
   }
 
   static generateProofsAndRoot(
@@ -41,7 +41,7 @@ export class MerkleProof {
     }
     if (hashedDatas.length === 2) {
       const root = Hash.doubleBlake3Hash(
-        SysBuf.concat([hashedDatas[0], hashedDatas[1]]),
+        SysBuf.concat([hashedDatas[0].buf, hashedDatas[1].buf]),
       );
       const proofs = [
         new MerkleProof(root, [[hashedDatas[1], true]]),
@@ -59,7 +59,9 @@ export class MerkleProof {
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
       hashedDatas.slice(hashedDatas.length / 2),
     );
-    const root = Hash.doubleBlake3Hash(SysBuf.concat([leftRoot, rightRoot]));
+    const root = Hash.doubleBlake3Hash(
+      SysBuf.concat([leftRoot.buf, rightRoot.buf]),
+    );
     const proofs = [
       ...leftProofs.map(
         (proof) => new MerkleProof(root, [[rightRoot, true], ...proof.proof]),
@@ -73,10 +75,10 @@ export class MerkleProof {
 
   toBuf(): SysBuf {
     const bw = new BufWriter();
-    bw.write(this.root);
+    bw.write(this.root.buf);
     bw.writeVarInt(new U64(this.proof.length));
     for (const [sibling, isLeft] of this.proof) {
-      bw.write(sibling);
+      bw.write(sibling.buf);
       bw.writeU8(new U8(isLeft ? 1 : 0));
     }
     return bw.toBuf();

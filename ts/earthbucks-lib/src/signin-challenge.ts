@@ -38,7 +38,7 @@ export class SigninChallenge {
   static fromStrictHex(hex: string, domain: string): SigninChallenge {
     // TODO: Fix return type (do not throw error)
     const buf = EbxBuf.fromStrictHex(hex.length / 2, hex);
-    return SigninChallenge.fromBuf(buf, domain);
+    return SigninChallenge.fromBuf(buf.buf, domain);
   }
 
   toBuf(): SysBuf {
