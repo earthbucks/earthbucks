@@ -3,6 +3,7 @@ export * from "./block-builder.js";
 export * from "./block.js";
 export * from "./buf-reader.js";
 export * from "./buf-writer.js";
+export * from "./buf.js";
 export * from "./domain.js";
 export * from "./error.js";
 export * from "./header-mine.js";
