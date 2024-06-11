@@ -49,6 +49,12 @@ class EbxBuf extends SysBuf {
     return EbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
+  subarray(start: number, end?: number): EbxBuf {
+    const buf = EbxBuf.alloc(end ? end - start : this.length - start);
+    this.copy(buf, 0, start, end);
+    return buf;
+  }
+
   static fromStrictHex(size: number, hex: string): EbxBuf {
     const buf = decodeHex(hex);
     return EbxBuf.fromBuf(size, buf);
@@ -101,6 +107,12 @@ class FixedBuf<N extends number> extends EbxBuf {
 
   static alloc<N extends number>(size: N, fill?: number): FixedBuf<N> {
     return FixedBuf.fromBuf(size, SysBuf.alloc(size, fill));
+  }
+
+  subarray(start: number, end?: number): FixedBuf<number> {
+    const buf = FixedBuf.alloc(end ? end - start : this.length - start);
+    this.copy(buf, 0, start, end);
+    return buf;
   }
 
   static fromStrictHex<N extends number>(size: N, hex: string): FixedBuf<N> {
