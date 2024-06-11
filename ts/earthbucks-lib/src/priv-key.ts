@@ -68,7 +68,7 @@ export class PrivKey {
 
   toStrictStr(): string {
     const hashBuf = Hash.blake3Hash(this.buf);
-    const checkBuf = hashBuf.subarray(0, 4);
+    const checkBuf = SysBuf.from(hashBuf).subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return "ebxprv" + checkHex + this.buf.toBase58();
   }
@@ -81,8 +81,8 @@ export class PrivKey {
     const checkBuf = FixedBuf.fromStrictHex(4, hexStr);
     const decoded32 = (FixedBuf<32>).fromBase58(32, str.slice(14));
     const hashBuf = Hash.blake3Hash(decoded32);
-    const checkBuf2 = hashBuf.subarray(0, 4);
-    if (!checkBuf.equals(checkBuf2)) {
+    const checkHash = SysBuf.from(hashBuf).subarray(0, 4);
+    if (checkBuf.toString("hex") !== checkHash.toString("hex")) {
       throw new InvalidChecksumError();
     }
     return PrivKey.fromBuf(decoded32);

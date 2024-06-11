@@ -30,7 +30,7 @@ export class Pkh {
   }
 
   toStrictStr(): string {
-    const checkHash = Hash.blake3Hash(this.buf).subarray(0, 4);
+    const checkHash = SysBuf.from(Hash.blake3Hash(this.buf)).subarray(0, 4);
     const checkHex = checkHash.toString("hex");
     return "ebxpkh" + checkHex + this.buf.toBase58();
   }
@@ -43,8 +43,8 @@ export class Pkh {
     const checkBuf = FixedBuf.fromStrictHex(4, checkHex);
     const buf = FixedBuf.fromBase58(32, pkhStr.slice(14));
     const hashBuf = Hash.blake3Hash(buf);
-    const checkHash = hashBuf.subarray(0, 4);
-    if (!checkHash.equals(checkBuf)) {
+    const checkHash = SysBuf.from(hashBuf).subarray(0, 4);
+    if (checkHash.toString("hex") !== checkBuf.toString("hex")) {
       throw new InvalidChecksumError();
     }
     return Pkh.fromBuf(buf);

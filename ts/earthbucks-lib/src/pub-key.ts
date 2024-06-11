@@ -48,7 +48,7 @@ export class PubKey {
 
   toStrictStr(): string {
     const checkHash = Hash.blake3Hash(this.buf);
-    const checkSum = checkHash.subarray(0, 4);
+    const checkSum = SysBuf.from(checkHash).subarray(0, 4);
     const checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + this.buf.toBase58();
   }
@@ -61,8 +61,8 @@ export class PubKey {
     const checkBuf = FixedBuf.fromStrictHex(4, checkHex);
     const decoded33 = FixedBuf.fromBase58(33, str.slice(14));
     const checkHash = Hash.blake3Hash(decoded33);
-    const checkSum = checkHash.subarray(0, 4);
-    if (!checkBuf.equals(checkSum)) {
+    const checkSum = SysBuf.from(checkHash).subarray(0, 4);
+    if (checkBuf.toString("hex") !== checkSum.toString("hex")) {
       throw new InvalidChecksumError();
     }
     return PubKey.fromBuf(decoded33);
