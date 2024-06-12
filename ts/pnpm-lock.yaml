@@ -105,6 +105,9 @@ importers:
       prettier:
         specifier: ^3.3.0
         version: 3.3.0
+      rimraf:
+        specifier: ^5.0.7
+        version: 5.0.7
       typescript-eslint:
         specifier: ^7.11.0
         version: 7.11.0(eslint@9.4.0)(typescript@5.4.5)
