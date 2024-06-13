@@ -13,7 +13,6 @@ export class SignedMessage {
   sig: FixedBuf<64>;
   pubKey: FixedBuf<33>;
   mac: FixedBuf<32>;
-  messageLen: VarInt;
   message: SysBuf;
   keyStr: string;
 
@@ -27,7 +26,6 @@ export class SignedMessage {
     this.sig = sig;
     this.pubKey = pubKey;
     this.mac = mac;
-    this.messageLen = VarInt.fromU64(new U64(message.length));
     this.message = message;
     this.keyStr = keyStr;
   }
@@ -71,8 +69,7 @@ export class SignedMessage {
     const sig = reader.readFixed(64);
     const pubKey = reader.readFixed(PubKey.SIZE);
     const mac = reader.readFixed(32);
-    const messageLenN = reader.readVarInt().n;
-    const message = reader.read(messageLenN);
+    const message = reader.readRemainder();
     return new SignedMessage(sig, pubKey, mac, message, keyStr);
   }
 
@@ -81,7 +78,6 @@ export class SignedMessage {
     writer.write(this.sig.buf);
     writer.write(this.pubKey.buf);
     writer.write(this.mac.buf);
-    writer.write(this.messageLen.toBuf());
     writer.write(this.message);
     return writer.toBuf();
   }
