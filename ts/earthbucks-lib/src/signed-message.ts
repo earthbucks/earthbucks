@@ -6,8 +6,6 @@ import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { VarInt } from "./var-int.js";
-import { U64 } from "./numbers.js";
 
 export class SignedMessage {
   sig: FixedBuf<64>;
