@@ -2,7 +2,7 @@
 
 <img src="./earthbucks-e-2-300.png" width="150" height="150" alt="EarthBucks">
 
-A blockchain for everybody on Planet Earth.
+Electronic cash for everybody on Planet Earth.
 
 Website: [earthbucks.com](https://earthbucks.com)
 
