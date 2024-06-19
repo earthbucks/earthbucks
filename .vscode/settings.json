@@ -33,7 +33,7 @@
   },
   "sql-formatter.uppercase": true,
   "rust-analyzer.check.command": "clippy",
-  "eslint.workingDirectories": ["ts"],
+  "eslint.workingDirectories": ["ts/*"],
   "eslint.validate": [
     "javascript",
     "javascriptreact",
