@@ -33,14 +33,11 @@
   },
   "sql-formatter.uppercase": true,
   "rust-analyzer.check.command": "clippy",
-  "eslint.workingDirectories": ["ts/earthbucks-lib", "ts/earthbucks-pow"],
+  "eslint.workingDirectories": ["ts"],
   "eslint.validate": [
     "javascript",
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ],
-  "markdownlint.config": {
-    "MD033": false
-  }
+  ]
 }
