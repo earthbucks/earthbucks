@@ -11,17 +11,17 @@ describe("PubKey", () => {
 
   test("to/from string format", () => {
     expect(
-      PubKey.isValidStringFmt(
+      PubKey.isValidStrictStr(
         "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
       ),
     ).toBe(true);
     expect(
-      PubKey.isValidStringFmt(
+      PubKey.isValidStrictStr(
         "ebxpu5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYVo",
       ),
     ).toBe(false);
     expect(
-      PubKey.isValidStringFmt(
+      PubKey.isValidStrictStr(
         "ebxpub5c2d464b282vZKAQ9QHCDmBhwpBhK4bK2kbjFbFzSxGPueCNsYYV",
       ),
     ).toBe(false);

@@ -146,11 +146,11 @@ describe("ScriptInterpreter", () => {
       const outputPrivKeyBuf = FixedBuf.fromStrictHex(32, outputPrivKeyHex);
       const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toBuf();
-      expect(SysBuf.from(outputPubKey).toString("hex")).toEqual(
+      expect(SysBuf.from(outputPubKey.buf).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
-      const outputScript = Script.fromPkhOutput(outputAddress.buf);
+      const outputScript = Script.fromPkhOutput(outputAddress.buf.buf);
       const outputAmount = new U64(100);
       const outputTxId = FixedBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
@@ -171,13 +171,13 @@ describe("ScriptInterpreter", () => {
 
       const sig = tx.signNoCache(
         new U32(0),
-        outputPrivKeyBuf,
+        outputPrivKeyBuf.buf,
         outputScript.toBuf(),
         outputAmount,
         TxSignature.SIGHASH_ALL,
       );
 
-      const stack = [sig.toBuf(), outputPubKey];
+      const stack = [sig.toBuf(), outputPubKey.buf];
       const hashCache = new HashCache();
 
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
@@ -209,8 +209,8 @@ describe("ScriptInterpreter", () => {
       );
 
       // Generate public keys
-      const pubKeys = privKeysU8Vec.map((privKey) =>
-        PrivKey.fromBuf(privKey).toPubKeyEbxBuf(),
+      const pubKeys = privKeysU8Vec.map(
+        (privKey) => PrivKey.fromBuf(privKey).toPubKeyEbxBuf().buf,
       );
 
       // Create a multisig output script
@@ -243,7 +243,7 @@ describe("ScriptInterpreter", () => {
           tx
             .signNoCache(
               new U32(0),
-              privKey,
+              privKey.buf,
               outputScript.toBuf(),
               outputAmount,
               TxSignature.SIGHASH_ALL,

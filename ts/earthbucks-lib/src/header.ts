@@ -90,16 +90,16 @@ export class Header {
 
   toBufWriter(bw: BufWriter): BufWriter {
     bw.writeU8(this.version);
-    bw.write(this.prevBlockId);
-    bw.write(this.merkleRoot);
+    bw.write(this.prevBlockId.buf);
+    bw.write(this.merkleRoot.buf);
     bw.writeU64BE(this.timestamp);
     bw.writeU32BE(this.blockNum);
     bw.writeU256BE(this.target);
     bw.writeU256BE(this.nonce);
     bw.writeU16BE(this.workSerAlgo);
-    bw.write(this.workSerHash);
+    bw.write(this.workSerHash.buf);
     bw.writeU16BE(this.workParAlgo);
-    bw.write(this.workParHash);
+    bw.write(this.workParHash.buf);
     return bw;
   }
 
@@ -131,7 +131,7 @@ export class Header {
 
   isIdValid(): boolean {
     const id = this.id();
-    const idNum = new BufReader(id).readU256BE();
+    const idNum = new BufReader(id.buf).readU256BE();
     return idNum.bn < this.target.bn;
   }
 
@@ -181,7 +181,8 @@ export class Header {
 
   isGenesis(): boolean {
     return (
-      this.blockNum.bn === 0n && this.prevBlockId.every((byte) => byte === 0)
+      this.blockNum.bn === 0n &&
+      this.prevBlockId.buf.every((byte) => byte === 0)
     );
   }
 
@@ -252,7 +253,7 @@ export class Header {
     }
     const len = new U32(adjh.length);
     if (len.n === 0) {
-      return new BufReader(Header.MAX_TARGET_BYTES).readU256BE();
+      return new BufReader(Header.MAX_TARGET_BYTES.buf).readU256BE();
     }
     const firstHeader = adjh[0];
     const targets: bigint[] = [];

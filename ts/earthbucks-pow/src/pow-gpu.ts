@@ -25,7 +25,7 @@ export class PowGpu {
     // all either 0 or 1.
     //
     // this method sends 32 times the amount of data to the GPU than strictly
-    // necessary. this is why i have two other implementations below.
+    // necessary. this is why i have three other implementations below.
     const bufferIter = buffer.values();
     const bits: number[] = [];
     let bit: number | undefined;

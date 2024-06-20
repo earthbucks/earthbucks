@@ -23,8 +23,8 @@ describe("Header", () => {
     const buf = bh1.toBuf();
     const bh2 = Header.fromBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
-    expect(bh1.prevBlockId.toString("hex")).toEqual(
-      bh2.prevBlockId.toString("hex"),
+    expect(bh1.prevBlockId.buf.toString("hex")).toEqual(
+      bh2.prevBlockId.buf.toString("hex"),
     );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
     expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
@@ -50,8 +50,8 @@ describe("Header", () => {
     const buf = bh1.toBuf();
     const bh2 = Header.fromBuf(buf);
     expect(bh1.version.bn).toEqual(bh2.version.bn);
-    expect(bh1.prevBlockId.toString("hex")).toEqual(
-      bh2.prevBlockId.toString("hex"),
+    expect(bh1.prevBlockId.buf.toString("hex")).toEqual(
+      bh2.prevBlockId.buf.toString("hex"),
     );
     expect(bh1.merkleRoot).toEqual(bh2.merkleRoot);
     expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
@@ -135,7 +135,7 @@ describe("Header", () => {
       const target1Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const targetSum = target1.bn;
       const len = new U32(1);
       const newTarget = Header.newTargetFromOldTargets(
@@ -156,7 +156,7 @@ describe("Header", () => {
       const target1Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const targetSum = target1.bn;
       const realTimeDiff = new U64(300_000);
       const len = new U32(1);
@@ -178,7 +178,7 @@ describe("Header", () => {
       const target1Hex =
         "8000000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const targetSum = target1.bn;
       const realTimeDiff = new U64(600_000);
       const len = new U32(1);
@@ -199,7 +199,7 @@ describe("Header", () => {
       const target1Hex =
         "8000000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const targetSum = target1.bn;
       const realTimeDiff = new U64(300_000);
       const len = new U32(1);
@@ -221,7 +221,7 @@ describe("Header", () => {
       const target1Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const targetSum = target1.bn;
       const realTimeDiff = new U64(1_200_000);
       const len = new U32(1);
@@ -243,11 +243,11 @@ describe("Header", () => {
       const target1Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn;
       const realTimeDiff = new U64(600_000 + 600_000);
       const len = new U32(2);
@@ -269,11 +269,11 @@ describe("Header", () => {
       const target1Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn;
       const realTimeDiff = new U64(600_000 + 300_000);
       const len = new U32(2);
@@ -295,11 +295,11 @@ describe("Header", () => {
       const target1Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn;
       const realTimeDiff = new U64(600_000 + 1_200_000);
       const len = new U32(2);
@@ -321,15 +321,15 @@ describe("Header", () => {
       const target1Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const target3Hex =
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
       const target3Buf = EbxBuf.fromStrictHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf).readU256BE();
+      const target3 = new BufReader(target3Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn + target3.bn;
       const realTimeDiff = new U64(600_000 + 600_000 + 600_000);
       const len = new U32(3);
@@ -351,15 +351,15 @@ describe("Header", () => {
       const target1Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const target3Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target3Buf = EbxBuf.fromStrictHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf).readU256BE();
+      const target3 = new BufReader(target3Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn + target3.bn;
       const realTimeDiff = new U64(600_000 + 600_000 + 601_000);
       const len = new U32(3);
@@ -381,15 +381,15 @@ describe("Header", () => {
       const target1Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target1Buf = EbxBuf.fromStrictHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf).readU256BE();
+      const target1 = new BufReader(target1Buf.buf).readU256BE();
       const target2Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target2Buf = EbxBuf.fromStrictHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf).readU256BE();
+      const target2 = new BufReader(target2Buf.buf).readU256BE();
       const target3Hex =
         "0080000000000000000000000000000000000000000000000000000000000000";
       const target3Buf = EbxBuf.fromStrictHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf).readU256BE();
+      const target3 = new BufReader(target3Buf.buf).readU256BE();
       const targetSum = target1.bn + target2.bn + target3.bn;
       const realTimeDiff = new U64(600_000 + 600_000 + 599_000);
       const len = new U32(3);

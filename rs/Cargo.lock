@@ -296,6 +296,7 @@ name = "earthbucks_pow"
 version = "0.1.0"
 dependencies = [
  "earthbucks_lib",
+ "hex",
  "ndarray",
  "tensorflow",
 ]

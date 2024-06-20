@@ -27,8 +27,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhOutput(pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -109,8 +109,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhx1hOutput(pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhx1hOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -162,8 +162,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhx1hOutput(pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhx1hOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -233,8 +233,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhx90dOutput(pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhx90dOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -286,8 +286,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhx90dOutput(pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhx90dOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -357,8 +357,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhxr1h40mOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -410,8 +410,11 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr1h40mOutput(FixedBuf.alloc(32), pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhxr1h40mOutput(
+          FixedBuf.alloc(32).buf,
+          pkh.buf.buf,
+        );
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -481,8 +484,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr1h40mOutput(pkh.buf, pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhxr1h40mOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -552,8 +555,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhxr90d60dOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
@@ -605,10 +608,10 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhxr90d60dOutput(
-          FixedBuf.alloc(32),
-          pkh.buf,
+          FixedBuf.alloc(32).buf,
+          pkh.buf.buf,
         );
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
@@ -679,8 +682,8 @@ describe("TxVerifier", () => {
       for (let i = 0; i < 5; i++) {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-        pkhKeyMap.add(key, pkh.buf);
-        const script = Script.fromPkhxr90d60dOutput(pkh.buf, pkh.buf);
+        pkhKeyMap.add(key, pkh.buf.buf);
+        const script = Script.fromPkhxr90d60dOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
         const txOutBn = new TxOutBn(txOut, new U64(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));

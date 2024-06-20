@@ -24,7 +24,7 @@ export class PrivKey {
         32,
         crypto.getRandomValues(SysBuf.alloc(32)),
       );
-    } while (!secp256k1.privateKeyVerify(privateKey));
+    } while (!secp256k1.privateKeyVerify(privateKey.buf));
     return new PrivKey(privateKey);
   }
 
@@ -35,7 +35,7 @@ export class PrivKey {
   toPubKeyEbxBuf(): FixedBuf<33> {
     return FixedBuf.fromBuf(
       33,
-      SysBuf.from(secp256k1.publicKeyCreate(this.buf)),
+      SysBuf.from(secp256k1.publicKeyCreate(this.buf.buf)),
     );
   }
 
@@ -44,31 +44,25 @@ export class PrivKey {
   }
 
   static fromBuf(buf: FixedBuf<32>): PrivKey {
-    if (buf.length > 32) {
-      throw new TooMuchDataError();
-    }
-    if (buf.length < 32) {
-      throw new NotEnoughDataError();
-    }
-    if (!secp256k1.privateKeyVerify(buf)) {
+    if (!secp256k1.privateKeyVerify(buf.buf)) {
       throw new InvalidEncodingError();
     }
     return new PrivKey(buf);
   }
 
   toStrictHex(): string {
-    return this.buf.toString("hex");
+    return this.buf.buf.toString("hex");
   }
 
   static fromStrictHex(hex: string): PrivKey {
     const buf = FixedBuf.fromStrictHex(32, hex);
-    const buf32: FixedBuf<32> = FixedBuf.fromBuf(32, buf);
+    const buf32: FixedBuf<32> = FixedBuf.fromBuf(32, buf.buf);
     return PrivKey.fromBuf(buf32);
   }
 
   toStrictStr(): string {
-    const hashBuf = Hash.blake3Hash(this.buf);
-    const checkBuf = hashBuf.subarray(0, 4);
+    const hashBuf = Hash.blake3Hash(this.buf.buf);
+    const checkBuf = SysBuf.from(hashBuf.buf).subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return "ebxprv" + checkHex + this.buf.toBase58();
   }
@@ -79,16 +73,16 @@ export class PrivKey {
     }
     const hexStr = str.slice(6, 14);
     const checkBuf = FixedBuf.fromStrictHex(4, hexStr);
-    const decoded32 = (FixedBuf<32>).fromBase58(32, str.slice(14));
-    const hashBuf = Hash.blake3Hash(decoded32);
-    const checkBuf2 = hashBuf.subarray(0, 4);
-    if (!checkBuf.equals(checkBuf2)) {
+    const decoded32 = FixedBuf.fromBase58(32, str.slice(14));
+    const hashBuf = Hash.blake3Hash(decoded32.buf);
+    const checkHash = hashBuf.buf.subarray(0, 4);
+    if (checkBuf.buf.toString("hex") !== checkHash.toString("hex")) {
       throw new InvalidChecksumError();
     }
     return PrivKey.fromBuf(decoded32);
   }
 
-  static isValidIsoStr(str: string): boolean {
+  static isValidStrictStr(str: string): boolean {
     try {
       PrivKey.fromStrictStr(str);
     } catch (e) {

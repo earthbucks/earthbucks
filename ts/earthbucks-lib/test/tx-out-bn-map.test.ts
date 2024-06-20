@@ -25,7 +25,7 @@ describe("TxOutBnMap", () => {
   });
 
   test("nameFromOutput", () => {
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txIdHash.buf, outputIndex);
     expect(name).toBe(
       "0102030400000000000000000000000000000000000000000000000000000000:0",
     );
@@ -33,14 +33,14 @@ describe("TxOutBnMap", () => {
 
   test("add", () => {
     txOutBnMap.add(txOutBn, txIdHash, outputIndex);
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txIdHash.buf, outputIndex);
     expect(txOutBnMap.map.get(name)).toBe(txOutBn);
   });
 
   test("remove", () => {
     txOutBnMap.add(txOutBn, txIdHash, outputIndex);
     txOutBnMap.remove(txIdHash, outputIndex);
-    const name = TxOutBnMap.nameFromOutput(txIdHash, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txIdHash.buf, outputIndex);
     expect(txOutBnMap.map.get(name)).toBeUndefined();
   });
 

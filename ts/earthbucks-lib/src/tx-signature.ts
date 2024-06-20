@@ -19,7 +19,7 @@ export class TxSignature {
   toBuf(): SysBuf {
     const hashTypeBuf = SysBuf.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType.n);
-    return SysBuf.concat([hashTypeBuf, this.sigBuf]);
+    return SysBuf.concat([hashTypeBuf, this.sigBuf.buf]);
   }
 
   static fromBuf(buf: SysBuf): TxSignature {

@@ -14,8 +14,12 @@ function main() {
     case "key":
       {
         const key = KeyPair.fromRandom();
-        const privateKeyHex = SysBuf.from(key.privKey.toBuf()).toString("hex");
-        const publicKeyHex = SysBuf.from(key.pubKey.toBuf()).toString("hex");
+        const privateKeyHex = SysBuf.from(key.privKey.toBuf().buf).toString(
+          "hex",
+        );
+        const publicKeyHex = SysBuf.from(key.pubKey.toBuf().buf).toString(
+          "hex",
+        );
 
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
@@ -31,9 +35,11 @@ function main() {
         const pkh = Pkh.fromPubKeyBuf(publicKey);
 
         // Print them out
-        const privateKeyHex = SysBuf.from(key.privKey.toBuf()).toString("hex");
-        const publicKeyHex = SysBuf.from(publicKey).toString("hex");
-        const pkhHex = SysBuf.from(pkh.buf).toString("hex");
+        const privateKeyHex = SysBuf.from(key.privKey.toBuf().buf).toString(
+          "hex",
+        );
+        const publicKeyHex = SysBuf.from(publicKey.buf).toString("hex");
+        const pkhHex = SysBuf.from(pkh.buf.buf).toString("hex");
         console.log(`Private key: ${privateKeyHex}`);
         console.log(`Public key: ${publicKeyHex}`);
         console.log(`Address: ${pkhHex}`);

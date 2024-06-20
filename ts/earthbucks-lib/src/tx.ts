@@ -74,7 +74,7 @@ export class Tx {
 
   static fromStrictHex(hex: string): Tx {
     const buf = FixedBuf.fromStrictHex(hex.length / 2, hex);
-    return Tx.fromBuf(buf);
+    return Tx.fromBuf(buf.buf);
   }
 
   static fromCoinbase(
@@ -104,7 +104,7 @@ export class Tx {
   hashPrevouts(): FixedBuf<32> {
     const writer = new BufWriter();
     for (const input of this.inputs) {
-      writer.write(input.inputTxId);
+      writer.write(input.inputTxId.buf);
       writer.writeU32BE(input.inputTxNOut);
     }
     return Hash.doubleBlake3Hash(writer.toBuf());
@@ -176,15 +176,15 @@ export class Tx {
 
     const writer = new BufWriter();
     writer.writeU8(this.version);
-    writer.write(prevoutsHash);
-    writer.write(lockRelHash);
-    writer.write(this.inputs[inputIndex.n].inputTxId);
+    writer.write(prevoutsHash.buf);
+    writer.write(lockRelHash.buf);
+    writer.write(this.inputs[inputIndex.n].inputTxId.buf);
     writer.writeU32BE(this.inputs[inputIndex.n].inputTxNOut);
     writer.writeVarInt(new U64(script.length));
     writer.write(script);
     writer.writeU64BE(amount);
     writer.writeU32BE(this.inputs[inputIndex.n].lockRel);
-    writer.write(outputsHash);
+    writer.write(outputsHash.buf);
     writer.writeU64BE(this.lockAbs);
     writer.writeU8(hashType);
     return writer.toBuf();
@@ -205,7 +205,7 @@ export class Tx {
       hashCache,
     );
     const hash = Hash.doubleBlake3Hash(preimage);
-    return hash;
+    return hash.buf;
   }
 
   sighashWithCache(
@@ -223,7 +223,7 @@ export class Tx {
       hashCache,
     );
     const hash = Hash.doubleBlake3Hash(preimage);
-    return hash;
+    return hash.buf;
   }
 
   signNoCache(
@@ -274,7 +274,7 @@ export class Tx {
   ): boolean {
     const hashType = sig.hashType;
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    return ecdsaVerify(sig.sigBuf, hash, publicKey);
+    return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
   }
 
   verifyWithCache(
@@ -293,6 +293,6 @@ export class Tx {
       hashType,
       hashCache,
     );
-    return ecdsaVerify(sig.sigBuf, hash, publicKey);
+    return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
   }
 }

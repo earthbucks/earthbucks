@@ -65,8 +65,8 @@ describe("BlockBuilder", () => {
     const bb = BlockBuilder.fromBlock(block);
     const block2 = bb.toBlock();
     expect(block2.header.version.n).toBe(bh.version.n);
-    expect(block2.header.prevBlockId.toString("hex")).toEqual(
-      bh.prevBlockId.toString("hex"),
+    expect(block2.header.prevBlockId.buf.toString("hex")).toEqual(
+      bh.prevBlockId.buf.toString("hex"),
     );
     expect(block2.header.merkleRoot).toEqual(bh.merkleRoot);
     expect(bb.header.timestamp.bn).toEqual(0n);

@@ -102,7 +102,7 @@ describe("Tx", () => {
     test("fromCoinbase", () => {
       const script = Script.fromStrictStr("DOUBLEBLAKE3");
       const txInput = TxIn.fromCoinbase(script);
-      expect(txInput.inputTxId.every((byte) => byte === 0)).toBe(true);
+      expect(txInput.inputTxId.buf.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut.n).toEqual(0xffffffff);
       expect(txInput.script.toStrictStr()).toEqual(script.toStrictStr());
       expect(txInput.lockRel.n).toBe(0);
@@ -172,7 +172,7 @@ describe("Tx", () => {
       const lockAbs = new U64(0);
 
       const tx = new Tx(version, inputs, outputs, lockAbs);
-      const expectedHash = Hash.blake3Hash(Hash.blake3Hash(tx.toBuf()));
+      const expectedHash = Hash.blake3Hash(Hash.blake3Hash(tx.toBuf()).buf);
       expect(tx.id()).toEqual(expectedHash);
     });
   });
@@ -190,7 +190,7 @@ describe("Tx", () => {
 
       const result = tx.hashPrevouts();
 
-      expect(SysBuf.from(result).toString("hex")).toEqual(
+      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
         "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
       );
     });
@@ -207,7 +207,7 @@ describe("Tx", () => {
 
       const result = tx.hashLockRel();
 
-      expect(SysBuf.from(result).toString("hex")).toEqual(
+      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
         "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
       );
     });
@@ -224,7 +224,7 @@ describe("Tx", () => {
 
       const result = tx.hashOutputs();
 
-      expect(SysBuf.from(result).toString("hex")).toEqual(
+      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
         "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
       );
     });
@@ -362,7 +362,7 @@ describe("Tx", () => {
         // Act
         const signature = tx.signNoCache(
           inputIndex,
-          privateKey,
+          privateKey.buf,
           script,
           amount,
           hashType,
@@ -379,7 +379,7 @@ describe("Tx", () => {
           .pubKey.toBuf();
         const result = tx.verifyNoCache(
           inputIndex,
-          publicKey,
+          publicKey.buf,
           signature,
           script,
           amount,
@@ -422,7 +422,7 @@ describe("Tx", () => {
         // Act
         const signature = tx.signWithCache(
           inputIndex,
-          privateKey,
+          privateKey.buf,
           script,
           amount,
           hashType,
@@ -441,7 +441,7 @@ describe("Tx", () => {
         const hashCache2 = new HashCache();
         const result = tx.verifyWithCache(
           inputIndex,
-          publicKey,
+          publicKey.buf,
           signature,
           script,
           amount,

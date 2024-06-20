@@ -14,7 +14,7 @@ describe("blake3", () => {
     const expected_pkh = SysBuf.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = SysBuf.from(Hash.blake3Hash(pub_key));
+    const pkh = Hash.blake3Hash(pub_key).buf;
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
@@ -31,7 +31,7 @@ describe("blake3", () => {
     const expected_pkh = SysBuf.from(expected_pkh_hex, "hex");
 
     // Compute the hash of the public key
-    const pkh = SysBuf.from(Hash.doubleBlake3Hash(pub_key));
+    const pkh = Hash.doubleBlake3Hash(pub_key).buf;
 
     // Check that the computed pkh matches the expected pkh
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
@@ -40,7 +40,7 @@ describe("blake3", () => {
   test("blake3Mac", () => {
     const key = Hash.blake3Hash(SysBuf.from("key"));
     const data = SysBuf.from("data");
-    const mac = SysBuf.from(Hash.blake3Mac(key, data));
+    const mac = Hash.blake3Mac(key.buf, data).buf;
     expect(mac.toString("hex")).toEqual(
       "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27",
     );

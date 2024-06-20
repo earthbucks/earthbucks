@@ -54,7 +54,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf(),
+        keyPair.privKey.toBuf().buf,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -62,7 +62,7 @@ export class TxSigner {
       const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
-      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
+      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhx90dOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as SysBuf;
       const expired = Script.isPkhx90dExpired(
@@ -91,7 +91,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf(),
+        keyPair.privKey.toBuf().buf,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -99,7 +99,7 @@ export class TxSigner {
       const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
-      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
+      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhx1hOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as SysBuf;
       const expired = Script.isPkhx1hExpired(
@@ -128,7 +128,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf(),
+        keyPair.privKey.toBuf().buf,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -136,7 +136,7 @@ export class TxSigner {
       const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
-      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
+      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhxr1h40mOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as SysBuf;
       const rpkh_buf = txOut.script.chunks[13].buf as SysBuf;
@@ -185,7 +185,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf(),
+        keyPair.privKey.toBuf().buf,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -193,7 +193,7 @@ export class TxSigner {
       const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
-      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
+      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhxr90d60dOutput()) {
       const pkh_buf = txOut.script.chunks[3].buf as SysBuf;
       const rpkh_buf = txOut.script.chunks[13].buf as SysBuf;
@@ -242,7 +242,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf(),
+        keyPair.privKey.toBuf().buf,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -250,7 +250,7 @@ export class TxSigner {
       const sigBuf = sig.toBuf();
 
       inputScript.chunks[0].buf = SysBuf.from(sigBuf);
-      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf);
+      inputScript.chunks[1].buf = SysBuf.from(pubKeyBuf.buf);
     } else {
       throw new GenericError("unsupported script type");
     }

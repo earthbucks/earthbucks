@@ -15,12 +15,12 @@ export class HeaderMine {
       32,
       crypto.getRandomValues(SysBuf.alloc(32)),
     );
-    this.header.nonce = new BufReader(buf).readU256BE();
+    this.header.nonce = new BufReader(buf.buf).readU256BE();
   }
 
   getIdHashNum(): U256 {
     const headerId = this.header.id();
-    const br = new BufReader(headerId);
+    const br = new BufReader(headerId.buf);
     const hashNum = br.readU256BE();
     return hashNum;
   }

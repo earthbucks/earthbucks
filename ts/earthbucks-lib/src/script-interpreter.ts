@@ -1029,7 +1029,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const buf = this.stack.pop() as SysBuf;
-            this.stack.push(Hash.blake3Hash(buf));
+            this.stack.push(Hash.blake3Hash(buf).buf);
           }
           break;
         case Opcode.OP_DOUBLEBLAKE3:
@@ -1039,7 +1039,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const buf = this.stack.pop() as SysBuf;
-            this.stack.push(Hash.doubleBlake3Hash(buf));
+            this.stack.push(Hash.doubleBlake3Hash(buf).buf);
           }
           break;
         case Opcode.OP_CHECKSIG:

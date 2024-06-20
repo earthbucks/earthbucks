@@ -19,17 +19,11 @@ export class PubKey {
 
   static fromPrivKey(privKey: PrivKey): PubKey {
     const buf = privKey.toPubKeyEbxBuf();
-    const isoBuf33 = (FixedBuf<33>).fromBuf(33, buf);
+    const isoBuf33 = (FixedBuf<33>).fromBuf(33, buf.buf);
     return new PubKey(isoBuf33);
   }
 
   static fromBuf(buf: FixedBuf<33>): PubKey {
-    if (buf.length > PubKey.SIZE) {
-      throw new TooMuchDataError();
-    }
-    if (buf.length < PubKey.SIZE) {
-      throw new NotEnoughDataError();
-    }
     return new PubKey(buf);
   }
 
@@ -38,7 +32,7 @@ export class PubKey {
   }
 
   toStrictHex(): string {
-    return this.buf.toString("hex");
+    return this.buf.buf.toString("hex");
   }
 
   static fromStrictHex(hex: string): PubKey {
@@ -47,8 +41,8 @@ export class PubKey {
   }
 
   toStrictStr(): string {
-    const checkHash = Hash.blake3Hash(this.buf);
-    const checkSum = checkHash.subarray(0, 4);
+    const checkHash = Hash.blake3Hash(this.buf.buf);
+    const checkSum = SysBuf.from(checkHash.buf).subarray(0, 4);
     const checkHex = checkSum.toString("hex");
     return "ebxpub" + checkHex + this.buf.toBase58();
   }
@@ -60,15 +54,15 @@ export class PubKey {
     const checkHex = str.slice(6, 14);
     const checkBuf = FixedBuf.fromStrictHex(4, checkHex);
     const decoded33 = FixedBuf.fromBase58(33, str.slice(14));
-    const checkHash = Hash.blake3Hash(decoded33);
-    const checkSum = checkHash.subarray(0, 4);
-    if (!checkBuf.equals(checkSum)) {
+    const checkHash = Hash.blake3Hash(decoded33.buf);
+    const checkSum = checkHash.buf.subarray(0, 4);
+    if (checkBuf.buf.toString("hex") !== checkSum.toString("hex")) {
       throw new InvalidChecksumError();
     }
     return PubKey.fromBuf(decoded33);
   }
 
-  static isValidStringFmt(str: string): boolean {
+  static isValidStrictStr(str: string): boolean {
     try {
       PubKey.fromStrictStr(str);
     } catch (e) {

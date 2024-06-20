@@ -32,8 +32,8 @@ describe("TxInput", () => {
       const reader = new BufReader(txInput.toBuf());
       const result = TxIn.fromBufReader(reader);
       expect(result).toBeInstanceOf(TxIn);
-      expect(SysBuf.from(result.inputTxId).toString("hex")).toEqual(
-        SysBuf.from(inputTxHash).toString("hex"),
+      expect(SysBuf.from(result.inputTxId.buf).toString("hex")).toEqual(
+        SysBuf.from(inputTxHash.buf).toString("hex"),
       );
       expect(result.inputTxNOut).toEqual(inputTxIndex);
       expect(result.script.toStrictStr()).toEqual(script.toStrictStr());

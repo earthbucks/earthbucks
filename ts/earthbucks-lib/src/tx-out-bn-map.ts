@@ -26,17 +26,17 @@ export class TxOutBnMap {
   }
 
   add(txOutBn: TxOutBn, txId: FixedBuf<32>, outputIndex: U32): void {
-    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     this.map.set(name, txOutBn);
   }
 
   remove(txId: FixedBuf<32>, outputIndex: U32): void {
-    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     this.map.delete(name);
   }
 
   get(txId: FixedBuf<32>, outputIndex: U32): TxOutBn | undefined {
-    const name = TxOutBnMap.nameFromOutput(txId, outputIndex);
+    const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     return this.map.get(name);
   }
 
