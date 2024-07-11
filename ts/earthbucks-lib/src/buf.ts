@@ -74,6 +74,11 @@ class EbxBuf {
   toBase58(): string {
     return bs58.encode(this._buf);
   }
+
+  static fromRandom(size: number): EbxBuf {
+    const buf = crypto.getRandomValues(SysBuf.alloc(size));
+    return EbxBuf.fromBuf(size, buf);
+  }
 }
 
 const sizeSymbol = Symbol("size");
@@ -101,6 +106,11 @@ class FixedBuf<N extends number> extends EbxBuf {
 
   static fromBase58<N extends number>(size: N, base58: string): FixedBuf<N> {
     const buf = SysBuf.from(bs58.decode(base58));
+    return FixedBuf.fromBuf(size, buf);
+  }
+
+  static fromRandom<N extends number>(size: N): FixedBuf<N> {
+    const buf = crypto.getRandomValues(SysBuf.alloc(size));
     return FixedBuf.fromBuf(size, buf);
   }
 }

@@ -18,14 +18,11 @@ export class PrivKey {
   }
 
   static fromRandom(): PrivKey {
-    let privateKey;
+    let privKeyBuf;
     do {
-      privateKey = (FixedBuf<32>).fromBuf(
-        32,
-        crypto.getRandomValues(SysBuf.alloc(32)),
-      );
-    } while (!secp256k1.privateKeyVerify(privateKey.buf));
-    return new PrivKey(privateKey);
+      privKeyBuf = FixedBuf.fromRandom(32);
+    } while (!secp256k1.privateKeyVerify(privKeyBuf.buf));
+    return new PrivKey(privKeyBuf);
   }
 
   toBuf(): FixedBuf<32> {

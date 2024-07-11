@@ -1,7 +1,7 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import * as Hash from "./hash.js";
-import { SysBuf, FixedBuf } from "./buf.js";
+import { SysBuf, FixedBuf, EbxBuf } from "./buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./error.js";
 
@@ -186,21 +186,26 @@ export class Header {
     );
   }
 
-  static fromGenesis(initialTarget: U256): Header {
+  static fromGenesis(initialTarget: U256, merkleRoot: FixedBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now())); // milliseconds
+    const nonce = new BufReader(EbxBuf.fromRandom(32).buf).readU256BE();
     return new Header(
       new U8(0),
       FixedBuf.alloc(32),
-      FixedBuf.alloc(32),
+      merkleRoot,
       timestamp,
       new U32(0n),
       initialTarget,
-      new U256(0),
+      nonce,
       new U16(0),
       FixedBuf.alloc(32),
       new U16(0),
       FixedBuf.alloc(32),
     );
+  }
+
+  isEmpty(): boolean {
+    return this.merkleRoot.buf.every((byte) => byte === 0);
   }
 
   hash(): FixedBuf<32> {
@@ -215,9 +220,13 @@ export class Header {
     return new U64(Math.floor(Date.now()));
   }
 
-  static fromLch(lch: Header[], newTimestamp: U64): Header {
+  static fromLch(
+    lch: Header[],
+    merkleRoot: FixedBuf<32>,
+    newTimestamp: U64,
+  ): Header {
     if (lch.length === 0) {
-      return Header.fromGenesis(new U256(0));
+      return Header.fromGenesis(new U256(0), merkleRoot);
     }
     const newTarget = Header.newTargetFromLch(lch, newTimestamp);
     const prevBlock = lch[lch.length - 1];
@@ -292,8 +301,24 @@ export class Header {
   static coinbaseAmount(blockNum: U32): U64 {
     // shift every 210,000 blocks ("halving")
     const shiftBy = blockNum.bn / 210_000n;
-    // 100_000_000 satoshis = 1 earthbuck
+    // BTC: 100_000_000 satoshis = 1 bitcoin
+    // 100 bitcoins per block for the first 210,000 blocks
+    // 100 million satoshis per block for the first 210,000 blocks
+    // EBX: 100_000_000_000 adams = 1 earthbuck
     // 100 earthbucks per block for the first 210,000 blocks
-    return new U64((100n * 100_000_000n) >> shiftBy);
+    // 100 billion adams per block for the first 210,000 blocks
+    return new U64((100n * 100_000_000_000n) >> shiftBy);
+  }
+
+  static difficultyFromTarget(target: U256): U256 {
+    const maxTargetBuf = Header.MAX_TARGET_BYTES;
+    const maxTarget = new BufReader(maxTargetBuf.buf).readU256BE();
+    return maxTarget.div(target);
+  }
+
+  static targetFromDifficulty(difficulty: U256): U256 {
+    const maxTargetBuf = Header.MAX_TARGET_BYTES;
+    const maxTarget = new BufReader(maxTargetBuf.buf).readU256BE();
+    return maxTarget.div(difficulty);
   }
 }

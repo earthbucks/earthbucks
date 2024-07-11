@@ -11,10 +11,7 @@ export class HeaderMine {
   }
 
   randomizeNonce(): void {
-    const buf = (FixedBuf<32>).fromBuf(
-      32,
-      crypto.getRandomValues(SysBuf.alloc(32)),
-    );
+    const buf = FixedBuf.fromRandom(32);
     this.header.nonce = new BufReader(buf.buf).readU256BE();
   }
 

@@ -31,15 +31,14 @@ export class BlockBuilder {
     outputScript: Script,
     outputAmount: U64,
   ): BlockBuilder {
-    const header = Header.fromGenesis(initialTarget);
     const txs = [];
     const txInput = TxIn.fromCoinbase(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
     const coinbaseTx = new Tx(new U8(0), [txInput], [txOutput], new U64(0n));
     txs.push(coinbaseTx);
     const merkleTxs = new MerkleTxs(txs);
-    const root = merkleTxs.root;
-    header.merkleRoot = root;
+    const merkleRoot = merkleTxs.root;
+    const header = Header.fromGenesis(initialTarget, merkleRoot);
     return new BlockBuilder(header, txs, merkleTxs);
   }
 
