@@ -2,6 +2,7 @@ use crate::error::EbxError;
 use bs58;
 use hex;
 use lazy_static::lazy_static;
+use rand::Rng;
 use regex::Regex;
 
 lazy_static! {
@@ -36,6 +37,7 @@ pub trait EbxBuf {
     fn from_base58(base58: &str) -> Result<Self, EbxError>
     where
         Self: Sized;
+    fn from_random() -> Self;
 }
 
 impl EbxBuf for Vec<u8> {
@@ -55,6 +57,13 @@ impl EbxBuf for Vec<u8> {
         bs58::decode(base58)
             .into_vec()
             .map_err(|_| EbxError::InvalidEncodingError { source: None })
+    }
+
+    fn from_random() -> Self {
+        let mut buffer = vec![0u8; 32];
+        let mut rng = rand::thread_rng();
+        rng.fill(&mut buffer[..]);
+        buffer
     }
 }
 
@@ -83,6 +92,13 @@ impl<const N: usize> EbxBuf for [u8; N] {
             .try_into()
             .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
         Ok(array)
+    }
+
+    fn from_random() -> Self {
+        let mut buffer = [0u8; N];
+        let mut rng = rand::thread_rng();
+        rng.fill(&mut buffer[..]);
+        buffer
     }
 }
 

@@ -1,6 +1,5 @@
 use crate::buf::EbxBuf;
 use crate::error::EbxError;
-use rand::Rng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 
 #[derive(Clone, Debug)]
@@ -14,10 +13,8 @@ impl PrivKey {
     }
 
     pub fn from_random() -> Self {
-        let mut rng = rand::thread_rng();
-        let mut key_data = [0u8; 32];
         loop {
-            rng.fill(&mut key_data);
+            let key_data: [u8; 32] = EbxBuf::from_random();
             if let Ok(secret_key) = SecretKey::from_slice(&key_data) {
                 return PrivKey::new(*secret_key.as_ref());
             }

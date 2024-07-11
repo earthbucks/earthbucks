@@ -284,9 +284,27 @@ impl Header {
     pub fn coinbase_amount(block_num: u32) -> u64 {
         // shift every 210,000 blocks ("halving")
         let shift_by = block_num / 210_000;
-        // 100_000_000 satoshis = 1 earthbuck
+        // BTC: 100_000_000 satoshis = 1 bitcoin
+        // 100 bitcoins per block for the first 210,000 blocks
+        // 100 million satoshis per block for the first 210,000 blocks
+        // EBX: 100_000_000_000 adams = 1 earthbuck
         // 100 earthbucks per block for the first 210,000 blocks
-        (100 * 100_000_000) >> shift_by
+        // 100 billion adams per block for the first 210,000 blocks
+        (100 * 100_000_000_000) >> shift_by
+    }
+
+    pub fn difficulty_from_target(target: u256) -> u256 {
+        let max_target = BufReader::new(Header::MAX_TARGET_BYTES.to_vec())
+            .read_u256_be()
+            .unwrap();
+        max_target / target
+    }
+
+    pub fn target_from_difficulty(difficulty: u256) -> u256 {
+        let max_target = BufReader::new(Header::MAX_TARGET_BYTES.to_vec())
+            .read_u256_be()
+            .unwrap();
+        max_target / difficulty
     }
 }
 
@@ -430,19 +448,131 @@ mod tests {
 
     #[test]
     fn test_coinbase_amount() {
-        assert_eq!(Header::coinbase_amount(0), 10_000_000_000);
-        assert_eq!(Header::coinbase_amount(210_000), 5_000_000_000);
-        assert_eq!(Header::coinbase_amount(420_000), 2_500_000_000);
-        assert_eq!(Header::coinbase_amount(630_000), 1_250_000_000);
-        assert_eq!(Header::coinbase_amount(840_000), 625_000_000);
-        assert_eq!(Header::coinbase_amount(1_050_000), 312_500_000);
-        assert_eq!(Header::coinbase_amount(1_260_000), 156_250_000);
+        assert_eq!(Header::coinbase_amount(0), 10_000_000_000_000);
+        assert_eq!(Header::coinbase_amount(210_000), 5_000_000_000_000);
+        assert_eq!(Header::coinbase_amount(420_000), 2_500_000_000_000);
+        assert_eq!(Header::coinbase_amount(630_000), 1_250_000_000_000);
+        assert_eq!(Header::coinbase_amount(840_000), 625_000_000_000);
+        assert_eq!(Header::coinbase_amount(1_050_000), 312_500_000_000);
+        assert_eq!(Header::coinbase_amount(1_260_000), 156_250_000_000);
 
         let mut sum = 0;
         for i in 0..2_000_000 {
             sum += Header::coinbase_amount(i);
         }
-        assert_eq!(sum, 4_193_945_312_500_000);
+        // max u64: 18_446_744_073_709_551_616 - 1
+        // max val:  4_193_945_312_500_000_000
+        assert_eq!(sum, 4_193_945_312_500_000_000);
+    }
+
+    #[test]
+    fn test_difficulty_from_target_1() {
+        let target_1_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_1: u256 = BufReader::new(Vec::<u8>::from_strict_hex(target_1_hex).unwrap())
+            .read_u256_be()
+            .unwrap();
+        let diff_1 = Header::difficulty_from_target(target_1);
+        assert_eq!(diff_1, u256::from(1u8));
+    }
+
+    #[test]
+    fn test_difficulty_from_target_2() {
+        let target_2_hex = "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_2: u256 = BufReader::new(Vec::<u8>::from_strict_hex(target_2_hex).unwrap())
+            .read_u256_be()
+            .unwrap();
+        let diff_2 = Header::difficulty_from_target(target_2);
+        assert_eq!(diff_2, u256::from(2u8));
+    }
+
+    #[test]
+    fn test_difficulty_from_target_3() {
+        let target_3_hex = "0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_3: u256 = BufReader::new(Vec::<u8>::from_strict_hex(target_3_hex).unwrap())
+            .read_u256_be()
+            .unwrap();
+        let diff_3 = Header::difficulty_from_target(target_3);
+        assert_eq!(diff_3, u256::from(16u8));
+    }
+
+    #[test]
+    fn test_difficulty_from_target_4() {
+        let target_4_hex = "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_4: u256 = BufReader::new(Vec::<u8>::from_strict_hex(target_4_hex).unwrap())
+            .read_u256_be()
+            .unwrap();
+        let diff_4 = Header::difficulty_from_target(target_4);
+        assert_eq!(diff_4, u256::from(32u8));
+    }
+
+    #[test]
+    fn test_difficulty_from_target_5() {
+        let target_5_hex = "00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let target_5: u256 = BufReader::new(Vec::<u8>::from_strict_hex(target_5_hex).unwrap())
+            .read_u256_be()
+            .unwrap();
+        let diff_5 = Header::difficulty_from_target(target_5);
+        assert_eq!(diff_5, u256::from(256u16));
+    }
+
+    #[test]
+    fn test_target_from_difficulty_1() {
+        let diff_1 = u256::from(1u8);
+        let target_1 = Header::target_from_difficulty(diff_1);
+        let target_1_hex = BufWriter::new()
+            .write_u256_be(target_1)
+            .to_buf()
+            .to_strict_hex();
+        let expected_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(target_1_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_target_from_difficulty_2() {
+        let diff_2 = u256::from(2u8);
+        let target_2 = Header::target_from_difficulty(diff_2);
+        let target_2_hex = BufWriter::new()
+            .write_u256_be(target_2)
+            .to_buf()
+            .to_strict_hex();
+        let expected_hex = "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(target_2_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_target_from_difficulty_3() {
+        let diff_3 = u256::from(16u8);
+        let target_3 = Header::target_from_difficulty(diff_3);
+        let target_3_hex = BufWriter::new()
+            .write_u256_be(target_3)
+            .to_buf()
+            .to_strict_hex();
+        let expected_hex = "0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(target_3_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_target_from_difficulty_4() {
+        let diff_4 = u256::from(32u8);
+        let target_4 = Header::target_from_difficulty(diff_4);
+        let target_4_hex = BufWriter::new()
+            .write_u256_be(target_4)
+            .to_buf()
+            .to_strict_hex();
+        let expected_hex = "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(target_4_hex, expected_hex);
+    }
+
+    #[test]
+    fn test_target_from_difficulty_5() {
+        let diff_5 = u256::from(256u16);
+        let target_5 = Header::target_from_difficulty(diff_5);
+        let target_5_hex = BufWriter::new()
+            .write_u256_be(target_5)
+            .to_buf()
+            .to_strict_hex();
+        let expected_hex = "00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        assert_eq!(target_5_hex, expected_hex);
     }
 
     #[test]
