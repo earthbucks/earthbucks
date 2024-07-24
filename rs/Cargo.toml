@@ -2,6 +2,5 @@
 members = [
     "earthbucks_lib",
     "earthbucks_pow",
-    "earthbucks_builder",
 ]
 resolver = "2"
