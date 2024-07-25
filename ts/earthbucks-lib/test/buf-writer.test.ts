@@ -66,7 +66,7 @@ describe("BufWriter", () => {
       const bn = new U64(0xffff);
       const result = BufWriter.varIntBuf(bn);
       expect(result[0]).toBe(253);
-      expect((result[1] << 8) | result[2]).toBe(bn.n);
+      expect(result[1] && result[2] && (result[1] << 8) | result[2]).toBe(bn.n);
     });
 
     it("should write a bigint less than 0x100000000 as a 5-byte integer", () => {
@@ -81,14 +81,14 @@ describe("BufWriter", () => {
       const result = BufWriter.varIntBuf(u64);
       expect(result[0]).toBe(255);
       const readBn =
-        (BigInt(result[1]) << 56n) |
-        (BigInt(result[2]) << 48n) |
-        (BigInt(result[3]) << 40n) |
-        (BigInt(result[4]) << 32n) |
-        (BigInt(result[5]) << 24n) |
-        (BigInt(result[6]) << 16n) |
-        (BigInt(result[7]) << 8n) |
-        BigInt(result[8]);
+        (BigInt(result[1] || 0) << 56n) |
+        (BigInt(result[2] || 0) << 48n) |
+        (BigInt(result[3] || 0) << 40n) |
+        (BigInt(result[4] || 0) << 32n) |
+        (BigInt(result[5] || 0) << 24n) |
+        (BigInt(result[6] || 0) << 16n) |
+        (BigInt(result[7] || 0) << 8n) |
+        BigInt(result[8] || 0);
       expect(readBn).toBe(u64.bn);
     });
   });

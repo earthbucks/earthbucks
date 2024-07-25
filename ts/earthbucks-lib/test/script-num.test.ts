@@ -22,25 +22,25 @@ describe("ScriptNum", () => {
     },
   ];
 
-  testCases.forEach(({ hex, dec }) => {
+  for (const { hex, dec } of testCases) {
     test(`fromBuf correctly converts ${hex} to ${dec}`, () => {
       const buffer = SysBuf.from(hex, "hex");
       const scriptNum = ScriptNum.fromBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });
-  });
+  }
 
-  testCases.forEach(({ hex, dec }) => {
+  for (const { hex, dec } of testCases) {
     test(`toBuf correctly converts ${dec} to ${hex}`, () => {
       const scriptNum = new ScriptNum();
       scriptNum.num = BigInt(dec);
       const buffer = scriptNum.toBuf();
       expect(buffer.toString("hex")).toBe(hex);
     });
-  });
+  }
 
   it("should correctly output positive numbers with the most significant bit set", () => {
-    const num = ScriptNum.fromStrictStr("128"); // 128 is a positive number with the most significant bit set
+    const num = ScriptNum.fromString("128"); // 128 is a positive number with the most significant bit set
     const buffer = num.toBuf();
     const hex = buffer.toString("hex");
     expect(hex).toEqual("0080"); // 128 in hexadecimal is 80, but we expect an extra '00' at the front

@@ -6,7 +6,8 @@ import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
 import { EbxError } from "./error.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U16, U32 } from "./numbers.js";
+import type { Pkh } from "./pkh.js";
 
 export class Script {
   chunks: ScriptChunk[] = [];
@@ -15,21 +16,21 @@ export class Script {
     this.chunks = chunks;
   }
 
-  toStrictStr(): string {
-    return this.chunks.map((chunk) => chunk.toStrictStr()).join(" ");
+  toString(): string {
+    return this.chunks.map((chunk) => chunk.toString()).join(" ");
   }
 
   static fromEmpty(): Script {
     return new Script();
   }
 
-  static fromStrictStr(str: string): Script {
+  static fromString(str: string): Script {
     const script = new Script();
     if (str === "") {
       return script;
     }
 
-    const chunks = str.split(" ").map(ScriptChunk.fromStrictStr);
+    const chunks = str.split(" ").map(ScriptChunk.fromString);
     script.chunks = chunks;
     return script;
   }
@@ -66,11 +67,11 @@ export class Script {
     return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
-  static fromPkhOutput(pkh: SysBuf): Script {
+  static fromPkhOutput(pkh: Pkh): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
+      ScriptChunk.fromData(pkh.buf.buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
     ]);
@@ -79,12 +80,12 @@ export class Script {
   isPkhOutput(): boolean {
     return (
       this.chunks.length === 5 &&
-      this.chunks[0].opcode === Opcode.OP_DUP &&
-      this.chunks[1].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[2].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_DUP &&
+      this.chunks[1]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[2]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[2].buf?.length === 32 &&
-      this.chunks[3].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[4].opcode === Opcode.OP_CHECKSIG
+      this.chunks[3]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[4]?.opcode === Opcode.OP_CHECKSIG
     );
   }
 
@@ -98,9 +99,9 @@ export class Script {
   isPkhInput(): boolean {
     return (
       this.chunks.length === 2 &&
-      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
-      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === PubKey.SIZE
     );
   }
@@ -140,25 +141,25 @@ export class Script {
   isPkhx90dOutput(): boolean {
     return (
       this.chunks.length === 12 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_IF &&
+      this.chunks[1]?.opcode === Opcode.OP_DUP &&
+      this.chunks[2]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[4]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[7]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[7].buf?.length === 2 &&
       this.chunks[7].buf?.readUInt16BE(0) === Script.PKHX_90D_LOCK_REL.n &&
-      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[9].opcode === Opcode.OP_DROP &&
-      this.chunks[10].opcode === Opcode.OP_1 &&
-      this.chunks[11].opcode === Opcode.OP_ENDIF
+      this.chunks[8]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[9]?.opcode === Opcode.OP_DROP &&
+      this.chunks[10]?.opcode === Opcode.OP_1 &&
+      this.chunks[11]?.opcode === Opcode.OP_ENDIF
     );
   }
 
-  static isPkhx90dExpired(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhx90dExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
     return newBlockNum.bn >= prevBlockNum.bn + Script.PKHX_90D_LOCK_REL.bn;
   }
 
@@ -203,47 +204,50 @@ export class Script {
   isPkhxr90d60dOutput(): boolean {
     return (
       this.chunks.length === 23 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_IF &&
+      this.chunks[1]?.opcode === Opcode.OP_DUP &&
+      this.chunks[2]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_IF &&
-      this.chunks[8].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[4]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[7]?.opcode === Opcode.OP_IF &&
+      this.chunks[8]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[8].buf?.length === 2 &&
       this.chunks[8].buf?.readUInt16BE(0) ===
         Script.PKHXR_90D_60D_R_LOCK_REL.n &&
-      this.chunks[9].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[10].opcode === Opcode.OP_DROP &&
-      this.chunks[11].opcode === Opcode.OP_DUP &&
-      this.chunks[12].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[13].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[9]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[10]?.opcode === Opcode.OP_DROP &&
+      this.chunks[11]?.opcode === Opcode.OP_DUP &&
+      this.chunks[12]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[13]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[13].buf?.length === 32 &&
-      this.chunks[14].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[15].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[16].opcode === Opcode.OP_ELSE &&
-      this.chunks[17].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[14]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[15]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[16]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[17]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[17].buf?.length === 2 &&
       this.chunks[17].buf?.readUInt16BE(0) ===
         Script.PKHXR_90D_60D_X_LOCK_REL.n &&
-      this.chunks[18].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[19].opcode === Opcode.OP_DROP &&
-      this.chunks[20].opcode === Opcode.OP_1 &&
-      this.chunks[21].opcode === Opcode.OP_ENDIF &&
+      this.chunks[18]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[19]?.opcode === Opcode.OP_DROP &&
+      this.chunks[20]?.opcode === Opcode.OP_1 &&
+      this.chunks[21]?.opcode === Opcode.OP_ENDIF &&
       this.chunks[21].opcode === Opcode.OP_ENDIF
     );
   }
 
-  static isPkhxr90d60dExpired(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhxr90d60dExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_90D_60D_X_LOCK_REL.bn
     );
   }
 
-  static isPkhxr90d60dRecoverable(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhxr90d60dRecoverable(
+    newBlockNum: U32,
+    prevBlockNum: U32,
+  ): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_90D_60D_R_LOCK_REL.bn
     );
@@ -273,23 +277,23 @@ export class Script {
   isPkhx1hOutput(): boolean {
     return (
       this.chunks.length === 12 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_IF &&
+      this.chunks[1]?.opcode === Opcode.OP_DUP &&
+      this.chunks[2]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_6 &&
-      this.chunks[8].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[9].opcode === Opcode.OP_DROP &&
-      this.chunks[10].opcode === Opcode.OP_1 &&
-      this.chunks[11].opcode === Opcode.OP_ENDIF
+      this.chunks[4]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[7]?.opcode === Opcode.OP_6 &&
+      this.chunks[8]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[9]?.opcode === Opcode.OP_DROP &&
+      this.chunks[10]?.opcode === Opcode.OP_1 &&
+      this.chunks[11]?.opcode === Opcode.OP_ENDIF
     );
   }
 
-  static isPkhx1hExpired(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhx1hExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
     return newBlockNum.bn >= prevBlockNum.bn + Script.PKHX_1H_LOCK_REL.bn;
   }
 
@@ -330,41 +334,41 @@ export class Script {
   isPkhxr1h40mOutput(): boolean {
     return (
       this.chunks.length === 23 &&
-      this.chunks[0].opcode === Opcode.OP_IF &&
-      this.chunks[1].opcode === Opcode.OP_DUP &&
-      this.chunks[2].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[3].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_IF &&
+      this.chunks[1]?.opcode === Opcode.OP_DUP &&
+      this.chunks[2]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[3]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[3].buf?.length === 32 &&
-      this.chunks[4].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[5].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[6].opcode === Opcode.OP_ELSE &&
-      this.chunks[7].opcode === Opcode.OP_IF &&
-      this.chunks[8].opcode === Opcode.OP_4 &&
-      this.chunks[9].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[10].opcode === Opcode.OP_DROP &&
-      this.chunks[11].opcode === Opcode.OP_DUP &&
-      this.chunks[12].opcode === Opcode.OP_DOUBLEBLAKE3 &&
-      this.chunks[13].opcode === Opcode.OP_PUSHDATA1 &&
-      this.chunks[13].buf?.length === 32 &&
-      this.chunks[14].opcode === Opcode.OP_EQUALVERIFY &&
-      this.chunks[15].opcode === Opcode.OP_CHECKSIG &&
-      this.chunks[16].opcode === Opcode.OP_ELSE &&
-      this.chunks[17].opcode === Opcode.OP_6 &&
-      this.chunks[18].opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
-      this.chunks[19].opcode === Opcode.OP_DROP &&
-      this.chunks[20].opcode === Opcode.OP_1 &&
-      this.chunks[21].opcode === Opcode.OP_ENDIF &&
+      this.chunks[4]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[5]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[6]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[7]?.opcode === Opcode.OP_IF &&
+      this.chunks[8]?.opcode === Opcode.OP_4 &&
+      this.chunks[9]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[10]?.opcode === Opcode.OP_DROP &&
+      this.chunks[11]?.opcode === Opcode.OP_DUP &&
+      this.chunks[12]?.opcode === Opcode.OP_DOUBLEBLAKE3 &&
+      this.chunks[13]?.opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[13]?.buf?.length === 32 &&
+      this.chunks[14]?.opcode === Opcode.OP_EQUALVERIFY &&
+      this.chunks[15]?.opcode === Opcode.OP_CHECKSIG &&
+      this.chunks[16]?.opcode === Opcode.OP_ELSE &&
+      this.chunks[17]?.opcode === Opcode.OP_6 &&
+      this.chunks[18]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
+      this.chunks[19]?.opcode === Opcode.OP_DROP &&
+      this.chunks[20]?.opcode === Opcode.OP_1 &&
+      this.chunks[21]?.opcode === Opcode.OP_ENDIF &&
       this.chunks[21].opcode === Opcode.OP_ENDIF
     );
   }
 
-  static isPkhxr1h40mExpired(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhxr1h40mExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_1H_40M_X_LOCK_REL.bn
     );
   }
 
-  static isPkhxr1h40mRecoverable(newBlockNum: U64, prevBlockNum: U64) {
+  static isPkhxr1h40mRecoverable(newBlockNum: U32, prevBlockNum: U32): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_1H_40M_R_LOCK_REL.bn
     );
@@ -375,7 +379,7 @@ export class Script {
   }
 
   isExpiredPkhxInput(): boolean {
-    return this.chunks.length === 1 && this.chunks[0].opcode === Opcode.OP_0;
+    return this.chunks.length === 1 && this.chunks[0]?.opcode === Opcode.OP_0;
   }
 
   static fromUnexpiredPkhxInput(sigBuf: SysBuf, pubKeyBuf: SysBuf): Script {
@@ -389,11 +393,11 @@ export class Script {
   isUnexpiredPkhxInput(): boolean {
     return (
       this.chunks.length === 3 &&
-      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
-      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === PubKey.SIZE &&
-      this.chunks[2].opcode === Opcode.OP_1
+      this.chunks[2]?.opcode === Opcode.OP_1
     );
   }
 
@@ -407,8 +411,8 @@ export class Script {
   isExpiredPkhxrInput(): boolean {
     return (
       this.chunks.length === 2 &&
-      this.chunks[0].opcode === Opcode.OP_0 &&
-      this.chunks[1].opcode === Opcode.OP_0
+      this.chunks[0]?.opcode === Opcode.OP_0 &&
+      this.chunks[1]?.opcode === Opcode.OP_0
     );
   }
 
@@ -430,12 +434,12 @@ export class Script {
   isRecoveryPkhxrInput(): boolean {
     return (
       this.chunks.length === 4 &&
-      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
-      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === PubKey.SIZE &&
-      this.chunks[2].opcode === Opcode.OP_1 &&
-      this.chunks[3].opcode === Opcode.OP_0
+      this.chunks[2]?.opcode === Opcode.OP_1 &&
+      this.chunks[3]?.opcode === Opcode.OP_0
     );
   }
 
@@ -456,11 +460,11 @@ export class Script {
   isUnexpiredPkhxrInput(): boolean {
     return (
       this.chunks.length === 3 &&
-      this.chunks[0].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[0]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[0].buf?.length === TxSignature.SIZE &&
-      this.chunks[1].opcode === Opcode.OP_PUSHDATA1 &&
+      this.chunks[1]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[1].buf?.length === PubKey.SIZE &&
-      this.chunks[2].opcode === Opcode.OP_1
+      this.chunks[2]?.opcode === Opcode.OP_1
     );
   }
 
@@ -474,7 +478,7 @@ export class Script {
     return this.chunks.every((chunk) => chunk.opcode <= Opcode.OP_16);
   }
 
-  isCoinbaseInput(): boolean {
+  isMintTxInput(): boolean {
     // TODO: Add more checks
     return this.isPushOnly();
   }

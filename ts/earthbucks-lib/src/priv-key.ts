@@ -1,6 +1,6 @@
 import secp256k1 from "secp256k1";
 import { SysBuf, FixedBuf } from "./buf.js";
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import {
   EbxError,
   InvalidChecksumError,
@@ -18,7 +18,7 @@ export class PrivKey {
   }
 
   static fromRandom(): PrivKey {
-    let privKeyBuf;
+    let privKeyBuf: FixedBuf<32>;
     do {
       privKeyBuf = FixedBuf.fromRandom(32);
     } while (!secp256k1.privateKeyVerify(privKeyBuf.buf));
@@ -37,7 +37,7 @@ export class PrivKey {
   }
 
   toPubKeyHex(): string {
-    return this.toPubKeyEbxBuf().toStrictHex();
+    return this.toPubKeyEbxBuf().toHex();
   }
 
   static fromBuf(buf: FixedBuf<32>): PrivKey {
@@ -47,29 +47,29 @@ export class PrivKey {
     return new PrivKey(buf);
   }
 
-  toStrictHex(): string {
+  toHex(): string {
     return this.buf.buf.toString("hex");
   }
 
-  static fromStrictHex(hex: string): PrivKey {
-    const buf = FixedBuf.fromStrictHex(32, hex);
+  static fromHex(hex: string): PrivKey {
+    const buf = FixedBuf.fromHex(32, hex);
     const buf32: FixedBuf<32> = FixedBuf.fromBuf(32, buf.buf);
     return PrivKey.fromBuf(buf32);
   }
 
-  toStrictStr(): string {
+  toString(): string {
     const hashBuf = Hash.blake3Hash(this.buf.buf);
     const checkBuf = SysBuf.from(hashBuf.buf).subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
-    return "ebxprv" + checkHex + this.buf.toBase58();
+    return `ebxprv${checkHex}${this.buf.toBase58()}`;
   }
 
-  static fromStrictStr(str: string): PrivKey {
+  static fromString(str: string): PrivKey {
     if (!str.startsWith("ebxprv")) {
       throw new InvalidEncodingError();
     }
     const hexStr = str.slice(6, 14);
-    const checkBuf = FixedBuf.fromStrictHex(4, hexStr);
+    const checkBuf = FixedBuf.fromHex(4, hexStr);
     const decoded32 = FixedBuf.fromBase58(32, str.slice(14));
     const hashBuf = Hash.blake3Hash(decoded32.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
@@ -81,10 +81,19 @@ export class PrivKey {
 
   static isValidStrictStr(str: string): boolean {
     try {
-      PrivKey.fromStrictStr(str);
+      PrivKey.fromString(str);
     } catch (e) {
       return false;
     }
     return true;
+  }
+
+  add(privKey: PrivKey): PrivKey {
+    const arr = secp256k1.privateKeyTweakAdd(
+      SysBuf.from(this.buf.buf),
+      SysBuf.from(privKey.buf.buf),
+    );
+    const buf = FixedBuf.fromBuf(32, SysBuf.from(arr));
+    return PrivKey.fromBuf(buf);
   }
 }

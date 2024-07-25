@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleProof } from "../src/merkle-proof.js";
-import * as Hash from "../src/hash.js";
+import { Hash } from "../src/hash.js";
 import { SysBuf } from "../src/buf.js";
 
 describe("MerkleProof", () => {
@@ -14,7 +14,7 @@ describe("MerkleProof", () => {
       "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244",
     );
 
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const verified1 = MerkleProof.verifyProof(data1.buf, proof1, root.buf);
     expect(verified1).toBe(true);
   });
@@ -30,11 +30,11 @@ describe("MerkleProof", () => {
       "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde",
     );
 
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const verified1 = MerkleProof.verifyProof(data1.buf, proof1, root.buf);
     expect(verified1).toBe(true);
 
-    const proof2 = proofs[1];
+    const proof2 = proofs[1] as MerkleProof;
     const verified2 = MerkleProof.verifyProof(data2.buf, proof2, root.buf);
     expect(verified2).toBe(true);
   });
@@ -48,18 +48,18 @@ describe("MerkleProof", () => {
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
     const hex = SysBuf.from(root.buf).toString("hex");
     expect(hex).toBe(
-      "30a6a79ea9df78385494a1df6a6eeb4fcf318929899fd0b6c96bba0724bcecdf",
+      "a30fb8877ea729e759aa7f847d0232d6620721ab73a57aa4b31f26075c1901a3",
     );
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const verified1 = MerkleProof.verifyProof(data1.buf, proof1, root.buf);
 
     expect(verified1).toBe(true);
 
-    const proof2 = proofs[1];
+    const proof2 = proofs[1] as MerkleProof;
     const verified2 = MerkleProof.verifyProof(data2.buf, proof2, root.buf);
     expect(verified2).toBe(true);
 
-    const proof3 = proofs[2];
+    const proof3 = proofs[2] as MerkleProof;
     const verified3 = MerkleProof.verifyProof(data3.buf, proof3, root.buf);
     expect(verified3).toBe(true);
   });
@@ -77,19 +77,19 @@ describe("MerkleProof", () => {
       "a3344f480b6c8102dd11ad1b686aa2b890b8455bd5343f66b33d392b05b4f187",
     );
 
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const verified1 = MerkleProof.verifyProof(data1.buf, proof1, root.buf);
     expect(verified1).toBe(true);
 
-    const proof2 = proofs[1];
+    const proof2 = proofs[1] as MerkleProof;
     const verified2 = MerkleProof.verifyProof(data2.buf, proof2, root.buf);
     expect(verified2).toBe(true);
 
-    const proof3 = proofs[2];
+    const proof3 = proofs[2] as MerkleProof;
     const verified3 = MerkleProof.verifyProof(data3.buf, proof3, root.buf);
     expect(verified3).toBe(true);
 
-    const proof4 = proofs[3];
+    const proof4 = proofs[3] as MerkleProof;
     const verified4 = MerkleProof.verifyProof(data4.buf, proof4, root.buf);
     expect(verified4).toBe(true);
   });
@@ -104,11 +104,11 @@ describe("MerkleProof", () => {
       "b008a98b438e9964e43bb0b46d985b5750d1bb5831ac97c8bb05868351b221a3",
     );
 
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const verified1 = MerkleProof.verifyProof(data1.buf, proof1, root.buf);
     expect(verified1).toBe(true);
 
-    const proof2 = proofs[1];
+    const proof2 = proofs[1] as MerkleProof;
     const verified2 = MerkleProof.verifyProof(data1.buf, proof2, root.buf);
     expect(verified2).toBe(true);
   });
@@ -120,7 +120,7 @@ describe("MerkleProof", () => {
     const data = [data1, data2];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
-    const proof1 = proofs[0];
+    const proof1 = proofs[0] as MerkleProof;
     const buf1 = proof1.toBuf();
     const proof1FromBuf = MerkleProof.fromBuf(buf1);
     const buf2 = proof1FromBuf.toBuf();
@@ -134,10 +134,10 @@ describe("MerkleProof", () => {
     const data = [data1, data2];
     const [root, proofs] = MerkleProof.generateProofsAndRoot(data);
 
-    const proof1 = proofs[0];
-    const str = proof1.toStrictStr();
-    const proof1FromString = MerkleProof.fromStrictStr(str);
-    const str2 = proof1FromString.toStrictStr();
+    const proof1 = proofs[0] as MerkleProof;
+    const str = proof1.toString();
+    const proof1FromString = MerkleProof.fromString(str);
+    const str2 = proof1FromString.toString();
     expect(str).toBe(str2);
   });
 });

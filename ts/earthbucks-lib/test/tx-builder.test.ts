@@ -23,20 +23,20 @@ describe("TxBuilder", () => {
       const key = KeyPair.fromRandom();
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
       pkhKeyMap.add(key, pkh.buf.buf);
-      const script = Script.fromPkhOutput(pkh.buf.buf);
+      const script = Script.fromPkhOutput(pkh);
       const txOut = new TxOut(new U64(100), script);
-      const txOutBn = new TxOutBn(txOut, new U64(0n));
+      const txOutBn = new TxOutBn(txOut, new U32(0n));
       txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
     }
 
     const changeScript = Script.fromEmpty();
-    txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+    txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
   });
 
   test("should build a valid tx when input is enough to cover the output", () => {
     const key = KeyPair.fromRandom();
     const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-    const script = Script.fromPkhOutput(pkh.buf.buf);
+    const script = Script.fromPkhOutput(pkh);
     const output = new TxOut(new U64(50), script);
     txBuilder.addOutput(output);
 
@@ -44,7 +44,7 @@ describe("TxBuilder", () => {
 
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
-    expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
+    expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
   });
 
   test("should build an invalid tx when input is insufficient to cover the output", () => {
@@ -56,6 +56,6 @@ describe("TxBuilder", () => {
     expect(tx.inputs.length).toBe(5);
     expect(tx.outputs.length).toBe(1);
     expect(txBuilder.inputAmount.bn).toEqual(BigInt(500));
-    expect(tx.outputs[0].value.bn).toEqual(BigInt(10000));
+    expect(tx.outputs[0]?.value.bn).toEqual(BigInt(10000));
   });
 });

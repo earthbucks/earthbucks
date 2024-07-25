@@ -2,9 +2,10 @@ import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
-import { SysBuf } from "./buf.js";
+import type { SysBuf } from "./buf.js";
 import { EbxError } from "./error.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U32 } from "./numbers.js";
+import type { U64 } from "./numbers.js";
 
 export class TxOut {
   public value: U64;

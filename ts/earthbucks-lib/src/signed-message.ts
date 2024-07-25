@@ -1,8 +1,8 @@
 import { FixedBuf, SysBuf } from "./buf.js";
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
-import { PrivKey } from "./priv-key.js";
+import type { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
@@ -28,9 +28,9 @@ export class SignedMessage {
     this.keyStr = keyStr;
   }
 
-  static createMac(message: SysBuf, keyStr: string) {
+  static createMac(message: SysBuf, keyStr: string): FixedBuf<32> {
     const key = Hash.blake3Hash(SysBuf.from(keyStr));
-    return Hash.blake3Mac(key.buf, message);
+    return Hash.blake3Mac(key, message);
   }
 
   static fromSignMessage(

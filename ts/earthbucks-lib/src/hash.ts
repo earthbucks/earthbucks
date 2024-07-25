@@ -1,12 +1,12 @@
 import { hash, createKeyed } from "blake3";
 import { SysBuf, FixedBuf } from "./buf.js";
-import { blake3 as blake3browser } from "@noble/hashes/blake3"; // eslint-disable-line
+import { blake3 as blake3browser } from "@noble/hashes/blake3";
 
-type EbxBufFunction = (input: SysBuf) => FixedBuf<32>;
-type MacFunction = (key: SysBuf, data: SysBuf) => FixedBuf<32>;
+type HashFunction = (input: SysBuf) => FixedBuf<32>;
+type MacFunction = (key: FixedBuf<32>, data: SysBuf) => FixedBuf<32>;
 
-let blake3Hash: EbxBufFunction;
-let doubleBlake3Hash: EbxBufFunction;
+let blake3Hash: HashFunction;
+let doubleBlake3Hash: HashFunction;
 let blake3Mac: MacFunction;
 
 if (typeof document === "undefined") {
@@ -20,14 +20,17 @@ if (typeof document === "undefined") {
     return FixedBuf.fromBuf(32, blake3Hash(blake3Hash(data).buf).buf);
   };
 
-  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedBuf<32> {
+  blake3Mac = function blake3Mac(
+    key: FixedBuf<32>,
+    data: SysBuf,
+  ): FixedBuf<32> {
     return FixedBuf.fromBuf(
       32,
-      createKeyed(key).update(data).digest() as SysBuf,
+      createKeyed(key.buf).update(data).digest() as SysBuf,
     );
   };
 } else {
-  // running in a browser environment
+  //running in a browser environment
 
   blake3Hash = function blake3Hash(data: SysBuf): FixedBuf<32> {
     return FixedBuf.fromBuf(
@@ -40,16 +43,13 @@ if (typeof document === "undefined") {
     return blake3Hash(blake3Hash(data).buf);
   };
 
-  blake3Mac = function blake3Mac(key: SysBuf, data: SysBuf): FixedBuf<32> {
-    return FixedBuf.fromBuf(
-      32,
-      SysBuf.from(
-        blake3browser(data, { key: key }),
-        data.byteOffset,
-        data.length,
-      ),
-    );
+  blake3Mac = function blake3Mac(
+    key: FixedBuf<32>,
+    data: SysBuf,
+  ): FixedBuf<32> {
+    const res = blake3browser(data, { key: key.buf });
+    return FixedBuf.fromBuf(32, SysBuf.from(res));
   };
 }
 
-export { blake3Hash, doubleBlake3Hash, blake3Mac };
+export const Hash = { blake3Hash, doubleBlake3Hash, blake3Mac };

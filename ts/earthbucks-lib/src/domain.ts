@@ -5,11 +5,11 @@ export class Domain {
     this.domainStr = domainStr;
   }
 
-  static fromStrictStr(domainStr: string): Domain {
+  static fromString(domainStr: string): Domain {
     return new Domain(domainStr);
   }
 
-  toStrictStr(): string {
+  toString(): string {
     return this.domainStr;
   }
 
@@ -17,8 +17,8 @@ export class Domain {
     return Domain.isValidDomain(this.domainStr);
   }
 
-  static isValidDomain(domainStr: string): boolean {
-    domainStr = domainStr.trim();
+  static isValidDomain(domain: string): boolean {
+    const domainStr = domain.trim();
     if (domainStr.length < 4) {
       return false;
     }

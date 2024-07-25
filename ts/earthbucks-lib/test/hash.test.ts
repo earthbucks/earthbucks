@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import * as Hash from "../src/hash.js";
-import { SysBuf } from "../src/buf.js";
+import { Hash } from "../src/hash.js";
+import { FixedBuf, SysBuf } from "../src/buf.js";
 
 describe("blake3", () => {
   test("hash", () => {
@@ -37,12 +37,39 @@ describe("blake3", () => {
     expect(pkh.toString("hex")).toEqual(expected_pkh.toString("hex"));
   });
 
-  test("blake3Mac", () => {
+  describe("blake3Mac", () => {
     const key = Hash.blake3Hash(SysBuf.from("key"));
     const data = SysBuf.from("data");
-    const mac = Hash.blake3Mac(key.buf, data).buf;
+    const mac = Hash.blake3Mac(key, data).buf;
     expect(mac.toString("hex")).toEqual(
       "438f903a8fc5997489497c30477dc32c5ece10f44049e302b85a83603960ec27",
     );
+
+    test("should return a FixedBuf<32>", () => {
+      const key = FixedBuf.fromHex(32, "0f".repeat(32));
+      const data = FixedBuf.fromHex(31, "f0".repeat(31)).buf;
+      const result = Hash.blake3Mac(key, data);
+      expect(result.toHex()).toEqual(
+        "46f66424c1cb3be92e623339cb0ef5df1a3a3c55de22135f7b658d362d9a6e9e",
+      );
+    });
+
+    test("should return a FixedBuf<32>", () => {
+      const key = FixedBuf.fromHex(32, "0f".repeat(32));
+      const data = FixedBuf.fromHex(33, "f0".repeat(33)).buf;
+      const result = Hash.blake3Mac(key, data);
+      expect(result.toHex()).toEqual(
+        "3251b3126f5de7f3621450105694096f91d592cb43f96e803644cafdf791a11b",
+      );
+    });
+
+    test("should return a FixedBuf<32>", () => {
+      const key = FixedBuf.fromHex(32, "0f".repeat(32));
+      const data = FixedBuf.fromHex(32, "f0".repeat(32)).buf;
+      const result = Hash.blake3Mac(key, data);
+      expect(result.toHex()).toEqual(
+        "40400457e60c7a6ab2c684c121bc7f3215f17be450fef773790dde7a2e133fdd",
+      );
+    });
   });
 });

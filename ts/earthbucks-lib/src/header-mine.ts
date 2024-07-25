@@ -1,4 +1,4 @@
-import { Header } from "./header.js";
+import type { Header } from "./header.js";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 import { BufReader } from "./buf-reader.js";
@@ -10,16 +10,13 @@ export class HeaderMine {
     this.header = header;
   }
 
-  randomizeNonce(): void {
+  randomizeNonce() {
     const buf = FixedBuf.fromRandom(32);
-    this.header.nonce = new BufReader(buf.buf).readU256BE();
+    this.header.nonce = U256.fromBEBuf(buf.buf);
   }
 
   getIdHashNum(): U256 {
-    const headerId = this.header.id();
-    const br = new BufReader(headerId.buf);
-    const hashNum = br.readU256BE();
-    return hashNum;
+    return U256.fromBEBuf(this.header.id().buf);
   }
 
   getLowestIdForNTimes(n: number): U256 {

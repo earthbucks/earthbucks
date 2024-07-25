@@ -1,11 +1,11 @@
-import { TxOut } from "./tx-out.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import type { TxOut } from "./tx-out.js";
+import type { U32 } from "./numbers.js";
 
 export class TxOutBn {
   txOut: TxOut;
-  blockNum: U64;
+  blockNum: U32;
 
-  constructor(txOut: TxOut, blockNum: U64) {
+  constructor(txOut: TxOut, blockNum: U32) {
     this.txOut = txOut;
     this.blockNum = blockNum;
   }

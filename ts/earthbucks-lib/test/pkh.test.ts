@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { KeyPair } from "../src/key-pair.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { Pkh } from "../src/pkh.js";
 import { SysBuf } from "../src/buf.js";
 import { PubKey } from "../src/pub-key.js";
@@ -30,11 +30,9 @@ describe("Pkh", () => {
       ),
     ).toBe(false);
     expect(
-      Pkh.fromStrictStr(
+      Pkh.fromString(
         "ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4",
-      )
-
-        .toStrictStr(),
+      ).toString(),
     ).toEqual("ebxpkh31a042833G3ZzV3uEraE8B2Pvea3rKP2QkaQRVZkxmADrm3LEcN4");
   });
 
@@ -52,9 +50,9 @@ describe("Pkh", () => {
       const pkhPairs: AddressPair[] = JSON.parse(data).pkh;
 
       for (const pair of pkhPairs) {
-        const pubKey = PubKey.fromStrictStr(pair.pub_key);
+        const pubKey = PubKey.fromString(pair.pub_key);
         const pkh = Pkh.fromPubKey(pubKey);
-        expect(pkh.toStrictStr()).toBe(pair.pkh);
+        expect(pkh.toString()).toBe(pair.pkh);
       }
     });
   });

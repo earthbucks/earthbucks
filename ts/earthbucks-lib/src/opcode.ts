@@ -379,96 +379,188 @@ export const Opcode: { [key in OP_CodeName]: number } = {
 };
 
 export const OPCODE_TO_NAME: { [key: number]: OpcodeName } = {
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x00: "0",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x4c: "PUSHDATA1",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x4d: "PUSHDATA2",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x4e: "PUSHDATA4",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x4f: "1NEGATE",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x51: "1",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x52: "2",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x53: "3",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x54: "4",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x55: "5",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x56: "6",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x57: "7",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x58: "8",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x59: "9",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5a: "10",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5b: "11",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5c: "12",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5d: "13",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5e: "14",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x5f: "15",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x60: "16",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x63: "IF",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x64: "NOTIF",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x67: "ELSE",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x68: "ENDIF",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x69: "VERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6a: "RETURN",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6b: "TOALTSTACK",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6c: "FROMALTSTACK",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6d: "2DROP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6e: "2DUP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x6f: "3DUP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x70: "2OVER",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x71: "2ROT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x72: "2SWAP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x73: "IFDUP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x74: "DEPTH",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x75: "DROP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x76: "DUP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x77: "NIP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x78: "OVER",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x79: "PICK",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7a: "ROLL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7b: "ROT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7c: "SWAP",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7d: "TUCK",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7e: "CAT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x7f: "SUBSTR",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x80: "LEFT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x81: "RIGHT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x82: "SIZE",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x83: "INVERT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x84: "AND",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x85: "OR",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x86: "XOR",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x87: "EQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x88: "EQUALVERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x8b: "1ADD",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x8c: "1SUB",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x8d: "2MUL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x8e: "2DIV",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x8f: "NEGATE",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x90: "ABS",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x91: "NOT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x92: "0NOTEQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x93: "ADD",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x94: "SUB",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x95: "MUL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x96: "DIV",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x97: "MOD",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x98: "LSHIFT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x99: "RSHIFT",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9a: "BOOLAND",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9b: "BOOLOR",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9c: "NUMEQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9d: "NUMEQUALVERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9e: "NUMNOTEQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0x9f: "LESSTHAN",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa0: "GREATERTHAN",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa1: "LESSTHANOREQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa2: "GREATERTHANOREQUAL",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa3: "MIN",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa4: "MAX",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa5: "WITHIN",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa6: "BLAKE3",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xa7: "DOUBLEBLAKE3",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xac: "CHECKSIG",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xad: "CHECKSIGVERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xae: "CHECKMULTISIG",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xaf: "CHECKMULTISIGVERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xb1: "CHECKLOCKABSVERIFY",
+  // biome-ignore lint/complexity/useSimpleNumberKeys:
   0xb2: "CHECKLOCKRELVERIFY",
 };

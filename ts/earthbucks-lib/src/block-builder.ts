@@ -2,28 +2,33 @@ import { Block } from "./block.js";
 import { Header } from "./header.js";
 import { Tx } from "./tx.js";
 import { MerkleTxs } from "./merkle-txs.js";
-import { Script } from "./script.js";
+import type { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import { SysBuf, FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
+import { SysBuf } from "./buf.js";
+import type { FixedBuf } from "./buf.js";
+import { U8 } from "./numbers.js";
+import type { U16, U128, U256 } from "./numbers.js";
+import { U32 } from "./numbers.js";
+import type { U64 } from "./numbers.js";
+import { MerkleNode } from "./merkle-node.js";
 
 export class BlockBuilder {
   public header: Header;
   public txs: Tx[];
-  public merkleTxs: MerkleTxs;
+  public rootMerkleNode: MerkleNode;
 
-  constructor(header: Header, txs: Tx[], merkleTxs: MerkleTxs) {
+  constructor(header: Header, txs: Tx[], rootMerkleNode: MerkleNode) {
     this.header = header;
     this.txs = txs;
-    this.merkleTxs = merkleTxs;
+    this.rootMerkleNode = rootMerkleNode;
   }
 
   static fromBlock(block: Block): BlockBuilder {
     const header = block.header;
     const txs = block.txs;
-    const merkleTxs = new MerkleTxs(txs);
-    return new BlockBuilder(header, txs, merkleTxs);
+    const merkleRoot = MerkleNode.fromLeafHashes(txs.map((tx) => tx.id()));
+    return new BlockBuilder(header, txs, merkleRoot);
   }
 
   static fromGenesis(
@@ -31,24 +36,25 @@ export class BlockBuilder {
     outputScript: Script,
     outputAmount: U64,
   ): BlockBuilder {
-    const txs = [];
-    const txInput = TxIn.fromCoinbase(outputScript);
+    const txInput = TxIn.fromMintTx(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const coinbaseTx = new Tx(new U8(0), [txInput], [txOutput], new U64(0n));
-    txs.push(coinbaseTx);
-    const merkleTxs = new MerkleTxs(txs);
-    const merkleRoot = merkleTxs.root;
-    const header = Header.fromGenesis(initialTarget, merkleRoot);
-    return new BlockBuilder(header, txs, merkleTxs);
+    const mintTx = new Tx(new U8(0), [txInput], [txOutput], new U32(0n));
+    const txs = [mintTx];
+    const merkleRoot = MerkleNode.fromLeafHashes(txs.map((tx) => tx.id()));
+    const merkleRootId: FixedBuf<32> = merkleRoot.hash as FixedBuf<32>;
+    const header = Header.fromGenesis(initialTarget, merkleRootId);
+    return new BlockBuilder(header, txs, merkleRoot);
   }
 
   toBlock(): Block {
     return new Block(this.header, this.txs);
   }
 
-  addTx(tx: Tx): void {
-    this.txs.push(tx);
-    this.merkleTxs = new MerkleTxs(this.txs);
-    this.header.merkleRoot = this.merkleTxs.root;
+  addTx(tx: Tx): BlockBuilder {
+    const txs = [...this.txs, tx];
+    const merkleRoot = this.rootMerkleNode.addLeafHash(tx.id());
+    const merkleRootId = merkleRoot.hash as FixedBuf<32>;
+    const header = this.header.addTx(merkleRootId);
+    return new BlockBuilder(header, txs, merkleRoot);
   }
 }

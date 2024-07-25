@@ -3,7 +3,7 @@
 // "browserify" the correct way. The reason why I'm renaming it here is
 // specifically to make sure we always use this version of "Buffer" and never
 // the standard node version so that it polyfills in the browser correctly.
-import { Buffer } from "buffer";
+import { Buffer as SysBuf } from "buffer";
 import {
   EbxError,
   InvalidSizeError,
@@ -11,9 +11,6 @@ import {
   InvalidEncodingError,
 } from "./error.js";
 import bs58 from "bs58";
-
-const SysBuf = Buffer;
-type SysBuf = Buffer;
 
 function isValidHex(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
@@ -53,12 +50,12 @@ class EbxBuf {
     return EbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex(size: number, hex: string): EbxBuf {
+  static fromHex(size: number, hex: string): EbxBuf {
     const buf = decodeHex(hex);
     return EbxBuf.fromBuf(size, buf);
   }
 
-  toStrictHex(): string {
+  toHex(): string {
     return encodeHex(this._buf);
   }
 
@@ -99,7 +96,7 @@ class FixedBuf<N extends number> extends EbxBuf {
     return FixedBuf.fromBuf(size, SysBuf.alloc(size, fill));
   }
 
-  static fromStrictHex<N extends number>(size: N, hex: string): FixedBuf<N> {
+  static fromHex<N extends number>(size: N, hex: string): FixedBuf<N> {
     const buf = decodeHex(hex);
     return FixedBuf.fromBuf(size, buf);
   }

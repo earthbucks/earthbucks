@@ -1,6 +1,6 @@
 {
-  "name": "earthbucks-pow",
-  "version": "0.1.0",
+  "name": "@earthbucks/earthbucks-pow-browser",
+  "version": "0.6.0",
   "description": "EarthBucks Proof-of-Work (PoW) algorithms with big dependencies.",
   "main": "dist/lib.js",
   "types": "dist/lib.d.js",
@@ -9,8 +9,8 @@
     "main": "tsx src/main.ts",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint --ignore-pattern dist --cache --cache-location ./node_modules/.cache/eslint .",
-    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "lint": "biome lint --write --unsafe",
+    "format": "biome format --write",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
@@ -26,28 +26,18 @@
   },
   "license": "MIT",
   "type": "module",
-  "prettier": {
-    "semi": true,
-    "singleQuote": false
-  },
   "packageManager": "pnpm@8.15.4",
   "dependencies": {
+    "@earthbucks/earthbucks-lib": "workspace:^",
     "@tensorflow/tfjs": "^4.20.0",
-    "@tensorflow/tfjs-node": "^4.20.0",
     "blake3": "2.1.7",
-    "buffer": "^6.0.3",
-    "earthbucks-lib": "workspace:^"
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.4.0",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
-    "eslint": "^9.4.0",
-    "eslint-plugin-import": "^2.29.1",
+    "typescript": "^5.5.3",
+    "@biomejs/biome": "^1.8.3",
     "globals": "^15.3.0",
-    "prettier": "^3.3.0",
     "rimraf": "^5.0.7",
-    "typescript-eslint": "^7.11.0",
     "vitest": "^1.6.0"
   }
 }

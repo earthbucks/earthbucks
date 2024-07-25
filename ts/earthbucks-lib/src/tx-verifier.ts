@@ -1,16 +1,18 @@
-import { Tx, HashCache } from "./tx.js";
-import { TxOutBnMap } from "./tx-out-bn-map.js";
+import { HashCache } from "./tx.js";
+import type { Tx } from "./tx.js";
+import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
 import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
+import type { TxIn } from "./tx-in.js";
 
 export class TxVerifier {
   public tx: Tx;
   public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
-  public blockNum: U64;
+  public blockNum: U32;
 
-  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: U64) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: U32) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
@@ -18,7 +20,7 @@ export class TxVerifier {
   }
 
   verifyInputScript(nIn: U32): boolean {
-    const txInput = this.tx.inputs[nIn.n];
+    const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txOutHash, outputIndex);
@@ -44,7 +46,7 @@ export class TxVerifier {
   }
 
   verifyInputLockRel(nIn: U32): boolean {
-    const txInput = this.tx.inputs[nIn.n];
+    const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txId = txInput.inputTxId;
     const txOutNum = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txId, txOutNum);
@@ -99,9 +101,9 @@ export class TxVerifier {
     return totalOutputValue.bn === totalInputValue.bn;
   }
 
-  verifyIsNotCoinbase(): boolean {
-    // TODO: Allow coinbases to have multiple inputs
-    if (this.tx.inputs.length === 1 && this.tx.inputs[0].isCoinbase()) {
+  verifyIsNotMintTx(): boolean {
+    // TODO: Allow mintTxs to have multiple inputs
+    if (this.tx.inputs.length === 1 && this.tx.inputs[0]?.isMintTx()) {
       return false;
     }
     return true;
@@ -118,7 +120,7 @@ export class TxVerifier {
     if (!this.verifyLockAbs()) {
       return false;
     }
-    if (!this.verifyIsNotCoinbase()) {
+    if (!this.verifyIsNotMintTx()) {
       return false;
     }
     if (!this.verifyNoDoubleSpend()) {

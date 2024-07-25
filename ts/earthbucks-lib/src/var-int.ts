@@ -11,12 +11,12 @@ export class VarInt {
     this.buf = buf;
   }
 
-  static fromU64(u64: U64) {
+  static fromU64(u64: U64): VarInt {
     const buf = new BufWriter().writeVarInt(u64).toBuf();
     return new VarInt(buf);
   }
 
-  static fromU32(u32: U32) {
+  static fromU32(u32: U32): VarInt {
     const buf = new BufWriter().writeVarInt(new U64(u32.n)).toBuf();
     return new VarInt(buf);
   }
@@ -39,7 +39,7 @@ export class VarInt {
     return new VarInt(buf);
   }
 
-  isMinimal() {
+  isMinimal(): boolean {
     try {
       const u64 = this.toU64();
       const varint = VarInt.fromU64(u64);

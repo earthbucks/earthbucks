@@ -12,21 +12,21 @@ export class TxBuilder {
   public tx: Tx;
   public changeScript: Script;
   public inputAmount: U64;
-  public lockAbs: U64;
+  public lockAbs: U32;
 
-  constructor(inputTxOutMap: TxOutBnMap, changeScript: Script, lockAbs: U64) {
-    this.tx = new Tx(new U8(0), [], [], new U64(0));
+  constructor(inputTxOutMap: TxOutBnMap, changeScript: Script, lockAbs: U32) {
+    this.tx = new Tx(new U8(0), [], [], new U32(0));
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = new U64(0);
     this.lockAbs = lockAbs;
   }
 
-  addOutput(txOut: TxOut): void {
+  addOutput(txOut: TxOut) {
     this.tx.outputs.push(txOut);
   }
 
-  addInput(txIn: TxIn, amount: U64): void {
+  addInput(txIn: TxIn, amount: U64) {
     this.tx.inputs.push(txIn);
     this.inputAmount = this.inputAmount.add(amount);
   }

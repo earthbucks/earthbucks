@@ -4,8 +4,8 @@ import { Script } from "../src/script.js";
 import { Tx, HashCache } from "../src/tx.js";
 import { TxIn } from "../src/tx-in.js";
 import { TxOut } from "../src/tx-out.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
@@ -28,13 +28,13 @@ describe("ScriptInterpreter", () => {
         ),
       ],
       [new TxOut(new U64(0), new Script())],
-      new U64(0),
+      new U32(0),
     );
   });
 
   describe("sanity tests", () => {
     test("0", () => {
-      const script = Script.fromStrictStr("0");
+      const script = Script.fromString("0");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -51,7 +51,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("pushdata1", () => {
-      const script = Script.fromStrictStr("0xff");
+      const script = Script.fromString("0xff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -69,7 +69,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA1", () => {
-      const script = Script.fromStrictStr("0xffff");
+      const script = Script.fromString("0xffff");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -87,7 +87,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA2", () => {
-      const script = Script.fromStrictStr("0x" + "ff".repeat(256));
+      const script = Script.fromString(`0x${"ff".repeat(256)}`);
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -105,7 +105,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("PUSHDATA4", () => {
-      const script = Script.fromStrictStr("0x" + "ff".repeat(65536));
+      const script = Script.fromString(`0x${"ff".repeat(65536)}`);
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -123,7 +123,7 @@ describe("ScriptInterpreter", () => {
     });
 
     test("1NEGATE", () => {
-      const script = Script.fromStrictStr("1NEGATE");
+      const script = Script.fromString("1NEGATE");
       const hashCache = new HashCache();
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
@@ -143,14 +143,14 @@ describe("ScriptInterpreter", () => {
     test("CHECKSIG", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
-      const outputPrivKeyBuf = FixedBuf.fromStrictHex(32, outputPrivKeyHex);
+      const outputPrivKeyBuf = FixedBuf.fromHex(32, outputPrivKeyHex);
       const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toBuf();
       expect(SysBuf.from(outputPubKey.buf).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
-      const outputScript = Script.fromPkhOutput(outputAddress.buf.buf);
+      const outputScript = Script.fromPkhOutput(outputAddress);
       const outputAmount = new U64(100);
       const outputTxId = FixedBuf.alloc(32, 0);
       const outputTxIndex = new U32(0);
@@ -166,7 +166,7 @@ describe("ScriptInterpreter", () => {
           ),
         ],
         [new TxOut(outputAmount, outputScript)],
-        new U64(0),
+        new U32(0),
       );
 
       const sig = tx.signNoCache(
@@ -233,7 +233,7 @@ describe("ScriptInterpreter", () => {
           ),
         ],
         [new TxOut(outputAmount, outputScript)],
-        new U64(0),
+        new U32(0),
       );
 
       // Sign the tx with the first 3 private keys
@@ -302,13 +302,13 @@ describe("ScriptInterpreter", () => {
             ),
           ],
           [new TxOut(new U64(0), new Script())],
-          new U64(0),
+          new U32(0),
         );
       });
 
-      testScripts.forEach((testScript) => {
+      for (const testScript of testScripts) {
         test(testScript.name, () => {
-          const script = Script.fromStrictStr(testScript.script);
+          const script = Script.fromString(testScript.script);
           const hashCache = new HashCache();
           const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,
@@ -327,7 +327,7 @@ describe("ScriptInterpreter", () => {
             testScript.expected_success,
           );
         });
-      });
+      }
     });
   });
 });

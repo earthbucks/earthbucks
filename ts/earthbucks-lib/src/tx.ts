@@ -3,13 +3,13 @@ import { TxOut } from "./tx-out.js";
 import { VarInt } from "./var-int.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
-import { Script } from "./script.js";
+import type { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
-import { EbxError } from "./error.js";
+import { EbxError, GenericError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class HashCache {
@@ -22,9 +22,9 @@ export class Tx {
   public version: U8;
   public inputs: TxIn[];
   public outputs: TxOut[];
-  public lockAbs: U64;
+  public lockAbs: U32;
 
-  constructor(version: U8, inputs: TxIn[], outputs: TxOut[], lockAbs: U64) {
+  constructor(version: U8, inputs: TxIn[], outputs: TxOut[], lockAbs: U32) {
     this.version = version;
     this.inputs = inputs;
     this.outputs = outputs;
@@ -49,7 +49,7 @@ export class Tx {
       const txOut = TxOut.fromBufReader(reader);
       outputs.push(txOut);
     }
-    const lockNum = reader.readU64BE();
+    const lockNum = reader.readU32BE();
     return new Tx(version, inputs, outputs, lockNum);
   }
 
@@ -64,33 +64,40 @@ export class Tx {
     for (const output of this.outputs) {
       writer.write(output.toBuf());
     }
-    writer.writeU64BE(this.lockAbs);
+    writer.writeU32BE(this.lockAbs);
     return writer.toBuf();
   }
 
-  toStrictHex(): string {
+  toHex(): string {
     return this.toBuf().toString("hex");
   }
 
-  static fromStrictHex(hex: string): Tx {
-    const buf = FixedBuf.fromStrictHex(hex.length / 2, hex);
+  static fromHex(hex: string): Tx {
+    const buf = FixedBuf.fromHex(hex.length / 2, hex);
     return Tx.fromBuf(buf.buf);
   }
 
-  static fromCoinbase(
+  static fromMintTxOutputScript(
     inputScript: Script,
     outputScript: Script,
     outputAmount: U64,
   ): Tx {
     const version = new U8(0);
-    const inputs = [TxIn.fromCoinbase(inputScript)];
-    const outputs = [new TxOut(outputAmount, outputScript)];
-    const lockNum = new U64(0);
-    return new Tx(version, inputs, outputs, lockNum);
+    const inputs = [TxIn.fromMintTx(inputScript)];
+    const txOuts = [new TxOut(outputAmount, outputScript)];
+    const lockNum = new U32(0);
+    return new Tx(version, inputs, txOuts, lockNum);
   }
 
-  isCoinbase(): boolean {
-    return this.inputs.length === 1 && this.inputs[0].isCoinbase();
+  static fromMintTxTxOuts(inputScript: Script, txOuts: TxOut[]): Tx {
+    const version = new U8(0);
+    const txIns = [TxIn.fromMintTx(inputScript)];
+    const lockNum = new U32(0);
+    return new Tx(version, txIns, txOuts, lockNum);
+  }
+
+  isMintTx(): boolean {
+    return this.inputs.length === 1 && this.inputs[0]?.isMintTx() === true;
   }
 
   blake3Hash(): FixedBuf<32> {
@@ -133,6 +140,9 @@ export class Tx {
     hashType: U8,
     hashCache: HashCache,
   ): SysBuf {
+    if (inputIndex.n >= this.inputs.length) {
+      throw new GenericError("input index out of bounds");
+    }
     const SIGHASH_ANYONECANPAY = 0x80;
     const SIGHASH_SINGLE = 0x03;
     const SIGHASH_NONE = 0x02;
@@ -171,21 +181,23 @@ export class Tx {
       (hashType.n & 0x1f) === SIGHASH_SINGLE &&
       inputIndex.n < this.outputs.length
     ) {
-      outputsHash = Hash.doubleBlake3Hash(this.outputs[inputIndex.n].toBuf());
+      outputsHash = Hash.doubleBlake3Hash(
+        (this.outputs[inputIndex.n] as TxOut).toBuf(),
+      );
     }
 
     const writer = new BufWriter();
     writer.writeU8(this.version);
     writer.write(prevoutsHash.buf);
     writer.write(lockRelHash.buf);
-    writer.write(this.inputs[inputIndex.n].inputTxId.buf);
-    writer.writeU32BE(this.inputs[inputIndex.n].inputTxNOut);
+    writer.write((this.inputs[inputIndex.n] as TxIn).inputTxId.buf);
+    writer.writeU32BE((this.inputs[inputIndex.n] as TxIn).inputTxNOut);
     writer.writeVarInt(new U64(script.length));
     writer.write(script);
     writer.writeU64BE(amount);
-    writer.writeU32BE(this.inputs[inputIndex.n].lockRel);
+    writer.writeU32BE((this.inputs[inputIndex.n] as TxIn).lockRel);
     writer.write(outputsHash.buf);
-    writer.writeU64BE(this.lockAbs);
+    writer.writeU32BE(this.lockAbs);
     writer.writeU8(hashType);
     return writer.toBuf();
   }

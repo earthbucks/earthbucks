@@ -11,19 +11,18 @@
     ".env.*": "dotenv"
   },
   "github.copilot.enable": {
-    "*": "false",
-    "dotenv": "false",
-    "markdown": "true",
-    "javascript": "true",
-    "typescript": "true",
-    "toml": "true",
-    "yaml": "true",
-    "json": "true",
-    "cpp": "true",
-    "rust": "true"
+    "*": false,
+    "dotenv": false,
+    "markdown": true,
+    "javascript": true,
+    "typescript": true,
+    "toml": true,
+    "yaml": true,
+    "json": true,
+    "cpp": true,
+    "rust": true
   },
   "css.customData": [".vscode/tailwind.json"],
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
@@ -33,11 +32,15 @@
   },
   "sql-formatter.uppercase": true,
   "rust-analyzer.check.command": "clippy",
-  "eslint.workingDirectories": ["ts/*"],
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ]
+  "editor.defaultFormatter": "biomejs.biome",
+  "biome.lspBin": "ts/node_modules/.bin/biome",
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
 }

@@ -25,7 +25,7 @@ TypeScript version if possible.
 ### In TypeScript
 
 ```ts
-import { PrivKey } from "earthbucks-lib/src/lib.js";
+import { PrivKey } from "@earthbucks/earthbucks-lib/src/lib.js";
 ```
 
 Even though this is TypeScript, you must use the .js extension in order to make
@@ -34,7 +34,7 @@ sure that the imports continue to work when built to JavaScript.
 ### In JavasScript
 
 ```js
-import { PrivKey } from "earthbucks-lib";
+import { PrivKey } from "@earthbucks/earthbucks-lib";
 ```
 
 Notice that the JavaScript version is the default.

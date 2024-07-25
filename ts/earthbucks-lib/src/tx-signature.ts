@@ -23,7 +23,10 @@ export class TxSignature {
   }
 
   static fromBuf(buf: SysBuf): TxSignature {
-    const hashType = new U8(buf[0]);
+    if (buf.length !== TxSignature.SIZE) {
+      throw new Error("Invalid TxSignature length");
+    }
+    const hashType = new U8(buf[0] as number);
     const sigBuf = buf.subarray(1);
     const sigFixedEbxBuf = FixedBuf.fromBuf(64, sigBuf);
     return new TxSignature(hashType, sigFixedEbxBuf);

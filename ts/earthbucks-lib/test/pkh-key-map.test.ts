@@ -56,11 +56,11 @@ describe("PkhKeyMap", () => {
     const values = Array.from(pkhKeyMap.values());
 
     expect(values.length).toBe(2);
-    expect(SysBuf.from(values[0].privKey.toBuf().buf).toString("hex")).toEqual(
-      SysBuf.from(key1.privKey.toBuf().buf).toString("hex"),
-    );
-    expect(SysBuf.from(values[1].privKey.toBuf().buf).toString("hex")).toEqual(
-      SysBuf.from(key2.privKey.toBuf().buf).toString("hex"),
-    );
+    expect(
+      SysBuf.from((values[0] as KeyPair).privKey.toBuf().buf).toString("hex"),
+    ).toEqual(SysBuf.from(key1.privKey.toBuf().buf).toString("hex"));
+    expect(
+      SysBuf.from((values[1] as KeyPair).privKey.toBuf().buf).toString("hex"),
+    ).toEqual(SysBuf.from(key2.privKey.toBuf().buf).toString("hex"));
   });
 });

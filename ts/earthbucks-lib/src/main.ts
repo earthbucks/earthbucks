@@ -1,12 +1,12 @@
+import { EbxBuf } from "./buf.js";
 import { KeyPair } from "./key-pair.js";
 import { Pkh } from "./pkh.js";
-import { SysBuf } from "./buf.js";
 
 function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.log("Please provide an argument: key or pkh");
+    console.log("Please provide an argument: key, pkh, entropy");
     return;
   }
 
@@ -14,35 +14,32 @@ function main() {
     case "key":
       {
         const key = KeyPair.fromRandom();
-        const privateKeyHex = SysBuf.from(key.privKey.toBuf().buf).toString(
-          "hex",
-        );
-        const publicKeyHex = SysBuf.from(key.pubKey.toBuf().buf).toString(
-          "hex",
-        );
+        const privKeyStr = key.privKey.toString();
+        const pubKeyStr = key.pubKey.toString();
 
-        console.log(`Private key: ${privateKeyHex}`);
-        console.log(`Public key: ${publicKeyHex}`);
+        console.log(`Private key: ${privKeyStr}`);
+        console.log(`Public key: ${pubKeyStr}`);
       }
       break;
     case "pkh":
       {
-        // Generate a new private key
         const key = KeyPair.fromRandom();
-        const publicKey = key.pubKey.toBuf();
+        const pkh = Pkh.fromPubKey(key.pubKey);
+        const privKeyStr = key.privKey.toString();
+        const pubKeyStr = key.pubKey.toString();
+        const pkhStr = pkh.toString();
 
-        // Get the corresponding pkh
-        const pkh = Pkh.fromPubKeyBuf(publicKey);
+        console.log(`Private key: ${privKeyStr}`);
+        console.log(`Public key: ${pubKeyStr}`);
+        console.log(`Address: ${pkhStr}`);
+      }
+      break;
+    case "entropy":
+      {
+        const entropyBuf = EbxBuf.fromRandom(32);
+        const entropyHex = entropyBuf.buf.toString("hex");
 
-        // Print them out
-        const privateKeyHex = SysBuf.from(key.privKey.toBuf().buf).toString(
-          "hex",
-        );
-        const publicKeyHex = SysBuf.from(publicKey.buf).toString("hex");
-        const pkhHex = SysBuf.from(pkh.buf.buf).toString("hex");
-        console.log(`Private key: ${privateKeyHex}`);
-        console.log(`Public key: ${publicKeyHex}`);
-        console.log(`Address: ${pkhHex}`);
+        console.log(`Entropy: ${entropyHex}`);
       }
       break;
     default:

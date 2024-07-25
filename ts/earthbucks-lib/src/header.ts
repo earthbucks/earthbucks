@@ -1,14 +1,34 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import * as Hash from "./hash.js";
-import { SysBuf, FixedBuf, EbxBuf } from "./buf.js";
+import { Hash } from "./hash.js";
+import type { SysBuf } from "./buf.js";
+import { FixedBuf } from "./buf.js";
+import { EbxBuf } from "./buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./error.js";
+import { WORK_SER_ALGO_NUM, WORK_SER_ALGO_NAME } from "./work-ser-algo.js";
+import { WORK_PAR_ALGO_NUM, WORK_PAR_ALGO_NAME } from "./work-par-algo.js";
 
-export class Header {
+interface HeaderInterface {
   version: U8;
   prevBlockId: FixedBuf<32>;
-  merkleRoot: FixedBuf<32>;
+  rootMerkleNodeId: FixedBuf<32>;
+  nTransactions: U64;
+  timestamp: U64;
+  blockNum: U32;
+  target: U256;
+  nonce: U256;
+  workSerAlgo: U16;
+  workSerHash: FixedBuf<32>;
+  workParAlgo: U16;
+  workParHash: FixedBuf<32>;
+}
+
+export class Header implements HeaderInterface {
+  version: U8;
+  prevBlockId: FixedBuf<32>;
+  rootMerkleNodeId: FixedBuf<32>;
+  nTransactions: U64;
   timestamp: U64; // milliseconds
   blockNum: U32;
   target: U256;
@@ -24,25 +44,28 @@ export class Header {
   // 600_000 milliseconds = 600 seconds = 10 minutes
   static readonly BLOCK_INTERVAL = new U64(600_000);
 
-  static readonly SIZE = 1 + 32 + 32 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
+  static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
+  static readonly MAX_TARGET_U256 = U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
 
-  constructor(
-    version: U8,
-    prevBlockId: FixedBuf<32>,
-    merkleRoot: FixedBuf<32>,
-    timestamp: U64,
-    blockNum: U32,
-    target: U256,
-    nonce: U256,
-    workSerAlgo: U16,
-    workSerHash: FixedBuf<32>,
-    workParAlgo: U16,
-    workParHash: FixedBuf<32>,
-  ) {
+  constructor({
+    version = new U8(0),
+    prevBlockId = FixedBuf.alloc(32),
+    rootMerkleNodeId = FixedBuf.alloc(32),
+    nTransactions = new U64(0),
+    timestamp = new U64(0),
+    blockNum = new U32(0),
+    target = new U256(0),
+    nonce = new U256(0),
+    workSerAlgo = new U16(0),
+    workSerHash = FixedBuf.alloc(32),
+    workParAlgo = new U16(0),
+    workParHash = FixedBuf.alloc(32),
+  }: Partial<HeaderInterface> = {}) {
     this.version = version;
     this.prevBlockId = prevBlockId;
-    this.merkleRoot = merkleRoot;
+    this.rootMerkleNodeId = rootMerkleNodeId;
+    this.nTransactions = nTransactions;
     this.timestamp = timestamp;
     this.blockNum = blockNum;
     this.target = target;
@@ -63,8 +86,9 @@ export class Header {
 
   static fromBufReader(br: BufReader): Header {
     const version = br.readU8();
-    const previousBlockId = br.readFixed(32);
+    const prevBlockId = br.readFixed(32);
     const merkleRoot = br.readFixed(32);
+    const nTransactions = br.readU64BE();
     const timestamp = br.readU64BE();
     const blockNum = br.readU32BE();
     const target = br.readU256BE();
@@ -73,10 +97,11 @@ export class Header {
     const workSerHash = br.readFixed(32);
     const workParAlgo = br.readU16BE();
     const workParHash = br.readFixed(32);
-    return new Header(
+    return new Header({
       version,
-      previousBlockId,
-      merkleRoot,
+      prevBlockId,
+      rootMerkleNodeId: merkleRoot,
+      nTransactions,
       timestamp,
       blockNum,
       target,
@@ -85,13 +110,14 @@ export class Header {
       workSerHash,
       workParAlgo,
       workParHash,
-    );
+    });
   }
 
   toBufWriter(bw: BufWriter): BufWriter {
     bw.writeU8(this.version);
     bw.write(this.prevBlockId.buf);
-    bw.write(this.merkleRoot.buf);
+    bw.write(this.rootMerkleNodeId.buf);
+    bw.writeU64BE(this.nTransactions);
     bw.writeU64BE(this.timestamp);
     bw.writeU32BE(this.blockNum);
     bw.writeU256BE(this.target);
@@ -103,20 +129,20 @@ export class Header {
     return bw;
   }
 
-  toStrictHex(): string {
+  toHex(): string {
     return this.toBuf().toString("hex");
   }
 
-  static fromStrictHex(str: string): Header {
-    return Header.fromBuf(SysBuf.from(str, "hex"));
+  static fromHex(str: string): Header {
+    return Header.fromBuf(EbxBuf.fromHex(Header.SIZE, str).buf);
   }
 
-  toStrictStr(): string {
-    return this.toStrictHex();
+  toString(): string {
+    return this.toHex();
   }
 
-  static fromStrictStr(str: string): Header {
-    return Header.fromStrictHex(str);
+  static fromString(str: string): Header {
+    return Header.fromHex(str);
   }
 
   isTargetValid(lch: Header[]): boolean {
@@ -131,7 +157,7 @@ export class Header {
 
   isIdValid(): boolean {
     const id = this.id();
-    const idNum = new BufReader(id.buf).readU256BE();
+    const idNum = U256.fromBEBuf(id.buf);
     return idNum.bn < this.target.bn;
   }
 
@@ -143,35 +169,64 @@ export class Header {
     return this.timestamp.n <= timestamp.n;
   }
 
+  isWorkSerAlgoValid(): boolean {
+    // can change with blockNum
+    return this.workSerAlgo.n === WORK_SER_ALGO_NUM.blake3_3;
+  }
+
+  isWorkParAlgoValid(): boolean {
+    // can change with blockNum
+    return this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627;
+  }
+
   isValidInLch(lch: Header[]): boolean {
     if (!this.isVersionValid()) {
+      //console.log('1')
       return false;
     }
     if (this.blockNum.bn === 0n) {
+      //console.log('2')
       return this.isGenesis();
     }
     if (lch.length === 0) {
+      //console.log('3')
       return false;
     }
     if (this.blockNum.n !== lch.length) {
+      //console.log('4')
       return false;
     }
-    if (this.prevBlockId !== lch[lch.length - 1].id()) {
+    const lastHeader = lch[lch.length - 1] as Header;
+    if (!this.prevBlockId.buf.equals(lastHeader.id().buf)) {
+      //console.log('5')
       return false;
     }
-    if (this.timestamp.n <= lch[lch.length - 1].timestamp.n) {
+    if (lch[lch.length - 1] && this.timestamp.n <= lastHeader.timestamp.n) {
+      //console.log('6')
       return false;
     }
     if (!this.isTargetValid(lch)) {
+      //console.log('7')
       return false;
     }
     if (!this.isIdValid()) {
+      //console.log('8')
+      return false;
+    }
+    if (!this.isWorkSerAlgoValid()) {
+      //console.log('9')
+      return false;
+    }
+    if (!this.isWorkParAlgoValid()) {
+      //console.log('10')
       return false;
     }
     return true;
   }
 
   isValidAt(lch: Header[], timestamp: U64): boolean {
+    // this validates everything about the header except PoW
+    // PoW must be validated using a separate library
     return this.isTimestampValidAt(timestamp) && this.isValidInLch(lch);
   }
 
@@ -182,30 +237,32 @@ export class Header {
   isGenesis(): boolean {
     return (
       this.blockNum.bn === 0n &&
-      this.prevBlockId.buf.every((byte) => byte === 0)
+      this.prevBlockId.buf.every((byte) => byte === 0) &&
+      this.workSerAlgo.n === WORK_SER_ALGO_NUM.blake3_3 &&
+      this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627
     );
   }
 
   static fromGenesis(initialTarget: U256, merkleRoot: FixedBuf<32>): Header {
     const timestamp = new U64(Math.floor(Date.now())); // milliseconds
-    const nonce = new BufReader(EbxBuf.fromRandom(32).buf).readU256BE();
-    return new Header(
-      new U8(0),
-      FixedBuf.alloc(32),
-      merkleRoot,
+    const nonce = U256.fromBEBuf(FixedBuf.fromRandom(32).buf);
+    return new Header({
+      version: new U8(0),
+      prevBlockId: FixedBuf.alloc(32),
+      rootMerkleNodeId: merkleRoot,
       timestamp,
-      new U32(0n),
-      initialTarget,
+      blockNum: new U32(0n),
+      target: initialTarget,
       nonce,
-      new U16(0),
-      FixedBuf.alloc(32),
-      new U16(0),
-      FixedBuf.alloc(32),
-    );
+      workSerAlgo: new U16(WORK_SER_ALGO_NUM.blake3_3),
+      workSerHash: FixedBuf.alloc(32),
+      workParAlgo: new U16(WORK_PAR_ALGO_NUM.algo1627),
+      workParHash: FixedBuf.alloc(32),
+    });
   }
 
   isEmpty(): boolean {
-    return this.merkleRoot.buf.every((byte) => byte === 0);
+    return this.rootMerkleNodeId.buf.every((byte) => byte === 0);
   }
 
   hash(): FixedBuf<32> {
@@ -223,37 +280,46 @@ export class Header {
   static fromLch(
     lch: Header[],
     merkleRoot: FixedBuf<32>,
+    nTransactions: U64,
     newTimestamp: U64,
   ): Header {
     if (lch.length === 0) {
-      return Header.fromGenesis(new U256(0), merkleRoot);
+      throw new GenericError("lch must not be empty");
     }
-    const newTarget = Header.newTargetFromLch(lch, newTimestamp);
-    const prevBlock = lch[lch.length - 1];
+    //console.log('fromLch 1')
+    const target = Header.newTargetFromLch(lch, newTimestamp);
+    //console.log('fromLch 2')
+    const prevBlock = lch[lch.length - 1] as Header;
     const prevBlockId = prevBlock.id();
     const blockNum = new U32(lch.length);
     const timestamp = newTimestamp;
     const nonce = new U256(0);
-    const workSerAlgo = prevBlock.workSerAlgo;
+    //const workSerAlgo = prevBlock.workSerAlgo;
+    const workSerAlgo = new U16(WORK_SER_ALGO_NUM.blake3_3);
     const workSerHash = FixedBuf.alloc(32);
-    const workParAlgo = prevBlock.workParAlgo;
+    //const workParAlgo = prevBlock.workParAlgo;
+    const workParAlgo = new U16(WORK_PAR_ALGO_NUM.algo1627);
     const workParHash = FixedBuf.alloc(32);
-    return new Header(
-      new U8(0),
+    return new Header({
+      version: new U8(0),
       prevBlockId,
-      FixedBuf.alloc(32),
+      rootMerkleNodeId: merkleRoot,
+      nTransactions,
       timestamp,
       blockNum,
-      newTarget,
+      target,
       nonce,
       workSerAlgo,
       workSerHash,
       workParAlgo,
       workParHash,
-    );
+    });
   }
 
   static newTargetFromLch(lch: Header[], newTimestamp: U64): U256 {
+    if (lch.length === 0) {
+      throw new GenericError("lch must not be empty");
+    }
     let adjh: Header[];
     if (lch.length > Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n) {
       adjh = lch.slice(lch.length - Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n);
@@ -262,16 +328,16 @@ export class Header {
     }
     const len = new U32(adjh.length);
     if (len.n === 0) {
-      return new BufReader(Header.MAX_TARGET_BYTES.buf).readU256BE();
+      return U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
     }
-    const firstHeader = adjh[0];
+    const firstHeader = adjh[0] as Header;
     const targets: bigint[] = [];
     for (const header of adjh) {
       const target = header.target.bn;
       targets.push(target);
     }
     const targetSum = targets.reduce((a, b) => a + b);
-    if (newTimestamp <= firstHeader.timestamp) {
+    if (newTimestamp.n <= firstHeader.timestamp.n) {
       throw new GenericError("timestamps must be increasing");
     }
     const realTimeDiff = newTimestamp.sub(firstHeader.timestamp);
@@ -295,10 +361,17 @@ export class Header {
     const intendedTimeDiff = len.bn * Header.BLOCK_INTERVAL.bn;
     const resBigInt =
       (targetSum * realTimeDiff.bn) / (len.bn * intendedTimeDiff);
+    //console.log('new target from old targets', resBigInt)
+    if (resBigInt < 0) {
+      throw new GenericError("new target must be positive");
+    }
+    if (resBigInt > Header.MAX_TARGET_U256.bn) {
+      return U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
+    }
     return new U256(resBigInt);
   }
 
-  static coinbaseAmount(blockNum: U32): U64 {
+  static mintTxAmount(blockNum: U32): U64 {
     // shift every 210,000 blocks ("halving")
     const shiftBy = blockNum.bn / 210_000n;
     // BTC: 100_000_000 satoshis = 1 bitcoin
@@ -310,15 +383,41 @@ export class Header {
     return new U64((100n * 100_000_000_000n) >> shiftBy);
   }
 
-  static difficultyFromTarget(target: U256): U256 {
+  static difficultyFromTarget(target: U256): U64 {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
-    const maxTarget = new BufReader(maxTargetBuf.buf).readU256BE();
-    return maxTarget.div(target);
+    const maxTarget = U256.fromBEBuf(maxTargetBuf.buf);
+    return new U64(maxTarget.div(target).bn);
   }
 
-  static targetFromDifficulty(difficulty: U256): U256 {
+  static targetFromDifficulty(difficulty: U64): U256 {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
-    const maxTarget = new BufReader(maxTargetBuf.buf).readU256BE();
-    return maxTarget.div(difficulty);
+    const maxTarget = U256.fromBEBuf(maxTargetBuf.buf);
+    return maxTarget.div(new U256(difficulty.bn));
+  }
+
+  workSerAlgoStr(): string {
+    const str = WORK_SER_ALGO_NAME[this.workSerAlgo.n];
+    if (!str) {
+      throw new GenericError("unknown workSerAlgo");
+    }
+    return str;
+  }
+
+  workParAlgoStr(): string {
+    const str = WORK_PAR_ALGO_NAME[this.workParAlgo.n];
+    if (!str) {
+      throw new GenericError("unknown workParAlgo");
+    }
+    return str;
+  }
+
+  addTx(merkleRoot: FixedBuf<32>, timestamp: U64 | null = null): Header {
+    const nTransactions = new U64(this.nTransactions.bn + 1n);
+    return new Header({
+      ...this,
+      nTransactions,
+      rootMerkleNodeId: merkleRoot,
+      timestamp: timestamp || this.timestamp,
+    });
   }
 }

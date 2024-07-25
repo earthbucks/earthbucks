@@ -41,79 +41,69 @@ export class BufReader {
   }
 
   readU8(): U8 {
-    let val: number;
+    let val: U8;
     try {
-      val = this.buf.readUInt8(this.pos);
+      val = U8.fromBEBuf(this.buf.subarray(this.pos, this.pos + 1));
     } catch (err: unknown) {
       throw new NotEnoughDataError(err as Error);
     }
     this.pos += 1;
-    return new U8(BigInt(val));
+    return val;
   }
 
   readU16BE(): U16 {
-    let val: number;
+    let val: U16;
     try {
-      val = this.buf.readUInt16BE(this.pos);
+      val = U16.fromBEBuf(this.buf.subarray(this.pos, this.pos + 2));
     } catch (err) {
       throw new NotEnoughDataError(err as Error);
     }
     this.pos += 2;
-    return new U16(BigInt(val));
+    return val;
   }
 
   readU32BE(): U32 {
-    let val: number;
+    let val: U32;
     try {
-      val = this.buf.readUInt32BE(this.pos);
+      val = U32.fromBEBuf(this.buf.subarray(this.pos, this.pos + 4));
     } catch (err) {
       throw new NotEnoughDataError(err as Error);
     }
     this.pos += 4;
-    return new U32(BigInt(val));
+    return val;
   }
 
   readU64BE(): U64 {
-    let val: bigint;
+    let val: U64;
     try {
-      val = this.buf.readBigUInt64BE(this.pos);
+      val = U64.fromBEBuf(this.buf.subarray(this.pos, this.pos + 8));
     } catch (err) {
       throw new NotEnoughDataError(err as Error);
     }
     this.pos += 8;
-    return new U64(val);
+    return val;
   }
 
   readU128BE(): U128 {
-    const buf = this.read(16);
-    let val1: bigint;
-    let val2: bigint;
+    let val: U128;
     try {
-      val1 = buf.readBigUInt64BE(0);
-      val2 = buf.readBigUInt64BE(8);
+      val = U128.fromBEBuf(this.buf.subarray(this.pos, this.pos + 16));
     } catch (err) {
       throw new NotEnoughDataError(err as Error);
     }
-    const val = (val1 << 64n) + val2;
-    return new U128(val);
+    this.pos += 16;
+    return val;
   }
 
   readU256BE(): U256 {
-    const buf = this.read(32);
-    let val1: bigint;
-    let val2: bigint;
-    let val3: bigint;
-    let val4: bigint;
+    let val: U256;
     try {
-      val1 = buf.readBigUInt64BE(0);
-      val2 = buf.readBigUInt64BE(8);
-      val3 = buf.readBigUInt64BE(16);
-      val4 = buf.readBigUInt64BE(24);
+      val = U256.fromBEBuf(this.buf.subarray(this.pos, this.pos + 32));
     } catch (err) {
       throw new NotEnoughDataError(err as Error);
     }
-    const val = (val1 << 192n) + (val2 << 128n) + (val3 << 64n) + val4;
-    return new U256(val);
+    this.pos += 32;
+    return val;
   }
 
   readVarIntBuf(): SysBuf {
@@ -124,22 +114,23 @@ export class BufReader {
         throw new NonMinimalEncodingError();
       }
       return SysBuf.concat([SysBuf.from([first]), buf]);
-    } else if (first === 0xfe) {
+    }
+    if (first === 0xfe) {
       const buf = this.read(4);
       if (buf.readUInt32BE(0) < 0x10000) {
         throw new NonMinimalEncodingError();
       }
       return SysBuf.concat([SysBuf.from([first]), buf]);
-    } else if (first === 0xff) {
+    }
+    if (first === 0xff) {
       const buf = this.read(8);
       const bn = buf.readBigUInt64BE(0);
       if (bn < 0x100000000) {
         throw new NonMinimalEncodingError();
       }
       return SysBuf.concat([SysBuf.from([first]), buf]);
-    } else {
-      return SysBuf.from([first]);
     }
+    return SysBuf.from([first]);
   }
 
   readVarInt(): U64 {

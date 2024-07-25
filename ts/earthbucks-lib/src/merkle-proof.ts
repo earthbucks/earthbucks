@@ -1,7 +1,8 @@
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf, FixedBuf } from "./buf.js";
+import { SysBuf } from "./buf.js";
+import type { FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import { GenericError } from "./error.js";
 
@@ -24,40 +25,49 @@ export class MerkleProof {
     return SysBuf.compare(hash, this.root.buf) === 0;
   }
 
-  static verifyProof(data: SysBuf, proof: MerkleProof, root: SysBuf) {
+  static verifyProof(data: SysBuf, proof: MerkleProof, root: SysBuf): boolean {
     return SysBuf.compare(proof.root.buf, root) === 0 || proof.verify(data);
   }
 
+  static concat(left: FixedBuf<32> | null, right: FixedBuf<32> | null) {
+    const leftBuf = left ? left.buf : SysBuf.alloc(0);
+    const rightBuf = right ? right.buf : SysBuf.alloc(0);
+    return SysBuf.concat([leftBuf, rightBuf]);
+  }
+
   static generateProofsAndRoot(
-    hashedDatas: FixedBuf<32>[],
+    hashes: (FixedBuf<32> | null)[],
   ): [FixedBuf<32>, MerkleProof[]] {
-    if (hashedDatas.length === 0) {
+    if (hashes.length === 0) {
       throw new GenericError("Cannot create Merkle tree from empty array");
     }
-    if (hashedDatas.length === 1) {
-      const root = hashedDatas[0];
+    if (hashes.length === 1) {
+      const root = hashes[0] as FixedBuf<32>;
       const proof = new MerkleProof(root, []);
       return [root, [proof]];
     }
-    if (hashedDatas.length === 2) {
+    if (hashes.length === 2) {
+      const hashedDatas0 = hashes[0] as FixedBuf<32>;
+      const hashedDatas1 = hashes[1] as FixedBuf<32>;
       const root = Hash.doubleBlake3Hash(
-        SysBuf.concat([hashedDatas[0].buf, hashedDatas[1].buf]),
+        MerkleProof.concat(hashedDatas0 ?? null, hashedDatas1 ?? null),
       );
       const proofs = [
-        new MerkleProof(root, [[hashedDatas[1], true]]),
-        new MerkleProof(root, [[hashedDatas[0], false]]),
+        new MerkleProof(root, [[hashedDatas1, true]]),
+        new MerkleProof(root, [[hashedDatas0, false]]),
       ];
       return [root, proofs];
     }
+    const newHashes: (FixedBuf<32> | null)[] = hashes.slice();
     // Make sure the number of elements is a power of two
-    while ((hashedDatas.length & (hashedDatas.length - 1)) !== 0) {
-      hashedDatas.push(hashedDatas[hashedDatas.length - 1]);
+    while ((newHashes.length & (newHashes.length - 1)) !== 0) {
+      newHashes.push(null);
     }
     const [leftRoot, leftProofs] = MerkleProof.generateProofsAndRoot(
-      hashedDatas.slice(0, hashedDatas.length / 2),
+      newHashes.slice(0, newHashes.length / 2),
     );
     const [rightRoot, rightProofs] = MerkleProof.generateProofsAndRoot(
-      hashedDatas.slice(hashedDatas.length / 2),
+      newHashes.slice(newHashes.length / 2),
     );
     const root = Hash.doubleBlake3Hash(
       SysBuf.concat([leftRoot.buf, rightRoot.buf]),
@@ -97,14 +107,14 @@ export class MerkleProof {
     return new MerkleProof(root, proof);
   }
 
-  toStrictStr(): string {
-    const u8vec = this.toBuf();
-    const hex = SysBuf.from(u8vec).toString("hex");
+  toString(): string {
+    const buf = this.toBuf();
+    const hex = SysBuf.from(buf).toString("hex");
     return hex;
   }
 
-  static fromStrictStr(hex: string): MerkleProof {
-    const u8vec = SysBuf.from(hex, "hex");
-    return MerkleProof.fromBuf(u8vec);
+  static fromString(hex: string): MerkleProof {
+    const buf = SysBuf.from(hex, "hex");
+    return MerkleProof.fromBuf(buf);
   }
 }

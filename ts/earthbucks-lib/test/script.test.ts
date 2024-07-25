@@ -1,13 +1,14 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script.js";
-import { SysBuf } from "../src/buf.js";
-import fs from "fs";
-import path from "path";
+import { FixedBuf, SysBuf } from "../src/buf.js";
+import fs from "node:fs";
+import path from "node:path";
 import {
   GenericError,
   NonMinimalEncodingError,
   NotEnoughDataError,
 } from "../src/error.js";
+import { Pkh } from "../src/pkh.js";
 
 describe("Script", () => {
   test("constructor", () => {
@@ -15,45 +16,45 @@ describe("Script", () => {
     expect(script.chunks).toEqual([]);
   });
 
-  test("fromStrictStr", () => {
-    const script = Script.fromStrictStr("DUP DOUBLEBLAKE3");
+  test("fromString", () => {
+    const script = Script.fromString("DUP DOUBLEBLAKE3");
     expect(script.chunks.length).toBe(2);
-    expect(script.chunks[0].toStrictStr()).toBe("DUP");
-    expect(script.chunks[1].toStrictStr()).toBe("DOUBLEBLAKE3");
+    expect(script.chunks[0]?.toString()).toBe("DUP");
+    expect(script.chunks[1]?.toString()).toBe("DOUBLEBLAKE3");
   });
 
-  test("fromStrictStr toString with PUSHDATA1", () => {
-    const script = Script.fromStrictStr("0x00");
-    expect(script.toStrictStr()).toBe("0x00");
+  test("fromString toString with PUSHDATA1", () => {
+    const script = Script.fromString("0x00");
+    expect(script.toString()).toBe("0x00");
   });
 
-  test("fromStrictStr toString with PUSHDATA2", () => {
-    const script = Script.fromStrictStr("0x" + "00".repeat(256));
-    expect(script.toStrictStr()).toBe("0x" + "00".repeat(256));
+  test("fromString toString with PUSHDATA2", () => {
+    const script = Script.fromString(`0x${"00".repeat(256)}`);
+    expect(script.toString()).toBe(`0x${"00".repeat(256)}`);
   });
 
   test("toString", () => {
-    const script = Script.fromStrictStr("DUP DOUBLEBLAKE3");
-    expect(script.toStrictStr()).toBe("DUP DOUBLEBLAKE3");
+    const script = Script.fromString("DUP DOUBLEBLAKE3");
+    expect(script.toString()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toBuf and fromBuf", () => {
-    const originalScript = Script.fromStrictStr("DUP DOUBLEBLAKE3");
+    const originalScript = Script.fromString("DUP DOUBLEBLAKE3");
     const arr = originalScript.toBuf();
     const script = Script.fromBuf(arr);
-    expect(script.toStrictStr()).toBe("DUP DOUBLEBLAKE3");
+    expect(script.toString()).toBe("DUP DOUBLEBLAKE3");
   });
 
   test("toBuf and fromBuf with PUSHDATA1", () => {
-    const originalScript = Script.fromStrictStr("0xff 0xff");
+    const originalScript = Script.fromString("0xff 0xff");
     const arr = originalScript.toBuf();
     const script = Script.fromBuf(arr);
-    expect(script.toStrictStr()).toBe("0xff 0xff");
+    expect(script.toString()).toBe("0xff 0xff");
   });
 
   it("should correctly convert between string and EbxBuf for two PUSHDATA2 operations", () => {
     // Create a new Script from a string
-    const initialScript = Script.fromStrictStr("0xffff 0xffff");
+    const initialScript = Script.fromString("0xffff 0xffff");
 
     // Convert the Script to a EbxBuf
     const arr = initialScript.toBuf();
@@ -62,7 +63,7 @@ describe("Script", () => {
     const finalScript = Script.fromBuf(arr);
 
     // Convert the final Script back to a string
-    const finalString = finalScript.toStrictStr();
+    const finalString = finalScript.toString();
 
     // Check that the final string matches the initial string
     expect(finalString).toEqual("0xffff 0xffff");
@@ -70,19 +71,23 @@ describe("Script", () => {
 
   describe("pubkeyhash", () => {
     test("fromAddressOutput", () => {
-      const script = Script.fromPkhOutput(SysBuf.from("01".repeat(32), "hex"));
-      expect(script.toStrictStr()).toBe(
-        "DUP DOUBLEBLAKE3 0x" + "01".repeat(32) + " EQUALVERIFY CHECKSIG",
+      const script = Script.fromPkhOutput(
+        Pkh.fromBuf(FixedBuf.fromHex(32, "01".repeat(32))),
+      );
+      expect(script.toString()).toBe(
+        `DUP DOUBLEBLAKE3 0x${"01".repeat(32)} EQUALVERIFY CHECKSIG`,
       );
     });
 
     test("isAddressOutput", () => {
-      const script = Script.fromPkhOutput(SysBuf.from("01".repeat(32), "hex"));
+      const script = Script.fromPkhOutput(
+        Pkh.fromBuf(FixedBuf.fromHex(32, "01".repeat(32))),
+      );
       expect(script.isPkhOutput()).toBe(true);
     });
 
     test("isAddressOutput false", () => {
-      const script = Script.fromStrictStr(
+      const script = Script.fromString(
         "DUP DOUBLEBLAKE3 0x01020304 EQUALVERIFY CHECKSIG",
       );
       expect(script.isPkhOutput()).toBe(false);

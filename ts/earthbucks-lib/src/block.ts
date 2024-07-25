@@ -2,7 +2,7 @@ import { Header } from "./header.js";
 import { Tx } from "./tx.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf } from "./buf.js";
+import type { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Block {
@@ -16,7 +16,7 @@ export class Block {
 
   static fromBufReader(br: BufReader): Block {
     const header = Header.fromBufReader(br);
-    const txCount = br.readVarInt().n;
+    const txCount = header.nTransactions.n;
 
     const txs: Tx[] = [];
     for (let i = 0; i < txCount; i++) {
@@ -29,10 +29,9 @@ export class Block {
 
   toBufWriter(bw: BufWriter): BufWriter {
     bw.write(this.header.toBuf());
-    bw.writeVarInt(new U64(this.txs.length));
-    this.txs.forEach((tx) => {
+    for (const tx of this.txs) {
       bw.write(tx.toBuf());
-    });
+    }
     return bw;
   }
 

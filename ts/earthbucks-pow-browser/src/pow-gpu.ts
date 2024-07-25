@@ -9,14 +9,21 @@ type AsyncBufferFunction = (input: SysBuf) => Promise<SysBuf>;
 
 export class PowGpu {
   workingBlockId: TFTensor;
-  recentBlockIds: TFTensor;
+  lch10Ids: TFTensor;
   tf: TF = tf;
 
-  constructor(workingBlockId: SysBuf, previousBlockIds: SysBuf[]) {
+  // lch10Ids: 10 recent blockheader ids: at 1 element per bit, and 256 bits per
+  // blockheader id, that's 2560 elements. that is bigger than one row of the
+  // matrix of the algo1627, which of course is 1627 elements long. 2560 is
+  // therefore long enough to be longer than the row size of any matrix we are
+  // likely to use soon. this means that when this data is wrapped around to
+  // create psuedorandom data, every single row in the matrix will be unique.
+  // this is important because it means that the matrix will be as random as
+  // possible given a minimum amount of pseudorandom data (which has to be sent
+  // over the network, not to mention to the GPU).
+  constructor(workingBlockId: SysBuf, lch10Ids: SysBuf[]) {
     this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId);
-    this.recentBlockIds = this.tensorFromBufferBitsAlt4(
-      SysBuf.concat(previousBlockIds),
-    );
+    this.lch10Ids = this.tensorFromBufferBitsAlt4(SysBuf.concat(lch10Ids));
   }
 
   tensorFromBufferBitsAlt1(buffer: SysBuf): TFTensor {
@@ -29,10 +36,12 @@ export class PowGpu {
     const bufferIter = buffer.values();
     const bits: number[] = [];
     let bit: number | undefined;
-    while ((bit = bufferIter.next().value) !== undefined) {
+    bit = bufferIter.next().value;
+    while (bit !== undefined) {
       for (let i = 7; i >= 0; i--) {
         bits.push((bit >> i) & 1);
       }
+      bit = bufferIter.next().value;
     }
     return this.tf.tensor1d(bits, "int32");
   }
@@ -47,11 +56,13 @@ export class PowGpu {
     const bufferIter = buffer.values();
     const bits: number[] = [];
     let bit: number | undefined;
-    while ((bit = bufferIter.next().value) !== undefined) {
+    bit = bufferIter.next().value;
+    while (bit !== undefined) {
       for (let i = 7; i >= 0; i--) {
-        const shiftedBit = Math.floor(bit / Math.pow(2, i));
+        const shiftedBit = Math.floor(bit / 2 ** i);
         bits.push(shiftedBit % 2);
       }
+      bit = bufferIter.next().value;
     }
     return this.tf.tensor1d(bits, "int32");
   }
@@ -114,7 +125,7 @@ export class PowGpu {
   }
 
   tensorSeed(): TFTensor {
-    return this.tf.concat([this.workingBlockId, this.recentBlockIds]);
+    return this.tf.concat([this.workingBlockId, this.lch10Ids]);
   }
 
   tensorSeedReplica(n: number) {

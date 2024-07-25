@@ -16,14 +16,14 @@ describe("TxOutput", () => {
       const result = TxOut.fromBufReader(reader);
       expect(result).toBeInstanceOf(TxOut);
       expect(result.value).toEqual(value);
-      expect(result.script.toStrictStr()).toEqual(script.toStrictStr());
+      expect(result.script.toString()).toEqual(script.toString());
     });
   });
 
   describe("fromU8Vec and toBuf", () => {
     test("should create a TxOutput from a EbxBuf", () => {
       const value = new U64(100);
-      const script = Script.fromStrictStr(
+      const script = Script.fromString(
         "DOUBLEBLAKE3 BLAKE3 DOUBLEBLAKE3 EQUAL",
       );
       const txOutput = new TxOut(value, script);
@@ -34,9 +34,9 @@ describe("TxOutput", () => {
     });
 
     test("big push data", () => {
-      const data = "0x" + "00".repeat(0xffff);
+      const data = `0x${"00".repeat(0xffff)}`;
       const value = new U64(100);
-      const script = Script.fromStrictStr(`${data} DOUBLEBLAKE3`);
+      const script = Script.fromString(`${data} DOUBLEBLAKE3`);
       const txOutput = new TxOut(value, script);
       const result = TxOut.fromBuf(txOutput.toBuf());
       expect(txOutput.toBuf().toString("hex")).toEqual(

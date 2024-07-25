@@ -2,8 +2,8 @@ import { describe, expect, test, beforeEach } from "vitest";
 import { BufReader } from "../src/buf-reader.js";
 import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import {
   EbxError,
   GenericError,
@@ -21,14 +21,14 @@ describe("BufReader", () => {
   });
 
   test("constructor sets buffer and position", () => {
-    expect(bufferReader["buf"]).toEqual(
+    expect(bufferReader.buf).toEqual(
       SysBuf.from(
         testEbxBuf.buffer,
         testEbxBuf.byteOffset,
         testEbxBuf.byteLength,
       ),
     );
-    expect(bufferReader["pos"]).toBe(0);
+    expect(bufferReader.pos).toBe(0);
   });
 
   test("read returns correct subarray", () => {
@@ -40,25 +40,25 @@ describe("BufReader", () => {
   test("read updates position", () => {
     const len = 4;
     bufferReader.read(len);
-    expect(bufferReader["pos"]).toBe(len);
+    expect(bufferReader.pos).toBe(len);
   });
 
   test("readUInt8 returns correct value and updates position", () => {
     const result = bufferReader.readU8();
     expect(result.n).toBe(1);
-    expect(bufferReader["pos"]).toBe(1);
+    expect(bufferReader.pos).toBe(1);
   });
 
   test("readUInt16BE returns correct value and updates position", () => {
     const result = bufferReader.readU16BE();
     expect(result.n).toBe(SysBuf.from([1, 2]).readUInt16BE());
-    expect(bufferReader["pos"]).toBe(2);
+    expect(bufferReader.pos).toBe(2);
   });
 
   test("readUInt32BE returns correct value and updates position", () => {
     const result = bufferReader.readU32BE();
     expect(result.n).toBe(SysBuf.from([1, 2, 3, 4]).readUInt32BE());
-    expect(bufferReader["pos"]).toBe(4);
+    expect(bufferReader.pos).toBe(4);
   });
 
   test("readUInt64BEBigInt returns correct value and updates position", () => {
@@ -73,7 +73,7 @@ describe("BufReader", () => {
     expect(result.bn).toEqual(BigInt("0x0123456789ABCDEF"));
 
     // Check that the position has been updated correctly
-    expect(bufferReader["pos"]).toBe(8);
+    expect(bufferReader.pos).toBe(8);
   });
 
   test("readVarIntBuf", () => {
@@ -145,7 +145,7 @@ describe("BufReader", () => {
     const testVector: TestVectorEbxBufReader = JSON.parse(jsonString);
 
     test("test vectors: read", () => {
-      testVector.read.errors.forEach((test) => {
+      for (const test of testVector.read.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -155,11 +155,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.read(test.len)).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_u8", () => {
-      testVector.read_u8.errors.forEach((test) => {
+      for (const test of testVector.read_u8.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -169,11 +169,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readU8()).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_u16_be", () => {
-      testVector.read_u16_be.errors.forEach((test) => {
+      for (const test of testVector.read_u16_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -183,11 +183,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readU16BE()).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_u32_be", () => {
-      testVector.read_u32_be.errors.forEach((test) => {
+      for (const test of testVector.read_u32_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -197,11 +197,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readU32BE()).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_u64_be", () => {
-      testVector.read_u64_be.errors.forEach((test) => {
+      for (const test of testVector.read_u64_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -211,11 +211,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readU64BE()).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_var_int_buf", () => {
-      testVector.read_var_int_buf.errors.forEach((test) => {
+      for (const test of testVector.read_var_int_buf.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -225,11 +225,11 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readVarIntBuf()).toThrow(errorType);
-      });
+      }
     });
 
     test("test vectors: read_var_int", () => {
-      testVector.read_var_int.errors.forEach((test) => {
+      for (const test of testVector.read_var_int.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
         const errorType =
@@ -239,7 +239,7 @@ describe("BufReader", () => {
               ? NotEnoughDataError
               : GenericError;
         expect(() => bufferReader.readVarInt()).toThrow(errorType);
-      });
+      }
     });
   });
 });

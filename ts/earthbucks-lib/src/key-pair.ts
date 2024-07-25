@@ -1,6 +1,6 @@
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { FixedBuf, SysBuf } from "./buf.js";
+import type { FixedBuf, SysBuf } from "./buf.js";
 
 export class KeyPair {
   privKey: PrivKey;
@@ -24,6 +24,11 @@ export class KeyPair {
 
   static fromRandom(): KeyPair {
     const privKey = PrivKey.fromRandom();
+    return KeyPair.fromPrivKey(privKey);
+  }
+
+  add(keyPair: KeyPair): KeyPair {
+    const privKey = this.privKey.add(keyPair.privKey);
     return KeyPair.fromPrivKey(privKey);
   }
 }

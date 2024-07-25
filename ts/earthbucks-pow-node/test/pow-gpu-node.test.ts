@@ -4,6 +4,7 @@ import { Buffer as SysBuf } from "buffer";
 import { hash as blake3HashRaw } from "blake3";
 
 function blake3Hash(seed: SysBuf): SysBuf {
+  blake3HashRaw(seed);
   return SysBuf.from(blake3HashRaw(seed));
 }
 

@@ -1,12 +1,15 @@
 import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
-import { Script } from "./script.js";
-import { Tx, HashCache } from "./tx.js";
+import type { Script } from "./script.js";
+import type { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
 import { SysBuf } from "./buf.js";
 import { PubKey } from "./pub-key.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U64 } from "./numbers.js";
+import type { U32 } from "./numbers.js";
+import type { ScriptChunk } from "./script-chunk.js";
+import type { TxIn } from "./tx-in.js";
 
 export class ScriptInterpreter {
   public script: Script;
@@ -107,17 +110,17 @@ export class ScriptInterpreter {
 
   evalScript(): boolean {
     loop: while (this.pc < this.script.chunks.length) {
-      const chunk = this.script.chunks[this.pc];
+      const chunk = this.script.chunks[this.pc] as ScriptChunk;
       const opcode = chunk.opcode;
       const ifExec = !this.ifStack.includes(false);
 
       if (
         !(
           ifExec ||
-          opcode == Opcode.OP_IF ||
-          opcode == Opcode.OP_NOTIF ||
-          opcode == Opcode.OP_ELSE ||
-          opcode == Opcode.OP_ENDIF
+          opcode === Opcode.OP_IF ||
+          opcode === Opcode.OP_NOTIF ||
+          opcode === Opcode.OP_ELSE ||
+          opcode === Opcode.OP_ENDIF
         )
       ) {
         this.pc++;
@@ -344,8 +347,8 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            this.stack.push(this.stack[this.stack.length - 2]);
-            this.stack.push(this.stack[this.stack.length - 2]);
+            this.stack.push(this.stack[this.stack.length - 2] as SysBuf);
+            this.stack.push(this.stack[this.stack.length - 2] as SysBuf);
           }
           break;
         case Opcode.OP_3DUP:
@@ -354,9 +357,9 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            this.stack.push(this.stack[this.stack.length - 3]);
-            this.stack.push(this.stack[this.stack.length - 3]);
-            this.stack.push(this.stack[this.stack.length - 3]);
+            this.stack.push(this.stack[this.stack.length - 3] as SysBuf);
+            this.stack.push(this.stack[this.stack.length - 3] as SysBuf);
+            this.stack.push(this.stack[this.stack.length - 3] as SysBuf);
           }
           break;
         case Opcode.OP_2OVER:
@@ -365,8 +368,8 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            this.stack.push(this.stack[this.stack.length - 4]);
-            this.stack.push(this.stack[this.stack.length - 4]);
+            this.stack.push(this.stack[this.stack.length - 4] as SysBuf);
+            this.stack.push(this.stack[this.stack.length - 4] as SysBuf);
           }
           break;
         case Opcode.OP_2ROT:
@@ -377,8 +380,8 @@ export class ScriptInterpreter {
               break loop;
             }
             const spliced = this.stack.splice(this.stack.length - 6, 2);
-            this.stack.push(spliced[0]);
-            this.stack.push(spliced[1]);
+            this.stack.push(spliced[0] as SysBuf);
+            this.stack.push(spliced[1] as SysBuf);
           }
           break;
         case Opcode.OP_2SWAP:
@@ -389,8 +392,8 @@ export class ScriptInterpreter {
               break loop;
             }
             const spliced = this.stack.splice(this.stack.length - 4, 2);
-            this.stack.push(spliced[0]);
-            this.stack.push(spliced[1]);
+            this.stack.push(spliced[0] as SysBuf);
+            this.stack.push(spliced[1] as SysBuf);
           }
           break;
         case Opcode.OP_IFDUP:
@@ -399,7 +402,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const buf = this.stack[this.stack.length - 1];
+            const buf = this.stack[this.stack.length - 1] as SysBuf;
             if (ScriptInterpreter.castToBool(buf)) {
               this.stack.push(buf);
             }
@@ -426,7 +429,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            this.stack.push(this.stack[this.stack.length - 1]);
+            this.stack.push(this.stack[this.stack.length - 1] as SysBuf);
           }
           break;
         case Opcode.OP_NIP:
@@ -446,7 +449,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            this.stack.push(this.stack[this.stack.length - 2]);
+            this.stack.push(this.stack[this.stack.length - 2] as SysBuf);
           }
           break;
         case Opcode.OP_PICK:
@@ -461,7 +464,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const num = Number(scriptNum);
-            this.stack.push(this.stack[this.stack.length - num - 1]);
+            this.stack.push(this.stack[this.stack.length - num - 1] as SysBuf);
           }
           break;
         case Opcode.OP_ROLL:
@@ -477,7 +480,7 @@ export class ScriptInterpreter {
             }
             const num = Number(scriptNum);
             const spliced = this.stack.splice(this.stack.length - num - 1, 1);
-            this.stack.push(spliced[0]);
+            this.stack.push(spliced[0] as SysBuf);
           }
           break;
         case Opcode.OP_ROT:
@@ -488,7 +491,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const spliced = this.stack.splice(this.stack.length - 3, 1);
-            this.stack.push(spliced[0]);
+            this.stack.push(spliced[0] as SysBuf);
           }
           break;
         case Opcode.OP_SWAP:
@@ -499,7 +502,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const spliced = this.stack.splice(this.stack.length - 2, 1);
-            this.stack.push(spliced[0]);
+            this.stack.push(spliced[0] as SysBuf);
           }
           break;
         case Opcode.OP_TUCK:
@@ -512,7 +515,7 @@ export class ScriptInterpreter {
             this.stack.splice(
               this.stack.length - 2,
               0,
-              this.stack[this.stack.length - 1],
+              this.stack[this.stack.length - 1] as SysBuf,
             );
           }
           break;
@@ -579,7 +582,7 @@ export class ScriptInterpreter {
               this.errStr = "invalid stack operation";
               break loop;
             }
-            const buf = this.stack[this.stack.length - 1];
+            const buf = this.stack[this.stack.length - 1] as SysBuf;
             const scriptNum = new ScriptNum(BigInt(buf.length));
             this.stack.push(scriptNum.toBuf());
           }
@@ -592,7 +595,7 @@ export class ScriptInterpreter {
             }
             const buf = this.stack.pop() as SysBuf;
             for (let i = 0; i < buf.length; i++) {
-              buf[i] = ~buf[i];
+              buf[i] = ~(buf[i] as number);
             }
             this.stack.push(buf);
           }
@@ -611,7 +614,7 @@ export class ScriptInterpreter {
             }
             const buf = SysBuf.alloc(buf1.length);
             for (let i = 0; i < buf.length; i++) {
-              buf[i] = buf1[i] & buf2[i];
+              buf[i] = (buf1[i] as number) & (buf2[i] as number);
             }
             this.stack.push(buf);
           }
@@ -630,7 +633,7 @@ export class ScriptInterpreter {
             }
             const buf = SysBuf.alloc(buf1.length);
             for (let i = 0; i < buf.length; i++) {
-              buf[i] = buf1[i] | buf2[i];
+              buf[i] = (buf1[i] as number) | (buf2[i] as number);
             }
             this.stack.push(buf);
           }
@@ -649,7 +652,7 @@ export class ScriptInterpreter {
             }
             const buf = SysBuf.alloc(buf1.length);
             for (let i = 0; i < buf.length; i++) {
-              buf[i] = buf1[i] ^ buf2[i];
+              buf[i] = (buf1[i] as number) ^ (buf2[i] as number);
             }
             this.stack.push(buf);
           }
@@ -1129,8 +1132,8 @@ export class ScriptInterpreter {
               for (let j = 0; j < pubKeys.length; j++) {
                 const success = this.tx.verifyWithCache(
                   this.nIn,
-                  pubKeys[j],
-                  TxSignature.fromBuf(sigs[i]),
+                  pubKeys[j] as SysBuf,
+                  TxSignature.fromBuf(sigs[i] as SysBuf),
                   execScriptBuf,
                   this.value,
                   this.hashCache,
@@ -1158,7 +1161,7 @@ export class ScriptInterpreter {
               break loop;
             }
             const scriptNum = ScriptNum.fromBuf(
-              this.stack[this.stack.length - 1],
+              this.stack[this.stack.length - 1] as SysBuf,
             );
             if (scriptNum.num < 0n) {
               this.errStr = "negative lockabs";
@@ -1177,13 +1180,13 @@ export class ScriptInterpreter {
               break loop;
             }
             const scriptNum = ScriptNum.fromBuf(
-              this.stack[this.stack.length - 1],
+              this.stack[this.stack.length - 1] as SysBuf,
             );
             if (scriptNum.num < 0n) {
               this.errStr = "negative lockrel";
               break loop;
             }
-            const txInput = this.tx.inputs[this.nIn.n];
+            const txInput = this.tx.inputs[this.nIn.n] as TxIn;
             if (txInput.lockRel.bn < scriptNum.num) {
               this.errStr = "lockrel requirement not met";
               break loop;

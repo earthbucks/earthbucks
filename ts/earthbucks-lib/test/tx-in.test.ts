@@ -36,7 +36,7 @@ describe("TxInput", () => {
         SysBuf.from(inputTxHash.buf).toString("hex"),
       );
       expect(result.inputTxNOut).toEqual(inputTxIndex);
-      expect(result.script.toStrictStr()).toEqual(script.toStrictStr());
+      expect(result.script.toString()).toEqual(script.toString());
       expect(result.lockRel).toEqual(lockRel);
     });
   });
@@ -58,7 +58,7 @@ describe("TxInput", () => {
     test("toBuf with script", () => {
       const inputTxHash = FixedBuf.alloc(32);
       const inputTxIndex = new U32(0);
-      const script = Script.fromStrictStr("DOUBLEBLAKE3");
+      const script = Script.fromString("DOUBLEBLAKE3");
       const lockRel = new U32(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -72,7 +72,7 @@ describe("TxInput", () => {
   test("toBuf with pushdata", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromStrictStr("0x121212");
+    const script = Script.fromString("0x121212");
     const lockRel = new U32(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -85,7 +85,7 @@ describe("TxInput", () => {
   test("isNull", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromStrictStr("0x121212");
+    const script = Script.fromString("0x121212");
     const lockRel = new U32(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -103,7 +103,7 @@ describe("TxInput", () => {
   test("isMinimalLock", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromStrictStr("0x121212");
+    const script = Script.fromString("0x121212");
     const lockRel = new U32(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -118,30 +118,30 @@ describe("TxInput", () => {
     expect(finalTxInput.isMinimalLock()).toBe(true);
   });
 
-  test("isCoinbase", () => {
+  test("isMintTx", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromStrictStr("0x121212");
+    const script = Script.fromString("0x121212");
     const lockRel = new U32(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
-    expect(txInput.isCoinbase()).toBe(false);
+    expect(txInput.isMintTx()).toBe(false);
 
-    const coinbaseTxInput = new TxIn(
+    const mintTxInput = new TxIn(
       FixedBuf.alloc(32),
       new U32(0xffffffff),
       new Script(),
       new U32(0),
     );
-    expect(coinbaseTxInput.isCoinbase()).toBe(true);
+    expect(mintTxInput.isMintTx()).toBe(true);
   });
 
-  test("fromCoinbase", () => {
-    const script = Script.fromStrictStr("0x121212");
-    const txInput = TxIn.fromCoinbase(script);
+  test("fromMintTx", () => {
+    const script = Script.fromString("0x121212");
+    const txInput = TxIn.fromMintTx(script);
     expect(txInput).toBeInstanceOf(TxIn);
     expect(txInput.isNull()).toBe(true);
     expect(txInput.isMinimalLock()).toBe(true);
-    expect(txInput.script.toStrictStr()).toEqual(script.toStrictStr());
+    expect(txInput.script.toString()).toEqual(script.toString());
   });
 });

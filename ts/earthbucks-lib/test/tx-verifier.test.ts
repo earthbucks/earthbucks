@@ -28,14 +28,14 @@ describe("TxVerifier", () => {
         const key = KeyPair.fromRandom();
         const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
         pkhKeyMap.add(key, pkh.buf.buf);
-        const script = Script.fromPkhOutput(pkh.buf.buf);
+        const script = Script.fromPkhOutput(pkh);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify a tx", () => {
@@ -46,13 +46,13 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInput = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInput).toBe(true);
 
@@ -75,16 +75,16 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(2);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(100));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(100));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(100));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(100));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed1 = txSigner.sign(new U32(0));
       expect(signed1).toBeTruthy();
       const signed2 = txSigner.sign(new U32(1));
       expect(signed2).toBeTruthy();
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInput1 = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInput1).toBe(true);
       const verifiedInput2 = txVerifier.verifyInputScript(new U32(1));
@@ -112,12 +112,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify unexpired pkhx 1h", () => {
@@ -128,15 +128,15 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
 
@@ -165,12 +165,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhx1hOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify expired pkhx 1h", () => {
@@ -190,23 +190,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHX_1H_LOCK_REL.bn),
+        new U32(Script.PKHX_1H_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isExpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isExpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHX_1H_LOCK_REL.bn),
+        new U32(Script.PKHX_1H_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
@@ -236,12 +236,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify unexpired pkhx 90d", () => {
@@ -252,15 +252,15 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
 
@@ -289,12 +289,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhx90dOutput(pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify expired pkhx 90d", () => {
@@ -314,23 +314,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHX_90D_LOCK_REL.bn),
+        new U32(Script.PKHX_90D_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isExpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isExpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHX_90D_LOCK_REL.bn),
+        new U32(Script.PKHX_90D_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
@@ -360,12 +360,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify unexpired pkhx 1h", () => {
@@ -376,15 +376,15 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
 
@@ -416,12 +416,12 @@ describe("TxVerifier", () => {
           pkh.buf.buf,
         );
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify recoverable pkhxr 1h", () => {
@@ -441,23 +441,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHXR_1H_40M_R_LOCK_REL.bn),
+        new U32(Script.PKHXR_1H_40M_R_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isRecoveryPkhxrInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isRecoveryPkhxrInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHXR_1H_40M_R_LOCK_REL.bn),
+        new U32(Script.PKHXR_1H_40M_R_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
@@ -487,12 +487,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhxr1h40mOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify expired pkhxr 1h 40m", () => {
@@ -512,23 +512,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHXR_1H_40M_X_LOCK_REL.bn),
+        new U32(Script.PKHXR_1H_40M_X_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isExpiredPkhxrInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isExpiredPkhxrInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHXR_1H_40M_X_LOCK_REL.bn),
+        new U32(Script.PKHXR_1H_40M_X_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
@@ -558,12 +558,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify unexpired pkhxr 1h", () => {
@@ -574,15 +574,15 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
-      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U64(0n));
+      txSigner = new TxSigner(tx, txOutBnMap, pkhKeyMap, new U32(0n));
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isUnexpiredPkhxInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
-      const txVerifier = new TxVerifier(tx, txOutBnMap, new U64(0n));
+      const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
 
@@ -614,12 +614,12 @@ describe("TxVerifier", () => {
           pkh.buf.buf,
         );
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify recovery pkhxr 90d 60d", () => {
@@ -639,23 +639,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHXR_90D_60D_R_LOCK_REL.bn),
+        new U32(Script.PKHXR_90D_60D_R_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isRecoveryPkhxrInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isRecoveryPkhxrInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHXR_90D_60D_R_LOCK_REL.bn),
+        new U32(Script.PKHXR_90D_60D_R_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);
@@ -685,12 +685,12 @@ describe("TxVerifier", () => {
         pkhKeyMap.add(key, pkh.buf.buf);
         const script = Script.fromPkhxr90d60dOutput(pkh.buf.buf, pkh.buf.buf);
         const txOut = new TxOut(new U64(100), script);
-        const txOutBn = new TxOutBn(txOut, new U64(0n));
+        const txOutBn = new TxOutBn(txOut, new U32(0n));
         txOutBnMap.add(txOutBn, FixedBuf.alloc(32), new U32(i));
       }
 
       const changeScript = Script.fromEmpty();
-      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U64(0n));
+      txBuilder = new TxBuilder(txOutBnMap, changeScript, new U32(0n));
     });
 
     test("should sign and verify expired pkhxr 90d 60d", () => {
@@ -710,23 +710,23 @@ describe("TxVerifier", () => {
 
       expect(tx.inputs.length).toBe(1);
       expect(tx.outputs.length).toBe(2);
-      expect(tx.outputs[0].value.bn).toEqual(BigInt(50));
-      expect(tx.outputs[1].value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+      expect(tx.outputs[1]?.value.bn).toEqual(BigInt(50));
 
       txSigner = new TxSigner(
         tx,
         txOutBnMap,
         pkhKeyMap,
-        new U64(Script.PKHXR_90D_60D_X_LOCK_REL.bn),
+        new U32(Script.PKHXR_90D_60D_X_LOCK_REL.bn),
       );
       const signed = txSigner.sign(new U32(0));
       expect(signed).toBeTruthy();
-      expect(tx.inputs[0].script.isExpiredPkhxrInput()).toBe(true);
+      expect(tx.inputs[0]?.script.isExpiredPkhxrInput()).toBe(true);
 
       const txVerifier = new TxVerifier(
         tx,
         txOutBnMap,
-        new U64(Script.PKHXR_90D_60D_X_LOCK_REL.bn),
+        new U32(Script.PKHXR_90D_60D_X_LOCK_REL.bn),
       );
       const verifiedInputScript = txVerifier.verifyInputScript(new U32(0));
       expect(verifiedInputScript).toBe(true);

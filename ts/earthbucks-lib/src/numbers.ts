@@ -1,3 +1,5 @@
+import { EbxBuf, SysBuf } from "./buf.js";
+
 export abstract class BasicNumber<U extends BasicNumber<U>> {
   protected value: bigint;
 
@@ -6,13 +8,11 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
     protected min: bigint,
     protected max: bigint,
   ) {
-    if (typeof value === "number") {
-      value = BigInt(value);
-    }
-    if (value < min || value > max) {
+    const valueBn = BigInt(value);
+    if (valueBn < min || valueBn > max) {
       throw new Error(`Value ${value} is not a valid number`);
     }
-    this.value = value;
+    this.value = valueBn;
   }
 
   abstract add(other: U): U;
@@ -21,6 +21,8 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
   abstract div(other: U): U;
   abstract get bn(): bigint;
   abstract get n(): number;
+  abstract toBEBuf(): SysBuf;
+  abstract toHex(): string;
 }
 
 export class U8 extends BasicNumber<U8> {
@@ -57,41 +59,23 @@ export class U8 extends BasicNumber<U8> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I8 extends BasicNumber<I8> {
-  readonly _I8: undefined;
-
-  constructor(value: bigint | number) {
-    super(value, -0x80n, 0x7fn);
+  toBEBuf(): SysBuf {
+    const buf = SysBuf.alloc(1);
+    buf.writeUInt8(this.n, 0);
+    return buf;
   }
 
-  add(other: I8): I8 {
-    const result = this.value + other.value;
-    return new I8(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I8): I8 {
-    const result = this.value - other.value;
-    return new I8(result);
+  static fromBEBuf(buf: SysBuf): U8 {
+    return new U8(buf.readUInt8(0));
   }
 
-  mul(other: I8): I8 {
-    const result = this.value * other.value;
-    return new I8(result);
-  }
-
-  div(other: I8): I8 {
-    const result = this.value / other.value;
-    return new I8(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U8 {
+    return U8.fromBEBuf(EbxBuf.fromHex(1, hex).buf);
   }
 }
 
@@ -129,41 +113,23 @@ export class U16 extends BasicNumber<U16> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I16 extends BasicNumber<I16> {
-  readonly _I16: undefined;
-
-  constructor(value: bigint | number) {
-    super(value, -0x8000n, 0x7fffn);
+  toBEBuf(): SysBuf {
+    const buf = SysBuf.alloc(2);
+    buf.writeUInt16BE(this.n, 0);
+    return buf;
   }
 
-  add(other: I16): I16 {
-    const result = this.value + other.value;
-    return new I16(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I16): I16 {
-    const result = this.value - other.value;
-    return new I16(result);
+  static fromBEBuf(buf: SysBuf): U16 {
+    return new U16(buf.readUInt16BE(0));
   }
 
-  mul(other: I16): I16 {
-    const result = this.value * other.value;
-    return new I16(result);
-  }
-
-  div(other: I16): I16 {
-    const result = this.value / other.value;
-    return new I16(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U16 {
+    return U16.fromBEBuf(EbxBuf.fromHex(2, hex).buf);
   }
 }
 
@@ -201,41 +167,23 @@ export class U32 extends BasicNumber<U32> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I32 extends BasicNumber<I32> {
-  readonly _I32: undefined;
-
-  constructor(value: bigint | number) {
-    super(value, -0x80000000n, 0x7fffffffn);
+  toBEBuf(): SysBuf {
+    const buf = SysBuf.alloc(4);
+    buf.writeUInt32BE(this.n, 0);
+    return buf;
   }
 
-  add(other: I32): I32 {
-    const result = this.value + other.value;
-    return new I32(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I32): I32 {
-    const result = this.value - other.value;
-    return new I32(result);
+  static fromBEBuf(buf: SysBuf): U32 {
+    return new U32(buf.readUInt32BE(0));
   }
 
-  mul(other: I32): I32 {
-    const result = this.value * other.value;
-    return new I32(result);
-  }
-
-  div(other: I32): I32 {
-    const result = this.value / other.value;
-    return new I32(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U32 {
+    return U32.fromBEBuf(EbxBuf.fromHex(4, hex).buf);
   }
 }
 
@@ -273,41 +221,23 @@ export class U64 extends BasicNumber<U64> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I64 extends BasicNumber<I64> {
-  readonly _I64: undefined;
-
-  constructor(value: bigint | number) {
-    super(value, -0x8000000000000000n, 0x7fffffffffffffffn);
+  toBEBuf(): SysBuf {
+    const buf = SysBuf.alloc(8);
+    buf.writeBigInt64BE(this.bn);
+    return buf;
   }
 
-  add(other: I64): I64 {
-    const result = this.value + other.value;
-    return new I64(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I64): I64 {
-    const result = this.value - other.value;
-    return new I64(result);
+  static fromBEBuf(buf: SysBuf): U64 {
+    return new U64(buf.readBigUInt64BE(0));
   }
 
-  mul(other: I64): I64 {
-    const result = this.value * other.value;
-    return new I64(result);
-  }
-
-  div(other: I64): I64 {
-    const result = this.value / other.value;
-    return new I64(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U64 {
+    return U64.fromBEBuf(EbxBuf.fromHex(8, hex).buf);
   }
 }
 
@@ -349,45 +279,29 @@ export class U128 extends BasicNumber<U128> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I128 extends BasicNumber<I128> {
-  readonly _I128: undefined;
-
-  constructor(value: bigint | number) {
-    super(
-      value,
-      -0x80000000000000000000000000000000n,
-      0x7fffffffffffffffffffffffffffffffn,
-    );
+  toBEBuf(): SysBuf {
+    const val1: bigint = this.bn >> 64n;
+    const val2: bigint = this.bn & 0xffffffffffffffffn;
+    const buf = SysBuf.alloc(16);
+    buf.writeBigUInt64BE(val1, 0);
+    buf.writeBigUInt64BE(val2, 8);
+    return buf;
   }
 
-  add(other: I128): I128 {
-    const result = this.value + other.value;
-    return new I128(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I128): I128 {
-    const result = this.value - other.value;
-    return new I128(result);
+  static fromBEBuf(buf: SysBuf): U128 {
+    const val1: bigint = buf.readBigUInt64BE(0);
+    const val2: bigint = buf.readBigUInt64BE(8);
+    return new U128((val1 << 64n) + val2);
   }
 
-  mul(other: I128): I128 {
-    const result = this.value * other.value;
-    return new I128(result);
-  }
-
-  div(other: I128): I128 {
-    const result = this.value / other.value;
-    return new I128(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U128 {
+    const buf = EbxBuf.fromHex(16, hex).buf;
+    return U128.fromBEBuf(buf);
   }
 }
 
@@ -429,44 +343,34 @@ export class U256 extends BasicNumber<U256> {
   get n(): number {
     return Number(this.value);
   }
-}
 
-export class I256 extends BasicNumber<I256> {
-  readonly _I256: undefined;
-
-  constructor(value: bigint | number) {
-    super(
-      value,
-      -0x8000000000000000000000000000000000000000000000000000000000000000n,
-      0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn,
-    );
+  toBEBuf(): SysBuf {
+    const val1: bigint = this.bn >> 192n;
+    const val2: bigint = (this.bn >> 128n) & 0xffffffffffffffffn;
+    const val3: bigint = (this.bn >> 64n) & 0xffffffffffffffffn;
+    const val4: bigint = this.bn & 0xffffffffffffffffn;
+    const buf = SysBuf.alloc(32);
+    buf.writeBigUInt64BE(val1, 0);
+    buf.writeBigUInt64BE(val2, 8);
+    buf.writeBigUInt64BE(val3, 16);
+    buf.writeBigUInt64BE(val4, 24);
+    return buf;
   }
 
-  add(other: I256): I256 {
-    const result = this.value + other.value;
-    return new I256(result);
+  toHex(): string {
+    return this.toBEBuf().toString("hex");
   }
 
-  sub(other: I256): I256 {
-    const result = this.value - other.value;
-    return new I256(result);
+  static fromBEBuf(buf: SysBuf): U256 {
+    const val1: bigint = buf.readBigUInt64BE(0);
+    const val2: bigint = buf.readBigUInt64BE(8);
+    const val3: bigint = buf.readBigUInt64BE(16);
+    const val4: bigint = buf.readBigUInt64BE(24);
+    return new U256((val1 << 192n) + (val2 << 128n) + (val3 << 64n) + val4);
   }
 
-  mul(other: I256): I256 {
-    const result = this.value * other.value;
-    return new I256(result);
-  }
-
-  div(other: I256): I256 {
-    const result = this.value / other.value;
-    return new I256(result);
-  }
-
-  get bn(): bigint {
-    return this.value;
-  }
-
-  get n(): number {
-    return Number(this.value);
+  static fromHex(hex: string): U256 {
+    const buf = EbxBuf.fromHex(32, hex).buf;
+    return U256.fromBEBuf(buf);
   }
 }

@@ -16,8 +16,8 @@ describe("TxOutBnMap", () => {
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
     txOut = new TxOut(new U64(100), Script.fromEmpty());
-    txOutBn = new TxOutBn(txOut, new U64(0n));
-    txIdHash = FixedBuf.fromStrictHex(
+    txOutBn = new TxOutBn(txOut, new U32(0n));
+    txIdHash = FixedBuf.fromHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
     );
@@ -27,7 +27,7 @@ describe("TxOutBnMap", () => {
   test("nameFromOutput", () => {
     const name = TxOutBnMap.nameFromOutput(txIdHash.buf, outputIndex);
     expect(name).toBe(
-      "0102030400000000000000000000000000000000000000000000000000000000:0",
+      "0102030400000000000000000000000000000000000000000000000000000000:00000000",
     );
   });
 
@@ -53,9 +53,9 @@ describe("TxOutBnMap", () => {
   test("values method should return all TxOutput values", () => {
     const txOutputMap = new TxOutBnMap();
     const txOut1 = txOut;
-    const txOutBn1 = new TxOutBn(txOut1, new U64(0n));
+    const txOutBn1 = new TxOutBn(txOut1, new U32(0n));
     const txOut2 = txOut;
-    const txOutBn2 = new TxOutBn(txOut2, new U64(1n));
+    const txOutBn2 = new TxOutBn(txOut2, new U32(1n));
     txOutputMap.add(txOutBn1, txIdHash, new U32(0));
     txOutputMap.add(txOutBn2, txIdHash, new U32(1));
 

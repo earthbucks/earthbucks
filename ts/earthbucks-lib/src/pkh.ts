@@ -3,9 +3,9 @@ import {
   InvalidChecksumError,
   InvalidEncodingError,
 } from "./error.js";
-import * as Hash from "./hash.js";
+import { Hash } from "./hash.js";
 import { SysBuf, EbxBuf, FixedBuf } from "./buf.js";
-import { PubKey } from "./pub-key.js";
+import type { PubKey } from "./pub-key.js";
 import { InvalidSizeError } from "./error.js";
 
 // public key hash
@@ -29,21 +29,21 @@ export class Pkh {
     return new Pkh(buf);
   }
 
-  toStrictStr(): string {
+  toString(): string {
     const checkHash = SysBuf.from(Hash.blake3Hash(this.buf.buf).buf).subarray(
       0,
       4,
     );
     const checkHex = checkHash.toString("hex");
-    return "ebxpkh" + checkHex + this.buf.toBase58();
+    return `ebxpkh${checkHex}${this.buf.toBase58()}`;
   }
 
-  static fromStrictStr(pkhStr: string): Pkh {
+  static fromString(pkhStr: string): Pkh {
     if (!pkhStr.startsWith("ebxpkh")) {
       throw new InvalidEncodingError();
     }
     const checkHex = pkhStr.slice(6, 14);
-    const checkBuf = FixedBuf.fromStrictHex(4, checkHex);
+    const checkBuf = FixedBuf.fromHex(4, checkHex);
     const buf = FixedBuf.fromBase58(32, pkhStr.slice(14));
     const hashBuf = Hash.blake3Hash(buf.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
@@ -55,7 +55,7 @@ export class Pkh {
 
   static isValidStringFmt(pkhStr: string): boolean {
     try {
-      Pkh.fromStrictStr(pkhStr);
+      Pkh.fromString(pkhStr);
     } catch (e) {
       return false;
     }

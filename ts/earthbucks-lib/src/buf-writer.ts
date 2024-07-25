@@ -1,5 +1,5 @@
 import { SysBuf } from "./buf.js";
-import { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
+import type { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class BufWriter {
   bufs: SysBuf[];
@@ -26,54 +26,32 @@ export class BufWriter {
   }
 
   writeU8(u8: U8): this {
-    const buf = SysBuf.alloc(1);
-    buf.writeUInt8(u8.n, 0);
-    this.write(buf);
+    this.write(u8.toBEBuf());
     return this;
   }
 
   writeU16BE(u16: U16): this {
-    const buf = SysBuf.alloc(2);
-    buf.writeUInt16BE(u16.n, 0);
-    this.write(buf);
+    this.write(u16.toBEBuf());
     return this;
   }
 
   writeU32BE(u32: U32): this {
-    const buf = SysBuf.alloc(4);
-    buf.writeUInt32BE(u32.n, 0);
-    this.write(buf);
+    this.write(u32.toBEBuf());
     return this;
   }
 
   writeU64BE(u64: U64): this {
-    const buf = SysBuf.alloc(8);
-    buf.writeBigInt64BE(u64.bn);
-    this.write(buf);
+    this.write(u64.toBEBuf());
     return this;
   }
 
   writeU128BE(u128: U128): this {
-    const val1: bigint = u128.bn >> 64n;
-    const val2: bigint = u128.bn & 0xffffffffffffffffn;
-    const buf = SysBuf.alloc(16);
-    buf.writeBigUInt64BE(val1, 0);
-    buf.writeBigUInt64BE(val2, 8);
-    this.write(buf);
+    this.write(u128.toBEBuf());
     return this;
   }
 
   writeU256BE(u256: U256): this {
-    const val1: bigint = u256.bn >> 192n;
-    const val2: bigint = (u256.bn >> 128n) & 0xffffffffffffffffn;
-    const val3: bigint = (u256.bn >> 64n) & 0xffffffffffffffffn;
-    const val4: bigint = u256.bn & 0xffffffffffffffffn;
-    const buf = SysBuf.alloc(32);
-    buf.writeBigUInt64BE(val1, 0);
-    buf.writeBigUInt64BE(val2, 8);
-    buf.writeBigUInt64BE(val3, 16);
-    buf.writeBigUInt64BE(val4, 24);
-    this.write(buf);
+    this.write(u256.toBEBuf());
     return this;
   }
 
