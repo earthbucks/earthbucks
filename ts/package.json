@@ -1,6 +1,8 @@
 {
   "name": "earthbucks",
-  "version": "1.0.0",
-  "scripts": {
+  "version": "0.6.0",
+  "scripts": {},
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3"
   }
 }

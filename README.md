@@ -24,7 +24,6 @@ the TypeScript implementation.
 - earthbucks-pow-browser (tensorflow methods for GPU POW in the browser)
 - earthbucks-pow-node (tensorflow methods for GPU POW in Node.js)
 
-
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
