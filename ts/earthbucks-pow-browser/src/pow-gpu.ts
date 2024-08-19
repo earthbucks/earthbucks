@@ -1,11 +1,12 @@
-import { Buffer as SysBuf } from "buffer";
+import { SysBuf } from "@earthbucks/lib";
+import type { FixedBuf } from "@earthbucks/lib";
 import * as tf from "@tensorflow/tfjs";
 
 type TF = typeof tf;
 type TFTensor = tf.Tensor;
 
-type BufferFunction = (input: SysBuf) => SysBuf;
-type AsyncBufferFunction = (input: SysBuf) => Promise<SysBuf>;
+type HashFunction = (input: SysBuf) => FixedBuf<32>;
+type AsyncHashFunction = (input: SysBuf) => Promise<FixedBuf<32>>;
 
 export class PowGpu {
   workingBlockId: TFTensor;
@@ -21,9 +22,12 @@ export class PowGpu {
   // this is important because it means that the matrix will be as random as
   // possible given a minimum amount of pseudorandom data (which has to be sent
   // over the network, not to mention to the GPU).
-  constructor(workingBlockId: SysBuf, lch10Ids: SysBuf[]) {
-    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId);
-    this.lch10Ids = this.tensorFromBufferBitsAlt4(SysBuf.concat(lch10Ids));
+  constructor(workingBlockId: FixedBuf<32>, lch10Ids: FixedBuf<32>[]) {
+    const lch10IdsRev = [...lch10Ids].reverse();
+    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId.buf);
+    this.lch10Ids = this.tensorFromBufferBitsAlt4(
+      SysBuf.concat(lch10IdsRev.map((id) => id.buf)),
+    );
   }
 
   tensorFromBufferBitsAlt1(buffer: SysBuf): TFTensor {
@@ -120,8 +124,8 @@ export class PowGpu {
     return bits.flatten();
   }
 
-  updateWorkingBlockId(workingBlockId: SysBuf) {
-    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId);
+  updateWorkingBlockId(workingBlockId: FixedBuf<32>) {
+    this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId.buf);
   }
 
   tensorSeed(): TFTensor {
@@ -288,24 +292,24 @@ export class PowGpu {
 
   reducedBufsHash(
     reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
-    blake3Hash: BufferFunction,
-  ): SysBuf {
-    const hash0 = blake3Hash(reducedBufs[0]);
-    const hash1 = blake3Hash(reducedBufs[1]);
-    const hash2 = blake3Hash(reducedBufs[2]);
-    const hash3 = blake3Hash(reducedBufs[3]);
+    blake3Hash: HashFunction,
+  ): FixedBuf<32> {
+    const hash0 = blake3Hash(reducedBufs[0]).buf;
+    const hash1 = blake3Hash(reducedBufs[1]).buf;
+    const hash2 = blake3Hash(reducedBufs[2]).buf;
+    const hash3 = blake3Hash(reducedBufs[3]).buf;
     const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3Hash(concatted);
   }
 
   async reducedBufsHashAsync(
     reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
-    blake3HashAsync: AsyncBufferFunction,
-  ): Promise<SysBuf> {
-    const hash0 = await blake3HashAsync(reducedBufs[0]);
-    const hash1 = await blake3HashAsync(reducedBufs[1]);
-    const hash2 = await blake3HashAsync(reducedBufs[2]);
-    const hash3 = await blake3HashAsync(reducedBufs[3]);
+    blake3HashAsync: AsyncHashFunction,
+  ): Promise<FixedBuf<32>> {
+    const hash0 = (await blake3HashAsync(reducedBufs[0])).buf;
+    const hash1 = (await blake3HashAsync(reducedBufs[1])).buf;
+    const hash2 = (await blake3HashAsync(reducedBufs[2])).buf;
+    const hash3 = (await blake3HashAsync(reducedBufs[3])).buf;
     const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3HashAsync(concatted);
   }

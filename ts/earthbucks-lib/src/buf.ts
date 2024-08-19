@@ -11,6 +11,7 @@ import {
   InvalidEncodingError,
 } from "./error.js";
 import bs58 from "bs58";
+import { z } from "zod";
 
 function isValidHex(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
@@ -86,6 +87,24 @@ class FixedBuf<N extends number> extends EbxBuf {
   constructor(size: N, buf: SysBuf) {
     super(size, buf);
     this[sizeSymbol] = size;
+  }
+
+  static DeserializeSchema<N extends number>(size: N) {
+    return z.string().transform((data, ctx) => {
+      try {
+        return FixedBuf.fromHex(size, data);
+      } catch (e) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid FixedBuf<${size}> format`,
+        });
+        return z.NEVER;
+      }
+    });
+  }
+
+  static SerializeSchema<N extends number>(size: N) {
+    return z.instanceof(FixedBuf).transform((buf) => buf.toHex());
   }
 
   static fromBuf<N extends number>(size: N, buf: SysBuf): FixedBuf<N> {

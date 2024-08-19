@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs-node";
-import { PowGpu } from "@earthbucks/earthbucks-pow-browser/src/lib.js";
+import { PowGpu } from "@earthbucks/pow-browser";
 
 type TF = typeof tf;
 

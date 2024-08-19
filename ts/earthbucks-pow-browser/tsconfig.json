@@ -17,6 +17,9 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "noEmit": true,
-    "declaration": true
+    "declaration": true,
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   }
 }

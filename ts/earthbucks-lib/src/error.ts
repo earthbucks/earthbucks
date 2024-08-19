@@ -1,166 +1,217 @@
 export abstract class EbxError extends Error {}
 
 export class GenericError extends EbxError {
-  constructor(
-    public message: string,
-    public source?: EbxError,
-  ) {
+  public message: string;
+  public source?: EbxError;
+  constructor(message?: string, source?: EbxError) {
     super();
+    this.message = message || "";
+    this.source = source;
   }
 
   toString(): string {
-    return `ebx error: ${this.message}`;
+    const errStr = "ebx error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class VerificationError extends EbxError {
-  constructor(
-    public message: string,
-    public source?: EbxError,
-  ) {
-    super();
-  }
-
+export class VerificationError extends GenericError {
   toString(): string {
-    return `verification error: ${this.message}`;
+    const errStr = "verification error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
+  }
+}
+
+export class HeaderVerificationError extends VerificationError {
+  toString(): string {
+    const errStr = "header verification error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
 export class BlockVerificationError extends VerificationError {
-  constructor(
-    public message: string,
-    public source?: EbxError,
-  ) {
-    super(message, source);
-  }
-
   toString(): string {
-    return `block verification error: ${this.message}`;
+    const errStr = "block verification error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
 export class TxVerificationError extends VerificationError {
-  constructor(
-    public message: string,
-    public source?: EbxError,
-  ) {
-    super(message, source);
-  }
-
   toString(): string {
-    return `tx verification error: ${this.message}`;
+    const errStr = "tx verification error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
 export class ScriptVerificationError extends VerificationError {
-  constructor(
-    public message: string,
-    public source?: EbxError,
-  ) {
-    super(message, source);
-  }
-
   toString(): string {
-    return `script verification error: ${this.message}`;
+    const errStr = "script verification error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidSizeError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidSizeError extends GenericError {
   toString(): string {
-    return "invalid size";
+    const errStr = "invalid size error";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class NotEnoughDataError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class NotEnoughDataError extends GenericError {
   toString(): string {
-    return "not enough bytes in the buffer to read";
+    const errStr = "not enough bytes in the buffer to read";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class TooMuchDataError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class TooMuchDataError extends GenericError {
   toString(): string {
-    return "too many bytes in the buffer to read";
+    const errStr = "too many bytes in the buffer to read";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class NonMinimalEncodingError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class NonMinimalEncodingError extends GenericError {
   toString(): string {
-    return "non-minimal encoding";
+    const errStr = "non-minimal encoding";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InsufficientPrecisionError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InsufficientPrecisionError extends GenericError {
   toString(): string {
-    return "number too large to retain precision";
+    const errStr = "number too large to retain precision";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidOpcodeError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidOpcodeError extends GenericError {
   toString(): string {
-    return "invalid opcode";
+    const errStr = "invalid opcode";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidHexError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidHexError extends GenericError {
   toString(): string {
-    return "invalid hex";
+    const errStr = "invalid hex";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidEncodingError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidEncodingError extends GenericError {
   toString(): string {
-    return "invalid encoding";
+    const errStr = "invalid encoding";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidKeyError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidKeyError extends GenericError {
   toString(): string {
-    return "invalid key";
+    const errStr = "invalid key";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }
 
-export class InvalidChecksumError extends EbxError {
-  constructor(public source?: EbxError) {
-    super();
-  }
-
+export class InvalidChecksumError extends GenericError {
   toString(): string {
-    return "invalid checksum";
+    const errStr = "invalid checksum";
+    if (this.message) {
+      if (this.source) {
+        return `${errStr}: ${this.message}: ${this.source.toString()}`;
+      }
+      return `${errStr}: ${this.message}`;
+    }
+    return `${errStr}`;
   }
 }

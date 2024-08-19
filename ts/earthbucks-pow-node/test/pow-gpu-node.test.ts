@@ -1,16 +1,16 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { PowGpuNode } from "../src/pow-gpu-node.js";
 import { Buffer as SysBuf } from "buffer";
+import { FixedBuf } from "@earthbucks/lib";
 import { hash as blake3HashRaw } from "blake3";
 
-function blake3Hash(seed: SysBuf): SysBuf {
-  blake3HashRaw(seed);
-  return SysBuf.from(blake3HashRaw(seed));
+function blake3Hash(seed: SysBuf): FixedBuf<32> {
+  return FixedBuf.fromBuf(32, SysBuf.from(blake3HashRaw(seed)));
 }
 
-function blake3HashAsync(seed: SysBuf): Promise<SysBuf> {
+function blake3HashAsync(seed: SysBuf): Promise<FixedBuf<32>> {
   return new Promise((resolve) => {
-    resolve(SysBuf.from(blake3HashRaw(seed)));
+    resolve(FixedBuf.fromBuf(32, SysBuf.from(blake3HashRaw(seed))));
   });
 }
 
@@ -19,7 +19,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt1(buffer);
       expect(result.shape).toEqual([8]);
@@ -33,7 +33,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt2(buffer);
       expect(result.shape).toEqual([8]);
@@ -47,7 +47,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
       expect(result.shape).toEqual([8]);
@@ -59,7 +59,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 16 values that are all int32 value 1 when passed a buffer of 0xffff", () => {
       const buffer = SysBuf.from([0xff, 0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
       expect(result.shape).toEqual([16]);
@@ -71,7 +71,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with binary data", () => {
       const buffer = SysBuf.from([0x80, 0x80]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
       expect(result.shape).toEqual([16]);
@@ -85,7 +85,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
       const buffer = SysBuf.from([0xff, 0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
       expect(result.shape).toEqual([16]);
@@ -97,7 +97,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with 16 values that are all int32 value 1 when passed a buffer of 0xffff", () => {
       const buffer = SysBuf.from([0xff, 0xff, 0xff, 0xff]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
       expect(result.shape).toEqual([32]);
@@ -112,7 +112,7 @@ describe("GpuPowNode", () => {
     it("should return a tensor with binary data", () => {
       const buffer = SysBuf.from([0x80, 0x80]);
       const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-      const previousBlockIds: SysBuf[] = [];
+      const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
       expect(result.shape).toEqual([16]);
@@ -124,22 +124,22 @@ describe("GpuPowNode", () => {
 
   test("algo17", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds: SysBuf[] = [];
+    const previousBlockIds: FixedBuf<32>[] = [];
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
     );
   });
 
   test("algo17 async", async () => {
     const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds: SysBuf[] = [];
+    const previousBlockIds: FixedBuf<32>[] = [];
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
     );
   });
@@ -150,7 +150,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
     );
   });
@@ -161,7 +161,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
     );
   });
@@ -172,7 +172,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
     );
   });
@@ -183,7 +183,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
     );
   });
@@ -194,7 +194,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
     );
   });
@@ -205,7 +205,7 @@ describe("GpuPowNode", () => {
     const gpupow = new PowGpuNode(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
-    expect(res.toString("hex")).toBe(
+    expect(res.toHex()).toBe(
       "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
     );
   });

@@ -2,7 +2,7 @@ import type { Block } from "./block.js";
 import { Header } from "./header.js";
 import type { Tx } from "./tx.js";
 import { MerkleTxs } from "./merkle-txs.js";
-import { GenericError, VerificationError } from "./error.js";
+import { GenericError, BlockVerificationError } from "./error.js";
 import { MerkleNode } from "./merkle-node.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import type { HeaderChain } from "./header-chain.js";
@@ -42,7 +42,7 @@ export class BlockVerifier {
   verifyMerkleRoot(): void {
     const merkleTxs = MerkleTxs.fromTxs(this.block.txs);
     if (!this.block.header.rootMerkleNodeId.buf.equals(merkleTxs.root.buf)) {
-      throw new VerificationError("Invalid merkle root");
+      throw new BlockVerificationError("Invalid merkle root");
     }
   }
 

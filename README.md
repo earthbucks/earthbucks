@@ -21,10 +21,13 @@ the TypeScript implementation.
 ### TypeScript (ts)
 
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks-pow-browser (tensorflow methods for GPU POW in the browser)
-- earthbucks-pow-node (tensorflow methods for GPU POW in Node.js)
+- earthbucks-mine-client (client for mines)
+- earthbucks-pow-browser (tensorflow methods for GPU PoW in the browser)
+- earthbucks-pow-node (tensorflow methods for GPU PoW in Node.js)
+- earthbucks-pow-node-gpu (tensorflow methods for GPU PoW in Node.js with GPU)
+- earthbucks-pow-validator-client (client for the PoW Validator)
 
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
-- earthbucks_pow (tensorflow methods for GPU POW)
+- earthbucks_pow (tensorflow methods for GPU PoW)

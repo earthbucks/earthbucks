@@ -1,5 +1,5 @@
 {
-  "name": "@earthbucks/pow-node",
+  "name": "@earthbucks/pow-node-gpu",
   "version": "0.6.0",
   "description": "EarthBucks Proof-of-Work (PoW) algorithms with big dependencies.",
   "main": "dist/index.js",
@@ -29,16 +29,16 @@
   "dependencies": {
     "@earthbucks/lib": "workspace:^",
     "@earthbucks/pow-browser": "workspace:^",
-    "@tensorflow/tfjs-node": "^4.20.0",
+    "@tensorflow/tfjs-node-gpu": "^4.20.0",
     "blake3": "2.1.7",
     "buffer": "^6.0.3",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "globals": "^15.9.0",
+    "globals": "^15.3.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.5.4",
+    "typescript": "^5.5.3",
     "vitest": "^2.0.5"
   }
 }

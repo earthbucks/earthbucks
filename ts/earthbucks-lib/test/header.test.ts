@@ -171,281 +171,94 @@ describe("Header", () => {
     );
   });
 
-  describe("newTargetFromOldTargets", () => {
-    test("newTargetFromOldTargets 1", () => {
-      const target1Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const targetSum = target1.bn;
-      const len = new U32(1);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        new U64(600_000),
-        len,
+  test("difficulty", () => {
+    const bh1 = new Header({
+      target: new U256(
+        0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+      ),
+    });
+    expect(bh1.difficulty().bn).toBe(65535n);
+  });
+
+  describe("newDifficultyFromPrevHeaders", () => {
+    test("newDifficultyFromPrevHeaders", () => {
+      const prevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(600_000),
+      });
+      const prevPrevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(0),
+      });
+      const difficulty = Header.newDifficultyFromPrevHeaders(
+        prevHeader,
+        prevPrevHeader,
       );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      expect(newTargetHex).toBe(expectedHex);
+      expect(difficulty.bn).toBe(65535n);
     });
 
-    test("newTargetFromOldTargets 1,2", () => {
-      const target1Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const targetSum = target1.bn;
-      const realTimeDiff = new U64(300_000);
-      const len = new U32(1);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
+    test("newDifficultyFromPrevHeaders", () => {
+      const prevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(1_200_000),
+      });
+      const prevPrevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(0),
+      });
+      const difficulty = Header.newDifficultyFromPrevHeaders(
+        prevHeader,
+        prevPrevHeader,
       );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      expect(newTargetHex).toBe(expectedHex);
+      expect(difficulty.bn).toBe(32767n);
     });
 
-    test("newTargetFromOldTargets 1,3", () => {
-      const target1Hex =
-        "8000000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const targetSum = target1.bn;
-      const realTimeDiff = new U64(600_000);
-      const len = new U32(1);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
+    test("newDifficultyFromPrevHeaders", () => {
+      const prevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(300_000),
+      });
+      const prevPrevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(0),
+      });
+      const difficulty = Header.newDifficultyFromPrevHeaders(
+        prevHeader,
+        prevPrevHeader,
       );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex = target1Hex;
-      expect(newTargetHex).toBe(expectedHex);
+      expect(difficulty.bn).toBe(131070n);
     });
 
-    test("newTargetFromOldTargets 1,4", () => {
-      const target1Hex =
-        "8000000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const targetSum = target1.bn;
-      const realTimeDiff = new U64(300_000);
-      const len = new U32(1);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
+    test("newDifficultyFromPrevHeaders", () => {
+      const prevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(1),
+      });
+      const prevPrevHeader = new Header({
+        target: new U256(
+          0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+        ),
+        timestamp: new U64(0),
+      });
+      const difficulty = Header.newDifficultyFromPrevHeaders(
+        prevHeader,
+        prevPrevHeader,
       );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "4000000000000000000000000000000000000000000000000000000000000000";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 1,5", () => {
-      const target1Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const targetSum = target1.bn;
-      const realTimeDiff = new U64(1_200_000);
-      const len = new U32(1);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "0100000000000000000000000000000000000000000000000000000000000000";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 2", () => {
-      const target1Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn;
-      const realTimeDiff = new U64(600_000 + 600_000);
-      const len = new U32(2);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 2,2", () => {
-      const target1Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn;
-      const realTimeDiff = new U64(600_000 + 300_000);
-      const len = new U32(2);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "0060000000000000000000000000000000000000000000000000000000000000";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 2,3", () => {
-      const target1Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn;
-      const realTimeDiff = new U64(600_000 + 1_200_000);
-      const len = new U32(2);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "00c0000000000000000000000000000000000000000000000000000000000000";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 3", () => {
-      const target1Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const target3Hex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      const target3Buf = EbxBuf.fromHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn + target3.bn;
-      const realTimeDiff = new U64(600_000 + 600_000 + 600_000);
-      const len = new U32(3);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 3,2", () => {
-      const target1Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const target3Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target3Buf = EbxBuf.fromHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn + target3.bn;
-      const realTimeDiff = new U64(600_000 + 600_000 + 601_000);
-      const len = new U32(3);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "0080123456789abcdf0123456789abcdf0123456789abcdf0123456789abcdf0";
-      expect(newTargetHex).toBe(expectedHex);
-    });
-
-    test("newTargetFromOldTargets 3,3", () => {
-      const target1Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target1Buf = EbxBuf.fromHex(32, target1Hex);
-      const target1 = new BufReader(target1Buf.buf).readU256BE();
-      const target2Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target2Buf = EbxBuf.fromHex(32, target2Hex);
-      const target2 = new BufReader(target2Buf.buf).readU256BE();
-      const target3Hex =
-        "0080000000000000000000000000000000000000000000000000000000000000";
-      const target3Buf = EbxBuf.fromHex(32, target3Hex);
-      const target3 = new BufReader(target3Buf.buf).readU256BE();
-      const targetSum = target1.bn + target2.bn + target3.bn;
-      const realTimeDiff = new U64(600_000 + 600_000 + 599_000);
-      const len = new U32(3);
-      const newTarget = Header.newTargetFromOldTargets(
-        targetSum,
-        realTimeDiff,
-        len,
-      );
-      const newTargetHex = new BufWriter()
-        .writeU256BE(newTarget)
-        .toBuf()
-        .toString("hex");
-      const expectedHex =
-        "007fedcba987654320fedcba987654320fedcba987654320fedcba987654320f";
-      expect(newTargetHex).toBe(expectedHex);
+      expect(difficulty.bn).toBe(262140n);
     });
   });
 });

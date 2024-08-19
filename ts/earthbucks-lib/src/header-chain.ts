@@ -10,7 +10,7 @@ import { GenericError } from "./error.js";
 import type { TxOut } from "./tx-out.js";
 
 export class HeaderChain {
-  static LENGTH_TARGET_ADJ_PERIOD = Header.BLOCKS_PER_TARGET_ADJ_PERIOD;
+  static LENGTH_TARGET_ADJ_PERIOD = Header.BLOCKS_PER_TWO_WEEKS;
   static LENGTH_EXPIRY_PERIOD = Script.PKHXR_90D_60D_X_LOCK_REL;
   static LENGTH_SAFETY_PERIOD = HeaderChain.LENGTH_EXPIRY_PERIOD.mul(
     new U32(2),
@@ -98,7 +98,7 @@ export class HeaderChain {
     nTransactions: U64,
     timestamp: U64,
   ) {
-    const header = Header.fromLch(
+    const header = Header.fromLch2016(
       this.headers,
       rootMerkleNodeId,
       nTransactions,

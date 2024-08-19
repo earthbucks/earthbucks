@@ -8,6 +8,7 @@ import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./error.js";
 import { WORK_SER_ALGO_NUM, WORK_SER_ALGO_NAME } from "./work-ser-algo.js";
 import { WORK_PAR_ALGO_NUM, WORK_PAR_ALGO_NAME } from "./work-par-algo.js";
+import { z } from "zod";
 
 interface HeaderInterface {
   version: U8;
@@ -39,14 +40,30 @@ export class Header implements HeaderInterface {
   workParHash: FixedBuf<32>;
 
   // exactly two weeks if block interval is 10 minutes
-  static readonly BLOCKS_PER_TARGET_ADJ_PERIOD = new U32(2016n);
+  static readonly BLOCKS_PER_TWO_WEEKS = new U32(2016n);
 
   // 600_000 milliseconds = 600 seconds = 10 minutes
-  static readonly BLOCK_INTERVAL = new U64(600_000);
+  static readonly BLOCK_INTERVAL_MS = new U64(600_000);
 
   static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
   static readonly MAX_TARGET_U256 = U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
+
+  static readonly DeserializeSchema = z.string().transform((data, ctx) => {
+    try {
+      return Header.fromHex(data);
+    } catch (e) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid Header format",
+      });
+      return z.NEVER;
+    }
+  });
+
+  static readonly SerializeSchema = z
+    .instanceof(Header)
+    .transform((header) => header.toHex());
 
   constructor({
     version = new U8(0),
@@ -145,10 +162,12 @@ export class Header implements HeaderInterface {
     return Header.fromHex(str);
   }
 
-  isTargetValid(lch: Header[]): boolean {
+  isTargetValid(lch2016: Header[]): boolean {
     let newTarget: U256;
     try {
-      newTarget = Header.newTargetFromLch(lch, this.timestamp);
+      const prevHeader = lch2016[lch2016.length - 1] as Header;
+      const prevPrevHeader = lch2016[lch2016.length - 2] || null;
+      newTarget = Header.newTargetFromPrevHeaders(prevHeader, prevPrevHeader);
     } catch (e) {
       return false;
     }
@@ -179,7 +198,7 @@ export class Header implements HeaderInterface {
     return this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627;
   }
 
-  isValidInLch(lch: Header[]): boolean {
+  isValidInLch2016(lch2016: Header[]): boolean {
     if (!this.isVersionValid()) {
       //console.log('1')
       return false;
@@ -188,24 +207,24 @@ export class Header implements HeaderInterface {
       //console.log('2')
       return this.isGenesis();
     }
-    if (lch.length === 0) {
+    if (lch2016.length === 0) {
       //console.log('3')
       return false;
     }
-    if (this.blockNum.n !== lch.length) {
+    const lastHeader = lch2016[lch2016.length - 1] as Header;
+    if (this.blockNum.n !== lastHeader.blockNum.n + 1) {
       //console.log('4')
       return false;
     }
-    const lastHeader = lch[lch.length - 1] as Header;
     if (!this.prevBlockId.buf.equals(lastHeader.id().buf)) {
       //console.log('5')
       return false;
     }
-    if (lch[lch.length - 1] && this.timestamp.n <= lastHeader.timestamp.n) {
+    if (this.timestamp.n <= lastHeader.timestamp.n) {
       //console.log('6')
       return false;
     }
-    if (!this.isTargetValid(lch)) {
+    if (!this.isTargetValid(lch2016)) {
       //console.log('7')
       return false;
     }
@@ -227,7 +246,7 @@ export class Header implements HeaderInterface {
   isValidAt(lch: Header[], timestamp: U64): boolean {
     // this validates everything about the header except PoW
     // PoW must be validated using a separate library
-    return this.isTimestampValidAt(timestamp) && this.isValidInLch(lch);
+    return this.isTimestampValidAt(timestamp) && this.isValidInLch2016(lch);
   }
 
   isValidNow(lch: Header[]): boolean {
@@ -277,27 +296,27 @@ export class Header implements HeaderInterface {
     return new U64(Math.floor(Date.now()));
   }
 
-  static fromLch(
-    lch: Header[],
+  static fromLch2016(
+    lch2016: Header[],
     merkleRoot: FixedBuf<32>,
     nTransactions: U64,
     newTimestamp: U64,
   ): Header {
-    if (lch.length === 0) {
-      throw new GenericError("lch must not be empty");
+    if (lch2016.length === 0) {
+      throw new GenericError("lch2016 must not be empty");
     }
-    //console.log('fromLch 1')
-    const target = Header.newTargetFromLch(lch, newTimestamp);
-    //console.log('fromLch 2')
-    const prevBlock = lch[lch.length - 1] as Header;
-    const prevBlockId = prevBlock.id();
-    const blockNum = new U32(lch.length);
+    if (lch2016.length > Header.BLOCKS_PER_TWO_WEEKS.n) {
+      throw new GenericError("lch2016 must not be longer than 2016 blocks");
+    }
+    const prevHeader = lch2016[lch2016.length - 1] as Header;
+    const prevPrevHeader = lch2016[lch2016.length - 2] || null;
+    const target = Header.newTargetFromPrevHeaders(prevHeader, prevPrevHeader);
+    const prevBlockId = prevHeader.id();
+    const blockNum = prevHeader.blockNum.add(new U32(1));
     const timestamp = newTimestamp;
     const nonce = new U256(0);
-    //const workSerAlgo = prevBlock.workSerAlgo;
     const workSerAlgo = new U16(WORK_SER_ALGO_NUM.blake3_3);
     const workSerHash = FixedBuf.alloc(32);
-    //const workParAlgo = prevBlock.workParAlgo;
     const workParAlgo = new U16(WORK_PAR_ALGO_NUM.algo1627);
     const workParHash = FixedBuf.alloc(32);
     return new Header({
@@ -316,59 +335,44 @@ export class Header implements HeaderInterface {
     });
   }
 
-  static newTargetFromLch(lch: Header[], newTimestamp: U64): U256 {
-    if (lch.length === 0) {
-      throw new GenericError("lch must not be empty");
-    }
-    let adjh: Header[];
-    if (lch.length > Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n) {
-      adjh = lch.slice(lch.length - Header.BLOCKS_PER_TARGET_ADJ_PERIOD.n);
-    } else {
-      adjh = lch;
-    }
-    const len = new U32(adjh.length);
-    if (len.n === 0) {
-      return U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
-    }
-    const firstHeader = adjh[0] as Header;
-    const targets: bigint[] = [];
-    for (const header of adjh) {
-      const target = header.target.bn;
-      targets.push(target);
-    }
-    const targetSum = targets.reduce((a, b) => a + b);
-    if (newTimestamp.n <= firstHeader.timestamp.n) {
-      throw new GenericError("timestamps must be increasing");
-    }
-    const realTimeDiff = newTimestamp.sub(firstHeader.timestamp);
-    return Header.newTargetFromOldTargets(targetSum, realTimeDiff, len);
+  static newTargetFromPrevHeaders(
+    prevHeader: Header,
+    prevPrevHeader: Header | null,
+  ): U256 {
+    const newDifficulty = Header.newDifficultyFromPrevHeaders(
+      prevHeader,
+      prevPrevHeader,
+    );
+    return Header.targetFromDifficulty(newDifficulty);
   }
 
-  static newTargetFromOldTargets(
-    targetSum: bigint,
-    realTimeDiff: U64,
-    len: U32,
-  ): U256 {
-    // - target_sum is sum of all targets in the adjustment period
-    // - real_time_diff is the time difference between the first block in
-    //   the adjustment period and now (the new block)
-    // new target = average target * real time diff / intended time diff
-    // let new_target = (target_sum / len) * real_time_diff / intended_time_diff;
-    // let new_target = (target_sum * real_time_diff) / intended_time_diff / len;
-    // let new_target = (target_sum * real_time_diff) / len / intended_time_diff;
-    // let new_target = (target_sum * real_time_diff) / (len * intended_time_diff);
-    // the fewest divisions is the most accurate in integer arithmetic...
-    const intendedTimeDiff = len.bn * Header.BLOCK_INTERVAL.bn;
-    const resBigInt =
-      (targetSum * realTimeDiff.bn) / (len.bn * intendedTimeDiff);
-    //console.log('new target from old targets', resBigInt)
-    if (resBigInt < 0) {
-      throw new GenericError("new target must be positive");
+  static newDifficultyFromPrevHeaders(
+    prevHeader: Header,
+    prevPrevHeader: Header | null,
+  ): U64 {
+    if (!prevPrevHeader) {
+      return prevHeader.difficulty();
     }
-    if (resBigInt > Header.MAX_TARGET_U256.bn) {
-      return U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
+    const prevTimeDiff = new U64(
+      prevHeader.timestamp.n - prevPrevHeader.timestamp.n,
+    );
+    const prevDifficulty = prevHeader.difficulty();
+    const idealTimeDiff = Header.BLOCK_INTERVAL_MS;
+    const newDifficulty = prevDifficulty.mul(idealTimeDiff).div(prevTimeDiff);
+    // prevent increase by more than 4x
+    // prevent decrease by more than 1/4
+    const maxIncrease = prevDifficulty.mul(new U64(4));
+    const maxDecrease = prevDifficulty.div(new U64(4));
+    if (newDifficulty.bn > maxIncrease.bn) {
+      return maxIncrease;
     }
-    return new U256(resBigInt);
+    if (newDifficulty.bn < maxDecrease.bn) {
+      return maxDecrease;
+    }
+    if (newDifficulty.bn === 0n) {
+      return new U64(1);
+    }
+    return newDifficulty;
   }
 
   static mintTxAmount(blockNum: U32): U64 {
@@ -395,6 +399,10 @@ export class Header implements HeaderInterface {
     return maxTarget.div(new U256(difficulty.bn));
   }
 
+  difficulty(): U64 {
+    return Header.difficultyFromTarget(this.target);
+  }
+
   workSerAlgoStr(): string {
     const str = WORK_SER_ALGO_NAME[this.workSerAlgo.n];
     if (!str) {
@@ -419,5 +427,14 @@ export class Header implements HeaderInterface {
       rootMerkleNodeId: merkleRoot,
       timestamp: timestamp || this.timestamp,
     });
+  }
+
+  toWorkingHeader(): Header {
+    const workingHeader = new Header({
+      ...this,
+      workSerHash: FixedBuf.alloc(32),
+      workParHash: FixedBuf.alloc(32),
+    });
+    return workingHeader;
   }
 }

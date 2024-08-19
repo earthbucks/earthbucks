@@ -45,7 +45,7 @@ export class BufReader {
     try {
       val = U8.fromBEBuf(this.buf.subarray(this.pos, this.pos + 1));
     } catch (err: unknown) {
-      throw new NotEnoughDataError(err as Error);
+      throw new NotEnoughDataError();
     }
     this.pos += 1;
     return val;
@@ -55,8 +55,8 @@ export class BufReader {
     let val: U16;
     try {
       val = U16.fromBEBuf(this.buf.subarray(this.pos, this.pos + 2));
-    } catch (err) {
-      throw new NotEnoughDataError(err as Error);
+    } catch (err: unknown) {
+      throw new NotEnoughDataError();
     }
     this.pos += 2;
     return val;
@@ -66,8 +66,8 @@ export class BufReader {
     let val: U32;
     try {
       val = U32.fromBEBuf(this.buf.subarray(this.pos, this.pos + 4));
-    } catch (err) {
-      throw new NotEnoughDataError(err as Error);
+    } catch (err: unknown) {
+      throw new NotEnoughDataError();
     }
     this.pos += 4;
     return val;
@@ -77,8 +77,8 @@ export class BufReader {
     let val: U64;
     try {
       val = U64.fromBEBuf(this.buf.subarray(this.pos, this.pos + 8));
-    } catch (err) {
-      throw new NotEnoughDataError(err as Error);
+    } catch (err: unknown) {
+      throw new NotEnoughDataError();
     }
     this.pos += 8;
     return val;
@@ -88,8 +88,8 @@ export class BufReader {
     let val: U128;
     try {
       val = U128.fromBEBuf(this.buf.subarray(this.pos, this.pos + 16));
-    } catch (err) {
-      throw new NotEnoughDataError(err as Error);
+    } catch (err: unknown) {
+      throw new NotEnoughDataError();
     }
     this.pos += 16;
     return val;
@@ -99,8 +99,8 @@ export class BufReader {
     let val: U256;
     try {
       val = U256.fromBEBuf(this.buf.subarray(this.pos, this.pos + 32));
-    } catch (err) {
-      throw new NotEnoughDataError(err as Error);
+    } catch (err: unknown) {
+      throw new NotEnoughDataError();
     }
     this.pos += 32;
     return val;

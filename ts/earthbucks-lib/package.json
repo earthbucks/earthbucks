@@ -1,9 +1,9 @@
 {
-  "name": "@earthbucks/earthbucks-lib",
+  "name": "@earthbucks/lib",
   "version": "0.6.0",
   "description": "EarthBucks library for data structures and algorithms.",
-  "main": "dist/lib.js",
-  "types": "dist/lib.d.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
     "clean": "rimraf dist",
     "main": "tsx src/main.ts",
@@ -15,8 +15,7 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
-    "node": ">=20.8.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=20.8.0"
   },
   "keywords": [],
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
@@ -26,7 +25,7 @@
   },
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
   "dependencies": {
     "@noble/hashes": "^1.4.0",
     "@types/secp256k1": "^4.0.6",
@@ -35,7 +34,8 @@
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "secp256k1": "^5.0.0",
-    "tsx": "^4.16.2"
+    "tsx": "^4.16.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",

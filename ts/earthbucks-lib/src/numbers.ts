@@ -2,17 +2,17 @@ import { EbxBuf, SysBuf } from "./buf.js";
 
 export abstract class BasicNumber<U extends BasicNumber<U>> {
   protected value: bigint;
+  protected min: bigint;
+  protected max: bigint;
 
-  constructor(
-    value: bigint | number,
-    protected min: bigint,
-    protected max: bigint,
-  ) {
+  constructor(value: bigint | number, min: bigint, max: bigint) {
     const valueBn = BigInt(value);
     if (valueBn < min || valueBn > max) {
       throw new Error(`Value ${value} is not a valid number`);
     }
     this.value = valueBn;
+    this.min = min;
+    this.max = max;
   }
 
   abstract add(other: U): U;

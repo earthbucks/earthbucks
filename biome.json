@@ -61,13 +61,15 @@
         "useYield": "error"
       },
       "style": {
+        "useImportType": "off",
         "useNodejsImportProtocol": "off",
         "noNamespace": "error",
         "noNonNullAssertion": "error",
         "noVar": "error",
         "useAsConstAssertion": "error",
         "useBlockStatements": "error",
-        "useConst": "error"
+        "useConst": "error",
+        "noParameterProperties": "error"
       },
       "suspicious": {
         "noAssignInExpressions": "error",
@@ -96,7 +98,8 @@
         "noUnsafeDeclarationMerging": "error",
         "noUnsafeNegation": "error",
         "useGetterReturn": "error",
-        "useValidTypeof": "error"
+        "useValidTypeof": "error",
+        "noConstEnum": "error"
       }
     }
   },
@@ -258,7 +261,8 @@
             "useNodejsImportProtocol": "off",
             "noArguments": "error",
             "noVar": "error",
-            "useConst": "error"
+            "useConst": "error",
+            "noParameterAssign": "off"
           },
           "suspicious": {
             "noDuplicateClassMembers": "off",
