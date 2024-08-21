@@ -1,5 +1,7 @@
 # Other Chains
 
+## First Look
+
 - [x] [Bitcoin](https://bitcoin.org/bitcoin.pdf): EarthBucks is a new chain
   with a new design, but with some similarities to Bitcoin.
 - [x] [Bitcoin Cash](https://bitcoincash.org): The closest blockchain to
@@ -30,6 +32,14 @@
   of Stake. Not like EarthBucks.
 - [x] [Dash](https://www.exodus.com/assets/docs/dash-whitepaper.pdf): "Masternodes"
   and "Darksend". Not like EarthBucks.
+
+## Second Look
+
+- [ ] Kaspa
+- [ ] Solana
+- [ ] Nano
+- [ ] eCash
+- [ ] Dash
 
 ## Detailed Notes
 
