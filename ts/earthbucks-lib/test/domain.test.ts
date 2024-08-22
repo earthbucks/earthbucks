@@ -5,6 +5,7 @@ describe("Domain", () => {
   describe("isValidDomain", () => {
     it("should test these known valid/invalid domains", () => {
       expect(Domain.fromString("earthbucks.com").isValid()).toEqual(true);
+      expect(Domain.fromString("earth-bucks.com").isValid()).toEqual(false);
       expect(Domain.fromString("earthbucks.com.").isValid()).toEqual(false);
       expect(Domain.fromString(".earthbucks.com").isValid()).toEqual(false);
       expect(

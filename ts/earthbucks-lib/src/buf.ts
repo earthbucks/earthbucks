@@ -11,7 +11,6 @@ import {
   InvalidEncodingError,
 } from "./error.js";
 import bs58 from "bs58";
-import { z } from "zod";
 
 function isValidHex(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
@@ -60,6 +59,19 @@ class EbxBuf {
     return encodeHex(this._buf);
   }
 
+  static fromBase64(size: number, base64: string): EbxBuf {
+    try {
+      const buf = SysBuf.from(base64, "base64");
+      return EbxBuf.fromBuf(size, buf);
+    } catch (err) {
+      throw new InvalidEncodingError();
+    }
+  }
+
+  toBase64(): string {
+    return this._buf.toString("base64");
+  }
+
   static fromBase58(size: number, base58: string): EbxBuf {
     try {
       const buf = SysBuf.from(bs58.decode(base58));
@@ -87,24 +99,6 @@ class FixedBuf<N extends number> extends EbxBuf {
   constructor(size: N, buf: SysBuf) {
     super(size, buf);
     this[sizeSymbol] = size;
-  }
-
-  static DeserializeSchema<N extends number>(size: N) {
-    return z.string().transform((data, ctx) => {
-      try {
-        return FixedBuf.fromHex(size, data);
-      } catch (e) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Invalid FixedBuf<${size}> format`,
-        });
-        return z.NEVER;
-      }
-    });
-  }
-
-  static SerializeSchema<N extends number>(size: N) {
-    return z.instanceof(FixedBuf).transform((buf) => buf.toHex());
   }
 
   static fromBuf<N extends number>(size: N, buf: SysBuf): FixedBuf<N> {

@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome lint --write --unsafe",
     "format": "biome format --write",
+    "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
@@ -34,14 +35,13 @@
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "secp256k1": "^5.0.0",
-    "tsx": "^4.16.2",
-    "zod": "^3.23.8"
+    "tsx": "^4.17.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "globals": "^15.3.0",
+    "globals": "^15.9.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.3"
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }

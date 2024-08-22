@@ -8,7 +8,6 @@ import { U8, U16, U32, U64, U256 } from "./numbers.js";
 import { GenericError } from "./error.js";
 import { WORK_SER_ALGO_NUM, WORK_SER_ALGO_NAME } from "./work-ser-algo.js";
 import { WORK_PAR_ALGO_NUM, WORK_PAR_ALGO_NAME } from "./work-par-algo.js";
-import { z } from "zod";
 
 interface HeaderInterface {
   version: U8;
@@ -48,22 +47,6 @@ export class Header implements HeaderInterface {
   static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
   static readonly MAX_TARGET_U256 = U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
-
-  static readonly DeserializeSchema = z.string().transform((data, ctx) => {
-    try {
-      return Header.fromHex(data);
-    } catch (e) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Invalid Header format",
-      });
-      return z.NEVER;
-    }
-  });
-
-  static readonly SerializeSchema = z
-    .instanceof(Header)
-    .transform((header) => header.toHex());
 
   constructor({
     version = new U8(0),

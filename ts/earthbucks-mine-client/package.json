@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome lint --write --unsafe",
     "format": "biome format --write",
+    "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
@@ -27,6 +28,8 @@
   "type": "module",
   "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
   "dependencies": {
+    "@earthbucks/lib": "workspace:^",
+    "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "fastify": "^4.28.1"
   },

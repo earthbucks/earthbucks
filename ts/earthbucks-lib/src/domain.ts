@@ -18,6 +18,9 @@ export class Domain {
   }
 
   static isValidDomain(domain: string): boolean {
+    // our domain name validation is intentionally simpler, and different, than
+    // real domain name validation. it is intended to be a simple check to
+    // prevent common mistakes, not a full validation of a domain name.
     const domainStr = domain.trim();
     if (domainStr.length < 4) {
       return false;
@@ -47,15 +50,21 @@ export class Domain {
     if (domainParts.some((part) => !part.match(/^[a-z0-9]+$/))) {
       return false;
     }
-    if (domainParts.some((part) => part.startsWith("-"))) {
-      return false;
-    }
-    if (domainParts.some((part) => part.endsWith("-"))) {
-      return false;
-    }
-    if (domainParts.some((part) => part.includes("--"))) {
-      return false;
-    }
     return true;
+  }
+
+  static domainToBaseUrl(domain: string) {
+    // enable "domain" to include a port number at the start if we are in
+    // development, e.g. 4189.localhost goes to 4189.localhost:4189. otherwise,
+    // assume https and no extra www (if they want www, they need to include that
+    // in "domain")
+    if (domain.includes("localhost")) {
+      const possiblePort = Number.parseInt(String(domain.split(".")[0]));
+      if (domain.endsWith("localhost") && possiblePort > 0) {
+        return `http://${possiblePort}.localhost:${possiblePort}`;
+      }
+    }
+
+    return `https://${domain}`;
   }
 }

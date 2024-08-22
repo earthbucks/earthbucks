@@ -1,23 +1,9 @@
 import { createTRPCProxyClient } from "@trpc/client";
 import { httpBatchLink } from "@trpc/client";
-import type { AppRouter } from "./trpc-router.js";
+import type { AppRouter } from "./trpc-router-types.js";
 import { Header } from "@earthbucks/lib";
+import { Domain } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
-
-export function domainToBaseUrl(domain: string) {
-  // enable "domain" to include a port number at the start if we are in
-  // development, e.g. 4189.localhost goes to 4189.localhost:4189. otherwise,
-  // assume https and no extra www (if they want www, they need to include that
-  // in "domain")
-  if (domain.includes("localhost")) {
-    const possiblePort = Number.parseInt(String(domain.split(".")[0]));
-    if (domain.endsWith("localhost") && possiblePort > 0) {
-      return `http://${possiblePort}.localhost:${possiblePort}`;
-    }
-  }
-
-  return `https://${domain}`;
-}
 
 export const createTRPCClient = (DOMAIN: string, apiKey: string) => {
   let headers: Record<string, string> = {};
@@ -33,7 +19,7 @@ export const createTRPCClient = (DOMAIN: string, apiKey: string) => {
   const trpc = createTRPCProxyClient<AppRouter>({
     links: [
       httpBatchLink({
-        url: `${domainToBaseUrl(DOMAIN)}/trpc`,
+        url: `${Domain.domainToBaseUrl(DOMAIN)}/trpc`,
         headers,
       }),
     ],
