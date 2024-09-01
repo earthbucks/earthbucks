@@ -1,11 +1,9 @@
 import { Block } from "./block.js";
 import { Header } from "./header.js";
 import { Tx } from "./tx.js";
-import { MerkleTxs } from "./merkle-txs.js";
 import type { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import { SysBuf } from "./buf.js";
 import type { FixedBuf } from "./buf.js";
 import { U8 } from "./numbers.js";
 import type { U16, U128, U256 } from "./numbers.js";
@@ -42,7 +40,7 @@ export class BlockBuilder {
     const txs = [mintTx];
     const merkleRoot = MerkleNode.fromLeafHashes(txs.map((tx) => tx.id()));
     const merkleRootId: FixedBuf<32> = merkleRoot.hash as FixedBuf<32>;
-    const header = Header.fromGenesis(initialTarget, merkleRootId);
+    const header = Header.fromGenesis(merkleRootId, initialTarget);
     return new BlockBuilder(header, txs, merkleRoot);
   }
 

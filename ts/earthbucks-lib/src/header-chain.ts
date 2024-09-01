@@ -10,7 +10,6 @@ import { GenericError } from "./error.js";
 import type { TxOut } from "./tx-out.js";
 
 export class HeaderChain {
-  static LENGTH_TARGET_ADJ_PERIOD = Header.BLOCKS_PER_TWO_WEEKS;
   static LENGTH_EXPIRY_PERIOD = Script.PKHXR_90D_60D_X_LOCK_REL;
   static LENGTH_SAFETY_PERIOD = HeaderChain.LENGTH_EXPIRY_PERIOD.mul(
     new U32(2),
@@ -35,11 +34,21 @@ export class HeaderChain {
   }
 
   newHeaderIsValidAt(header: Header, timestamp: U64): boolean {
-    return header.isValidAt(this.headers, timestamp);
+    const prevHeader = this.headers[this.headers.length - 1] || null;
+    if (!prevHeader) {
+      throw new GenericError("no previous header");
+    }
+    const prevPrevHeader = this.headers[this.headers.length - 2] || null;
+    return header.isValidAt(prevHeader, prevPrevHeader, timestamp);
   }
 
   newHeaderIsValidNow(header: Header): boolean {
-    return header.isValidNow(this.headers);
+    const prevHeader = this.headers[this.headers.length - 1] || null;
+    if (!prevHeader) {
+      throw new GenericError("no previous header");
+    }
+    const prevPrevHeader = this.headers[this.headers.length - 2] || null;
+    return header.isValidNow(prevHeader, prevPrevHeader);
   }
 
   getNextMintTxFromPkh(pkh: Pkh, domain: string, blockMessageId: FixedBuf<32>) {
@@ -98,8 +107,14 @@ export class HeaderChain {
     nTransactions: U64,
     timestamp: U64,
   ) {
-    const header = Header.fromLch2016(
-      this.headers,
+    const prevHeader = this.headers[this.headers.length - 1] || null;
+    if (!prevHeader) {
+      throw new GenericError("no previous header");
+    }
+    const prevPrevHeader = this.headers[this.headers.length - 2] || null;
+    const header = Header.fromChain(
+      prevHeader,
+      prevPrevHeader,
       rootMerkleNodeId,
       nTransactions,
       timestamp,
@@ -117,13 +132,6 @@ export class HeaderChain {
   hasFirstBlockHeader() {
     const firstHeader = this.headers[0];
     return firstHeader?.blockNum.n === 0;
-  }
-
-  trimToTargetAdjPeriod() {
-    const targetAdjPeriodHeaders = this.headers.slice(
-      -HeaderChain.LENGTH_TARGET_ADJ_PERIOD.n,
-    );
-    return new HeaderChain(targetAdjPeriodHeaders);
   }
 
   trimToExpiryPeriod() {

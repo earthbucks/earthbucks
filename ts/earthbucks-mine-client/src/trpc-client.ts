@@ -79,11 +79,12 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         });
       },
     },
-    miningTestButton: {
+    miningButton: {
       getNewHeader: async () => {
-        const res = await trpcClient.miningTestButton.getNewHeader.query();
+        const res = await trpcClient.miningButton.getNewHeader.query();
         return {
           shareId: res.shareId,
+          retryTarget: U256.fromHex(res.retryTarget),
           shareTarget: U256.fromHex(res.shareTarget),
           header: Header.fromHex(res.header),
           lch10Ids: res.lch10Ids.map((idHex: string) =>
@@ -97,7 +98,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         count: number,
         duration: number,
       ) => {
-        await trpcClient.miningTestButton.postHeader.mutate({
+        await trpcClient.miningButton.postHeader.mutate({
           shareId,
           header: header.toHex(),
           count,

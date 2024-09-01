@@ -675,7 +675,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
         >;
       }
     >;
-    miningTestButton: import("@trpc/server").CreateRouterInner<
+    miningButton: import("@trpc/server").CreateRouterInner<
       import("@trpc/server").RootConfig<{
         ctx: {
           req: import("fastify").FastifyRequest<
@@ -827,6 +827,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
           },
           {
             shareId: number;
+            retryTarget: string;
             shareTarget: string;
             header: string;
             lch10Ids: string[];

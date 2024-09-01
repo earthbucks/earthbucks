@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow-browser",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "EarthBucks Proof-of-Work (PoW) algorithms with big dependencies.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",

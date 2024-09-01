@@ -56,7 +56,13 @@ export class BlockVerifier {
   }
 
   isValidHeaderAt(timestamp: U64): boolean {
-    return this.block.header.isValidAt(this.prevLch.headers, timestamp);
+    const prevHeader = this.prevLch.getTip();
+    if (!prevHeader) {
+      return false;
+    }
+    const prevPrevHeader =
+      this.prevLch.headers[this.prevLch.headers.length - 2] || null;
+    return this.block.header.isValidAt(prevHeader, prevPrevHeader, timestamp);
   }
 
   hasValidMintTx(): boolean {

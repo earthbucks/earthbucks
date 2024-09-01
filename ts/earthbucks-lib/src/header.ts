@@ -38,15 +38,16 @@ export class Header implements HeaderInterface {
   workParAlgo: U16;
   workParHash: FixedBuf<32>;
 
-  // exactly two weeks if block interval is 10 minutes
-  static readonly BLOCKS_PER_TWO_WEEKS = new U32(2016n);
-
   // 600_000 milliseconds = 600 seconds = 10 minutes
   static readonly BLOCK_INTERVAL_MS = new U64(600_000);
-
+  static readonly MIN_DIFFICULTY = new U64(2_000);
+  static readonly GENESIS_DIFFICULTY = new U64(2_000);
   static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
   static readonly MAX_TARGET_U256 = U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
+  static readonly GENESIS_TARGET = Header.targetFromDifficulty(
+    Header.GENESIS_DIFFICULTY,
+  );
 
   constructor({
     version = new U8(0),
@@ -145,12 +146,15 @@ export class Header implements HeaderInterface {
     return Header.fromHex(str);
   }
 
-  isTargetValid(lch2016: Header[]): boolean {
+  isTargetValid(prevHeader: Header, prevPrevHeader: Header | null): boolean {
     let newTarget: U256;
     try {
-      const prevHeader = lch2016[lch2016.length - 1] as Header;
-      const prevPrevHeader = lch2016[lch2016.length - 2] || null;
-      newTarget = Header.newTargetFromPrevHeaders(prevHeader, prevPrevHeader);
+      const timestamp = this.timestamp;
+      newTarget = Header.newTargetFromPrevHeaders(
+        prevHeader,
+        prevPrevHeader,
+        timestamp,
+      );
     } catch (e) {
       return false;
     }
@@ -181,7 +185,7 @@ export class Header implements HeaderInterface {
     return this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627;
   }
 
-  isValidInLch2016(lch2016: Header[]): boolean {
+  isValidInChain(prevHeader: Header, prevPrevHeader: Header | null): boolean {
     if (!this.isVersionValid()) {
       //console.log('1')
       return false;
@@ -190,24 +194,19 @@ export class Header implements HeaderInterface {
       //console.log('2')
       return this.isGenesis();
     }
-    if (lch2016.length === 0) {
-      //console.log('3')
-      return false;
-    }
-    const lastHeader = lch2016[lch2016.length - 1] as Header;
-    if (this.blockNum.n !== lastHeader.blockNum.n + 1) {
+    if (this.blockNum.n !== prevHeader.blockNum.n + 1) {
       //console.log('4')
       return false;
     }
-    if (!this.prevBlockId.buf.equals(lastHeader.id().buf)) {
+    if (!this.prevBlockId.buf.equals(prevHeader.id().buf)) {
       //console.log('5')
       return false;
     }
-    if (this.timestamp.n <= lastHeader.timestamp.n) {
+    if (this.timestamp.n <= prevHeader.timestamp.n) {
       //console.log('6')
       return false;
     }
-    if (!this.isTargetValid(lch2016)) {
+    if (!this.isTargetValid(prevHeader, prevPrevHeader)) {
       //console.log('7')
       return false;
     }
@@ -226,18 +225,27 @@ export class Header implements HeaderInterface {
     return true;
   }
 
-  isValidAt(lch: Header[], timestamp: U64): boolean {
+  isValidAt(
+    prevHeader: Header,
+    prevPrevHeader: Header | null,
+    timestamp: U64,
+  ): boolean {
     // this validates everything about the header except PoW
     // PoW must be validated using a separate library
-    return this.isTimestampValidAt(timestamp) && this.isValidInLch2016(lch);
+    return (
+      this.isTimestampValidAt(timestamp) &&
+      this.isValidInChain(prevHeader, prevPrevHeader)
+    );
   }
 
-  isValidNow(lch: Header[]): boolean {
-    return this.isValidAt(lch, Header.getNewTimestamp());
+  isValidNow(prevHeader: Header, prevPrevHeader: Header | null): boolean {
+    return this.isValidAt(prevHeader, prevPrevHeader, Header.getNewTimestamp());
   }
 
   isGenesis(): boolean {
     return (
+      this.idU256().bn < Header.GENESIS_TARGET.bn &&
+      this.target.bn === Header.GENESIS_TARGET.bn &&
       this.blockNum.bn === 0n &&
       this.prevBlockId.buf.every((byte) => byte === 0) &&
       this.workSerAlgo.n === WORK_SER_ALGO_NUM.blake3_3 &&
@@ -245,7 +253,10 @@ export class Header implements HeaderInterface {
     );
   }
 
-  static fromGenesis(initialTarget: U256, merkleRoot: FixedBuf<32>): Header {
+  static fromGenesis(
+    merkleRoot: FixedBuf<32>,
+    initialTarget: U256 = Header.GENESIS_TARGET,
+  ): Header {
     const timestamp = new U64(Math.floor(Date.now())); // milliseconds
     const nonce = U256.fromBEBuf(FixedBuf.fromRandom(32).buf);
     return new Header({
@@ -275,25 +286,26 @@ export class Header implements HeaderInterface {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
+  idU256(): U256 {
+    return U256.fromBEBuf(this.id().buf);
+  }
+
   static getNewTimestamp(): U64 {
     return new U64(Math.floor(Date.now()));
   }
 
-  static fromLch2016(
-    lch2016: Header[],
+  static fromChain(
+    prevHeader: Header,
+    prevPrevHeader: Header | null,
     merkleRoot: FixedBuf<32>,
     nTransactions: U64,
     newTimestamp: U64,
   ): Header {
-    if (lch2016.length === 0) {
-      throw new GenericError("lch2016 must not be empty");
-    }
-    if (lch2016.length > Header.BLOCKS_PER_TWO_WEEKS.n) {
-      throw new GenericError("lch2016 must not be longer than 2016 blocks");
-    }
-    const prevHeader = lch2016[lch2016.length - 1] as Header;
-    const prevPrevHeader = lch2016[lch2016.length - 2] || null;
-    const target = Header.newTargetFromPrevHeaders(prevHeader, prevPrevHeader);
+    const target = Header.newTargetFromPrevHeaders(
+      prevHeader,
+      prevPrevHeader,
+      newTimestamp,
+    );
     const prevBlockId = prevHeader.id();
     const blockNum = prevHeader.blockNum.add(new U32(1));
     const timestamp = newTimestamp;
@@ -321,10 +333,12 @@ export class Header implements HeaderInterface {
   static newTargetFromPrevHeaders(
     prevHeader: Header,
     prevPrevHeader: Header | null,
+    newTimestamp: U64 = Header.getNewTimestamp(),
   ): U256 {
     const newDifficulty = Header.newDifficultyFromPrevHeaders(
       prevHeader,
       prevPrevHeader,
+      newTimestamp,
     );
     return Header.targetFromDifficulty(newDifficulty);
   }
@@ -332,30 +346,45 @@ export class Header implements HeaderInterface {
   static newDifficultyFromPrevHeaders(
     prevHeader: Header,
     prevPrevHeader: Header | null,
+    newTimestamp: U64 = Header.getNewTimestamp(),
   ): U64 {
     if (!prevPrevHeader) {
       return prevHeader.difficulty();
     }
-    const prevTimeDiff = new U64(
-      prevHeader.timestamp.n - prevPrevHeader.timestamp.n,
-    );
-    const prevDifficulty = prevHeader.difficulty();
-    const idealTimeDiff = Header.BLOCK_INTERVAL_MS;
-    const newDifficulty = prevDifficulty.mul(idealTimeDiff).div(prevTimeDiff);
-    // prevent increase by more than 4x
-    // prevent decrease by more than 1/4
-    const maxIncrease = prevDifficulty.mul(new U64(4));
-    const maxDecrease = prevDifficulty.div(new U64(4));
-    if (newDifficulty.bn > maxIncrease.bn) {
-      return maxIncrease;
-    }
-    if (newDifficulty.bn < maxDecrease.bn) {
-      return maxDecrease;
-    }
-    if (newDifficulty.bn === 0n) {
-      return new U64(1);
-    }
-    return newDifficulty;
+    const prevTimeDiff = prevHeader.timestamp.n - prevPrevHeader.timestamp.n;
+    const prevDifficulty = prevHeader.difficulty().n;
+    const idealTimeDiff = Header.BLOCK_INTERVAL_MS.n;
+
+    // First, we want to adjust the difficulty based on the time difference
+    // between the previous block and the block before that. This is to ensure
+    // that the difficulty adjusts correctly if the time difference between
+    // blocks is greater or less than the ideal time difference of 10 minutes.
+    let newDifficulty = (prevDifficulty * idealTimeDiff) / prevTimeDiff;
+
+    // Next, we want to incentivize miners to mine at the ideal time interval of
+    // 10 minutes per block. We can do this by adjusting the difficulty based on
+    // how close the time difference is to the ideal time difference. We can use
+    // an exponential decay function to adjust the difficulty based on the time
+    // difference ratio. It is more difficult to mine a block if the time
+    // difference is less than the ideal time difference, and less difficult if
+    // the time difference is greater than the ideal time difference.
+
+    // Exponential decay function parameters
+    const m = 10; // Maximum adjustment factor
+    const k = Math.log(m); // Steepness of the curve
+
+    // Calculate the time difference ratio
+    const timeDiffRatio =
+      (newTimestamp.n - prevHeader.timestamp.n) / idealTimeDiff;
+
+    // Calculate the adjustment factor using the logistic function
+    const adjustmentFactor = Math.exp(-k * (timeDiffRatio - 1));
+
+    // Apply the adjustment factor to the difficulty
+    newDifficulty = newDifficulty * adjustmentFactor;
+    newDifficulty = Math.max(newDifficulty, Header.MIN_DIFFICULTY.n);
+
+    return new U64(Math.floor(newDifficulty));
   }
 
   static mintTxAmount(blockNum: U32): U64 {
@@ -372,13 +401,13 @@ export class Header implements HeaderInterface {
 
   static difficultyFromTarget(target: U256): U64 {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
-    const maxTarget = U256.fromBEBuf(maxTargetBuf.buf);
+    const maxTarget = Header.MAX_TARGET_U256;
     return new U64(maxTarget.div(target).bn);
   }
 
   static targetFromDifficulty(difficulty: U64): U256 {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
-    const maxTarget = U256.fromBEBuf(maxTargetBuf.buf);
+    const maxTarget = Header.MAX_TARGET_U256;
     return maxTarget.div(new U256(difficulty.bn));
   }
 
