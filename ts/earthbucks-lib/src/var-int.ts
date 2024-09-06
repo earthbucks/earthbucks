@@ -2,7 +2,7 @@ import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { EbxError } from "./error.js";
+import { EbxError, GenericError } from "./error.js";
 
 export class VarInt {
   private buf: SysBuf;
@@ -19,6 +19,14 @@ export class VarInt {
   static fromU32(u32: U32): VarInt {
     const buf = new BufWriter().writeVarInt(new U64(u32.n)).toBuf();
     return new VarInt(buf);
+  }
+
+  static fromNumber(n: number): VarInt {
+    if (n < 0) {
+      throw new GenericError("VarInt.fromNumber: n must be >= 0");
+    }
+    const u64 = new U64(n);
+    return VarInt.fromU64(u64);
   }
 
   toBuf(): SysBuf {

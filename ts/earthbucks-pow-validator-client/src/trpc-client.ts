@@ -3,7 +3,7 @@ import { httpBatchLink } from "@trpc/client";
 import type { AppRouter } from "./trpc-router-types.js";
 import { Header } from "@earthbucks/lib";
 import { Domain } from "@earthbucks/lib";
-import type { FixedBuf } from "@earthbucks/lib";
+import type { FixedBuf, WorkPack } from "@earthbucks/lib";
 
 export const createTRPCClient = (DOMAIN: string, apiKey: string) => {
   let headers: Record<string, string> = {};
@@ -40,14 +40,12 @@ export const createPVClient = (DOMAIN: string, apiKey: string) => {
         return Header.fromHex(res);
       },
 
-      validateHeaderPow: async (input: {
-        header: Header;
-        lch10Ids: FixedBuf<32>[];
+      validateWorkPackPow: async (input: {
+        workPack: WorkPack;
       }) => {
-        const { header, lch10Ids } = input;
-        const res = await trpc.powValidator.validateHeaderPow.mutate({
-          header: header.toHex(),
-          lch10Ids: lch10Ids.map((buf) => buf.toHex()),
+        const { workPack } = input;
+        const res = await trpc.powValidator.validateWorkPackPow.mutate({
+          workPack: workPack.toHex(),
         });
         return res;
       },

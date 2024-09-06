@@ -29,6 +29,19 @@ export class Pkh {
     return new Pkh(buf);
   }
 
+  toBuf(): FixedBuf<32> {
+    return this.buf;
+  }
+
+  static fromHex(pkhHex: string): Pkh {
+    const buf = FixedBuf.fromHex(32, pkhHex);
+    return Pkh.fromBuf(buf);
+  }
+
+  toHex(): string {
+    return this.buf.toHex();
+  }
+
   toString(): string {
     const checkHash = SysBuf.from(Hash.blake3Hash(this.buf.buf).buf).subarray(
       0,

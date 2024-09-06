@@ -29,15 +29,15 @@
   "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
   "dependencies": {
     "@earthbucks/lib": "workspace:^",
-    "@tensorflow/tfjs": "^4.20.0",
+    "@tensorflow/tfjs": "^4.21.0",
     "blake3": "2.1.7",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
-    "typescript": "^5.5.3",
     "@biomejs/biome": "^1.8.3",
-    "globals": "^15.3.0",
-    "rimraf": "^5.0.7",
-    "vitest": "^1.6.0"
+    "globals": "^15.9.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }

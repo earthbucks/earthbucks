@@ -138,7 +138,7 @@ describe("TxInput", () => {
 
   test("fromMintTx", () => {
     const script = Script.fromString("0x121212");
-    const txInput = TxIn.fromMintTx(script);
+    const txInput = TxIn.fromMintTxScript(script);
     expect(txInput).toBeInstanceOf(TxIn);
     expect(txInput.isNull()).toBe(true);
     expect(txInput.isMinimalLock()).toBe(true);

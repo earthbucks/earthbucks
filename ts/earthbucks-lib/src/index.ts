@@ -10,6 +10,7 @@ export * from "./error.js";
 export * from "./hash.js";
 export * from "./header.js";
 export * from "./key-pair.js";
+export * from "./lch10-ids.js"
 export * from "./merkle-node.js";
 export * from "./merkle-proof.js";
 export * from "./merkle-txs.js";
@@ -37,3 +38,4 @@ export * from "./tx-signer.js";
 export * from "./tx-verifier.js";
 export * from "./tx.js";
 export * from "./var-int.js";
+export * from "./work-pack.js";

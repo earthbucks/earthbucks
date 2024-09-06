@@ -7,7 +7,7 @@ import { Hash } from "./hash.js";
 import secp256k1 from "secp256k1";
 const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
-import type { Script } from "./script.js";
+import { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { EbxError, GenericError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
@@ -77,26 +77,52 @@ export class Tx {
     return Tx.fromBuf(buf.buf);
   }
 
-  static fromMintTxOutputScript(
-    inputScript: Script,
+  static fromMintTxData(
+    blockMessageId: FixedBuf<32>,
+    domain: string,
     outputScript: Script,
     outputAmount: U64,
-  ): Tx {
+    blockNum: U32,
+  ) {
+    // TODO: DO NOT also allow inputting expired txs: expired txs should
+    // actually be the first tx of the new block.
     const version = new U8(0);
-    const inputs = [TxIn.fromMintTx(inputScript)];
+    const inputs = [TxIn.fromMintTxData(blockMessageId, domain)];
     const txOuts = [new TxOut(outputAmount, outputScript)];
-    const lockNum = new U32(0);
+    const lockNum = blockNum;
     return new Tx(version, inputs, txOuts, lockNum);
   }
 
-  static fromMintTxTxOuts(inputScript: Script, txOuts: TxOut[]): Tx {
+  static fromMintTxScripts(
+    inputScript: Script,
+    outputScript: Script,
+    outputAmount: U64,
+    blockNum: U32,
+  ): Tx {
+    // TODO: DO NOT also allow inputting expired txs: expired txs should
+    // actually be the first tx of the new block.
     const version = new U8(0);
-    const txIns = [TxIn.fromMintTx(inputScript)];
-    const lockNum = new U32(0);
+    const inputs = [TxIn.fromMintTxScript(inputScript)];
+    const txOuts = [new TxOut(outputAmount, outputScript)];
+    const lockNum = blockNum;
+    return new Tx(version, inputs, txOuts, lockNum);
+  }
+
+  static fromMintTxTxOuts(
+    inputScript: Script,
+    txOuts: TxOut[],
+    blockNum: U32,
+  ): Tx {
+    // TODO: DO NOT also allow inputting expired txs: expired txs should
+    // actually be the first tx of the new block.
+    const version = new U8(0);
+    const txIns = [TxIn.fromMintTxScript(inputScript)];
+    const lockNum = blockNum;
     return new Tx(version, txIns, txOuts, lockNum);
   }
 
   isMintTx(): boolean {
+    // TODO: Also allow inputting expired txs
     return this.inputs.length === 1 && this.inputs[0]?.isMintTx() === true;
   }
 

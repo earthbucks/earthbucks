@@ -12,6 +12,8 @@ import {
   U256,
   U64,
   Domain,
+  Pkh,
+  WorkPack,
 } from "@earthbucks/lib";
 import { FixedBuf, PrivKey, SigninResponse } from "@earthbucks/lib";
 
@@ -79,28 +81,38 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         });
       },
     },
+    keys: {
+      createNewDerivedKey: async () => {
+        const res = await trpcClient.keys.createNewDerivedKey.mutate();
+        return {
+          id: res.id,
+          clientPubKey: PubKey.fromHex(res.clientPubKey),
+          clientDerivationPrivKey: PrivKey.fromHex(res.clientDerivationPrivKey),
+          derivedPubKey: PubKey.fromHex(res.derivedPubKey),
+          derivedPkh: Pkh.fromHex(res.derivedPkh),
+          createdAt: res.createdAt,
+        };
+      },
+    },
     miningButton: {
-      getNewHeader: async () => {
-        const res = await trpcClient.miningButton.getNewHeader.query();
+      getNewWorkPack: async () => {
+        const res = await trpcClient.miningButton.getNewWorkPack.query();
         return {
           shareId: res.shareId,
           retryTarget: U256.fromHex(res.retryTarget),
           shareTarget: U256.fromHex(res.shareTarget),
-          header: Header.fromHex(res.header),
-          lch10Ids: res.lch10Ids.map((idHex: string) =>
-            FixedBuf.fromHex(32, idHex),
-          ),
+          workPack: WorkPack.fromHex(res.workPack),
         };
       },
-      postHeader: async (
+      postWorkPack: async (
         shareId: number,
-        header: Header,
+        workPack: WorkPack,
         count: number,
         duration: number,
       ) => {
-        await trpcClient.miningButton.postHeader.mutate({
+        await trpcClient.miningButton.postWorkPack.mutate({
           shareId,
-          header: header.toHex(),
+          workPack: workPack.toHex(),
           count,
           duration,
         });

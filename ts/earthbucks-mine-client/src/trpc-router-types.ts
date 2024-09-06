@@ -675,6 +675,167 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
         >;
       }
     >;
+    keys: import("@trpc/server").CreateRouterInner<
+      import("@trpc/server").RootConfig<{
+        ctx: {
+          req: import("fastify").FastifyRequest<
+            import("fastify").RouteGenericInterface,
+            import("fastify").RawServerDefault,
+            import("http").IncomingMessage,
+            import("fastify").FastifySchema,
+            import("fastify").FastifyTypeProviderDefault,
+            unknown,
+            import("fastify").FastifyBaseLogger,
+            import("fastify/types/type-provider.js").ResolveFastifyRequestType<
+              import("fastify").FastifyTypeProviderDefault,
+              import("fastify").FastifySchema,
+              import("fastify").RouteGenericInterface
+            >
+          >;
+          res: import("fastify").FastifyReply<
+            import("fastify").RawServerDefault,
+            import("http").IncomingMessage,
+            import("http").ServerResponse<import("http").IncomingMessage>,
+            import("fastify").RouteGenericInterface,
+            unknown,
+            import("fastify").FastifySchema,
+            import("fastify").FastifyTypeProviderDefault,
+            unknown
+          >;
+          pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+          user: {
+            id: number;
+            pubKey: Buffer;
+            createdAt: Date;
+            name: string | null;
+            avatarId: string | null;
+            nSwipes: number;
+          } | null;
+          completeUserProfile: {
+            id: number;
+            name: string;
+            avatarId: string;
+            nSwipes: number;
+            pubKeyStr: string;
+          } | null;
+          sessionTokenId: Buffer | null;
+        };
+        meta: object;
+        errorShape: import("@trpc/server").DefaultErrorShape;
+        transformer: import("@trpc/server").DefaultDataTransformer;
+      }>,
+      {
+        createNewDerivedKey: import("@trpc/server").BuildProcedure<
+          "mutation",
+          {
+            _config: import("@trpc/server").RootConfig<{
+              ctx: {
+                req: import("fastify").FastifyRequest<
+                  import("fastify").RouteGenericInterface,
+                  import("fastify").RawServerDefault,
+                  import("http").IncomingMessage,
+                  import("fastify").FastifySchema,
+                  import("fastify").FastifyTypeProviderDefault,
+                  unknown,
+                  import("fastify").FastifyBaseLogger,
+                  import("fastify/types/type-provider.js").ResolveFastifyRequestType<
+                    import("fastify").FastifyTypeProviderDefault,
+                    import("fastify").FastifySchema,
+                    import("fastify").RouteGenericInterface
+                  >
+                >;
+                res: import("fastify").FastifyReply<
+                  import("fastify").RawServerDefault,
+                  import("http").IncomingMessage,
+                  import("http").ServerResponse<import("http").IncomingMessage>,
+                  import("fastify").RouteGenericInterface,
+                  unknown,
+                  import("fastify").FastifySchema,
+                  import("fastify").FastifyTypeProviderDefault,
+                  unknown
+                >;
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                  id: number;
+                  pubKey: Buffer;
+                  createdAt: Date;
+                  name: string | null;
+                  avatarId: string | null;
+                  nSwipes: number;
+                } | null;
+                completeUserProfile: {
+                  id: number;
+                  name: string;
+                  avatarId: string;
+                  nSwipes: number;
+                  pubKeyStr: string;
+                } | null;
+                sessionTokenId: Buffer | null;
+              };
+              meta: object;
+              errorShape: import("@trpc/server").DefaultErrorShape;
+              transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+              pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+              user: {
+                id: number;
+                pubKey: Buffer;
+                createdAt: Date;
+                name: string | null;
+                avatarId: string | null;
+                nSwipes: number;
+              } | null;
+              sessionTokenId: Buffer | null;
+              res: import("fastify").FastifyReply<
+                import("fastify").RawServerDefault,
+                import("http").IncomingMessage,
+                import("http").ServerResponse<import("http").IncomingMessage>,
+                import("fastify").RouteGenericInterface,
+                unknown,
+                import("fastify").FastifySchema,
+                import("fastify").FastifyTypeProviderDefault,
+                unknown
+              >;
+              req: import("fastify").FastifyRequest<
+                import("fastify").RouteGenericInterface,
+                import("fastify").RawServerDefault,
+                import("http").IncomingMessage,
+                import("fastify").FastifySchema,
+                import("fastify").FastifyTypeProviderDefault,
+                unknown,
+                import("fastify").FastifyBaseLogger,
+                import("fastify/types/type-provider.js").ResolveFastifyRequestType<
+                  import("fastify").FastifyTypeProviderDefault,
+                  import("fastify").FastifySchema,
+                  import("fastify").RouteGenericInterface
+                >
+              >;
+              completeUserProfile: {
+                id: number;
+                name: string;
+                avatarId: string;
+                nSwipes: number;
+                pubKeyStr: string;
+              } | null;
+            };
+            _input_in: typeof import("@trpc/server").unsetMarker;
+            _input_out: typeof import("@trpc/server").unsetMarker;
+            _output_in: typeof import("@trpc/server").unsetMarker;
+            _output_out: typeof import("@trpc/server").unsetMarker;
+          },
+          {
+            id: number;
+            clientPubKey: string;
+            clientDerivationPrivKey: string;
+            derivedPubKey: string;
+            derivedPkh: string;
+            createdAt: Date;
+          }
+        >;
+      }
+    >;
     miningButton: import("@trpc/server").CreateRouterInner<
       import("@trpc/server").RootConfig<{
         ctx: {
@@ -725,7 +886,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
         transformer: import("@trpc/server").DefaultDataTransformer;
       }>,
       {
-        getNewHeader: import("@trpc/server").BuildProcedure<
+        getNewWorkPack: import("@trpc/server").BuildProcedure<
           "query",
           {
             _config: import("@trpc/server").RootConfig<{
@@ -829,11 +990,10 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
             shareId: number;
             retryTarget: string;
             shareTarget: string;
-            header: string;
-            lch10Ids: string[];
+            workPack: string;
           }
         >;
-        postHeader: import("@trpc/server").BuildProcedure<
+        postWorkPack: import("@trpc/server").BuildProcedure<
           "mutation",
           {
             _config: import("@trpc/server").RootConfig<{
@@ -929,15 +1089,15 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
               } | null;
             };
             _input_in: {
-              header: string;
               count: number;
               duration: number;
+              workPack: string;
               shareId: number;
             };
             _input_out: {
-              header: import("@earthbucks/lib/dist/header.js").Header;
               count: number;
               duration: number;
+              workPack: import("@earthbucks/lib/dist/work-pack.js").WorkPack;
               shareId: number;
             };
             _output_in: typeof import("@trpc/server").unsetMarker;

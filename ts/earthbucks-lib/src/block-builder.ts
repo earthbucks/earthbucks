@@ -34,7 +34,7 @@ export class BlockBuilder {
     outputScript: Script,
     outputAmount: U64,
   ): BlockBuilder {
-    const txInput = TxIn.fromMintTx(outputScript);
+    const txInput = TxIn.fromMintTxScript(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
     const mintTx = new Tx(new U8(0), [txInput], [txOutput], new U32(0n));
     const txs = [mintTx];

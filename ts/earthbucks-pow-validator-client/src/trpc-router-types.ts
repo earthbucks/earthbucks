@@ -1,5 +1,4 @@
-import { Header } from "@earthbucks/lib";
-import { FixedBuf } from "@earthbucks/lib";
+import { Header, WorkPack } from "@earthbucks/lib";
 export declare const appRouter: import("@trpc/server").CreateRouterInner<
   import("@trpc/server").RootConfig<{
     ctx: {
@@ -202,7 +201,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
           },
           unknown
         >;
-        validateHeaderPow: import("@trpc/server").BuildProcedure<
+        validateWorkPackPow: import("@trpc/server").BuildProcedure<
           "mutation",
           {
             _config: import("@trpc/server").RootConfig<{
@@ -264,12 +263,10 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
               >;
             };
             _input_in: {
-              header: string;
-              lch10Ids: string[];
+              workPack: string;
             };
             _input_out: {
-              header: Header;
-              lch10Ids: FixedBuf<32>[];
+              workPack: WorkPack;
             };
             _output_in: typeof import("@trpc/server").unsetMarker;
             _output_out: typeof import("@trpc/server").unsetMarker;

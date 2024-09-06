@@ -1,4 +1,4 @@
-import type { SysBuf } from "@earthbucks/lib";
+import type { SysBuf, WorkPack } from "@earthbucks/lib";
 import { FixedBuf } from "@earthbucks/lib";
 import { GenericError } from "@earthbucks/lib";
 import { HeaderVerificationError } from "@earthbucks/lib";
@@ -22,12 +22,13 @@ const nullHash = FixedBuf.alloc(32).buf;
  * less than the target. It is assumed that verification happens elsewhere. The
  * verify/validate methods on Header and BlockVerify are responsibile for that.
  */
-export async function HeaderPowVerify(
-  header: Header,
-  lch10Ids: FixedBuf<32>[],
+export async function verifyWorkPackPow(
+  workPack: WorkPack,
   PowGpuClass: typeof PowGpu,
   blake3Async: AsyncHashFunction,
 ): Promise<void> {
+  const header = workPack.header;
+  const lch10IdsArr = workPack.lch10Ids.ids;
   if (header.workSerAlgoStr() !== "blake3_3") {
     throw new HeaderVerificationError("unsupported serial PoW algorithm");
   }
@@ -44,7 +45,7 @@ export async function HeaderPowVerify(
 
   const workingHeader: Header = header.toWorkingHeader();
   const workingBlockId = workingHeader.id();
-  const gpupow = new PowGpuClass(workingBlockId, lch10Ids);
+  const gpupow = new PowGpuClass(workingBlockId, lch10IdsArr);
 
   // TODO: execute algorithms in parallel
 

@@ -101,7 +101,7 @@ describe("Tx", () => {
   describe("fromMintTx", () => {
     test("fromMintTx", () => {
       const script = Script.fromString("DOUBLEBLAKE3");
-      const txInput = TxIn.fromMintTx(script);
+      const txInput = TxIn.fromMintTxScript(script);
       expect(txInput.inputTxId.buf.every((byte) => byte === 0)).toBe(true);
       expect(txInput.inputTxNOut.n).toEqual(0xffffffff);
       expect(txInput.script.toString()).toEqual(script.toString());
@@ -140,8 +140,8 @@ describe("Tx", () => {
     });
 
     test("fromMintTx -> isMintTx", () => {
-      const script = Script.fromString("DOUBLEBLAKE3");
-      const txInput = TxIn.fromMintTx(script);
+      const script = Script.fromString("1");
+      const txInput = TxIn.fromMintTxScript(script);
       const tx = new Tx(new U8(0), [txInput], [], new U32(0));
       expect(tx.isMintTx()).toBe(true);
     });

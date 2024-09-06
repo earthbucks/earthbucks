@@ -20,6 +20,10 @@ export class Script {
     return this.chunks.map((chunk) => chunk.toString()).join(" ");
   }
 
+  static fromPushOnly(datas: SysBuf[]): Script {
+    return new Script(datas.map(ScriptChunk.fromData));
+  }
+
   static fromEmpty(): Script {
     return new Script();
   }

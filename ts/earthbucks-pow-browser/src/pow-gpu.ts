@@ -144,40 +144,6 @@ export class PowGpu {
     return seed.reshape([n, n]);
   }
 
-  matrixCalculations(matrix: TFTensor, n: number) {
-    // The primary goal of this method is to perform a giant integer matrix
-    // multiplication which is impractical on any hardware other than a GPU. We
-    // use integers because we know they are deterministic when added.
-    //
-    // The secondary goal of this method is to use floating point operations to
-    // spread out the values in the matrix, thus requiring the use of floating
-    // point calculations, thus using a larger number of the operations
-    // available on a GPU, and not just integers. Because floating points can be
-    // non-deterministic if added in unpredictable order, we only perform known
-    // deterministic floating point operations on each element separately.
-    //
-    // Why build an ASIC for this algorithm when doing so would simply replicate
-    // the functionality already available on a GPU? The idea is that GPUs *are*
-    // the ASICs for this computation. There should be no reason to develop an
-    // ASIC when the calculations can already be performed optimally with
-    // commodity hardware.
-    const matrix1 = this.tf.matMul(matrix, matrix); // int32 matrix square
-    const matrix2 = matrix1.toFloat(); // convert to float
-    const min = matrix2.min();
-    const matrix3 = matrix2.sub(min); // subtract min; new min is 0
-    const max = matrix3.max();
-    const matrix4 = matrix3.div(max); // divide by max; new max is 1
-    const matrix5 = matrix4.exp(); // use exp to redistribute values; new min is 1 and new max is e^1
-    const min2 = matrix5.min();
-    const matrix6 = matrix5.sub(min2); // subtract min; new min is 0
-    const max2 = matrix6.max();
-    const matrix7 = matrix6.div(max2); // divide by max; new max is 1
-    const matrix8 = matrix7.mul(n); // multiply by N; new max is N
-    const matrix9 = matrix8.round(); // round to nearest int
-    const matrix10 = matrix9.toInt(); // convert to int32
-    return matrix10;
-  }
-
   reduceMatrixToVectorSum(matrix: TFTensor): TFTensor {
     return matrix.sum(1);
   }
@@ -231,7 +197,7 @@ export class PowGpu {
     const reduced = this.tf.tidy(() => {
       const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
       const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
-      const matrix10 = this.matrixCalculations(matrix, n);
+      const matrix10 = this.tf.matMul(matrix, matrix);
       return this.matrixReduce(matrix10);
     });
     const reducedBuf = SysBuf.from(await reduced.data());

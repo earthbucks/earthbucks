@@ -51,7 +51,12 @@ export class HeaderChain {
     return header.isValidNow(prevHeader, prevPrevHeader);
   }
 
-  getNextMintTxFromPkh(pkh: Pkh, domain: string, blockMessageId: FixedBuf<32>) {
+  getNextMintTxFromPkh(
+    pkh: Pkh,
+    domain: string,
+    blockMessageId: FixedBuf<32>,
+    blockNum: U32,
+  ) {
     const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
       new U32(1),
     );
@@ -64,10 +69,11 @@ export class HeaderChain {
     ]);
     const outputScript = Script.fromPkhOutput(pkh);
     const outputAmount = Header.mintTxAmount(working_block_n);
-    const tx = Tx.fromMintTxOutputScript(
+    const tx = Tx.fromMintTxScripts(
       inputScript,
       outputScript,
       outputAmount,
+      blockNum,
     );
     return tx;
   }
@@ -76,6 +82,7 @@ export class HeaderChain {
     txOuts: TxOut[],
     domain: string,
     blockMessageId: FixedBuf<32>,
+    blockNum: U32,
   ) {
     const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
       new U32(1),
@@ -98,7 +105,7 @@ export class HeaderChain {
         "output amount does not match sum of output amounts",
       );
     }
-    const tx = Tx.fromMintTxTxOuts(inputScript, txOuts);
+    const tx = Tx.fromMintTxTxOuts(inputScript, txOuts, blockNum);
     return tx;
   }
 

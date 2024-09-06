@@ -1,4 +1,4 @@
-import type { SysBuf } from "@earthbucks/lib";
+import { SysBuf, WorkPack } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
 import { GenericError } from "@earthbucks/lib";
 import { U256 } from "@earthbucks/lib";
@@ -14,13 +14,14 @@ function timeout(ms: number) {
 
 type AsyncHashFunction = (input: SysBuf) => Promise<FixedBuf<32>>;
 
-export async function HeaderMine(
-  header: Header,
-  lch10Ids: FixedBuf<32>[],
+export async function MineWorkPack(
+  workPack: WorkPack,
   shareTargetNum: U256,
   PowGpuClass: typeof PowGpu,
   blake3Async: AsyncHashFunction,
-): Promise<{ header: Header; count: number; duration: number }> {
+): Promise<{ workPack: WorkPack; count: number; duration: number }> {
+  const header = workPack.header;
+  const lch10IdsArr = workPack.lch10Ids.ids;
   if (
     header.workSerAlgoStr() !== "blake3_3" ||
     header.workParAlgoStr() !== "algo1627"
@@ -33,7 +34,7 @@ export async function HeaderMine(
 
   let workingHeader: Header = header.toWorkingHeader();
   const workingBlockId = workingHeader.id();
-  const gpupow = new PowGpuClass(workingBlockId, lch10Ids);
+  const gpupow = new PowGpuClass(workingBlockId, lch10IdsArr);
 
   const start = Date.now();
   while (true) {
@@ -60,9 +61,9 @@ export async function HeaderMine(
       (await blake3Async((await blake3Async(workingBlockId.buf)).buf)).buf,
     );
 
-    const id = workingHeader.id();
-    const idNum = new BufReader(id.buf).readU256BE();
+    const idNum = workingHeader.idU256();
     if (idNum.bn < shareTargetNum.bn) {
+      const id = workingHeader.id();
       console.log(id.buf.toString("hex"));
       break;
     }
@@ -70,5 +71,6 @@ export async function HeaderMine(
   }
   const end = Date.now();
   duration = end - start;
-  return { header: workingHeader, count, duration };
+  const resWorkPack = new WorkPack(workingHeader, workPack.lch10Ids);
+  return { workPack: resWorkPack, count, duration };
 }

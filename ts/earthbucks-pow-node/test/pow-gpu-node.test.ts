@@ -129,7 +129,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo17();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toHex()).toBe(
-      "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
+      "d89f017c661dbf2e68922520f29a746aa269ed9f66377afcec6783b44a97213a",
     );
   });
 
@@ -140,7 +140,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo17();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toHex()).toBe(
-      "bf04bc09f8c1ae36d6309670532535fdc08e988a195de346e4964c3b80226e44",
+      "d89f017c661dbf2e68922520f29a746aa269ed9f66377afcec6783b44a97213a",
     );
   });
 
@@ -151,7 +151,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toHex()).toBe(
-      "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
+      "c7a7826d1f7155402c5d2efae25f82ea930df7ef1054a0fbe5f00b38c1784282",
     );
   });
 
@@ -162,7 +162,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toHex()).toBe(
-      "efca7d84ffa0e3b09fe01d5669a92d8b5ed0a26453a4bb8037ebdab00b38860b",
+      "c7a7826d1f7155402c5d2efae25f82ea930df7ef1054a0fbe5f00b38c1784282",
     );
   });
 
@@ -173,7 +173,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toHex()).toBe(
-      "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
+      "726f2d4547af7271d1f85aea80448fb2d0b38de7083966565e112eac3ee2094a",
     );
   });
 
@@ -184,7 +184,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toHex()).toBe(
-      "e16afb6fe0510dfea8cfe176931c0ba8da66c2e6f95da3209ae840316f480280",
+      "726f2d4547af7271d1f85aea80448fb2d0b38de7083966565e112eac3ee2094a",
     );
   });
 
@@ -195,7 +195,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
     expect(res.toHex()).toBe(
-      "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
+      "60b36e32a89ec32f9d7a310e45b9ce044e25c4eae41c0f8a3aced26d0fa91d24",
     );
   });
 
@@ -206,7 +206,7 @@ describe("GpuPowNode", () => {
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
     expect(res.toHex()).toBe(
-      "492f608f757844a2407c960ff0623470af1b770a25496ba82d6bcc0a39e32442",
+      "60b36e32a89ec32f9d7a310e45b9ce044e25c4eae41c0f8a3aced26d0fa91d24",
     );
   });
 });

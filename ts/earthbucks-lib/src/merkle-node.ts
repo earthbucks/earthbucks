@@ -1,7 +1,7 @@
 import { GenericError } from "./error.js";
 import { Hash } from "./hash.js";
 import { SysBuf } from "./buf.js";
-import type { FixedBuf } from "./buf.js";
+import { FixedBuf } from "./buf.js";
 
 export class MerkleNode {
   public left: MerkleNode | null;
@@ -9,13 +9,13 @@ export class MerkleNode {
   public hash: FixedBuf<32> | null;
 
   constructor(
-    left: MerkleNode | null,
-    right: MerkleNode | null,
-    hash: FixedBuf<32> | null,
+    left?: MerkleNode | null,
+    right?: MerkleNode | null,
+    hash?: FixedBuf<32> | null,
   ) {
-    this.left = left;
-    this.right = right;
-    this.hash = hash;
+    this.left = left ?? null;
+    this.right = right ?? null;
+    this.hash = hash ?? null;
   }
 
   countNonNullLeaves(): number {
@@ -51,6 +51,10 @@ export class MerkleNode {
       return Hash.doubleBlake3Hash(MerkleNode.concat(leftData, rightData));
     }
     return this.hash;
+  }
+
+  public computeMerkleRootId(): FixedBuf<32> {
+    return this.computeHash() ?? FixedBuf.alloc(32);
   }
 
   leftHeight(): number {

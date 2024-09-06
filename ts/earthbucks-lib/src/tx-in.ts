@@ -2,9 +2,8 @@ import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
 import { Script } from "./script.js";
 import { VarInt } from "./var-int.js";
-import type { SysBuf } from "./buf.js";
+import { SysBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
-import { EbxError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxIn {
@@ -63,11 +62,19 @@ export class TxIn {
   }
 
   isMintTx(): boolean {
-    return this.isNull() && this.isMinimalLock();
+    return this.isNull() && this.isMinimalLock() && this.script.isPushOnly();
   }
 
-  static fromMintTx(script: Script): TxIn {
+  static fromMintTxScript(script: Script): TxIn {
     const emptyId = FixedBuf.alloc(32);
     return new TxIn(emptyId, new U32(0xffffffff), script, new U32(0));
+  }
+
+  static fromMintTxData(blockMessageId: FixedBuf<32>, domain: string): TxIn {
+    const script = Script.fromPushOnly([
+      blockMessageId.buf,
+      SysBuf.from(domain, "utf8"),
+    ]);
+    return TxIn.fromMintTxScript(script);
   }
 }
