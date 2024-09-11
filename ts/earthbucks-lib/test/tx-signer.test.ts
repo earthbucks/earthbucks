@@ -76,7 +76,7 @@ describe("TxSigner", () => {
     );
 
     const result = scriptInterpreter.evalScript();
-    expect(result).toBe(true);
+    expect(!!result.result).toBe(true);
   });
 
   test("should sign two inputs", () => {
@@ -121,7 +121,7 @@ describe("TxSigner", () => {
     );
 
     const result1 = scriptInterpreter1.evalScript();
-    expect(result1).toBe(true);
+    expect(!!result1.result).toBe(true);
 
     const txInput2 = tx.inputs[1] as TxIn;
     const txOutput2 = txOutBnMap.get(txInput2.inputTxId, txInput2.inputTxNOut);
@@ -144,6 +144,6 @@ describe("TxSigner", () => {
     );
 
     const result2 = scriptInterpreter2.evalScript();
-    expect(result2).toBe(true);
+    expect(!!result2.result).toBe(true);
   });
 });

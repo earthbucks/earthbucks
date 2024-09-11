@@ -1,4 +1,3 @@
-import { GenericError } from "./error.js";
 import { Hash } from "./hash.js";
 import { SysBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
@@ -118,7 +117,7 @@ export class MerkleNode {
   doubleWithNulls(): MerkleNode {
     const count = this.countAllLeaves();
     if (Math.log2(count) % 1 !== 0) {
-      throw new GenericError("Cannot double a tree that is not a power of 2");
+      throw new Error("Cannot double a tree that is not a power of 2");
     }
     const nullHashes = Array(count).fill(null);
     const nullTree = MerkleNode.fromLeafHashes(nullHashes);
@@ -127,14 +126,14 @@ export class MerkleNode {
 
   updateBalancedLeafHash(pos: number, hash: FixedBuf<32>): MerkleNode {
     if (pos < 0) {
-      throw new GenericError("Position must be greater than or equal to 0");
+      throw new Error("Position must be greater than or equal to 0");
     }
     const countAll = this.countAllLeaves();
     if (pos >= countAll) {
-      throw new GenericError("Position must be less than the number of leaves");
+      throw new Error("Position must be less than the number of leaves");
     }
     if (Math.log2(countAll) % 1 !== 0) {
-      throw new GenericError("Cannot update a tree that is not a power of 2");
+      throw new Error("Cannot update a tree that is not a power of 2");
     }
     if (countAll === 1) {
       return new MerkleNode(null, null, hash);
@@ -157,7 +156,7 @@ export class MerkleNode {
     }
     const countLeft = countAll / 2;
     if (countLeft === null || countLeft === undefined) {
-      throw new GenericError("Left node must not be null");
+      throw new Error("Left node must not be null");
     }
     if (pos < countLeft) {
       return new MerkleNode(

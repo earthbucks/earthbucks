@@ -1,6 +1,5 @@
 import { SysBuf, WorkPack } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
-import { GenericError } from "@earthbucks/lib";
 import { U256 } from "@earthbucks/lib";
 import type { Header } from "@earthbucks/lib";
 import { BufReader } from "@earthbucks/lib";
@@ -8,7 +7,7 @@ import type { PowGpu } from "./pow-gpu.js";
 
 function timeout(ms: number) {
   return new Promise((_, reject) =>
-    setTimeout(() => reject(new GenericError("Operation timed out")), ms),
+    setTimeout(() => reject(new Error("Operation timed out")), ms),
   );
 }
 
@@ -26,7 +25,7 @@ export async function MineWorkPack(
     header.workSerAlgoStr() !== "blake3_3" ||
     header.workParAlgoStr() !== "algo1627"
   ) {
-    throw new GenericError("Unsupported PoW algorithms");
+    throw new Error("Unsupported PoW algorithms");
   }
 
   let count = 0;

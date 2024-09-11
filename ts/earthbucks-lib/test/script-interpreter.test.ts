@@ -190,7 +190,7 @@ describe("ScriptInterpreter", () => {
       );
 
       const result = scriptInterpreter.evalScript();
-      expect(result).toBe(true);
+      expect(!!result.result).toBe(true);
     });
 
     test("CHECKMULTISIG", () => {
@@ -268,7 +268,7 @@ describe("ScriptInterpreter", () => {
       // Evaluate the script
       const result = scriptInterpreter.evalScript();
       expect(scriptInterpreter.errStr).toBe("");
-      expect(result).toBe(true);
+      expect(!!result.result).toBe(true);
     });
   });
 

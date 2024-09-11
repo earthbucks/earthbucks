@@ -42,7 +42,7 @@ export class TxVerifier {
       this.hashCache,
     );
     const result = scriptInterpreter.evalScript();
-    return result;
+    return !!result.result;
   }
 
   verifyInputLockRel(nIn: U32): boolean {

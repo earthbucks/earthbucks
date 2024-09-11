@@ -10,6 +10,7 @@ import { U8, U64 } from "./numbers.js";
 import type { U32 } from "./numbers.js";
 import type { ScriptChunk } from "./script-chunk.js";
 import type { TxIn } from "./tx-in.js";
+import { Result, Ok, Err } from "./result.js";
 
 export class ScriptInterpreter {
   public script: Script;
@@ -108,7 +109,7 @@ export class ScriptInterpreter {
     return SysBuf.compare(buf, SysBuf.alloc(buf.length)) !== 0;
   }
 
-  evalScript(): boolean {
+  evalScript(): Result<SysBuf> {
     loop: while (this.pc < this.script.chunks.length) {
       const chunk = this.script.chunks[this.pc] as ScriptChunk;
       const opcode = chunk.opcode;
@@ -1204,10 +1205,12 @@ export class ScriptInterpreter {
     if (this.errStr) {
       this.returnValue = this.stack[this.stack.length - 1] || SysBuf.alloc(0);
       this.returnSuccess = false;
-      return this.returnSuccess;
+      return Err(
+        `At pc ${this.pc} (opcode ${OPCODE_TO_NAME[this.script.chunks[this.pc]?.opcode as number]}): ${this.errStr}`,
+      );
     }
     this.returnValue = this.stack[this.stack.length - 1] || SysBuf.alloc(0);
     this.returnSuccess = ScriptInterpreter.castToBool(this.returnValue);
-    return this.returnSuccess;
+    return Ok(this.returnValue);
   }
 }

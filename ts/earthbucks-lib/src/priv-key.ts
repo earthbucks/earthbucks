@@ -1,14 +1,6 @@
 import secp256k1 from "secp256k1";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { Hash } from "./hash.js";
-import {
-  EbxError,
-  InvalidChecksumError,
-  InvalidEncodingError,
-  InvalidKeyError,
-  NotEnoughDataError,
-  TooMuchDataError,
-} from "./error.js";
 
 export class PrivKey {
   buf: FixedBuf<32>;
@@ -42,7 +34,7 @@ export class PrivKey {
 
   static fromBuf(buf: FixedBuf<32>): PrivKey {
     if (!secp256k1.privateKeyVerify(buf.buf)) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
     return new PrivKey(buf);
   }
@@ -66,7 +58,7 @@ export class PrivKey {
 
   static fromString(str: string): PrivKey {
     if (!str.startsWith("ebxprv")) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
     const hexStr = str.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, hexStr);
@@ -74,7 +66,7 @@ export class PrivKey {
     const hashBuf = Hash.blake3Hash(decoded32.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
     if (checkBuf.buf.toString("hex") !== checkHash.toString("hex")) {
-      throw new InvalidChecksumError();
+      throw new Error("invalid checksum");
     }
     return PrivKey.fromBuf(decoded32);
   }

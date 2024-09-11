@@ -2,7 +2,6 @@ import { U64 } from "./numbers.js";
 import { FixedBuf } from "./buf.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { InvalidSizeError } from "./error.js";
 import type { SysBuf } from "./buf.js";
 
 export class PermissionToken {
@@ -23,7 +22,7 @@ export class PermissionToken {
 
   static fromBuf(buf: SysBuf): PermissionToken {
     if (buf.length !== 32 + 8) {
-      throw new InvalidSizeError();
+      throw new Error("invalid size error");
     }
     const reader = new BufReader(buf);
     const randValue = reader.readFixed(32);

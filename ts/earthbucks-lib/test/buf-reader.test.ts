@@ -4,12 +4,6 @@ import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  EbxError,
-  GenericError,
-  NonMinimalEncodingError,
-  NotEnoughDataError,
-} from "../src/error.js";
 
 describe("BufReader", () => {
   let bufferReader: BufReader;
@@ -78,15 +72,15 @@ describe("BufReader", () => {
 
   test("readVarIntBuf", () => {
     let bufferReader = new BufReader(SysBuf.from([0xfd, 0x00, 0x01]));
-    expect(() => bufferReader.readVarIntBuf()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarIntBuf()).toThrow();
 
     bufferReader = new BufReader(SysBuf.from([0xfe, 0x00, 0x00, 0x00, 0x01]));
-    expect(() => bufferReader.readVarIntBuf()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarIntBuf()).toThrow();
 
     bufferReader = new BufReader(
       SysBuf.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(() => bufferReader.readVarIntBuf()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarIntBuf()).toThrow();
 
     bufferReader = new BufReader(SysBuf.from([0x01]));
     expect(bufferReader.readVarIntBuf().toString("hex")).toEqual(
@@ -96,15 +90,15 @@ describe("BufReader", () => {
 
   test("readVarInt", () => {
     let bufferReader = new BufReader(SysBuf.from([0xfd, 0x00, 0x01]));
-    expect(() => bufferReader.readVarInt()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarInt()).toThrow();
 
     bufferReader = new BufReader(SysBuf.from([0xfe, 0x00, 0x00, 0x00, 0x01]));
-    expect(() => bufferReader.readVarInt()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarInt()).toThrow();
 
     bufferReader = new BufReader(
       SysBuf.from([0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     );
-    expect(() => bufferReader.readVarInt()).toThrow(NonMinimalEncodingError);
+    expect(() => bufferReader.readVarInt()).toThrow();
 
     bufferReader = new BufReader(SysBuf.from([0x01]));
     expect(bufferReader.readVarInt().bn).toEqual(BigInt(1));
@@ -148,13 +142,7 @@ describe("BufReader", () => {
       for (const test of testVector.read.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.read(test.len)).toThrow(errorType);
+        expect(() => bufferReader.read(test.len)).toThrow();
       }
     });
 
@@ -162,13 +150,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_u8.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readU8()).toThrow(errorType);
+        expect(() => bufferReader.readU8()).toThrow();
       }
     });
 
@@ -176,13 +158,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_u16_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readU16BE()).toThrow(errorType);
+        expect(() => bufferReader.readU16BE()).toThrow();
       }
     });
 
@@ -190,13 +166,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_u32_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readU32BE()).toThrow(errorType);
+        expect(() => bufferReader.readU32BE()).toThrow();
       }
     });
 
@@ -204,13 +174,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_u64_be.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readU64BE()).toThrow(errorType);
+        expect(() => bufferReader.readU64BE()).toThrow();
       }
     });
 
@@ -218,13 +182,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_var_int_buf.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readVarIntBuf()).toThrow(errorType);
+        expect(() => bufferReader.readVarIntBuf()).toThrow();
       }
     });
 
@@ -232,13 +190,7 @@ describe("BufReader", () => {
       for (const test of testVector.read_var_int.errors) {
         const buf = SysBuf.from(test.hex, "hex");
         const bufferReader = new BufReader(buf);
-        const errorType =
-          test.error === "non-minimal encoding"
-            ? NonMinimalEncodingError
-            : test.error === "not enough bytes in the buffer to read"
-              ? NotEnoughDataError
-              : GenericError;
-        expect(() => bufferReader.readVarInt()).toThrow(errorType);
+        expect(() => bufferReader.readVarInt()).toThrow();
       }
     });
   });

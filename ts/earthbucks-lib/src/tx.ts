@@ -9,8 +9,8 @@ const { ecdsaSign, ecdsaVerify } = secp256k1;
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
-import { EbxError, GenericError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
+import { Pkh } from "./pkh.js";
 
 export class HashCache {
   public hashPrevouts?: FixedBuf<32>;
@@ -77,17 +77,25 @@ export class Tx {
     return Tx.fromBuf(buf.buf);
   }
 
-  static fromMintTxData(
-    blockMessageId: FixedBuf<32>,
-    domain: string,
-    outputScript: Script,
-    outputAmount: U64,
-    blockNum: U32,
-  ) {
+  static fromMintTxData({
+    blockMessageId,
+    domain,
+    outputScript,
+    outputAmount,
+    blockNum,
+    nonce = FixedBuf.fromRandom(32),
+  }: {
+    blockMessageId: FixedBuf<32>;
+    domain: string;
+    outputScript: Script;
+    outputAmount: U64;
+    blockNum: U32;
+    nonce?: FixedBuf<32>;
+  }): Tx {
     // TODO: DO NOT also allow inputting expired txs: expired txs should
     // actually be the first tx of the new block.
     const version = new U8(0);
-    const inputs = [TxIn.fromMintTxData(blockMessageId, domain)];
+    const inputs = [TxIn.fromMintTxData(blockMessageId, domain, nonce)];
     const txOuts = [new TxOut(outputAmount, outputScript)];
     const lockNum = blockNum;
     return new Tx(version, inputs, txOuts, lockNum);
@@ -167,7 +175,7 @@ export class Tx {
     hashCache: HashCache,
   ): SysBuf {
     if (inputIndex.n >= this.inputs.length) {
-      throw new GenericError("input index out of bounds");
+      throw new Error("input index out of bounds");
     }
     const SIGHASH_ANYONECANPAY = 0x80;
     const SIGHASH_SINGLE = 0x03;
@@ -332,5 +340,18 @@ export class Tx {
       hashCache,
     );
     return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
+  }
+
+  getAllOutputPkhs(): Pkh[] {
+    const txOuts = this.outputs;
+    const pkhs: Pkh[] = [];
+    for (const txOut of txOuts) {
+      const pkhObj = txOut.script.getPkhs();
+      pkhs.push(pkhObj.pkh);
+      if (pkhObj.rpkh) {
+        pkhs.push(pkhObj.rpkh);
+      }
+    }
+    return pkhs;
   }
 }

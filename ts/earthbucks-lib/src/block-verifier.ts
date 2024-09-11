@@ -2,14 +2,14 @@ import type { Block } from "./block.js";
 import { Header } from "./header.js";
 import type { Tx } from "./tx.js";
 import { MerkleTxs } from "./merkle-txs.js";
-import { GenericError, BlockVerificationError } from "./error.js";
 import { MerkleNode } from "./merkle-node.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import type { HeaderChain } from "./header-chain.js";
-import { U64 } from "./numbers.js";
+import { U32, U64 } from "./numbers.js";
 import type { ScriptChunk } from "./script-chunk.js";
 import { Domain } from "./domain.js";
 import { TxVerifier } from "./tx-verifier.js";
+import { Err, Result } from "./result.js";
 
 export class BlockVerifier {
   public block: Block;
@@ -42,7 +42,7 @@ export class BlockVerifier {
   verifyMerkleRoot(): void {
     const merkleTxs = MerkleTxs.fromTxs(this.block.txs);
     if (!this.block.header.rootMerkleNodeId.buf.equals(merkleTxs.root.buf)) {
-      throw new BlockVerificationError("Invalid merkle root");
+      throw new Error("Invalid merkle root");
     }
   }
 
@@ -55,76 +55,28 @@ export class BlockVerifier {
     }
   }
 
-  isValidHeaderAt(timestamp: U64): boolean {
+  resIsValidHeaderAt(actualNTransactions: U64, timestamp: U64): Result<true> {
     const prevHeader = this.prevLch.getTip();
     if (!prevHeader) {
-      return false;
+      return Err("No previous header");
     }
     const prevPrevHeader =
       this.prevLch.headers[this.prevLch.headers.length - 2] || null;
-    return this.block.header.isValidAt(prevHeader, prevPrevHeader, timestamp);
+    return this.block.header.resIsValidAt(
+      prevHeader,
+      prevPrevHeader,
+      actualNTransactions,
+      timestamp,
+    );
   }
 
-  hasValidMintTx(): boolean {
-    // 1. mint tx is the last tx
-    const txsCount = this.block.txs.length;
-    if (txsCount === 0) {
-      return false;
+  hasValidMintTx(): Result<boolean> {
+    const header = this.block.header;
+    const mintTx = this.block.txs[this.block.txs.length - 1];
+    if (!mintTx) {
+      return Err("No mint tx");
     }
-    const mintTx = this.block.txs[txsCount - 1] as Tx;
-    if (!mintTx.isMintTx()) {
-      return false;
-    }
-    // 2. lockNum equals block number
-    if (mintTx.lockAbs.bn !== this.block.header.blockNum.bn) {
-      return false;
-    }
-    // 3. version is 1
-    if (mintTx.version.n !== 1) {
-      return false;
-    }
-    // 4. all outputs are pkh
-    for (const txOutput of mintTx.outputs) {
-      if (!txOutput.script.isPkhOutput()) {
-        return false;
-      }
-    }
-    // 5. output amount is correct
-    let totalOutputValue = new U64(0);
-    for (const output of mintTx.outputs) {
-      totalOutputValue = totalOutputValue.add(output.value);
-    }
-    const expectedMintAmount = Header.mintTxAmount(this.block.header.blockNum);
-    if (totalOutputValue.bn !== expectedMintAmount.bn) {
-      return false;
-    }
-    // 5. mint tx script is valid (push only)
-    const mintInput = mintTx.inputs[0];
-    if (!mintInput) {
-      return false;
-    }
-    const mintScript = mintInput.script;
-    if (!mintScript.isPushOnly()) {
-      return false;
-    }
-    // 6. domain name, top of the stack, is valid
-    const scriptChunks = mintScript.chunks;
-    if (scriptChunks.length === 0) {
-      return false;
-    }
-    const domainChunk = scriptChunks[scriptChunks.length - 1] as ScriptChunk;
-    const domainBuf = domainChunk.buf;
-    if (!domainBuf) {
-      return false;
-    }
-    const domainStr = domainBuf.toString();
-    if (!Domain.isValidDomain(domainStr)) {
-      return false;
-    }
-    // note that we do not verify whether domain is actually responsive and
-    // delivers this block. that would require pinging the domain name,
-    // which is done elsewhere.
-    return true;
+    return header.resHasValidMintTx(mintTx);
   }
 
   isValidTxs(): boolean {
@@ -155,11 +107,11 @@ export class BlockVerifier {
     return true;
   }
 
-  isValidAt(timestamp: U64): boolean {
+  isValidAt(actualNTransactions: U64, timestamp: U64): boolean {
     if (timestamp.bn < this.block.header.timestamp.bn) {
       return false;
     }
-    if (!this.isValidHeaderAt(timestamp)) {
+    if (!this.resIsValidHeaderAt(actualNTransactions, timestamp).result) {
       return false;
     }
     if (!this.isValidMerkleRoot()) {
@@ -171,8 +123,8 @@ export class BlockVerifier {
     return true;
   }
 
-  isValidNow(): boolean {
+  isValidNow(actualNTransactions: U64): boolean {
     const timestamp = Header.getNewTimestamp();
-    return this.isValidAt(timestamp);
+    return this.isValidAt(actualNTransactions, timestamp);
   }
 }

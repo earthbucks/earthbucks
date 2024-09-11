@@ -1,12 +1,6 @@
-import {
-  EbxError,
-  InvalidChecksumError,
-  InvalidEncodingError,
-} from "./error.js";
 import { Hash } from "./hash.js";
 import { SysBuf, EbxBuf, FixedBuf } from "./buf.js";
 import type { PubKey } from "./pub-key.js";
-import { InvalidSizeError } from "./error.js";
 
 // public key hash
 export class Pkh {
@@ -53,7 +47,7 @@ export class Pkh {
 
   static fromString(pkhStr: string): Pkh {
     if (!pkhStr.startsWith("ebxpkh")) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, checkHex);
@@ -61,7 +55,7 @@ export class Pkh {
     const hashBuf = Hash.blake3Hash(buf.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
     if (checkHash.toString("hex") !== checkBuf.buf.toString("hex")) {
-      throw new InvalidChecksumError();
+      throw new Error("invalid checksum");
     }
     return Pkh.fromBuf(buf);
   }

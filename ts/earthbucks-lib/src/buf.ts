@@ -4,12 +4,6 @@
 // specifically to make sure we always use this version of "Buffer" and never
 // the standard node version so that it polyfills in the browser correctly.
 import { Buffer as SysBuf } from "buffer";
-import {
-  EbxError,
-  InvalidSizeError,
-  InvalidHexError,
-  InvalidEncodingError,
-} from "./error.js";
 import bs58 from "bs58";
 
 function isValidHex(hex: string): boolean {
@@ -22,7 +16,7 @@ function encodeHex(buffer: SysBuf): string {
 
 function decodeHex(hex: string): SysBuf {
   if (!isValidHex(hex)) {
-    throw new InvalidHexError();
+    throw new Error("invalid hex");
   }
   const sysBuf = SysBuf.from(hex, "hex");
   return sysBuf;
@@ -33,7 +27,7 @@ class EbxBuf {
 
   constructor(size: number, buf: SysBuf) {
     if (buf.length !== size) {
-      throw new InvalidSizeError();
+      throw new Error("invalid size error");
     }
     this._buf = buf;
   }
@@ -64,7 +58,7 @@ class EbxBuf {
       const buf = SysBuf.from(base64, "base64");
       return EbxBuf.fromBuf(size, buf);
     } catch (err) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
   }
 
@@ -77,7 +71,7 @@ class EbxBuf {
       const buf = SysBuf.from(bs58.decode(base58));
       return EbxBuf.fromBuf(size, buf);
     } catch (err) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
   }
 

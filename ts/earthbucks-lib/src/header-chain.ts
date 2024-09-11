@@ -6,7 +6,6 @@ import { ScriptChunk } from "./script-chunk.js";
 import { Script } from "./script.js";
 import type { FixedBuf } from "./buf.js";
 import { Tx } from "./tx.js";
-import { GenericError } from "./error.js";
 import type { TxOut } from "./tx-out.js";
 
 export class HeaderChain {
@@ -33,22 +32,35 @@ export class HeaderChain {
     return null;
   }
 
-  newHeaderIsValidAt(header: Header, timestamp: U64): boolean {
+  newHeaderIsValidAt(
+    header: Header,
+    actualNTransactions: U64,
+    timestamp: U64,
+  ): boolean {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
-      throw new GenericError("no previous header");
+      throw new Error("no previous header");
     }
     const prevPrevHeader = this.headers[this.headers.length - 2] || null;
-    return header.isValidAt(prevHeader, prevPrevHeader, timestamp);
+    return !!header.resIsValidAt(
+      prevHeader,
+      prevPrevHeader,
+      actualNTransactions,
+      timestamp,
+    ).result;
   }
 
-  newHeaderIsValidNow(header: Header): boolean {
+  newHeaderIsValidNow(header: Header, actualNTransactions: U64): boolean {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
-      throw new GenericError("no previous header");
+      throw new Error("no previous header");
     }
     const prevPrevHeader = this.headers[this.headers.length - 2] || null;
-    return header.isValidNow(prevHeader, prevPrevHeader);
+    return !!header.resIsValidNow(
+      prevHeader,
+      prevPrevHeader,
+      actualNTransactions,
+    ).result;
   }
 
   getNextMintTxFromPkh(
@@ -101,9 +113,7 @@ export class HeaderChain {
       sum = sum.add(output.value);
     }
     if (sum.bn !== outputAmount.bn) {
-      throw new GenericError(
-        "output amount does not match sum of output amounts",
-      );
+      throw new Error("output amount does not match sum of output amounts");
     }
     const tx = Tx.fromMintTxTxOuts(inputScript, txOuts, blockNum);
     return tx;
@@ -116,7 +126,7 @@ export class HeaderChain {
   ) {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
-      throw new GenericError("no previous header");
+      throw new Error("no previous header");
     }
     const prevPrevHeader = this.headers[this.headers.length - 2] || null;
     const header = Header.fromChain(
@@ -126,6 +136,7 @@ export class HeaderChain {
       nTransactions,
       timestamp,
     );
+    return header;
   }
 
   getNextHeaderNow(rootMerkleNodeId: FixedBuf<32>, nTransactions: U64) {

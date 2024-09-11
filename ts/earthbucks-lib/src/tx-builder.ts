@@ -4,7 +4,6 @@ import { TxOut } from "./tx-out.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
-import { EbxError, GenericError } from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxBuilder {
@@ -87,7 +86,7 @@ export class TxBuilder {
       ) {
         inputScript = Script.fromUnexpiredPkhxrInputPlaceholder();
       } else {
-        throw new GenericError("unsupported script type");
+        throw new Error("unsupported script type");
       }
 
       const txInput = new TxIn(txId, txOutNum, inputScript, new U32(0));

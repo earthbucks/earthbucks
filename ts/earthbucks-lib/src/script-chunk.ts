@@ -3,13 +3,6 @@ import type { OpcodeName } from "./opcode.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
 import { SysBuf } from "./buf.js";
-import {
-  EbxError,
-  InvalidOpcodeError,
-  NonMinimalEncodingError,
-  NotEnoughDataError,
-  TooMuchDataError,
-} from "./error.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class ScriptChunk {
@@ -34,7 +27,7 @@ export class ScriptChunk {
     if (this.buf) {
       return this.buf;
     }
-    throw new NotEnoughDataError();
+    throw new Error("not enough bytes in the buffer to read");
   }
 
   toString(): string {
@@ -45,7 +38,7 @@ export class ScriptChunk {
     if (name !== undefined) {
       return name;
     }
-    throw new InvalidOpcodeError();
+    throw new Error("invalid opcode");
   }
 
   static fromString(str: string): ScriptChunk {
@@ -63,7 +56,7 @@ export class ScriptChunk {
       } else if (fourbytelen) {
         scriptChunk.opcode = OP.PUSHDATA4;
       } else {
-        throw new TooMuchDataError();
+        throw new Error("too many bytes in the buffer to read");
       }
     } else {
       function isOpcodeName(str: string): str is OpcodeName {
@@ -73,7 +66,7 @@ export class ScriptChunk {
         const opcode = OP[str];
         scriptChunk.opcode = opcode;
       } else {
-        throw new InvalidOpcodeError();
+        throw new Error("invalid opcode");
       }
 
       scriptChunk.buf = undefined;
@@ -120,20 +113,20 @@ export class ScriptChunk {
       const buffer = reader.read(len);
       const first = buffer[0];
       if (len === 0 || (len === 1 && first && first >= 1 && first <= 16)) {
-        throw new NonMinimalEncodingError();
+        throw new Error("non-minimal encoding");
       }
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA2) {
       const len = reader.readU16BE().n;
       if (len <= 0xff) {
-        throw new NonMinimalEncodingError();
+        throw new Error("non-minimal encoding");
       }
       const buffer = reader.read(len);
       chunk.buf = buffer;
     } else if (opcode === OP.PUSHDATA4) {
       const len = reader.readU32BE().n;
       if (len <= 0xffff) {
-        throw new NonMinimalEncodingError();
+        throw new Error("non-minimal encoding");
       }
       const buffer = reader.read(len);
       chunk.buf = buffer;

@@ -1,13 +1,6 @@
 import { SysBuf, FixedBuf } from "./buf.js";
 import type { PrivKey } from "./priv-key.js";
 import { Hash } from "./hash.js";
-import {
-  EbxError,
-  InvalidChecksumError,
-  InvalidEncodingError,
-  NotEnoughDataError,
-  TooMuchDataError,
-} from "./error.js";
 import secp256k1 from "secp256k1";
 
 export class PubKey {
@@ -50,7 +43,7 @@ export class PubKey {
 
   static fromString(str: string): PubKey {
     if (!str.startsWith("ebxpub")) {
-      throw new InvalidEncodingError();
+      throw new Error("invalid encoding");
     }
     const checkHex = str.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, checkHex);
@@ -58,7 +51,7 @@ export class PubKey {
     const checkHash = Hash.blake3Hash(decoded33.buf);
     const checkSum = checkHash.buf.subarray(0, 4);
     if (checkBuf.buf.toString("hex") !== checkSum.toString("hex")) {
-      throw new InvalidChecksumError();
+      throw new Error("invalid checksum");
     }
     return PubKey.fromBuf(decoded33);
   }

@@ -4,7 +4,6 @@ import { BufReader } from "./buf-reader.js";
 import { SysBuf } from "./buf.js";
 import type { FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { GenericError } from "./error.js";
 
 export class MerkleProof {
   public root: FixedBuf<32>;
@@ -39,7 +38,7 @@ export class MerkleProof {
     hashes: (FixedBuf<32> | null)[],
   ): [FixedBuf<32>, MerkleProof[]] {
     if (hashes.length === 0) {
-      throw new GenericError("Cannot create Merkle tree from empty array");
+      throw new Error("Cannot create Merkle tree from empty array");
     }
     if (hashes.length === 1) {
       const root = hashes[0] as FixedBuf<32>;

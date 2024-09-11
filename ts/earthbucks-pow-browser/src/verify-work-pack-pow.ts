@@ -1,13 +1,11 @@
 import type { SysBuf, WorkPack } from "@earthbucks/lib";
 import { FixedBuf } from "@earthbucks/lib";
-import { GenericError } from "@earthbucks/lib";
-import { HeaderVerificationError } from "@earthbucks/lib";
 import type { Header } from "@earthbucks/lib";
 import type { PowGpu } from "./pow-gpu.js";
 
 function timeout(ms: number) {
   return new Promise((_, reject) =>
-    setTimeout(() => reject(new GenericError("Operation timed out")), ms),
+    setTimeout(() => reject(new Error("Operation timed out")), ms),
   );
 }
 
@@ -30,17 +28,17 @@ export async function verifyWorkPackPow(
   const header = workPack.header;
   const lch10IdsArr = workPack.lch10Ids.ids;
   if (header.workSerAlgoStr() !== "blake3_3") {
-    throw new HeaderVerificationError("unsupported serial PoW algorithm");
+    throw new Error("unsupported serial PoW algorithm");
   }
   if (header.workParAlgoStr() !== "algo1627") {
-    throw new HeaderVerificationError("unsupported parallel PoW algorithm");
+    throw new Error("unsupported parallel PoW algorithm");
   }
 
   if (header.workSerHash.buf.equals(nullHash)) {
-    throw new HeaderVerificationError("serial hash is null");
+    throw new Error("serial hash is null");
   }
   if (header.workParHash.buf.equals(nullHash)) {
-    throw new HeaderVerificationError("parallel hash is null");
+    throw new Error("parallel hash is null");
   }
 
   const workingHeader: Header = header.toWorkingHeader();
@@ -55,7 +53,7 @@ export async function verifyWorkPackPow(
   );
 
   if (!header.workSerHash.buf.equals(workSerHash.buf)) {
-    throw new HeaderVerificationError("serial hash does not match");
+    throw new Error("serial hash does not match");
   }
 
   // algo1627
@@ -70,6 +68,6 @@ export async function verifyWorkPackPow(
   const workParHash = matrixHashBuf;
 
   if (!header.workParHash.buf.equals(workParHash.buf)) {
-    throw new HeaderVerificationError("parallel hash does not match");
+    throw new Error("parallel hash does not match");
   }
 }

@@ -1,13 +1,12 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { BufReader } from "./buf-reader.js";
-import { SysBuf } from "./buf.js";
+import { FixedBuf, SysBuf } from "./buf.js";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
-import { EbxError } from "./error.js";
 import { U8, U16, U32 } from "./numbers.js";
-import type { Pkh } from "./pkh.js";
+import { Pkh } from "./pkh.js";
 
 export class Script {
   chunks: ScriptChunk[] = [];
@@ -484,17 +483,69 @@ export class Script {
 
   isMintTxInput(): boolean {
     // TODO: Add more checks
-    return this.isPushOnly();
+    return this.isPushOnly() && this.chunks.length >= 3;
+  }
+
+  getMintTxData(): {
+    nonce: FixedBuf<32>;
+    blockMessageId: FixedBuf<32>;
+    domain: string;
+  } {
+    if (!this.isMintTxInput()) {
+      throw new Error("Not a mint tx");
+    }
+    const nonce = FixedBuf.fromBuf(
+      32,
+      this.chunks[this.chunks.length - 3]?.getData() as SysBuf,
+    );
+    const blockMessageId = FixedBuf.fromBuf(
+      32,
+      this.chunks[this.chunks.length - 2]?.getData() as SysBuf,
+    );
+    const domain = this.chunks[this.chunks.length - 1]
+      ?.getData()
+      ?.toString("utf8") as string;
+    return { nonce, blockMessageId, domain };
   }
 
   isStandardInput(): boolean {
     return (
       this.isPushOnly() &&
-      (this.isUnexpiredPkhxInput() || this.isExpiredPkhxInput())
+      (this.isUnexpiredPkhxInput() ||
+        this.isExpiredPkhxInput() ||
+        this.isUnexpiredPkhxrInput() ||
+        this.isExpiredPkhxrInput())
     );
   }
 
   isStandardOutput(): boolean {
-    return this.isPkhx90dOutput() || this.isPkhx1hOutput();
+    return (
+      this.isPkhx90dOutput() ||
+      this.isPkhx1hOutput() ||
+      this.isPkhxr1h40mOutput() ||
+      this.isPkhxr90d60dOutput()
+    );
+  }
+
+  getPkhs(): { pkh: Pkh; rpkh: Pkh | null } {
+    if (this.isPkhxr90d60dOutput() || this.isPkhxr1h40mOutput()) {
+      return {
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as SysBuf)),
+        rpkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[13]?.buf as SysBuf)),
+      };
+    }
+    if (this.isPkhx90dOutput() || this.isPkhx1hOutput()) {
+      return {
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as SysBuf)),
+        rpkh: null,
+      };
+    }
+    if (this.isPkhOutput()) {
+      return {
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[2]?.buf as SysBuf)),
+        rpkh: null,
+      };
+    }
+    throw new Error("Invalid Script");
   }
 }

@@ -5,9 +5,12 @@ import type { SysBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
 import { EbxBuf } from "./buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
-import { GenericError } from "./error.js";
 import { WORK_SER_ALGO_NUM, WORK_SER_ALGO_NAME } from "./work-ser-algo.js";
 import { WORK_PAR_ALGO_NUM, WORK_PAR_ALGO_NAME } from "./work-par-algo.js";
+import { Tx } from "./tx.js";
+import { Domain } from "./domain.js";
+import { ScriptChunk } from "./script-chunk.js";
+import { Err, Ok, Result } from "./result.js";
 
 interface HeaderInterface {
   version: U8;
@@ -185,61 +188,82 @@ export class Header implements HeaderInterface {
     return this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627;
   }
 
-  isValidInChain(prevHeader: Header, prevPrevHeader: Header | null): boolean {
-    if (!this.isVersionValid()) {
-      //console.log('1')
-      return false;
+  resIsValidInChain(
+    prevHeader: Header | null,
+    prevPrevHeader: Header | null,
+    actualNTransactions: U64,
+  ): Result<true> {
+    if (this.nTransactions.n === 0) {
+      return Err("nTransactions is 0");
     }
-    if (this.blockNum.bn === 0n) {
-      //console.log('2')
-      return this.isGenesis();
-    }
-    if (this.blockNum.n !== prevHeader.blockNum.n + 1) {
-      //console.log('4')
-      return false;
-    }
-    if (!this.prevBlockId.buf.equals(prevHeader.id().buf)) {
-      //console.log('5')
-      return false;
-    }
-    if (this.timestamp.n <= prevHeader.timestamp.n) {
-      //console.log('6')
-      return false;
-    }
-    if (!this.isTargetValid(prevHeader, prevPrevHeader)) {
-      //console.log('7')
-      return false;
+    if (this.nTransactions.n !== actualNTransactions.n) {
+      return Err("nTransactions does not match actual number of transactions");
     }
     if (!this.isIdValid()) {
-      //console.log('8')
-      return false;
+      return Err("id is not valid");
+    }
+    if (!this.isVersionValid()) {
+      return Err("version is not valid");
+    }
+    if (this.blockNum.bn === 0n) {
+      if (this.isGenesis()) {
+        return Ok(true);
+      }
+      return Err("genesis is not valid");
+    }
+    if (!prevHeader) {
+      return Err("prevHeader is null");
+    }
+    if (this.blockNum.n !== prevHeader.blockNum.n + 1) {
+      return Err("blockNum is not valid");
+    }
+    if (!this.prevBlockId.buf.equals(prevHeader.id().buf)) {
+      return Err("prevBlockId is not valid");
+    }
+    if (this.timestamp.n <= prevHeader.timestamp.n) {
+      return Err("timestamp is not valid");
+    }
+    if (!this.isTargetValid(prevHeader, prevPrevHeader)) {
+      return Err("target is not valid");
     }
     if (!this.isWorkSerAlgoValid()) {
-      //console.log('9')
-      return false;
+      return Err("workSerAlgo is not valid");
     }
     if (!this.isWorkParAlgoValid()) {
-      //console.log('10')
-      return false;
+      return Err("workParAlgo is not valid");
     }
-    return true;
+    return Ok(true);
   }
 
-  isValidAt(
-    prevHeader: Header,
+  resIsValidAt(
+    prevHeader: Header | null,
     prevPrevHeader: Header | null,
+    actualNTransactions: U64,
     timestamp: U64,
-  ): boolean {
+  ): Result<true> {
     // this validates everything about the header except PoW
     // PoW must be validated using a separate library
-    return (
-      this.isTimestampValidAt(timestamp) &&
-      this.isValidInChain(prevHeader, prevPrevHeader)
+    if (!this.isTimestampValidAt(timestamp)) {
+      return Err("timestamp is not valid");
+    }
+    return this.resIsValidInChain(
+      prevHeader,
+      prevPrevHeader,
+      actualNTransactions,
     );
   }
 
-  isValidNow(prevHeader: Header, prevPrevHeader: Header | null): boolean {
-    return this.isValidAt(prevHeader, prevPrevHeader, Header.getNewTimestamp());
+  resIsValidNow(
+    prevHeader: Header | null,
+    prevPrevHeader: Header | null,
+    actualNTransactions: U64,
+  ): Result<true> {
+    return this.resIsValidAt(
+      prevHeader,
+      prevPrevHeader,
+      actualNTransactions,
+      Header.getNewTimestamp(),
+    );
   }
 
   isGenesis(): boolean {
@@ -418,7 +442,7 @@ export class Header implements HeaderInterface {
   workSerAlgoStr(): string {
     const str = WORK_SER_ALGO_NAME[this.workSerAlgo.n];
     if (!str) {
-      throw new GenericError("unknown workSerAlgo");
+      throw new Error("unknown workSerAlgo");
     }
     return str;
   }
@@ -426,7 +450,7 @@ export class Header implements HeaderInterface {
   workParAlgoStr(): string {
     const str = WORK_PAR_ALGO_NAME[this.workParAlgo.n];
     if (!str) {
-      throw new GenericError("unknown workParAlgo");
+      throw new Error("unknown workParAlgo");
     }
     return str;
   }
@@ -448,5 +472,75 @@ export class Header implements HeaderInterface {
       workParHash: FixedBuf.alloc(32),
     });
     return workingHeader;
+  }
+
+  resHasValidMintTx(mintTx: Tx): Result<true> {
+    // 1. mint tx is the last tx
+    if (!mintTx.isMintTx()) {
+      return Err("not a mint tx");
+    }
+    // 2. lockNum equals block number
+    if (mintTx.lockAbs.bn !== this.blockNum.bn) {
+      return Err("lockNum does not match block number");
+    }
+    // 3. version is 1
+    if (mintTx.version.n !== 0) {
+      return Err("version is not 0");
+    }
+    // 4. all outputs are pkh
+    for (const txOutput of mintTx.outputs) {
+      if (!txOutput.script.isStandardOutput()) {
+        return Err("output is not standard");
+      }
+    }
+    // 5. output amount is correct
+    let totalOutputValue = new U64(0);
+    for (const output of mintTx.outputs) {
+      totalOutputValue = totalOutputValue.add(output.value);
+    }
+    const expectedMintAmount = Header.mintTxAmount(this.blockNum);
+    if (totalOutputValue.bn !== expectedMintAmount.bn) {
+      return Err("output amount does not match expected mint amount");
+    }
+    // 6. mint tx script is valid (push only)
+    const mintInput = mintTx.inputs[0];
+    if (!mintInput) {
+      return Err("no inputs");
+    }
+    const mintScript = mintInput.script;
+    if (!mintScript.isPushOnly()) {
+      return Err("script is not push only");
+    }
+    // 7. must have at least two script chunks
+    const scriptChunks = mintScript.chunks;
+    if (scriptChunks.length < 2) {
+      return Err("not enough script chunks");
+    }
+    // 8. domain name, top of the stack, is valid
+    const domainChunk = scriptChunks[scriptChunks.length - 1] as ScriptChunk;
+    const domainBuf = domainChunk.buf;
+    if (!domainBuf) {
+      return Err("no domain buf");
+    }
+    const domainStr = domainBuf.toString();
+    if (!Domain.isValidDomain(domainStr)) {
+      return Err("domain is not valid");
+    }
+    // 9. block message, ID, second from top of stack, is valid FixedBuf<32>
+    if (scriptChunks.length < 2) {
+      return Err("no block message script chunk");
+    }
+    const idChunk = scriptChunks[scriptChunks.length - 2] as ScriptChunk;
+    const idBuf = idChunk.buf;
+    if (!idBuf) {
+      return Err("no block message id buf");
+    }
+    if (idBuf.length !== 32) {
+      return Err("block message id buf length is not 32");
+    }
+    // note that we do not verify whether domain is actually responsive and
+    // delivers this block. that would require pinging the domain name,
+    // which is done elsewhere.
+    return Ok(true);
   }
 }

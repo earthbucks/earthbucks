@@ -4,11 +4,6 @@ import { OP } from "../src/opcode.js";
 import { BufWriter } from "../src/buf-writer.js";
 import { SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
-import {
-  InvalidOpcodeError,
-  NonMinimalEncodingError,
-  NotEnoughDataError,
-} from "../src/error.js";
 
 describe("ScriptChunk", () => {
   let scriptChunk: ScriptChunk;
@@ -74,9 +69,7 @@ describe("ScriptChunk", () => {
     });
 
     test("should throw an error for invalid opcode", () => {
-      expect(() => ScriptChunk.fromString("INVALID_OPCODE")).toThrow(
-        InvalidOpcodeError,
-      );
+      expect(() => ScriptChunk.fromString("INVALID_OPCODE")).toThrow();
     });
   });
 
@@ -165,7 +158,7 @@ describe("ScriptChunk", () => {
     test("should throw error if length does not match expected length", () => {
       const buffer = SysBuf.alloc(100).fill(0);
       const arr = SysBuf.from([OP.PUSHDATA1, 200, ...buffer]);
-      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NotEnoughDataError);
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow();
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -175,7 +168,7 @@ describe("ScriptChunk", () => {
         .writeU16BE(new U16(200))
         .write(buffer)
         .toBuf();
-      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NonMinimalEncodingError);
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow();
     });
 
     test("should throw error if length does not match expected length", () => {
@@ -185,7 +178,7 @@ describe("ScriptChunk", () => {
         .writeU32BE(new U32(200))
         .write(buffer)
         .toBuf();
-      expect(() => ScriptChunk.fromBuf(arr)).toThrow(NonMinimalEncodingError);
+      expect(() => ScriptChunk.fromBuf(arr)).toThrow();
     });
   });
 

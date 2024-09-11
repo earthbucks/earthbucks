@@ -10,6 +10,7 @@ import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
 import { FixedBuf, SysBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { ScriptChunk } from "../src/script-chunk.js";
 
 describe("Tx", () => {
   describe("constructor", () => {
@@ -116,7 +117,11 @@ describe("Tx", () => {
         new TxIn(
           FixedBuf.alloc(32),
           new U32(0xffffffff),
-          new Script(),
+          new Script([
+            ScriptChunk.fromData(SysBuf.alloc(32)),
+            ScriptChunk.fromData(SysBuf.alloc(32)),
+            ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+          ]),
           new U32(0),
         ),
       ];
@@ -140,7 +145,11 @@ describe("Tx", () => {
     });
 
     test("fromMintTx -> isMintTx", () => {
-      const script = Script.fromString("1");
+      const script = new Script([
+        ScriptChunk.fromData(SysBuf.alloc(32)),
+        ScriptChunk.fromData(SysBuf.alloc(32)),
+        ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+      ]);
       const txInput = TxIn.fromMintTxScript(script);
       const tx = new Tx(new U8(0), [txInput], [], new U32(0));
       expect(tx.isMintTx()).toBe(true);

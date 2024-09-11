@@ -62,7 +62,7 @@ export class TxIn {
   }
 
   isMintTx(): boolean {
-    return this.isNull() && this.isMinimalLock() && this.script.isPushOnly();
+    return this.isNull() && this.isMinimalLock() && this.script.isMintTxInput();
   }
 
   static fromMintTxScript(script: Script): TxIn {
@@ -70,11 +70,24 @@ export class TxIn {
     return new TxIn(emptyId, new U32(0xffffffff), script, new U32(0));
   }
 
-  static fromMintTxData(blockMessageId: FixedBuf<32>, domain: string): TxIn {
+  static fromMintTxData(
+    blockMessageId: FixedBuf<32>,
+    domain: string,
+    nonce: FixedBuf<32> = FixedBuf.fromRandom(32),
+  ): TxIn {
     const script = Script.fromPushOnly([
+      nonce.buf,
       blockMessageId.buf,
       SysBuf.from(domain, "utf8"),
     ]);
     return TxIn.fromMintTxScript(script);
+  }
+
+  getMintTxData(): {
+    nonce: FixedBuf<32>;
+    blockMessageId: FixedBuf<32>;
+    domain: string;
+  } {
+    return this.script.getMintTxData();
   }
 }

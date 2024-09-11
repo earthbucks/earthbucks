@@ -8,7 +8,6 @@ import { Script } from "./script.js";
 import type { KeyPair } from "./key-pair.js";
 import type { U64 } from "./numbers.js";
 import { U32 } from "./numbers.js";
-import { GenericError } from "./error.js";
 import type { TxIn } from "./tx-in.js";
 import type { ScriptChunk } from "./script-chunk.js";
 
@@ -32,14 +31,14 @@ export class TxSigner {
 
   sign(nIn: U32): Tx {
     if (nIn.n >= this.tx.inputs.length) {
-      throw new GenericError("input index out of bounds");
+      throw new Error("input index out of bounds");
     }
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutMap.get(txOutHash, outputIndex);
     if (!txOutBn) {
-      throw new GenericError("tx_out not found");
+      throw new Error("tx_out not found");
     }
     const txOut = txOutBn.txOut;
     const prevBlockNum = txOutBn.blockNum;
@@ -48,11 +47,11 @@ export class TxSigner {
       const pkh_buf = txOut.script.chunks[2]?.buf as SysBuf;
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
-        throw new GenericError("expected pkh input placeholder");
+        throw new Error("expected pkh input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        throw new GenericError("key not found");
+        throw new Error("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toBuf();
 
@@ -81,14 +80,14 @@ export class TxSigner {
           // no need to sign expired pkhx
           return this.tx;
         }
-        throw new GenericError("expected expired pkhx input");
+        throw new Error("expected expired pkhx input");
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        throw new GenericError("expected unexpired pkhx input placeholder");
+        throw new Error("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        throw new GenericError("key not found");
+        throw new Error("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toBuf();
 
@@ -117,14 +116,14 @@ export class TxSigner {
           // no need to sign expired pkhx
           return this.tx;
         }
-        throw new GenericError("expected expired pkhx input");
+        throw new Error("expected expired pkhx input");
       }
       if (!inputScript.isUnexpiredPkhxInput()) {
-        throw new GenericError("expected unexpired pkhx input placeholder");
+        throw new Error("expected unexpired pkhx input placeholder");
       }
       const keyPair = this.pkhKeyMap.get(pkh_buf);
       if (!keyPair) {
-        throw new GenericError("key not found");
+        throw new Error("key not found");
       }
       const pubKeyBuf = keyPair.pubKey.toBuf();
 
@@ -154,7 +153,7 @@ export class TxSigner {
           // no need to sign expired pkhx
           return this.tx;
         }
-        throw new GenericError("expected expired pkhx input");
+        throw new Error("expected expired pkhx input");
       }
 
       let keyPair: KeyPair;
@@ -164,23 +163,23 @@ export class TxSigner {
           prevBlockNum,
         );
         if (!recoverable) {
-          throw new GenericError("expected recoverable pkhx input");
+          throw new Error("expected recoverable pkhx input");
         }
         const res = this.pkhKeyMap.get(rpkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          throw new GenericError("key not found");
+          throw new Error("key not found");
         }
       } else if (inputScript.isUnexpiredPkhxrInput()) {
         const res = this.pkhKeyMap.get(pkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          throw new GenericError("key not found");
+          throw new Error("key not found");
         }
       } else {
-        throw new GenericError("expected unexpired pkhx input placeholder");
+        throw new Error("expected unexpired pkhx input placeholder");
       }
 
       const pubKeyBuf = keyPair.pubKey.toBuf();
@@ -210,7 +209,7 @@ export class TxSigner {
           // no need to sign expired pkhx
           return this.tx;
         }
-        throw new GenericError("expected expired pkhx input");
+        throw new Error("expected expired pkhx input");
       }
 
       let keyPair: KeyPair;
@@ -220,23 +219,23 @@ export class TxSigner {
           prevBlockNum,
         );
         if (!recoverable) {
-          throw new GenericError("expected recoverable pkhx input");
+          throw new Error("expected recoverable pkhx input");
         }
         const res = this.pkhKeyMap.get(rpkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          throw new GenericError("key not found");
+          throw new Error("key not found");
         }
       } else if (inputScript.isUnexpiredPkhxrInput()) {
         const res = this.pkhKeyMap.get(pkh_buf);
         if (res) {
           keyPair = res;
         } else {
-          throw new GenericError("key not found");
+          throw new Error("key not found");
         }
       } else {
-        throw new GenericError("expected unexpired pkhx input placeholder");
+        throw new Error("expected unexpired pkhx input placeholder");
       }
 
       const pubKeyBuf = keyPair.pubKey.toBuf();
@@ -254,7 +253,7 @@ export class TxSigner {
       (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
       (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
     } else {
-      throw new GenericError("unsupported script type");
+      throw new Error("unsupported script type");
     }
 
     return this.tx;

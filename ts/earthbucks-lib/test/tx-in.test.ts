@@ -4,6 +4,7 @@ import { Script } from "../src/script.js";
 import { BufReader } from "../src/buf-reader.js";
 import { SysBuf, FixedBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { ScriptChunk } from "../src/script-chunk.js";
 
 describe("TxInput", () => {
   test("should create a TxInput", () => {
@@ -121,7 +122,11 @@ describe("TxInput", () => {
   test("isMintTx", () => {
     const inputTxHash = FixedBuf.alloc(32);
     const inputTxIndex = new U32(0);
-    const script = Script.fromString("0x121212");
+    const script = new Script([
+      ScriptChunk.fromData(SysBuf.alloc(32)),
+      ScriptChunk.fromData(SysBuf.alloc(32)),
+      ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+    ]);
     const lockRel = new U32(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
@@ -130,7 +135,11 @@ describe("TxInput", () => {
     const mintTxInput = new TxIn(
       FixedBuf.alloc(32),
       new U32(0xffffffff),
-      new Script(),
+      new Script([
+        ScriptChunk.fromData(SysBuf.alloc(32)),
+        ScriptChunk.fromData(SysBuf.alloc(32)),
+        ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+      ]),
       new U32(0),
     );
     expect(mintTxInput.isMintTx()).toBe(true);

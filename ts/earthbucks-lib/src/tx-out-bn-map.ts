@@ -1,7 +1,6 @@
 import { TxOutBn } from "./tx-out-bn.js";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
-import { GenericError } from "./error.js";
 import type { Tx } from "./tx.js";
 
 export class TxOutBnMap {
@@ -32,7 +31,7 @@ export class TxOutBnMap {
   static nameToOutputIndex(name: string): U32 {
     const outputIndexHex = name.split(":")[1];
     if (!outputIndexHex) {
-      throw new GenericError("Invalid output index");
+      throw new Error("Invalid output index");
     }
     return U32.fromBEBuf(SysBuf.from(outputIndexHex, "hex"));
   }

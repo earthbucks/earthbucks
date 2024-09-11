@@ -3,7 +3,6 @@ import { BufWriter } from "./buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
 import type { SysBuf } from "./buf.js";
-import { EbxError } from "./error.js";
 import { U32 } from "./numbers.js";
 import type { U64 } from "./numbers.js";
 
