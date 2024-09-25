@@ -32,11 +32,11 @@
     "@trpc/server": "^10.45.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.3",
+    "@biomejs/biome": "^1.9.0",
     "fastify": "^4.28.1",
     "globals": "^15.9.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.2",
-    "vitest": "^2.0.5"
+    "vitest": "^2.1.0"
   }
 }

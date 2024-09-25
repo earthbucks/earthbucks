@@ -60,7 +60,7 @@ export async function MineWorkPack(
       (await blake3Async((await blake3Async(workingBlockId.buf)).buf)).buf,
     );
 
-    const idNum = workingHeader.idU256();
+    const idNum = workingHeader.idNum();
     if (idNum.bn < shareTargetNum.bn) {
       const id = workingHeader.id();
       console.log(id.buf.toString("hex"));

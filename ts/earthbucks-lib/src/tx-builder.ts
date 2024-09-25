@@ -13,8 +13,12 @@ export class TxBuilder {
   public inputAmount: U64;
   public lockAbs: U32;
 
-  constructor(inputTxOutMap: TxOutBnMap, changeScript: Script, lockAbs: U32) {
-    this.tx = new Tx(new U8(0), [], [], new U32(0));
+  constructor(
+    inputTxOutMap: TxOutBnMap,
+    changeScript: Script,
+    lockAbs: U32 = new U32(0),
+  ) {
+    this.tx = new Tx(new U8(0), [], [], lockAbs);
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
     this.inputAmount = new U64(0);
@@ -48,24 +52,19 @@ export class TxBuilder {
     // this logic means we use the "most confirmed" outputs first, which is
     // what we want, and then we have a deterministic way to sort the UTXOs
     // in the same block.
-    const sortedTxOutBns = Array.from(this.inputTxOutBnMap.map.entries()).sort(
-      ([aId, aBn], [bId, bBn]) => {
-        const blockNumCmp =
-          aBn.blockNum < bBn.blockNum
-            ? -1
-            : aBn.blockNum > bBn.blockNum
-              ? 1
-              : 0;
-        if (blockNumCmp !== 0) {
-          return blockNumCmp;
-        }
-        return aId < bId ? -1 : aId > bId ? 1 : 0;
-      },
-    );
+    const sortedInputTxOutBns = Array.from(
+      this.inputTxOutBnMap.map.entries(),
+    ).sort(([aId, aBn], [bId, bBn]) => {
+      const blockNumCmp =
+        aBn.blockNum < bBn.blockNum ? -1 : aBn.blockNum > bBn.blockNum ? 1 : 0;
+      if (blockNumCmp !== 0) {
+        return blockNumCmp;
+      }
+      return aId < bId ? -1 : aId > bId ? 1 : 0;
+    });
 
-    for (const [txOutId, txOutBn] of sortedTxOutBns) {
+    for (const [txOutId, txOutBn] of sortedInputTxOutBns) {
       if (inputAmount.bn >= totalSpendAmount.bn) {
-        changeAmount = inputAmount.sub(totalSpendAmount);
         break;
       }
       const txId = TxOutBnMap.nameToTxId(txOutId);
@@ -94,11 +93,12 @@ export class TxBuilder {
       inputAmount = inputAmount.add(outputAmount);
       this.tx.inputs.push(txInput);
     }
-    this.inputAmount = inputAmount;
-    if (changeAmount.bn > BigInt(0)) {
+    if (inputAmount.bn > totalSpendAmount.bn) {
+      changeAmount = inputAmount.sub(totalSpendAmount);
       const txOut = new TxOut(changeAmount, this.changeScript);
       this.addOutput(txOut);
     }
+    this.inputAmount = inputAmount;
     return this.tx;
   }
 }

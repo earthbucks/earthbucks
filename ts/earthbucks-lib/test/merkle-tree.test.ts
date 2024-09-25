@@ -1,14 +1,15 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
-import { MerkleNode } from "../src/merkle-node.js";
+import { MerkleTree } from "../src/merkle-tree.js";
 import { Hash } from "../src/hash.js";
 import { SysBuf } from "../src/buf.js";
-import type { FixedBuf } from "../src/buf.js";
+import { FixedBuf } from "../src/buf.js";
+import { MerkleProof } from "../src/merkle-proof.js";
 
-describe("MerkleNode", () => {
+describe("MerkleTree", () => {
   describe("fromBufs", () => {
     test("fromBufs with 0 data", () => {
       const data: FixedBuf<32>[] = [];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       expect(root.hash).toBe(null);
     });
 
@@ -16,7 +17,7 @@ describe("MerkleNode", () => {
       const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
 
       const data = [data1];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
         "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244",
@@ -32,7 +33,7 @@ describe("MerkleNode", () => {
       const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
       const data = [data1, data2];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
         "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde",
@@ -49,7 +50,7 @@ describe("MerkleNode", () => {
       const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
 
       const data = [data1, data2, data3];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -68,7 +69,7 @@ describe("MerkleNode", () => {
       const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
 
       const data = [data1, data2, data3];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -91,7 +92,7 @@ describe("MerkleNode", () => {
       const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
 
       const data = [data1, data2, data3, data4];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -112,7 +113,7 @@ describe("MerkleNode", () => {
       const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
 
       const data = [data1, data2, data3, data4, data5];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -134,7 +135,7 @@ describe("MerkleNode", () => {
       const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data5, data6];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -157,7 +158,7 @@ describe("MerkleNode", () => {
       const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -181,7 +182,7 @@ describe("MerkleNode", () => {
       const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data8];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -216,7 +217,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const hex = root.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -236,7 +237,7 @@ describe("MerkleNode", () => {
       const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
       const data = [data1, data2];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
 
       const node = root.doubleWithNulls();
       expect(node.countAllLeaves()).toBe(4);
@@ -246,7 +247,7 @@ describe("MerkleNode", () => {
   describe("updateBalancedLeafHash", () => {
     test("updateBalancedLeafHash with 0 data", () => {
       const data: FixedBuf<32>[] = [];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(
         0,
         Hash.doubleBlake3Hash(SysBuf.from("data1")),
@@ -261,7 +262,7 @@ describe("MerkleNode", () => {
       const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
 
       const data = [data1];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(0, data2);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -279,7 +280,7 @@ describe("MerkleNode", () => {
       const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
 
       const data = [data1, data2];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(1, data3);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -297,7 +298,7 @@ describe("MerkleNode", () => {
       const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
 
       const data = [data1, data3];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(1, data2);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -316,7 +317,7 @@ describe("MerkleNode", () => {
       const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
 
       const data = [data1, data2, data3];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(2, data4);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -336,7 +337,7 @@ describe("MerkleNode", () => {
       const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
 
       const data = [data1, data2, data4];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(2, data3);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -357,7 +358,7 @@ describe("MerkleNode", () => {
       const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
 
       const data = [data1, data2, data3, data4];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(3, data5);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -378,7 +379,7 @@ describe("MerkleNode", () => {
       const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
 
       const data = [data1, data2, data3, data5];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(3, data4);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -400,7 +401,7 @@ describe("MerkleNode", () => {
       const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data5];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(4, data6);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -422,7 +423,7 @@ describe("MerkleNode", () => {
       const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data6];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(4, data5);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -445,7 +446,7 @@ describe("MerkleNode", () => {
       const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data6];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(5, data7);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -468,7 +469,7 @@ describe("MerkleNode", () => {
       const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data7];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(5, data6);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -492,7 +493,7 @@ describe("MerkleNode", () => {
       const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(6, data8);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -516,7 +517,7 @@ describe("MerkleNode", () => {
       const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data8];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(6, data7);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -541,7 +542,7 @@ describe("MerkleNode", () => {
       const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data8];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(7, data9);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -566,7 +567,7 @@ describe("MerkleNode", () => {
       const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data9];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(7, data8);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -602,7 +603,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(8, data10);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -638,7 +639,7 @@ describe("MerkleNode", () => {
         data8,
         data10,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(8, data9);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -674,7 +675,7 @@ describe("MerkleNode", () => {
         data10,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(7, data8);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -710,7 +711,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(6, data7);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -746,7 +747,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(5, data6);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -782,7 +783,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(4, data5);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -818,7 +819,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(3, data4);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -854,7 +855,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(2, data3);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -890,7 +891,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(1, data2);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -926,7 +927,7 @@ describe("MerkleNode", () => {
         data8,
         data9,
       ];
-      const root = MerkleNode.fromLeafHashes(data);
+      const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(0, data1);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -943,7 +944,7 @@ describe("MerkleNode", () => {
   describe("addLeafHash", () => {
     test("addLeafHash with 1 total", () => {
       const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const root = MerkleNode.fromLeafHashes([]);
+      const root = MerkleTree.fromLeafHashes([]);
       const updated = root.addLeafHash(data1);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -958,7 +959,7 @@ describe("MerkleNode", () => {
     test("addLeafHash with 2 total", () => {
       const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
       const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const root = MerkleNode.fromLeafHashes([data1]);
+      const root = MerkleTree.fromLeafHashes([data1]);
       const updated = root.addLeafHash(data2);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -974,7 +975,7 @@ describe("MerkleNode", () => {
       const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
       const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
       const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const root = MerkleNode.fromLeafHashes([data1, data2]);
+      const root = MerkleTree.fromLeafHashes([data1, data2]);
       const updated = root.addLeafHash(data3);
       const hex = updated.computeHash()?.buf.toString("hex");
       expect(hex).toBe(
@@ -992,7 +993,7 @@ describe("MerkleNode", () => {
         Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
       );
       const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
-      const root = MerkleNode.fromLeafHashes(datas);
+      const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 1000 total");
       console.time("add 1");
       const updated = root.addLeafHash(dataN);
@@ -1014,7 +1015,7 @@ describe("MerkleNode", () => {
         Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
       );
       const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
-      const root = MerkleNode.fromLeafHashes(datas);
+      const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 10000 total");
       console.time("add 1");
       const updated = root.addLeafHash(dataN);
@@ -1036,7 +1037,7 @@ describe("MerkleNode", () => {
         Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
       );
       const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
-      const root = MerkleNode.fromLeafHashes(datas);
+      const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 100000 total");
       console.time("add 1");
       const updated = root.addLeafHash(dataN);
@@ -1050,6 +1051,724 @@ describe("MerkleNode", () => {
       expect(updated.countAllLeaves()).toBe(131072);
       expect(updated.leftHeight()).toBe(18);
       expect(updated.isNullBalanced()).toBe(true);
+    });
+  });
+
+  describe("merkle proofs", () => {
+    test("get proof with 1 total", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const root = MerkleTree.fromLeafHashes([data1]);
+      const proof = root.getProof(0);
+      expect(proof).toEqual([]);
+    });
+
+    test("get proof with 2 total", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const root = MerkleTree.fromLeafHashes([data1, data2]);
+      const proof = root.getMerkleProof(0);
+      expect(proof.toHex()).toEqual(
+        "fdc77b5c255818023a45501e5a5ce7f2e0ea275546cad26df121d4b8f17d8cde01d5984dbb2273f9cbb7467a1d6c9c2aa2a4641ffda555085cd707c988725e134801",
+      );
+    });
+
+    test("get proof and verify (1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const root = MerkleTree.fromLeafHashes([data1]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const root = MerkleTree.fromLeafHashes([data1, data2]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (3,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (3,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (3,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (4,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (4,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (4,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (4,4)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
+      const proof = root.getProof(3);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data4);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (5,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+      ]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (5,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+      ]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (5,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+      ]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (5,4)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+      ]);
+      const proof = root.getProof(3);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data4);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (5,5)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+      ]);
+      const proof = root.getProof(4);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data5);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,4)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(3);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data4);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,5)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(4);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data5);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (6,6)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+      ]);
+      const proof = root.getProof(5);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data6);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,4)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(3);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data4);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,5)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(4);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data5);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,6)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(5);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data6);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (7,7)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+      ]);
+      const proof = root.getProof(6);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data7);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,3)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(2);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data3);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,4)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(3);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data4);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,5)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(4);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data5);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,6)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(5);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data6);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,7)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(6);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data7);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (8,8)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+      ]);
+      const proof = root.getProof(7);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data8);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (9,1)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+        data9,
+      ]);
+      const proof = root.getProof(0);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data1);
+      expect(verified).toBe(true);
+    });
+
+    test("get proof and verify (9,2)", () => {
+      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const root = MerkleTree.fromLeafHashes([
+        data1,
+        data2,
+        data3,
+        data4,
+        data5,
+        data6,
+        data7,
+        data8,
+        data9,
+      ]);
+      const proof = root.getProof(1);
+      const verified = MerkleTree.verifyProof(root.hash, proof, data2);
+      expect(verified).toBe(true);
     });
   });
 });

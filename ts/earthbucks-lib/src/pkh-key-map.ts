@@ -1,5 +1,6 @@
 import type { KeyPair } from "./key-pair.js";
 import type { SysBuf } from "./buf.js";
+import { Pkh } from "./pkh.js";
 
 export class PkhKeyMap {
   public map: Map<string, KeyPair>;
@@ -8,18 +9,18 @@ export class PkhKeyMap {
     this.map = new Map<string, KeyPair>();
   }
 
-  add(key: KeyPair, pkhBuf: SysBuf) {
-    const pkhHex = pkhBuf.toString("hex");
+  add(key: KeyPair, pkh: Pkh) {
+    const pkhHex = pkh.toHex();
     this.map.set(pkhHex, key);
   }
 
-  remove(pkhEbxBuf: SysBuf) {
-    const pkhHex = pkhEbxBuf.toString("hex");
+  remove(pkh: Pkh) {
+    const pkhHex = pkh.toHex();
     this.map.delete(pkhHex);
   }
 
-  get(pkhEbxBuf: SysBuf): KeyPair | undefined {
-    const pkhHex = pkhEbxBuf.toString("hex");
+  get(pkh: Pkh): KeyPair | undefined {
+    const pkhHex = pkh.toHex();
     return this.map.get(pkhHex);
   }
 

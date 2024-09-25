@@ -28,7 +28,7 @@ describe("TxSigner", () => {
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-      pkhKeyMap.add(key, pkh.buf.buf);
+      pkhKeyMap.add(key, pkh);
       const script = Script.fromPkhOutput(pkh);
       const txOut = new TxOut(new U64(100), script);
       const txOutBn = new TxOutBn(txOut, new U32(0n));

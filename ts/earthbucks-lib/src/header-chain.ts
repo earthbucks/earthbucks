@@ -120,7 +120,7 @@ export class HeaderChain {
   }
 
   getNextHeaderAt(
-    rootMerkleNodeId: FixedBuf<32>,
+    rootMerkleTreeId: FixedBuf<32>,
     nTransactions: U64,
     timestamp: U64,
   ) {
@@ -132,16 +132,16 @@ export class HeaderChain {
     const header = Header.fromChain(
       prevHeader,
       prevPrevHeader,
-      rootMerkleNodeId,
+      rootMerkleTreeId,
       nTransactions,
       timestamp,
     );
     return header;
   }
 
-  getNextHeaderNow(rootMerkleNodeId: FixedBuf<32>, nTransactions: U64) {
+  getNextHeaderNow(rootMerkleTreeId: FixedBuf<32>, nTransactions: U64) {
     return this.getNextHeaderAt(
-      rootMerkleNodeId,
+      rootMerkleTreeId,
       nTransactions,
       Header.getNewTimestamp(),
     );

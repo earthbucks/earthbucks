@@ -26,7 +26,7 @@ describe("Header", () => {
     expect(bh1.prevBlockId.buf.toString("hex")).toEqual(
       bh2.prevBlockId.buf.toString("hex"),
     );
-    expect(bh1.rootMerkleNodeId).toEqual(bh2.rootMerkleNodeId);
+    expect(bh1.rootMerkleTreeId).toEqual(bh2.rootMerkleTreeId);
     expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
     expect(bh1.target).toEqual(bh2.target);
     expect(bh1.nonce).toEqual(bh2.nonce);
@@ -41,7 +41,7 @@ describe("Header", () => {
     expect(bh1.prevBlockId.buf.toString("hex")).toEqual(
       bh2.prevBlockId.buf.toString("hex"),
     );
-    expect(bh1.rootMerkleNodeId).toEqual(bh2.rootMerkleNodeId);
+    expect(bh1.rootMerkleTreeId).toEqual(bh2.rootMerkleTreeId);
     expect(bh1.timestamp.bn).toEqual(bh2.timestamp.bn);
     expect(bh1.target).toEqual(bh2.target);
     expect(bh1.nonce).toEqual(bh2.nonce);

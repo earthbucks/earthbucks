@@ -18,28 +18,28 @@ describe("PkhKeyMap", () => {
   });
 
   test("add", () => {
-    pkhKeyMap.add(key, pkhBuf);
+    pkhKeyMap.add(key, pkh);
     expect(
-      SysBuf.from(pkhKeyMap.get(pkhBuf)?.privKey.toBuf().buf || "").toString(
+      SysBuf.from(pkhKeyMap.get(pkh)?.privKey.toBuf().buf || "").toString(
         "hex",
       ),
     ).toEqual(SysBuf.from(key.privKey.toBuf().buf).toString("hex"));
   });
 
   test("remove", () => {
-    pkhKeyMap.add(key, pkhBuf);
-    pkhKeyMap.remove(pkhBuf);
+    pkhKeyMap.add(key, pkh);
+    pkhKeyMap.remove(pkh);
     expect(
-      SysBuf.from(pkhKeyMap.get(pkhBuf)?.privKey.toBuf().buf || "").toString(
+      SysBuf.from(pkhKeyMap.get(pkh)?.privKey.toBuf().buf || "").toString(
         "hex",
       ),
     ).toEqual("");
   });
 
   test("get", () => {
-    pkhKeyMap.add(key, pkhBuf);
+    pkhKeyMap.add(key, pkh);
     expect(
-      SysBuf.from(pkhKeyMap.get(pkhBuf)?.privKey.toBuf().buf || "").toString(
+      SysBuf.from(pkhKeyMap.get(pkh)?.privKey.toBuf().buf || "").toString(
         "hex",
       ),
     ).toEqual(SysBuf.from(key.privKey.toBuf().buf).toString("hex"));
@@ -49,9 +49,8 @@ describe("PkhKeyMap", () => {
     const key1 = key;
     const key2 = KeyPair.fromRandom();
     const pkh2 = Pkh.fromPubKeyBuf(key2.pubKey.toBuf());
-    const pkhU8Vec2 = pkh2.buf;
-    pkhKeyMap.add(key1, pkhBuf);
-    pkhKeyMap.add(key2, pkhU8Vec2.buf);
+    pkhKeyMap.add(key1, pkh);
+    pkhKeyMap.add(key2, pkh2);
 
     const values = Array.from(pkhKeyMap.values());
 

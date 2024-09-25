@@ -5,6 +5,7 @@ import { ScriptInterpreter } from "./script-interpreter.js";
 import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import type { TxIn } from "./tx-in.js";
+import { Err, isErr, isOk, Ok, Result } from "./result.js";
 
 export class TxVerifier {
   public tx: Tx;
@@ -19,18 +20,20 @@ export class TxVerifier {
     this.blockNum = blockNum;
   }
 
-  verifyInputScript(nIn: U32): boolean {
+  verifyInputScript(nIn: U32): Result<void, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txOutHash, outputIndex);
     if (!txOutBn) {
-      return false;
+      return Err(
+        `Failed to find txOutBn for input script ${nIn.n}: ${txOutHash.toHex()} ${outputIndex.n}`,
+      );
     }
     const outputScript = txOutBn.txOut.script;
     const inputScript = txInput.script;
     if (!inputScript.isPushOnly()) {
-      return false;
+      return Err(`Input script ${nIn.n} is not push only`);
     }
     const stack = inputScript.chunks.map((chunk) => chunk.getData());
     const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
@@ -42,96 +45,137 @@ export class TxVerifier {
       this.hashCache,
     );
     const result = scriptInterpreter.evalScript();
-    return !!result.result;
+    if (!isOk(result)) {
+      return Err(`Failed to verify input script ${nIn.n}: ${result.error}`);
+    }
+    return Ok(undefined);
   }
 
-  verifyInputLockRel(nIn: U32): boolean {
+  verifyInputLockRel(nIn: U32): Result<void, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txId = txInput.inputTxId;
     const txOutNum = txInput.inputTxNOut;
     const txOutBn = this.txOutBnMap.get(txId, txOutNum);
     if (!txOutBn) {
-      return false;
+      return Err(
+        `Failed to find txOutBn for input lockRel ${nIn.n}: ${txId.toHex()} ${txOutNum.n}`,
+      );
     }
     const lockRel = txInput.lockRel;
     const prevBlockNum = txOutBn.blockNum;
-    return this.blockNum.bn >= prevBlockNum.bn + lockRel.bn;
+    const isValid = this.blockNum.bn >= prevBlockNum.bn + lockRel.bn;
+    if (!isValid) {
+      return Err(
+        `Input lockRel ${nIn.n} is invalid: ${lockRel.bn} ${prevBlockNum.bn} ${this.blockNum.bn}`,
+      );
+    }
+    return Ok(undefined);
   }
 
-  verifyInputs(): boolean {
+  verifyInputs(): Result<void, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      if (!this.verifyInputScript(new U32(i))) {
-        return false;
+      const scriptResult = this.verifyInputScript(new U32(i));
+      if (isErr(scriptResult)) {
+        return Err(`Failed to verify input script ${i}: ${scriptResult.error}`);
       }
-      if (!this.verifyInputLockRel(new U32(i))) {
-        return false;
+      const lockRelResult = this.verifyInputLockRel(new U32(i));
+      if (isErr(lockRelResult)) {
+        return Err(
+          `Failed to verify input lockRel ${i}: ${lockRelResult.error}`,
+        );
       }
     }
-    return true;
+    return Ok(undefined);
   }
 
-  verifyNoDoubleSpend(): boolean {
+  verifyNoDoubleSpend(): Result<void, string> {
     const spentOutputs = new Set();
-    for (const input of this.tx.inputs) {
+    for (let i = 0; i < this.tx.inputs.length; i++) {
+      const input = this.tx.inputs[i] as TxIn;
       const txOut = this.txOutBnMap.get(input.inputTxId, input.inputTxNOut);
       if (!txOut) {
-        return false;
+        return Err(
+          `Failed to find txOut for double spend verification for input ${i}: ${input.inputTxId.toHex()} ${input.inputTxNOut.n}`,
+        );
       }
       if (spentOutputs.has(txOut)) {
-        return false;
+        return Err(
+          `Double spend detected for input ${i}: ${input.inputTxId.toHex()} ${input.inputTxNOut.n}`,
+        );
       }
       spentOutputs.add(txOut);
     }
-    return true;
+    return Ok(undefined);
   }
 
-  verifyOutputValues(): boolean {
+  verifyOutputValues(): Result<void, string> {
     let totalOutputValue = new U64(0);
     let totalInputValue = new U64(0);
     for (const output of this.tx.outputs) {
       totalOutputValue = totalOutputValue.add(output.value);
     }
-    for (const input of this.tx.inputs) {
+    for (let i = 0; i < this.tx.inputs.length; i++) {
+      const input = this.tx.inputs[i] as TxIn;
       const txOutBn = this.txOutBnMap.get(input.inputTxId, input.inputTxNOut);
       if (!txOutBn) {
-        return false;
+        return Err(
+          `Failed to find txOutBn for output value verification for input ${i}: ${input.inputTxId.toHex()} ${input.inputTxNOut.n}`,
+        );
       }
       totalInputValue = totalInputValue.add(txOutBn.txOut.value);
     }
-    return totalOutputValue.bn === totalInputValue.bn;
-  }
-
-  verifyIsNotMintTx(): boolean {
-    // TODO: Allow mintTxs to have multiple inputs
-    if (this.tx.inputs.length === 1 && this.tx.inputs[0]?.isMintTx()) {
-      return false;
+    const isValid = totalOutputValue.bn === totalInputValue.bn;
+    if (!isValid) {
+      return Err(
+        `Output value ${totalOutputValue.bn} does not match input value ${totalInputValue.bn}`,
+      );
     }
-    return true;
+    return Ok(undefined);
   }
 
-  verifyLockAbs(): boolean {
+  verifyIsNotMintTx(): Result<void, string> {
+    if (this.tx.isMintTx()) {
+      return Err("Is mint transaction, but mint transaction not valid here");
+    }
+    return Ok(undefined);
+  }
+
+  verifyLockAbs(): Result<void, string> {
     if (this.tx.lockAbs > this.blockNum) {
-      return false;
+      return Err(
+        `Absolute lock time ${this.tx.lockAbs} is greater than block time ${this.blockNum}`,
+      );
     }
-    return true;
+    return Ok(undefined);
   }
 
-  verify(): boolean {
-    if (!this.verifyLockAbs()) {
-      return false;
+  verifyTx(): Result<void, string> {
+    const resVerifyLockAbs = this.verifyLockAbs();
+    if (isErr(resVerifyLockAbs)) {
+      return Err(`Failed to verify lockAbs: ${resVerifyLockAbs.error}`);
     }
-    if (!this.verifyIsNotMintTx()) {
-      return false;
+    const resVerifyIsNotMintTx = this.verifyIsNotMintTx();
+    if (isErr(resVerifyIsNotMintTx)) {
+      return Err(
+        `Failed to verify is not mint tx: ${resVerifyIsNotMintTx.error}`,
+      );
     }
-    if (!this.verifyNoDoubleSpend()) {
-      return false;
+    const resVerifyNoDoubleSpend = this.verifyNoDoubleSpend();
+    if (isErr(resVerifyNoDoubleSpend)) {
+      return Err(
+        `Failed to verify no double spend: ${resVerifyNoDoubleSpend.error}`,
+      );
     }
-    if (!this.verifyInputs()) {
-      return false;
+    const resVerifyInputs = this.verifyInputs();
+    if (isErr(resVerifyInputs)) {
+      return Err(`Failed to verify inputs: ${resVerifyInputs.error}`);
     }
-    if (!this.verifyOutputValues()) {
-      return false;
+    const resVerifyOutputValues = this.verifyOutputValues();
+    if (isErr(resVerifyOutputValues)) {
+      return Err(
+        `Failed to verify output values: ${resVerifyOutputValues.error}`,
+      );
     }
-    return true;
+    return Ok(undefined);
   }
 }

@@ -8,6 +8,25 @@ import { PubKey } from "./pub-key.js";
 import { U8, U16, U32 } from "./numbers.js";
 import { Pkh } from "./pkh.js";
 
+export type ScriptTemplateType =
+  | "mint-input"
+  | "pkh-output"
+  | "pkh-input"
+  | "pkhx90d-output"
+  | "pkhx90d-unexpired-input"
+  | "pkhx90d-expired-input"
+  | "pkhx1h-output"
+  | "pkhx1h-unexpired-input"
+  | "pkhx1h-expired-input"
+  | "pkhxr90d60d-output"
+  | "pkhxr90d60d-unexpired-input"
+  | "pkhxr90d60d-recovery-input"
+  | "pkhxr90d60d-expired-input"
+  | "pkhxr1h40m-output"
+  | "pkhxr1h40m-unexpired-input"
+  | "pkhxr1h40m-recovery-input"
+  | "pkhxr1h40m-expired-input";
+
 export class Script {
   chunks: ScriptChunk[] = [];
 
@@ -122,12 +141,12 @@ export class Script {
   // 13104 blocks = 2016 blocks / 14 * 90
   static readonly PKHX_90D_LOCK_REL: U32 = new U32(12960);
 
-  static fromPkhx90dOutput(pkh: SysBuf): Script {
+  static fromPkhx90dOutput(pkh: Pkh): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
+      ScriptChunk.fromData(pkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -172,12 +191,12 @@ export class Script {
   static readonly PKHXR_90D_60D_X_LOCK_REL: U32 = new U32(12960);
   static readonly PKHXR_90D_60D_R_LOCK_REL: U32 = new U32(8640);
 
-  static fromPkhxr90d60dOutput(pkh: SysBuf, rpkh: SysBuf): Script {
+  static fromPkhxr90d60dOutput(pkh: Pkh, rpkh: Pkh): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
+      ScriptChunk.fromData(pkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -189,7 +208,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_DROP),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(rpkh),
+      ScriptChunk.fromData(rpkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -260,12 +279,12 @@ export class Script {
   // 6 blocks = 1 hour for 10 min blocks
   static readonly PKHX_1H_LOCK_REL: U32 = new U32(6);
 
-  static fromPkhx1hOutput(pkh: SysBuf): Script {
+  static fromPkhx1hOutput(pkh: Pkh): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
+      ScriptChunk.fromData(pkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -306,12 +325,12 @@ export class Script {
   static readonly PKHXR_1H_40M_X_LOCK_REL: U32 = new U32(6);
   static readonly PKHXR_1H_40M_R_LOCK_REL: U32 = new U32(4);
 
-  static fromPkhxr1h40mOutput(pkh: SysBuf, rpkh: SysBuf): Script {
+  static fromPkhxr1h40mOutput(pkh: Pkh, rpkh: Pkh): Script {
     return new Script([
       new ScriptChunk(Opcode.OP_IF),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(pkh),
+      ScriptChunk.fromData(pkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -321,7 +340,7 @@ export class Script {
       new ScriptChunk(Opcode.OP_DROP),
       new ScriptChunk(Opcode.OP_DUP),
       new ScriptChunk(Opcode.OP_DOUBLEBLAKE3),
-      ScriptChunk.fromData(rpkh),
+      ScriptChunk.fromData(rpkh.toBuf().buf),
       new ScriptChunk(Opcode.OP_EQUALVERIFY),
       new ScriptChunk(Opcode.OP_CHECKSIG),
       new ScriptChunk(Opcode.OP_ELSE),
@@ -545,6 +564,22 @@ export class Script {
         pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[2]?.buf as SysBuf)),
         rpkh: null,
       };
+    }
+    throw new Error("Invalid Script");
+  }
+
+  getOutputTemplateType(): ScriptTemplateType {
+    if (this.isPkhx90dOutput()) {
+      return "pkhx90d-output";
+    }
+    if (this.isPkhx1hOutput()) {
+      return "pkhx1h-output";
+    }
+    if (this.isPkhxr90d60dOutput()) {
+      return "pkhxr90d60d-output";
+    }
+    if (this.isPkhxr1h40mOutput()) {
+      return "pkhxr1h40m-output";
     }
     throw new Error("Invalid Script");
   }

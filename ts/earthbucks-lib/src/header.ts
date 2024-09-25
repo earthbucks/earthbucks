@@ -15,7 +15,7 @@ import { Err, Ok, Result } from "./result.js";
 interface HeaderInterface {
   version: U8;
   prevBlockId: FixedBuf<32>;
-  rootMerkleNodeId: FixedBuf<32>;
+  rootMerkleTreeId: FixedBuf<32>;
   nTransactions: U64;
   timestamp: U64;
   blockNum: U32;
@@ -30,7 +30,7 @@ interface HeaderInterface {
 export class Header implements HeaderInterface {
   version: U8;
   prevBlockId: FixedBuf<32>;
-  rootMerkleNodeId: FixedBuf<32>;
+  rootMerkleTreeId: FixedBuf<32>;
   nTransactions: U64;
   timestamp: U64; // milliseconds
   blockNum: U32;
@@ -55,7 +55,7 @@ export class Header implements HeaderInterface {
   constructor({
     version = new U8(0),
     prevBlockId = FixedBuf.alloc(32),
-    rootMerkleNodeId = FixedBuf.alloc(32),
+    rootMerkleTreeId = FixedBuf.alloc(32),
     nTransactions = new U64(0),
     timestamp = new U64(0),
     blockNum = new U32(0),
@@ -68,7 +68,7 @@ export class Header implements HeaderInterface {
   }: Partial<HeaderInterface> = {}) {
     this.version = version;
     this.prevBlockId = prevBlockId;
-    this.rootMerkleNodeId = rootMerkleNodeId;
+    this.rootMerkleTreeId = rootMerkleTreeId;
     this.nTransactions = nTransactions;
     this.timestamp = timestamp;
     this.blockNum = blockNum;
@@ -104,7 +104,7 @@ export class Header implements HeaderInterface {
     return new Header({
       version,
       prevBlockId,
-      rootMerkleNodeId: merkleRoot,
+      rootMerkleTreeId: merkleRoot,
       nTransactions,
       timestamp,
       blockNum,
@@ -120,7 +120,7 @@ export class Header implements HeaderInterface {
   toBufWriter(bw: BufWriter): BufWriter {
     bw.writeU8(this.version);
     bw.write(this.prevBlockId.buf);
-    bw.write(this.rootMerkleNodeId.buf);
+    bw.write(this.rootMerkleTreeId.buf);
     bw.writeU64BE(this.nTransactions);
     bw.writeU64BE(this.timestamp);
     bw.writeU32BE(this.blockNum);
@@ -268,7 +268,7 @@ export class Header implements HeaderInterface {
 
   isGenesis(): boolean {
     return (
-      this.idU256().bn < Header.GENESIS_TARGET.bn &&
+      this.idNum().bn < Header.GENESIS_TARGET.bn &&
       this.target.bn === Header.GENESIS_TARGET.bn &&
       this.blockNum.bn === 0n &&
       this.prevBlockId.buf.every((byte) => byte === 0) &&
@@ -286,7 +286,8 @@ export class Header implements HeaderInterface {
     return new Header({
       version: new U8(0),
       prevBlockId: FixedBuf.alloc(32),
-      rootMerkleNodeId: merkleRoot,
+      rootMerkleTreeId: merkleRoot,
+      nTransactions: new U64(1), // genesis block has 1 transaction
       timestamp,
       blockNum: new U32(0n),
       target: initialTarget,
@@ -299,7 +300,7 @@ export class Header implements HeaderInterface {
   }
 
   isEmpty(): boolean {
-    return this.rootMerkleNodeId.buf.every((byte) => byte === 0);
+    return this.rootMerkleTreeId.buf.every((byte) => byte === 0);
   }
 
   hash(): FixedBuf<32> {
@@ -310,7 +311,7 @@ export class Header implements HeaderInterface {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
-  idU256(): U256 {
+  idNum(): U256 {
     return U256.fromBEBuf(this.id().buf);
   }
 
@@ -341,7 +342,7 @@ export class Header implements HeaderInterface {
     return new Header({
       version: new U8(0),
       prevBlockId,
-      rootMerkleNodeId: merkleRoot,
+      rootMerkleTreeId: merkleRoot,
       nTransactions,
       timestamp,
       blockNum,
@@ -460,7 +461,7 @@ export class Header implements HeaderInterface {
     return new Header({
       ...this,
       nTransactions,
-      rootMerkleNodeId: merkleRoot,
+      rootMerkleTreeId: merkleRoot,
       timestamp: timestamp || this.timestamp,
     });
   }

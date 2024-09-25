@@ -17,7 +17,7 @@ describe("BlockBuilder", () => {
     const bb = BlockBuilder.fromBlock(block);
     expect(bb.header.version).toBe(bh.version);
     expect(bb.header.prevBlockId).toEqual(bh.prevBlockId);
-    expect(bb.header.rootMerkleNodeId).toEqual(bh.rootMerkleNodeId);
+    expect(bb.header.rootMerkleTreeId).toEqual(bh.rootMerkleTreeId);
     expect(bb.header.timestamp).toBe(bh.timestamp);
     expect(bb.header.target).toEqual(bh.target);
   });
@@ -29,8 +29,8 @@ describe("BlockBuilder", () => {
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version.n).toEqual(0);
     expect(bb.header.prevBlockId).toEqual(FixedBuf.alloc(32));
-    expect(bb.header.rootMerkleNodeId.toHex()).toEqual(
-      bb.rootMerkleNode.hash?.toHex(),
+    expect(bb.header.rootMerkleTreeId.toHex()).toEqual(
+      bb.rootMerkleTree.hash?.toHex(),
     );
     expect(bb.header.timestamp.n).toBeLessThanOrEqual(new Date().getTime());
     expect(bb.header.target).toEqual(target);
@@ -46,7 +46,7 @@ describe("BlockBuilder", () => {
     expect(block2.header.prevBlockId.buf.toString("hex")).toEqual(
       bh.prevBlockId.buf.toString("hex"),
     );
-    expect(block2.header.rootMerkleNodeId).toEqual(bh.rootMerkleNodeId);
+    expect(block2.header.rootMerkleTreeId).toEqual(bh.rootMerkleTreeId);
     expect(bb.header.timestamp.bn).toEqual(0n);
     expect(block2.header.target).toEqual(bh.target);
   });

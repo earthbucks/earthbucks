@@ -22,7 +22,7 @@ describe("TxBuilder", () => {
     for (let i = 0; i < 5; i++) {
       const key = KeyPair.fromRandom();
       const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
-      pkhKeyMap.add(key, pkh.buf.buf);
+      pkhKeyMap.add(key, pkh);
       const script = Script.fromPkhOutput(pkh);
       const txOut = new TxOut(new U64(100), script);
       const txOutBn = new TxOutBn(txOut, new U32(0n));
@@ -45,6 +45,21 @@ describe("TxBuilder", () => {
     expect(tx.inputs.length).toBe(1);
     expect(tx.outputs.length).toBe(2);
     expect(tx.outputs[0]?.value.bn).toEqual(BigInt(50));
+  });
+
+  test("should build a valid tx when all inputs are enough to cover the output", () => {
+    const key = KeyPair.fromRandom();
+    const pkh = Pkh.fromPubKeyBuf(key.pubKey.toBuf());
+    const script = Script.fromPkhOutput(pkh);
+    const output = new TxOut(new U64(100 * 5 - 1), script);
+    txBuilder.addOutput(output);
+
+    const tx = txBuilder.build();
+
+    expect(tx.inputs.length).toBe(5);
+    expect(tx.outputs.length).toBe(2);
+    expect(tx.outputs[0]?.value.bn).toEqual(BigInt(100 * 5 - 1));
+    expect(tx.outputs[1]?.value.bn).toEqual(BigInt(1));
   });
 
   test("should build an invalid tx when input is insufficient to cover the output", () => {

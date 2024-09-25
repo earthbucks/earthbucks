@@ -9,23 +9,23 @@ import { U8 } from "./numbers.js";
 import type { U16, U128, U256 } from "./numbers.js";
 import { U32 } from "./numbers.js";
 import type { U64 } from "./numbers.js";
-import { MerkleNode } from "./merkle-node.js";
+import { MerkleTree } from "./merkle-tree.js";
 
 export class BlockBuilder {
   public header: Header;
   public txs: Tx[];
-  public rootMerkleNode: MerkleNode;
+  public rootMerkleTree: MerkleTree;
 
-  constructor(header: Header, txs: Tx[], rootMerkleNode: MerkleNode) {
+  constructor(header: Header, txs: Tx[], rootMerkleTree: MerkleTree) {
     this.header = header;
     this.txs = txs;
-    this.rootMerkleNode = rootMerkleNode;
+    this.rootMerkleTree = rootMerkleTree;
   }
 
   static fromBlock(block: Block): BlockBuilder {
     const header = block.header;
     const txs = block.txs;
-    const merkleRoot = MerkleNode.fromLeafHashes(txs.map((tx) => tx.id()));
+    const merkleRoot = MerkleTree.fromLeafHashes(txs.map((tx) => tx.id()));
     return new BlockBuilder(header, txs, merkleRoot);
   }
 
@@ -38,7 +38,7 @@ export class BlockBuilder {
     const txOutput = new TxOut(outputAmount, outputScript);
     const mintTx = new Tx(new U8(0), [txInput], [txOutput], new U32(0n));
     const txs = [mintTx];
-    const merkleRoot = MerkleNode.fromLeafHashes(txs.map((tx) => tx.id()));
+    const merkleRoot = MerkleTree.fromLeafHashes(txs.map((tx) => tx.id()));
     const merkleRootId: FixedBuf<32> = merkleRoot.hash as FixedBuf<32>;
     const header = Header.fromGenesis(merkleRootId, initialTarget);
     return new BlockBuilder(header, txs, merkleRoot);
@@ -50,7 +50,7 @@ export class BlockBuilder {
 
   addTx(tx: Tx): BlockBuilder {
     const txs = [...this.txs, tx];
-    const merkleRoot = this.rootMerkleNode.addLeafHash(tx.id());
+    const merkleRoot = this.rootMerkleTree.addLeafHash(tx.id());
     const merkleRootId = merkleRoot.hash as FixedBuf<32>;
     const header = this.header.addTx(merkleRootId);
     return new BlockBuilder(header, txs, merkleRoot);

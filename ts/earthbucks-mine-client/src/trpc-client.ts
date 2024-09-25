@@ -110,12 +110,13 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         count: number,
         duration: number,
       ) => {
-        await trpcClient.miningButton.postWorkPack.mutate({
+        const res = await trpcClient.miningButton.postWorkPack.mutate({
           shareId,
           workPack: workPack.toHex(),
           count,
           duration,
         });
+        return res;
       },
     },
     userAvatar: {

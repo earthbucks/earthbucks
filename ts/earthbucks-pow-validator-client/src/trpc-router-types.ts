@@ -1,4 +1,4 @@
-import { Header, WorkPack } from "@earthbucks/lib";
+import { Header, Result, WorkPack } from "@earthbucks/lib";
 export declare const appRouter: import("@trpc/server").CreateRouterInner<
   import("@trpc/server").RootConfig<{
     ctx: {
@@ -271,14 +271,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<
             _output_in: typeof import("@trpc/server").unsetMarker;
             _output_out: typeof import("@trpc/server").unsetMarker;
           },
-          | {
-              result: null;
-              error: string;
-            }
-          | {
-              result: boolean;
-              error: null;
-            }
+          Result<true>
         >;
       }
     >;
