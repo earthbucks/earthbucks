@@ -527,23 +527,19 @@ export class Script {
     return { nonce, blockMessageId, domain };
   }
 
+  isExpiredInput(): boolean {
+    return this.isExpiredPkhxInput() || this.isExpiredPkhxrInput();
+  }
+
   isStandardInput(): boolean {
     return (
       this.isPushOnly() &&
-      (this.isUnexpiredPkhxInput() ||
-        this.isExpiredPkhxInput() ||
-        this.isUnexpiredPkhxrInput() ||
-        this.isExpiredPkhxrInput())
+      (this.isUnexpiredPkhxrInput() || this.isRecoveryPkhxrInput())
     );
   }
 
   isStandardOutput(): boolean {
-    return (
-      this.isPkhx90dOutput() ||
-      this.isPkhx1hOutput() ||
-      this.isPkhxr1h40mOutput() ||
-      this.isPkhxr90d60dOutput()
-    );
+    return this.isPkhxr1h40mOutput() || this.isPkhxr90d60dOutput();
   }
 
   getPkhs(): { pkh: Pkh; rpkh: Pkh | null } {

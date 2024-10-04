@@ -1,6 +1,6 @@
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import { Script } from "./script.js";
+import { Script, ScriptTemplateType } from "./script.js";
 import { VarInt } from "./var-int.js";
 import { SysBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
@@ -59,6 +59,14 @@ export class TxIn {
 
   isMinimalLock(): boolean {
     return this.lockRel.n === 0;
+  }
+
+  isExpiredInputScript(): boolean {
+    return this.script.isExpiredInput();
+  }
+
+  isStandardInputScript(): boolean {
+    return this.script.isStandardInput();
   }
 
   isMintTx(): boolean {

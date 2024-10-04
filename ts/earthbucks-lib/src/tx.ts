@@ -129,9 +129,47 @@ export class Tx {
     return new Tx(version, txIns, txOuts, lockNum);
   }
 
+  /**
+   * A mint transaction is a special transaction at the end of every block that
+   * has one "new" input that creates new earthbucks. All other inputs, if they
+   * exist, must be "expired", meaning they are spending expired outputs. Normal
+   * inputs are not allowed in a mint transaction. Other transaction types
+   * cannot have either "new" or "expired" inputs.
+   * @returns Whether this transaction is a mint transaction.
+   */
   isMintTx(): boolean {
-    // TODO: Also allow inputting expired txs
-    return this.inputs.length === 1 && this.inputs[0]?.isMintTx() === true;
+    if (this.inputs.length < 1) {
+      return false;
+    }
+    if (!(this.inputs[0] as TxIn).isMintTx()) {
+      return false;
+    }
+    for (let i = 1; i < this.inputs.length; i++) {
+      if (!(this.inputs[i] as TxIn).isExpiredInputScript()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  isStandardTx(): boolean {
+    if (this.inputs.length < 1) {
+      return false;
+    }
+    for (let i = 0; i < this.inputs.length; i++) {
+      if (!(this.inputs[i] as TxIn).isStandardInputScript()) {
+        return false;
+      }
+    }
+    if (this.outputs.length < 1) {
+      return false;
+    }
+    for (let i = 0; i < this.outputs.length; i++) {
+      if (!(this.outputs[i] as TxOut).isStandardOutputScript()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   blake3Hash(): FixedBuf<32> {
@@ -342,6 +380,13 @@ export class Tx {
     return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
   }
 
+  /**
+   * In order to know if your key is in a tx, you can use this method to get all
+   * keys (pub key hash, or Pkh) in the outputs. This gets both normal pkh and
+   * recovery pkh.
+   * @returns The public key hashes of all the keys in all the outputs in this
+   * transaction.
+   */
   getAllOutputPkhs(): Pkh[] {
     const txOuts = this.outputs;
     const pkhs: Pkh[] = [];

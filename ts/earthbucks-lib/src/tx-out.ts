@@ -36,4 +36,8 @@ export class TxOut {
     writer.write(scriptBuf);
     return writer.toBuf();
   }
+
+  isStandardOutputScript(): boolean {
+    return this.script.isStandardOutput();
+  }
 }

@@ -54,7 +54,7 @@ describe("TxVerifier", () => {
       expect(signed).toBeTruthy();
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInput = isOk(txVerifier.verifyInputScript(new U32(0)));
+      const verifiedInput = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInput).toBe(true);
 
       const verifiedScripts = isOk(txVerifier.verifyInputs());
@@ -86,9 +86,9 @@ describe("TxVerifier", () => {
       expect(signed2).toBeTruthy();
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInput1 = isOk(txVerifier.verifyInputScript(new U32(0)));
+      const verifiedInput1 = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInput1).toBe(true);
-      const verifiedInput2 = isOk(txVerifier.verifyInputScript(new U32(1)));
+      const verifiedInput2 = isOk(txVerifier.evalInputScript(new U32(1)));
       expect(verifiedInput2).toBe(true);
 
       const verifiedScripts = isOk(txVerifier.verifyInputs());
@@ -138,9 +138,7 @@ describe("TxVerifier", () => {
       expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -213,9 +211,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHX_1H_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -270,9 +266,7 @@ describe("TxVerifier", () => {
       expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -345,9 +339,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHX_90D_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -402,9 +394,7 @@ describe("TxVerifier", () => {
       expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -480,9 +470,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHXR_1H_40M_R_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -555,9 +543,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHXR_1H_40M_X_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -612,9 +598,7 @@ describe("TxVerifier", () => {
       expect(tx.inputs[0]?.script.isUnexpiredPkhxInput()).toBe(true);
 
       const txVerifier = new TxVerifier(tx, txOutBnMap, new U32(0n));
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -690,9 +674,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHXR_90D_60D_R_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(
@@ -765,9 +747,7 @@ describe("TxVerifier", () => {
         txOutBnMap,
         new U32(Script.PKHXR_90D_60D_X_LOCK_REL.bn),
       );
-      const verifiedInputScript = isOk(
-        txVerifier.verifyInputScript(new U32(0)),
-      );
+      const verifiedInputScript = isOk(txVerifier.evalInputScript(new U32(0)));
       expect(verifiedInputScript).toBe(true);
 
       const verifiedInputLockRel = isOk(

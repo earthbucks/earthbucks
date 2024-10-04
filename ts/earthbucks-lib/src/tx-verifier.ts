@@ -6,6 +6,7 @@ import { SysBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import type { TxIn } from "./tx-in.js";
 import { Err, isErr, isOk, Ok, Result } from "./result.js";
+import { ScriptTemplateType } from "./script.js";
 
 export class TxVerifier {
   public tx: Tx;
@@ -20,7 +21,7 @@ export class TxVerifier {
     this.blockNum = blockNum;
   }
 
-  verifyInputScript(nIn: U32): Result<void, string> {
+  evalInputScript(nIn: U32): Result<SysBuf, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
@@ -48,7 +49,7 @@ export class TxVerifier {
     if (!isOk(result)) {
       return Err(`Failed to verify input script ${nIn.n}: ${result.error}`);
     }
-    return Ok(undefined);
+    return result;
   }
 
   verifyInputLockRel(nIn: U32): Result<void, string> {
@@ -74,7 +75,7 @@ export class TxVerifier {
 
   verifyInputs(): Result<void, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      const scriptResult = this.verifyInputScript(new U32(i));
+      const scriptResult = this.evalInputScript(new U32(i));
       if (isErr(scriptResult)) {
         return Err(`Failed to verify input script ${i}: ${scriptResult.error}`);
       }
@@ -177,5 +178,78 @@ export class TxVerifier {
       );
     }
     return Ok(undefined);
+  }
+
+  getInputScriptTemplateType(nIn: U32): ScriptTemplateType {
+    if (this.tx.isMintTx() && nIn.n === 0) {
+      return "mint-input";
+    }
+    const txInput = this.tx.inputs[nIn.n] as TxIn;
+    const txOutBn = this.txOutBnMap.get(txInput.inputTxId, txInput.inputTxNOut);
+    if (!txOutBn) {
+      throw new Error(
+        `Failed to find txOutBn for input template type ${nIn.n}: ${txInput.inputTxId.toHex()} ${txInput.inputTxNOut.n}`,
+      );
+    }
+    const outputTemplateType = txOutBn.txOut.script.getOutputTemplateType();
+    if (outputTemplateType === "pkh-output") {
+      if (txInput.script.isPkhInput()) {
+        return "pkh-input";
+      }
+      throw new Error(
+        `Invalid input template type for pkh-output: ${txInput.script.toString()}`,
+      );
+    }
+    if (outputTemplateType === "pkhx1h-output") {
+      if (txInput.script.isUnexpiredPkhxInput()) {
+        return "pkhx1h-unexpired-input";
+      }
+      if (txInput.script.isExpiredPkhxInput()) {
+        return "pkhx1h-expired-input";
+      }
+      throw new Error(
+        `Invalid input template type for pkhx1h-output: ${txInput.script.toString()}`,
+      );
+    }
+    if (outputTemplateType === "pkhx90d-output") {
+      if (txInput.script.isUnexpiredPkhxInput()) {
+        return "pkhx90d-unexpired-input";
+      }
+      if (txInput.script.isExpiredPkhxInput()) {
+        return "pkhx90d-expired-input";
+      }
+      throw new Error(
+        `Invalid input template type for pkhx90d-output: ${txInput.script.toString()}`,
+      );
+    }
+    if (outputTemplateType === "pkhxr1h40m-output") {
+      if (txInput.script.isUnexpiredPkhxInput()) {
+        return "pkhxr1h40m-unexpired-input";
+      }
+      if (txInput.script.isRecoveryPkhxrInput()) {
+        return "pkhxr1h40m-recovery-input";
+      }
+      if (txInput.script.isExpiredPkhxInput()) {
+        return "pkhxr1h40m-expired-input";
+      }
+      throw new Error(
+        `Invalid input template type for pkhxr1h40m-output: ${txInput.script.toString()}`,
+      );
+    }
+    if (outputTemplateType === "pkhxr90d60d-output") {
+      if (txInput.script.isUnexpiredPkhxInput()) {
+        return "pkhxr90d60d-unexpired-input";
+      }
+      if (txInput.script.isRecoveryPkhxrInput()) {
+        return "pkhxr90d60d-recovery-input";
+      }
+      if (txInput.script.isExpiredPkhxInput()) {
+        return "pkhxr90d60d-expired-input";
+      }
+      throw new Error(
+        `Invalid input template type for pkhxr90d60d-output: ${txInput.script.toString()}`,
+      );
+    }
+    throw new Error(`Invalid output template type: ${outputTemplateType}`);
   }
 }

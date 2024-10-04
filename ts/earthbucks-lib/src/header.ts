@@ -43,6 +43,8 @@ export class Header implements HeaderInterface {
 
   // 600_000 milliseconds = 600 seconds = 10 minutes
   static readonly BLOCK_INTERVAL_MS = new U64(600_000);
+  static readonly N_BLOCKS_180D = (180 * 24 * 60) / 10;
+  static readonly N_BLOCKS_90D = (90 * 24 * 60) / 10;
   static readonly MIN_DIFFICULTY = new U64(2_000);
   static readonly GENESIS_DIFFICULTY = new U64(2_000);
   static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;

@@ -38,6 +38,15 @@ export class MerkleTree {
     return 1;
   }
 
+  static computeAllLeavesForBalancedTree(nonNullLeaves: number): number {
+    if (nonNullLeaves === 0) {
+      return 0;
+    }
+    // next greatest power of 2
+    const count = 2 ** Math.ceil(Math.log2(nonNullLeaves));
+    return count;
+  }
+
   height(): number {
     return Math.floor(Math.log2(this.countAllLeaves())) + 1;
   }
@@ -103,6 +112,7 @@ export class MerkleTree {
       );
     }
     // ensure balance by filling with nulls
+    hashes = [...hashes];
     while ((hashes.length & (hashes.length - 1)) !== 0) {
       hashes.push(null);
     }
@@ -126,7 +136,10 @@ export class MerkleTree {
     }
     const nullHashes = Array(count).fill(null);
     const nullTree = MerkleTree.fromLeafHashes(nullHashes);
-    return new MerkleTree(this, nullTree, null);
+    const newRoot = Hash.doubleBlake3Hash(
+      MerkleTree.concat(this.hash, nullTree.hash),
+    );
+    return new MerkleTree(this, nullTree, newRoot);
   }
 
   updateBalancedLeafHash(pos: number, hash: FixedBuf<32>): MerkleTree {
@@ -164,33 +177,47 @@ export class MerkleTree {
       throw new Error("Left node must not be null");
     }
     if (pos < countLeft) {
+      const updatedLeft =
+        this.left?.updateBalancedLeafHash(pos, hash) ?? this.left;
       return new MerkleTree(
-        this.left?.updateBalancedLeafHash(pos, hash) ?? this.left,
+        updatedLeft,
         this.right,
         Hash.doubleBlake3Hash(
-          MerkleTree.concat(this.left?.hash ?? null, this.right?.hash ?? null),
+          MerkleTree.concat(
+            updatedLeft?.hash ?? null,
+            this.right?.hash ?? null,
+          ),
         ),
       );
     }
+    const updatedRight =
+      this.right?.updateBalancedLeafHash(pos - countLeft, hash) ?? this.right;
     return new MerkleTree(
       this.left,
-      this.right?.updateBalancedLeafHash(pos - countLeft, hash) ?? this.right,
+      updatedRight,
       Hash.doubleBlake3Hash(
-        MerkleTree.concat(this.left?.hash ?? null, this.right?.hash ?? null),
+        MerkleTree.concat(this.left?.hash ?? null, updatedRight?.hash ?? null),
       ),
     );
   }
 
-  addLeafHash(hash: FixedBuf<32>): MerkleTree {
-    const countNonNull = this.countNonNullLeaves();
-    const countAll = this.countAllLeaves();
-    if (countNonNull === countAll) {
+  /**
+   * Add a leaf hash to the tree. Assumes tree is balanced with nulls.
+   *
+   * @param hash The leaf hash to add.
+   * @param nonNullLeaves The number of non-null leaves in the tree. This is
+   * typically the number of transactions in the tree.
+   * @returns The new Merkle tree with the leaf hash added.
+   */
+  addLeafHash(hash: FixedBuf<32>, nonNullLeaves?: number): MerkleTree {
+    const countNonNull = nonNullLeaves ?? this.countNonNullLeaves();
+    const countAll = MerkleTree.computeAllLeavesForBalancedTree(countNonNull);
+    if (countNonNull === countAll && countAll > 0) {
       return this.doubleWithNulls().updateBalancedLeafHash(countNonNull, hash);
     }
     return this.updateBalancedLeafHash(countNonNull, hash);
   }
 
-  // TODO: make this more efficient by computing all new hashes at once
   updateBalancedLeafHashes(
     startPos: number,
     hashes: FixedBuf<32>[],
@@ -205,11 +232,22 @@ export class MerkleTree {
     return tree;
   }
 
-  // TODO: make this more efficient by computing all new hashes at once
-  addLeafHashes(hashes: FixedBuf<32>[]): MerkleTree {
+  /**
+   * Add leaf hashes to the tree. Assumes tree is balanced with nulls.
+   *
+   * @param hashes The leaf hashes to add.
+   * @param nonNullLeaves The number of non-null leaves in the tree. This is
+   * typically the number of transactions in the tree.
+   * @returns The new Merkle tree with the leaf hashes added.
+   */
+  addLeafHashes(hashes: FixedBuf<32>[], nonNullLeaves?: number): MerkleTree {
     let tree: MerkleTree = this;
     for (let i = 0; i < hashes.length; i++) {
-      tree = tree.addLeafHash(hashes[i] as FixedBuf<32>);
+      if (nonNullLeaves !== undefined) {
+        tree = tree.addLeafHash(hashes[i] as FixedBuf<32>, nonNullLeaves + i);
+      } else {
+        tree = tree.addLeafHash(hashes[i] as FixedBuf<32>);
+      }
     }
     return tree;
   }
