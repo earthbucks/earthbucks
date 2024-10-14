@@ -2,6 +2,8 @@
 
 Website: [earthbucks.com](https://earthbucks.com)
 
+Repo: [github.com/earthbucks/earthbucks](https://github.com/earthbucks/earthbucks)
+
 ## Overview
 
 This library contains data structures and algorithms for EarthBucks. This

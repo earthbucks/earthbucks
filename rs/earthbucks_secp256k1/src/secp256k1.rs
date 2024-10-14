@@ -16,6 +16,17 @@ pub fn private_key_verify(priv_key_buf: &[u8]) -> bool {
 }
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
+pub fn public_key_verify(pub_key_buf: &[u8]) -> bool {
+    // Check if the public key length is correct (33 bytes for compressed format)
+    if pub_key_buf.len() != 33 {
+        return false;
+    }
+
+    // Try to parse the public key and return whether it's valid
+    PublicKey::from_sec1_bytes(pub_key_buf).is_ok()
+}
+
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn public_key_create(priv_key_buf: &[u8]) -> Result<Vec<u8>, String> {
     if priv_key_buf.len() != 32 {
         return Err("Invalid private key: must be exactly 32 bytes".to_string());

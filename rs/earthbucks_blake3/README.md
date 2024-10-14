@@ -21,14 +21,14 @@ Add the following dependency to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-earthbucks_blake3 = { version = "0.1.0", features = ["wasm"] } # Enable WASM if needed
+earthbucks_blake3 = { version = "0.8.0", features = ["wasm"] } # Enable WASM if needed
 ```
 
 To build the library for **Rust-only** usage, skip the `wasm` feature:
 
 ```toml
 [dependencies]
-earthbucks_blake3 = "0.1.0"
+earthbucks_blake3 = "0.8.0"
 ```
 
 ---

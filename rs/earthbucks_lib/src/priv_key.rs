@@ -1,6 +1,7 @@
 use crate::buf::EbxBuf;
 use crate::error::EbxError;
-use secp256k1::{PublicKey, Secp256k1, SecretKey};
+use crate::hash;
+use earthbucks_secp256k1::secp256k1;
 
 #[derive(Clone, Debug)]
 pub struct PrivKey {
@@ -15,20 +16,24 @@ impl PrivKey {
     pub fn from_random() -> Self {
         loop {
             let key_data: [u8; 32] = EbxBuf::from_random();
-            if let Ok(secret_key) = SecretKey::from_slice(&key_data) {
-                return PrivKey::new(*secret_key.as_ref());
+            if secp256k1::private_key_verify(&key_data) {
+                return PrivKey::new(key_data);
             }
         }
     }
 
     pub fn to_pub_key_buffer(&self) -> Result<[u8; 33], EbxError> {
-        let secret_key = SecretKey::from_slice(&self.buf);
-        if secret_key.is_err() {
+        // let secret_key = SecretKey::from_slice(&self.buf);
+        if !secp256k1::private_key_verify(&self.buf) {
             return Err(EbxError::InvalidKeyError { source: None });
         }
-        let secp = Secp256k1::new();
-        let public_key_obj = PublicKey::from_secret_key(&secp, &secret_key.unwrap());
-        Ok(public_key_obj.serialize())
+        let public_key_res = secp256k1::public_key_create(&self.buf);
+        if public_key_res.is_err() {
+            return Err(EbxError::InvalidKeyError { source: None });
+        }
+        let public_key = public_key_res.unwrap();
+        let pub_key_buf: [u8; 33] = public_key.try_into().unwrap();
+        Ok(pub_key_buf)
     }
 
     pub fn to_pub_key_hex(&self) -> Result<String, EbxError> {
@@ -64,8 +69,8 @@ impl PrivKey {
     }
 
     pub fn to_strict_str(&self) -> String {
-        let check_buf = blake3::hash(&self.buf);
-        let check_sum: [u8; 4] = check_buf.as_bytes()[0..4].try_into().unwrap();
+        let check_buf = hash::blake3_hash(&self.buf);
+        let check_sum: [u8; 4] = check_buf[0..4].try_into().unwrap();
         let check_hex = check_sum.to_strict_hex();
         "ebxprv".to_string() + &check_hex + &self.buf.to_base58()
     }
@@ -77,8 +82,8 @@ impl PrivKey {
         let check_sum: [u8; 4] = <[u8; 4]>::from_strict_hex(&s[6..14])?;
         let buf = Vec::<u8>::from_base58(&s[14..])
             .map_err(|_| EbxError::InvalidEncodingError { source: None })?;
-        let check_buf = blake3::hash(&buf);
-        let expected_check_sum = &check_buf.as_bytes()[0..4];
+        let check_buf = hash::blake3_hash(&buf);
+        let expected_check_sum = &check_buf[0..4];
         if check_sum != expected_check_sum {
             return Err(EbxError::InvalidChecksumError { source: None });
         }

@@ -1,19 +1,15 @@
-use blake3::Hasher;
+use earthbucks_blake3::hash;
 
 pub fn blake3_hash(data: &[u8]) -> [u8; 32] {
-    let mut hasher = Hasher::new();
-    hasher.update(data);
-    hasher.finalize().into()
+  hash::blake3_hash(data).unwrap().try_into().unwrap()
 }
 
 pub fn double_blake3_hash(data: &[u8]) -> [u8; 32] {
-    blake3_hash(&blake3_hash(data))
+    hash::double_blake3_hash(data).unwrap().try_into().unwrap()
 }
 
 pub fn blake3_mac(key: &[u8; 32], data: &[u8]) -> [u8; 32] {
-    let mut hasher = Hasher::new_keyed(key);
-    hasher.update(data);
-    hasher.finalize().into()
+  hash::blake3_mac(key, data).unwrap().try_into().unwrap()
 }
 
 #[cfg(test)]

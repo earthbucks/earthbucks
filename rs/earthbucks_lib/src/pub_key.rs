@@ -2,7 +2,7 @@ use crate::buf::EbxBuf;
 use crate::error::EbxError;
 use crate::hash::blake3_hash;
 use crate::priv_key::PrivKey;
-use secp256k1::PublicKey;
+use earthbucks_secp256k1::secp256k1;
 
 #[derive(Debug, Clone)]
 pub struct PubKey {
@@ -73,8 +73,7 @@ impl PubKey {
     }
 
     pub fn is_valid(&self) -> bool {
-        let public_key_obj = PublicKey::from_slice(&self.buf);
-        public_key_obj.is_ok()
+        secp256k1::public_key_verify(&self.buf)
     }
 
     pub fn is_valid_string_fmt(s: &str) -> bool {
