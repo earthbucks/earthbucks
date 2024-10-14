@@ -2,5 +2,11 @@
 members = [
     "earthbucks_lib",
     "earthbucks_pow",
+    "earthbucks_blake3",
+    "earthbucks_secp256k1",
 ]
 resolver = "2"
+
+[patch.crates-io]
+earthbucks_blake3 = { path = "./earthbucks_blake3" }
+earthbucks_secp256k1 = { path = "./earthbucks_secp256k1" }
