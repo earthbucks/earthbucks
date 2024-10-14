@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "earthbucks_lib",
-    "earthbucks_pow",
     "earthbucks_blake3",
     "earthbucks_secp256k1",
 ]
