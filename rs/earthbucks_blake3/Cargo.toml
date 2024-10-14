@@ -1,0 +1,22 @@
+[package]
+name = "earthbucks_blake3"
+description = "Blake3 hash function for EarthBucks with optional support for WASM."
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
+repository = "https://github.com/earthbucks/earthbucks"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+wasm = ["wasm-bindgen"]
+
+[dependencies]
+blake3 = "1.5.1"
+hex = "0.4.3"
+
+[dependencies.wasm-bindgen]
+version = "0.2"
+optional = true

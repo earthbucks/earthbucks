@@ -2,15 +2,15 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { PowGpuBrowser } from "../src/pow-gpu-browser.js";
 import { Buffer as SysBuf } from "buffer";
 import { FixedBuf } from "@earthbucks/lib";
-import { hash as blake3HashRaw } from "blake3";
+import { Hash } from "@earthbucks/lib";
 
 function blake3Hash(seed: SysBuf): FixedBuf<32> {
-  return FixedBuf.fromBuf(32, SysBuf.from(blake3HashRaw(seed)));
+  return Hash.blake3Hash(seed);
 }
 
 function blake3HashAsync(seed: SysBuf): Promise<FixedBuf<32>> {
   return new Promise((resolve) => {
-    resolve(FixedBuf.fromBuf(32, SysBuf.from(blake3HashRaw(seed))));
+    resolve(Hash.blake3Hash(seed));
   });
 }
 

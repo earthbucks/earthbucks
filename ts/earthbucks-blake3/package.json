@@ -1,19 +1,21 @@
 {
   "name": "@earthbucks/blake3",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Inline wasm blake3 for EarthBucks.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
-    "clean": "rimraf dist",
     "main": "tsx src/main.ts",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint --write --unsafe",
     "format": "biome format --write",
     "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
-    "build": "tsc -p tsconfig.build.json",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "sync:from-rust": "cp -r ../../rs/earthbucks_blake3/build/bundler/* src/rs-blake3-bundler/",
+    "build": "pnpm run build:src-to-dist && pnpm run build:inline-wasm",
+    "build:src-to-dist": "cp -r src/* dist/",
+    "build:inline-wasm": "tsx build-inline-wasm.ts",
+    "prepublishOnly": "pnpm run build"
   },
   "engines": {
     "node": ">=20.8.0"
@@ -22,7 +24,7 @@
   "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/earthbucks/earthbucks-blake3"
+    "url": "https://github.com/earthbucks/earthbucks"
   },
   "license": "MIT",
   "type": "module",
@@ -32,8 +34,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
+    "@types/node": "^22.7.5",
     "globals": "^15.11.0",
     "rimraf": "^6.0.1",
+    "tsx": "^4.19.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.2"
   }

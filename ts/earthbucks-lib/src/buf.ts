@@ -23,7 +23,7 @@ function decodeHex(hex: string): SysBuf {
 }
 
 class EbxBuf {
-  private _buf: SysBuf;
+  public _buf: SysBuf;
 
   constructor(size: number, buf: SysBuf) {
     if (buf.length !== size) {
@@ -116,6 +116,10 @@ class FixedBuf<N extends number> extends EbxBuf {
   static fromRandom<N extends number>(size: N): FixedBuf<N> {
     const buf = crypto.getRandomValues(SysBuf.alloc(size));
     return FixedBuf.fromBuf(size, buf);
+  }
+
+  clone(): FixedBuf<N> {
+    return FixedBuf.fromBuf(this[sizeSymbol], SysBuf.from(this._buf));
   }
 }
 

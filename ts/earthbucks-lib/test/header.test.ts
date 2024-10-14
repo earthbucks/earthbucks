@@ -56,6 +56,14 @@ describe("Header", () => {
     expect(bh1.isGenesis()).toBe(true);
   });
 
+  test("clone", () => {
+    const headerHex =
+      "000001cc1b55d81c64b2cf4c1ef9577c2911551c650c1c6e8de73d8d4d3dff58949744cdf96442df0e8b45a7bf3f77fa35ff2ce98a7669cd55cd1d3d25b8eee0790000000000000002000001926352f88d0000001a0002cef0fe2831d9359f4974cf77cb57d9628e595752955eb1cdf9db50d40812000000000000000000000000000000000000000000000000000000000000011200030e562364eb9b72db7bc18408917f0b0082c91f9c01496f8bd36c57a496c0d6250001a06596b56530429f2fd168edee4dc9caef67d7b9077c9eaa1e6ca7c5f8336aca";
+    const header = Header.fromHex(headerHex);
+    const headerClone = header.clone();
+    expect(header.toHex()).toBe(headerClone.toHex());
+  });
+
   test("hash", () => {
     const bh1 = new Header();
     expect(bh1.hash().toHex()).toBe(

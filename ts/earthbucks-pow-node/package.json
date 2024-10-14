@@ -31,7 +31,6 @@
     "@earthbucks/lib": "workspace:^",
     "@earthbucks/pow-browser": "workspace:^",
     "@tensorflow/tfjs-node": "^4.21.0",
-    "blake3": "2.1.7",
     "buffer": "^6.0.3",
     "seedrandom": "^3.0.5"
   },

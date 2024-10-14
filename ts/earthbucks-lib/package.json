@@ -28,20 +28,18 @@
   "type": "module",
   "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
   "dependencies": {
-    "@noble/hashes": "^1.5.0",
-    "@types/secp256k1": "^4.0.6",
-    "blake3": "2.1.7",
-    "blake3-wasm": "2.1.5",
+    "@earthbucks/blake3": "workspace:^",
+    "@earthbucks/secp256k1": "workspace:^",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
-    "secp256k1": "^5.0.0",
     "tsx": "^4.19.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
-    "globals": "^15.9.0",
+    "@types/node": "^22.7.5",
+    "globals": "^15.11.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.0"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.2"
   }
 }

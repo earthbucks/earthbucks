@@ -1,0 +1,22 @@
+[package]
+name = "earthbucks_secp256k1"
+description = "Elliptic curve secp256k1 for EarthBucks with optional support for WASM."
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
+repository = "https://github.com/earthbucks/earthbucks"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# The 'wasm' feature enables the wasm-bindgen dependency and other wasm-specific code.
+wasm = ["wasm-bindgen"]
+
+[dependencies]
+k256 = { version = "0.13.4", default-features = false, features = ["arithmetic", "ecdsa"] }
+hex = "0.4.3"
+
+# Conditionally include wasm-bindgen only when the 'wasm' feature is enabled
+wasm-bindgen = { version = "0.2", optional = true }

@@ -546,4 +546,21 @@ export class Header implements HeaderInterface {
     // which is done elsewhere.
     return Ok(true);
   }
+
+  clone(): Header {
+    return new Header({
+      version: new U8(this.version.n),
+      prevBlockId: this.prevBlockId.clone(),
+      rootMerkleTreeId: this.rootMerkleTreeId.clone(),
+      nTransactions: new U64(this.nTransactions.bn),
+      timestamp: new U64(this.timestamp.bn),
+      blockNum: new U32(this.blockNum.bn),
+      target: new U256(this.target.bn),
+      nonce: new U256(this.nonce.bn),
+      workSerAlgo: new U16(this.workSerAlgo.n),
+      workSerHash: this.workSerHash.clone(),
+      workParAlgo: new U16(this.workParAlgo.n),
+      workParHash: this.workParHash.clone(),
+    });
+  }
 }

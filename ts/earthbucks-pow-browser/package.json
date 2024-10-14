@@ -30,7 +30,6 @@
   "dependencies": {
     "@earthbucks/lib": "workspace:^",
     "@tensorflow/tfjs": "^4.21.0",
-    "blake3": "2.1.7",
     "buffer": "^6.0.3"
   },
   "devDependencies": {

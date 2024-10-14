@@ -4,10 +4,10 @@ import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
 import type { SysBuf } from "./buf.js";
 import { U32 } from "./numbers.js";
-import type { U64 } from "./numbers.js";
+import { U64 } from "./numbers.js";
 
 export class TxOut {
-  public value: U64;
+  public value: U64; // measured in "adams".
   public script: Script;
 
   constructor(value: U64, script: Script) {
@@ -39,5 +39,9 @@ export class TxOut {
 
   isStandardOutputScript(): boolean {
     return this.script.isStandardOutput();
+  }
+
+  clone(): TxOut {
+    return new TxOut(new U64(this.value.bn), this.script.clone());
   }
 }

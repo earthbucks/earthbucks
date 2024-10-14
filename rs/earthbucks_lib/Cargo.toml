@@ -1,13 +1,14 @@
 [package]
 name = "earthbucks_lib"
 description = "EarthBucks library for data structures and algorithms"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 license = "MIT"
 authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
+repository = "https://github.com/earthbucks/earthbucks"
 
 [dependencies]
-secp256k1 = "0.29.0"
+secp256k1 = "0.30.0"
 rand = "0.8.4"
 hex = "0.4.3"
 serde = { version = "1.0", features = ["derive"] }
@@ -19,4 +20,4 @@ num-bigint = "0.4.4"
 num-traits = "0.2.14"
 regex = "1.10.4"
 bs58 = "0.5.1"
-bnum = "0.11.0"
+bnum = "0.12.0"

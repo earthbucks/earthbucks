@@ -161,4 +161,11 @@ export class ScriptChunk {
     }
     return new ScriptChunk(0);
   }
+
+  clone(): ScriptChunk {
+    return new ScriptChunk(
+      this.opcode,
+      this.buf ? SysBuf.from(this.buf) : undefined,
+    );
+  }
 }

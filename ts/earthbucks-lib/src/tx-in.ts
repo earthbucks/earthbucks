@@ -98,4 +98,13 @@ export class TxIn {
   } {
     return this.script.getMintTxData();
   }
+
+  clone(): TxIn {
+    return new TxIn(
+      this.inputTxId.clone(),
+      new U32(this.inputTxNOut.n),
+      this.script.clone(),
+      new U32(this.lockRel.n),
+    );
+  }
 }

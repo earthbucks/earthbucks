@@ -579,4 +579,8 @@ export class Script {
     }
     throw new Error("Invalid Script");
   }
+
+  clone(): Script {
+    return new Script(this.chunks.map((chunk) => chunk.clone()));
+  }
 }

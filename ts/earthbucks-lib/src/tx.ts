@@ -4,8 +4,7 @@ import { VarInt } from "./var-int.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { Hash } from "./hash.js";
-import secp256k1 from "secp256k1";
-const { ecdsaSign, ecdsaVerify } = secp256k1;
+import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
@@ -320,7 +319,7 @@ export class Tx {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
     const sigBuf = FixedBuf.fromBuf(
       64,
-      SysBuf.from(ecdsaSign(hash, privateKey).signature),
+      SysBuf.from(ecdsa_sign(hash, privateKey)),
     );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
@@ -343,7 +342,7 @@ export class Tx {
     );
     const sigBuf = FixedBuf.fromBuf(
       64,
-      SysBuf.from(ecdsaSign(hash, privateKey).signature),
+      SysBuf.from(ecdsa_sign(hash, privateKey)),
     );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
@@ -358,7 +357,7 @@ export class Tx {
   ): boolean {
     const hashType = sig.hashType;
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
+    return ecdsa_verify(sig.sigBuf.buf, hash, publicKey);
   }
 
   verifyWithCache(
@@ -377,7 +376,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    return ecdsaVerify(sig.sigBuf.buf, hash, publicKey);
+    return ecdsa_verify(sig.sigBuf.buf, hash, publicKey);
   }
 
   /**
@@ -398,5 +397,16 @@ export class Tx {
       }
     }
     return pkhs;
+  }
+
+  clone(): Tx {
+    const inputs = this.inputs.map((input) => input.clone());
+    const outputs = this.outputs.map((output) => output.clone());
+    return new Tx(
+      new U8(this.version.n),
+      inputs,
+      outputs,
+      new U32(this.lockAbs.n),
+    );
   }
 }

@@ -3,7 +3,7 @@ import { SysBuf, EbxBuf, FixedBuf } from "../src/buf.js";
 
 describe("EbxBuf", () => {
   test("to/from buf", () => {
-    const buf = Buffer.from("deadbeef", "hex");
+    const buf = SysBuf.from("deadbeef", "hex");
     const isoBuf = EbxBuf.fromBuf(buf.length, buf);
     expect(isoBuf instanceof EbxBuf).toEqual(true);
     expect(isoBuf instanceof SysBuf).toEqual(false);
@@ -12,7 +12,7 @@ describe("EbxBuf", () => {
   });
 
   test("to/from base58", () => {
-    const buf = Buffer.from("deadbeef", "hex");
+    const buf = SysBuf.from("deadbeef", "hex");
     const isoBuf = EbxBuf.fromBuf(buf.length, buf);
     expect(isoBuf instanceof EbxBuf).toEqual(true);
     expect(isoBuf instanceof SysBuf).toEqual(false);
@@ -25,7 +25,7 @@ describe("EbxBuf", () => {
 
 describe("FixedEbxBuf", () => {
   test("to/from buf", () => {
-    const buf = Buffer.from("deadbeef", "hex");
+    const buf = SysBuf.from("deadbeef", "hex");
     const fixedEbxBuf = FixedBuf.fromBuf(4, buf);
     expect(fixedEbxBuf instanceof EbxBuf).toEqual(true);
     expect(fixedEbxBuf instanceof SysBuf).toEqual(false);
@@ -34,7 +34,7 @@ describe("FixedEbxBuf", () => {
   });
 
   test("to/from base58", () => {
-    const buf = Buffer.from("deadbeef", "hex");
+    const buf = SysBuf.from("deadbeef", "hex");
     const fixedEbxBuf = FixedBuf.fromBuf(4, buf);
     expect(fixedEbxBuf instanceof EbxBuf).toEqual(true);
     expect(fixedEbxBuf instanceof SysBuf).toEqual(false);

@@ -146,6 +146,12 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         await trpcClient.userName.setUserName.mutate(userName);
       },
     },
+    buttonConfig: {
+      setNButtons: async (nButtons: 1 | 2 | 3 | 4) => {
+        const res = await trpcClient.buttonConfig.setNButtons.mutate(nButtons);
+        return res;
+      }
+    }
   };
 };
 

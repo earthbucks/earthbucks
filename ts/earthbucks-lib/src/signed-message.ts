@@ -1,7 +1,6 @@
 import { FixedBuf, SysBuf } from "./buf.js";
 import { Hash } from "./hash.js";
-import secp256k1 from "secp256k1";
-const { ecdsaSign, ecdsaVerify } = secp256k1;
+import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
 import type { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
 import { BufReader } from "./buf-reader.js";
@@ -39,8 +38,8 @@ export class SignedMessage {
     keyStr: string,
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
-    const sigObj = ecdsaSign(mac.buf, privKey.toBuf().buf);
-    const sigBuf = (FixedBuf<64>).fromBuf(64, SysBuf.from(sigObj.signature));
+    const sigObj = ecdsa_sign(mac.buf, privKey.toBuf().buf);
+    const sigBuf = (FixedBuf<64>).fromBuf(64, SysBuf.from(sigObj));
     const pubKey = privKey.toPubKeyEbxBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
@@ -56,7 +55,7 @@ export class SignedMessage {
     if (!pubKey.toBuf().buf.equals(this.pubKey.buf)) {
       return false;
     }
-    if (!ecdsaVerify(this.sig.buf, mac.buf, this.pubKey.buf)) {
+    if (!ecdsa_verify(this.sig.buf, mac.buf, this.pubKey.buf)) {
       return false;
     }
     return true;

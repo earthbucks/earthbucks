@@ -1,7 +1,7 @@
 import { SysBuf, FixedBuf } from "./buf.js";
 import type { PrivKey } from "./priv-key.js";
 import { Hash } from "./hash.js";
-import secp256k1 from "secp256k1";
+import { public_key_add } from "@earthbucks/secp256k1";
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
@@ -66,7 +66,7 @@ export class PubKey {
   }
 
   add(pubKey: PubKey): PubKey {
-    const buf = secp256k1.publicKeyCombine([this.buf.buf, pubKey.buf.buf]);
+    const buf = public_key_add(this.buf.buf, pubKey.buf.buf);
     const fixedBuf = FixedBuf.fromBuf(33, SysBuf.from(buf));
     return PubKey.fromBuf(fixedBuf);
   }

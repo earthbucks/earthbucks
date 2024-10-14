@@ -1,4 +1,8 @@
-import secp256k1 from "secp256k1";
+import {
+  private_key_verify,
+  public_key_create,
+  private_key_add,
+} from "@earthbucks/secp256k1";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { Hash } from "./hash.js";
 
@@ -13,7 +17,7 @@ export class PrivKey {
     let privKeyBuf: FixedBuf<32>;
     do {
       privKeyBuf = FixedBuf.fromRandom(32);
-    } while (!secp256k1.privateKeyVerify(privKeyBuf.buf));
+    } while (!private_key_verify(privKeyBuf.buf));
     return new PrivKey(privKeyBuf);
   }
 
@@ -22,10 +26,7 @@ export class PrivKey {
   }
 
   toPubKeyEbxBuf(): FixedBuf<33> {
-    return FixedBuf.fromBuf(
-      33,
-      SysBuf.from(secp256k1.publicKeyCreate(this.buf.buf)),
-    );
+    return FixedBuf.fromBuf(33, SysBuf.from(public_key_create(this.buf.buf)));
   }
 
   toPubKeyHex(): string {
@@ -33,7 +34,7 @@ export class PrivKey {
   }
 
   static fromBuf(buf: FixedBuf<32>): PrivKey {
-    if (!secp256k1.privateKeyVerify(buf.buf)) {
+    if (!private_key_verify(buf.buf)) {
       throw new Error("invalid encoding");
     }
     return new PrivKey(buf);
@@ -81,7 +82,7 @@ export class PrivKey {
   }
 
   add(privKey: PrivKey): PrivKey {
-    const arr = secp256k1.privateKeyTweakAdd(
+    const arr = private_key_add(
       SysBuf.from(this.buf.buf),
       SysBuf.from(privKey.buf.buf),
     );

@@ -186,6 +186,16 @@ describe("Tx", () => {
     });
   });
 
+  describe("clone", () => {
+    it("should verify this known tx clone", () => {
+      const hexTx =
+        "000100000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000640000000000";
+      const tx = Tx.fromHex(hexTx);
+      const clone = tx.clone();
+      expect(tx.toHex()).toEqual(clone.toHex());
+    });
+  });
+
   describe("sighash", () => {
     test("hashPrevouts", () => {
       const version = new U8(0);
@@ -331,7 +341,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e"; // your expected signature in hex
+          "010567ff74a146fbef1dea911c46789f7d31b87f6dd9a81db9ea77c6d895c95e800a9794bbd5a1cdfa4acfd05f5d4ad07b079e3f391404a692ccbe1e17f3e16549"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -379,7 +389,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e"; // your expected signature in hex
+          "010567ff74a146fbef1dea911c46789f7d31b87f6dd9a81db9ea77c6d895c95e800a9794bbd5a1cdfa4acfd05f5d4ad07b079e3f391404a692ccbe1e17f3e16549"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
@@ -438,7 +448,7 @@ describe("Tx", () => {
 
         // Assert
         const expectedSignatureHex =
-          "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e"; // your expected signature in hex
+          "010567ff74a146fbef1dea911c46789f7d31b87f6dd9a81db9ea77c6d895c95e800a9794bbd5a1cdfa4acfd05f5d4ad07b079e3f391404a692ccbe1e17f3e16549"; // your expected signature in hex
         expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
