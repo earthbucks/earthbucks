@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/blake3",
-  "version": "0.4.0",
+  "version": "0.8.0",
   "description": "Inline wasm blake3 for EarthBucks.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
