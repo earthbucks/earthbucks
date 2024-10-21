@@ -15,68 +15,68 @@ import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "./aes.js";
 /**
  * Encrypt data with AES + CBC mode.
  *
- * @param {SysBuf} messageBuf - The data to encrypt. Can be any size.
- * @param {SysBuf} aesKeyBuf - The key to encrypt with. Must be 128, 192, or 256 bits.
- * @param {SysBuf} ivBuf - The initialization vector to use. Must be 128 bits.
- * @param {boolean} concatIvBuf - If true, the ivBuf will be concatenated with the encrypted data.
- * @returns {SysBuf} - The encrypted data.
+ * @param plaintext The data to encrypt. Can be any size.
+ * @param aesKey The key to encrypt with. Must be 128, 192, or 256 bits.
+ * @param iv The initialization vector to use. Must be 128 bits.
+ * @param concatIv If true, the iv will be concatenated with the encrypted data.
+ * @returns The encrypted data.
  */
 export function encrypt(
-  messageBuf: SysBuf,
-  aesKeyBuf: SysBuf,
-  ivBuf?: SysBuf,
-  concatIvBuf = true,
+  plaintext: SysBuf,
+  aesKey: SysBuf,
+  iv?: SysBuf,
+  concatIv = true,
 ): SysBuf {
-  //ivBuf = ivBuf || Random.getRandomBuffer(128 / 8)
-  if (!ivBuf) {
-    ivBuf = SysBuf.from(crypto.getRandomValues(new Uint8Array(128 / 8)));
+  //iv = iv || Random.getRandomBuffer(128 / 8)
+  if (!iv) {
+    iv = SysBuf.from(crypto.getRandomValues(new Uint8Array(128 / 8)));
   }
-  if (ivBuf.length !== 128 / 8) {
-    throw new Error("ivBuf must be 128 bits");
+  if (iv.length !== 128 / 8) {
+    throw new Error("iv must be 128 bits");
   }
   if (
-    aesKeyBuf.length !== 128 / 8 &&
-    aesKeyBuf.length !== 192 / 8 &&
-    aesKeyBuf.length !== 256 / 8
+    aesKey.length !== 128 / 8 &&
+    aesKey.length !== 192 / 8 &&
+    aesKey.length !== 256 / 8
   ) {
-    throw new Error("aesKeyBuf must be 128, 192, or 256 bits");
+    throw new Error("aesKey must be 128, 192, or 256 bits");
   }
-  const ctBuf = encryptRaw(messageBuf, ivBuf, aesKeyBuf);
-  if (concatIvBuf) {
-    return SysBuf.concat([ivBuf, ctBuf]);
+  const ctBuf = encryptRaw(plaintext, iv, aesKey);
+  if (concatIv) {
+    return SysBuf.concat([iv, ctBuf]);
   }
   return ctBuf;
 }
 
 /**
  * Decrypt data with AES + CBC mode.
- * @param {SysBuf} encBuf - The data to decrypt. Can be any size.
- * @param {SysBuf} aesKeyBuf - The key to decrypt with. Must be 128, 192, or 256 bits.
- * @param {SysBuf} ivBuf - The initialization vector to use. Must be 128 bits.
- * @returns {SysBuf} - The decrypted data.
+ * @param ciphertext The data to decrypt. Can be any size.
+ * @param aesKey The key to decrypt with. Must be 128, 192, or 256 bits.
+ * @param iv The initialization vector to use. Must be 128 bits.
+ * @returns The decrypted data.
  */
 export function decrypt(
-  encBuf: SysBuf,
-  aesKeyBuf: SysBuf,
-  ivBuf?: SysBuf,
+  ciphertext: SysBuf,
+  aesKey: SysBuf,
+  iv?: SysBuf,
 ): SysBuf {
-  if (ivBuf && ivBuf.length !== 128 / 8) {
-    throw new Error("ivBuf must be 128 bits");
+  if (iv && iv.length !== 128 / 8) {
+    throw new Error("iv must be 128 bits");
   }
   if (
-    aesKeyBuf.length !== 128 / 8 &&
-    aesKeyBuf.length !== 192 / 8 &&
-    aesKeyBuf.length !== 256 / 8
+    aesKey.length !== 128 / 8 &&
+    aesKey.length !== 192 / 8 &&
+    aesKey.length !== 256 / 8
   ) {
-    throw new Error("aesKeyBuf must be 128, 192, or 256 bits");
+    throw new Error("aesKey must be 128, 192, or 256 bits");
   }
-  if (!ivBuf) {
-    const ivBuf = encBuf.slice(0, 128 / 8);
-    const ctBuf = encBuf.slice(128 / 8);
-    return decryptRaw(ctBuf, ivBuf, aesKeyBuf);
+  if (!iv) {
+    const iv = ciphertext.slice(0, 128 / 8);
+    const ctBuf = ciphertext.slice(128 / 8);
+    return decryptRaw(ctBuf, iv, aesKey);
   }
-  const ctBuf = encBuf;
-  return decryptRaw(ctBuf, ivBuf, aesKeyBuf);
+  const ctBuf = ciphertext;
+  return decryptRaw(ctBuf, iv, aesKey);
 }
 
 export function buf2BlocksBuf(buf: SysBuf, blockSize: number) {
@@ -106,78 +106,66 @@ export function blockBufs2Buf(blockBufs: SysBuf[]) {
   return buf;
 }
 
-export function encryptRaw(
-  messageBuf: SysBuf,
-  ivBuf: SysBuf,
-  aesKeyBuf: SysBuf,
-) {
-  const blockSize = ivBuf.length * 8;
-  const blockBufs = buf2BlocksBuf(messageBuf, blockSize);
-  const encBufs = encryptBlocks(blockBufs, ivBuf, aesKeyBuf);
-  const encBuf = SysBuf.concat(encBufs);
-  return encBuf;
+export function encryptRaw(plaintext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+  const blockSize = iv.length * 8;
+  const blockBufs = buf2BlocksBuf(plaintext, blockSize);
+  const ciphertexts = encryptBlocks(blockBufs, iv, aesKey);
+  const ciphertext = SysBuf.concat(ciphertexts);
+  return ciphertext;
 }
 
-export function decryptRaw(encBuf: SysBuf, ivBuf: SysBuf, aesKeyBuf: SysBuf) {
-  const bytesize = ivBuf.length;
-  const encBufs = [];
-  for (let i = 0; i < encBuf.length / bytesize; i++) {
-    encBufs.push(encBuf.slice(i * bytesize, i * bytesize + bytesize));
+export function decryptRaw(ciphertext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+  const bytesize = iv.length;
+  const ciphertexts = [];
+  for (let i = 0; i < ciphertext.length / bytesize; i++) {
+    ciphertexts.push(ciphertext.slice(i * bytesize, i * bytesize + bytesize));
   }
-  const blockBufs = decryptBlocks(encBufs, ivBuf, aesKeyBuf);
+  const blockBufs = decryptBlocks(ciphertexts, iv, aesKey);
   const buf = blockBufs2Buf(blockBufs);
   return buf;
 }
 
-export function encryptBlock(
-  blockBuf: SysBuf,
-  ivBuf: SysBuf,
-  aesKeyBuf: SysBuf,
-) {
-  const xorbuf = xorBufs(blockBuf, ivBuf);
-  const encBuf = aesEncrypt(xorbuf, aesKeyBuf);
-  return encBuf;
+export function encryptBlock(blockBuf: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+  const xorbuf = xorBufs(blockBuf, iv);
+  const ciphertext = aesEncrypt(xorbuf, aesKey);
+  return ciphertext;
 }
 
-export function decryptBlock(encBuf: SysBuf, ivBuf: SysBuf, aesKeyBuf: SysBuf) {
-  const xorbuf = aesDecrypt(encBuf, aesKeyBuf);
-  const blockBuf = xorBufs(xorbuf, ivBuf);
+export function decryptBlock(ciphertext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+  const xorbuf = aesDecrypt(ciphertext, aesKey);
+  const blockBuf = xorBufs(xorbuf, iv);
   return blockBuf;
 }
 
-export function encryptBlocks(
-  blockBufs: SysBuf[],
-  ivBuf: SysBuf,
-  aesKeyBuf: SysBuf,
-) {
-  const encBufs = [];
+export function encryptBlocks(blockBufs: SysBuf[], iv: SysBuf, aesKey: SysBuf) {
+  const ciphertexts = [];
 
   for (let i = 0; i < blockBufs.length; i++) {
     const blockBuf = blockBufs[i] as SysBuf;
-    const encBuf = encryptBlock(blockBuf, ivBuf, aesKeyBuf);
+    const ciphertext = encryptBlock(blockBuf, iv, aesKey);
 
-    encBufs.push(encBuf);
+    ciphertexts.push(ciphertext);
 
-    ivBuf = encBuf;
+    iv = ciphertext;
   }
 
-  return encBufs;
+  return ciphertexts;
 }
 
 export function decryptBlocks(
-  encBufs: SysBuf[],
-  ivBuf: SysBuf,
-  aesKeyBuf: SysBuf,
+  ciphertexts: SysBuf[],
+  iv: SysBuf,
+  aesKey: SysBuf,
 ) {
   const blockBufs = [];
 
-  for (let i = 0; i < encBufs.length; i++) {
-    const encBuf = encBufs[i] as SysBuf;
-    const blockBuf = decryptBlock(encBuf, ivBuf, aesKeyBuf);
+  for (let i = 0; i < ciphertexts.length; i++) {
+    const ciphertext = ciphertexts[i] as SysBuf;
+    const blockBuf = decryptBlock(ciphertext, iv, aesKey);
 
     blockBufs.push(blockBuf);
 
-    ivBuf = encBuf as SysBuf;
+    iv = ciphertext as SysBuf;
   }
 
   return blockBufs;

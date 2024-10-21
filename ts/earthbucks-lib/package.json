@@ -30,6 +30,7 @@
   "dependencies": {
     "@earthbucks/blake3": "workspace:^",
     "@earthbucks/secp256k1": "workspace:^",
+    "@earthbucks/aes": "workspace:^",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "tsx": "^4.19.1"

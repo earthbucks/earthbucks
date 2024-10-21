@@ -319,10 +319,7 @@ export class Tx {
     hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = ecdsa_sign(
-      hash,
-      privKey,
-    );
+    const sigBuf = ecdsa_sign(hash, privKey);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
@@ -342,10 +339,7 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = ecdsa_sign(
-      hash,
-      privKey,
-    );
+    const sigBuf = ecdsa_sign(hash, privKey);
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
   }
