@@ -61,7 +61,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf().buf,
+        keyPair.privKey,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -98,7 +98,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf().buf,
+        keyPair.privKey,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -135,7 +135,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf().buf,
+        keyPair.privKey,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -193,7 +193,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf().buf,
+        keyPair.privKey,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,
@@ -251,7 +251,7 @@ export class TxSigner {
       const outputAmount = txOut.value;
       const sig = this.tx.signNoCache(
         nIn,
-        keyPair.privKey.toBuf().buf,
+        keyPair.privKey,
         outputScriptBuf,
         outputAmount,
         TxSignature.SIGHASH_ALL,

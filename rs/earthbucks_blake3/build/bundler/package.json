@@ -4,9 +4,13 @@
   "collaborators": [
     "Ryan X. Charles <ryan@ryanxcharles.com>"
   ],
-  "description": "Blake3 hash function for base64 inline WASM for EarthBucks.",
-  "version": "0.1.0",
+  "description": "Blake3 hash function for EarthBucks with optional support for WASM.",
+  "version": "0.8.5",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
   "files": [
     "earthbucks_blake3_bg.wasm",
     "earthbucks_blake3.js",

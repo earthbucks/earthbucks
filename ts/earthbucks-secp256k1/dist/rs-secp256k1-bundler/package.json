@@ -4,9 +4,13 @@
   "collaborators": [
     "Ryan X. Charles <ryan@ryanxcharles.com>"
   ],
-  "description": "Elliptic curve secp256k1 for EarthBucks with support for WASM.",
-  "version": "0.1.0",
+  "description": "Elliptic curve secp256k1 for EarthBucks with optional support for WASM.",
+  "version": "0.8.5",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
   "files": [
     "earthbucks_secp256k1_bg.wasm",
     "earthbucks_secp256k1.js",

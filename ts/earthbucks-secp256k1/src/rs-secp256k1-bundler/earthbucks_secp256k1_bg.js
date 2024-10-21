@@ -58,6 +58,17 @@ export function private_key_verify(priv_key_buf) {
     return ret !== 0;
 }
 
+/**
+ * @param {Uint8Array} pub_key_buf
+ * @returns {boolean}
+ */
+export function public_key_verify(pub_key_buf) {
+    const ptr0 = passArray8ToWasm0(pub_key_buf, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.public_key_verify(ptr0, len0);
+    return ret !== 0;
+}
+
 let cachedDataViewMemory0 = null;
 
 function getDataViewMemory0() {
@@ -167,18 +178,74 @@ export function public_key_add(pub_key_buf_1, pub_key_buf_2) {
 }
 
 /**
- * @param {Uint8Array} digest
+ * @param {Uint8Array} hash_buf
  * @param {Uint8Array} priv_key_buf
+ * @param {Uint8Array} k_buf
  * @returns {Uint8Array}
  */
-export function ecdsa_sign(digest, priv_key_buf) {
+export function sign(hash_buf, priv_key_buf, k_buf) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(digest, wasm.__wbindgen_malloc);
+        const ptr0 = passArray8ToWasm0(hash_buf, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ptr1 = passArray8ToWasm0(priv_key_buf, wasm.__wbindgen_malloc);
         const len1 = WASM_VECTOR_LEN;
-        wasm.ecdsa_sign(retptr, ptr0, len0, ptr1, len1);
+        const ptr2 = passArray8ToWasm0(k_buf, wasm.__wbindgen_malloc);
+        const len2 = WASM_VECTOR_LEN;
+        wasm.sign(retptr, ptr0, len0, ptr1, len1, ptr2, len2);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v4 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_free(r0, r1 * 1, 1);
+        return v4;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+ * @param {Uint8Array} sig_buf
+ * @param {Uint8Array} hash_buf
+ * @param {Uint8Array} pub_key_buf
+ */
+export function verify(sig_buf, hash_buf, pub_key_buf) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(sig_buf, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(hash_buf, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passArray8ToWasm0(pub_key_buf, wasm.__wbindgen_malloc);
+        const len2 = WASM_VECTOR_LEN;
+        wasm.verify(retptr, ptr0, len0, ptr1, len1, ptr2, len2);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        if (r1) {
+            throw takeObject(r0);
+        }
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+ * @param {Uint8Array} priv_key_buf
+ * @param {Uint8Array} pub_key_buf
+ * @returns {Uint8Array}
+ */
+export function shared_secret(priv_key_buf, pub_key_buf) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(priv_key_buf, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(pub_key_buf, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.shared_secret(retptr, ptr0, len0, ptr1, len1);
         var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
         var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
         var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
@@ -189,34 +256,6 @@ export function ecdsa_sign(digest, priv_key_buf) {
         var v3 = getArrayU8FromWasm0(r0, r1).slice();
         wasm.__wbindgen_free(r0, r1 * 1, 1);
         return v3;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-}
-
-/**
- * @param {Uint8Array} sig_buf
- * @param {Uint8Array} digest
- * @param {Uint8Array} pub_key_buf
- * @returns {boolean}
- */
-export function ecdsa_verify(sig_buf, digest, pub_key_buf) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passArray8ToWasm0(sig_buf, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passArray8ToWasm0(digest, wasm.__wbindgen_malloc);
-        const len1 = WASM_VECTOR_LEN;
-        const ptr2 = passArray8ToWasm0(pub_key_buf, wasm.__wbindgen_malloc);
-        const len2 = WASM_VECTOR_LEN;
-        wasm.ecdsa_verify(retptr, ptr0, len0, ptr1, len1, ptr2, len2);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return r0 !== 0;
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }

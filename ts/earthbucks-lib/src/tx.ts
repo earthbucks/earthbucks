@@ -4,12 +4,14 @@ import { VarInt } from "./var-int.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { Hash } from "./hash.js";
-import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
+import { ecdsa_sign, ecdsa_verify } from "./ecdsa.js";
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
 import { SysBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import { Pkh } from "./pkh.js";
+import { PrivKey } from "./priv-key.js";
+import { PubKey } from "./pub-key.js";
 
 export class HashCache {
   public hashPrevouts?: FixedBuf<32>;
@@ -278,7 +280,7 @@ export class Tx {
     script: SysBuf,
     amount: U64,
     hashType: U8,
-  ): SysBuf {
+  ): FixedBuf<32> {
     const hashCache = new HashCache();
     const preimage = this.sighashPreimage(
       inputIndex,
@@ -288,7 +290,7 @@ export class Tx {
       hashCache,
     );
     const hash = Hash.doubleBlake3Hash(preimage);
-    return hash.buf;
+    return hash;
   }
 
   sighashWithCache(
@@ -297,7 +299,7 @@ export class Tx {
     amount: U64,
     hashType: U8,
     hashCache: HashCache,
-  ): SysBuf {
+  ): FixedBuf<32> {
     const preimage = this.sighashPreimage(
       inputIndex,
       script,
@@ -306,20 +308,20 @@ export class Tx {
       hashCache,
     );
     const hash = Hash.doubleBlake3Hash(preimage);
-    return hash.buf;
+    return hash;
   }
 
   signNoCache(
     inputIndex: U32,
-    privateKey: SysBuf,
+    privKey: PrivKey,
     script: SysBuf,
     amount: U64,
     hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    const sigBuf = FixedBuf.fromBuf(
-      64,
-      SysBuf.from(ecdsa_sign(hash, privateKey)),
+    const sigBuf = ecdsa_sign(
+      hash,
+      privKey,
     );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
@@ -327,7 +329,7 @@ export class Tx {
 
   signWithCache(
     inputIndex: U32,
-    privateKey: SysBuf,
+    privKey: PrivKey,
     script: SysBuf,
     amount: U64,
     hashType: U8,
@@ -340,9 +342,9 @@ export class Tx {
       hashType,
       hashCache,
     );
-    const sigBuf = FixedBuf.fromBuf(
-      64,
-      SysBuf.from(ecdsa_sign(hash, privateKey)),
+    const sigBuf = ecdsa_sign(
+      hash,
+      privKey,
     );
     const sig = new TxSignature(hashType, sigBuf);
     return sig;
@@ -357,7 +359,11 @@ export class Tx {
   ): boolean {
     const hashType = sig.hashType;
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
-    return ecdsa_verify(sig.sigBuf.buf, hash, publicKey);
+    return ecdsa_verify(
+      sig.sigBuf,
+      hash,
+      PubKey.fromBuf(FixedBuf.fromBuf(33, publicKey)),
+    );
   }
 
   verifyWithCache(
@@ -376,7 +382,11 @@ export class Tx {
       hashType,
       hashCache,
     );
-    return ecdsa_verify(sig.sigBuf.buf, hash, publicKey);
+    return ecdsa_verify(
+      sig.sigBuf,
+      hash,
+      PubKey.fromBuf(FixedBuf.fromBuf(33, publicKey)),
+    );
   }
 
   /**
