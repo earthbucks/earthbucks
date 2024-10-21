@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow-node",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "EarthBucks Proof-of-Work (PoW) algorithms with big dependencies.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",

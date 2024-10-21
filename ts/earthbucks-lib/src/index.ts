@@ -1,4 +1,3 @@
-export * from "./acb3.js";
 export * from "./block-builder.js";
 export * from "./block-message-header.js";
 export * from "./block.js";
@@ -8,6 +7,7 @@ export * from "./buf.js";
 export * from "./compucha-challenge.js";
 export * from "./domain.js";
 export * from "./ebx-value.js";
+export * from "./encryption.js";
 export * from "./hash.js";
 export * from "./header-w-id.js";
 export * from "./header.js";
