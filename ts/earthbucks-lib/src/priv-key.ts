@@ -3,7 +3,7 @@ import {
   public_key_create,
   private_key_add,
 } from "@earthbucks/secp256k1";
-import { SysBuf, FixedBuf } from "./buf.js";
+import { WebBuf, FixedBuf } from "./buf.js";
 import { Hash } from "./hash.js";
 
 export class PrivKey {
@@ -26,7 +26,7 @@ export class PrivKey {
   }
 
   toPubKeyEbxBuf(): FixedBuf<33> {
-    return FixedBuf.fromBuf(33, SysBuf.from(public_key_create(this.buf.buf)));
+    return FixedBuf.fromBuf(33, WebBuf.from(public_key_create(this.buf.buf)));
   }
 
   toPubKeyHex(): string {
@@ -52,7 +52,7 @@ export class PrivKey {
 
   toString(): string {
     const hashBuf = Hash.blake3Hash(this.buf.buf);
-    const checkBuf = SysBuf.from(hashBuf.buf).subarray(0, 4);
+    const checkBuf = WebBuf.from(hashBuf.buf).subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
     return `ebxprv${checkHex}${this.buf.toBase58()}`;
   }
@@ -83,10 +83,10 @@ export class PrivKey {
 
   add(privKey: PrivKey): PrivKey {
     const arr = private_key_add(
-      SysBuf.from(this.buf.buf),
-      SysBuf.from(privKey.buf.buf),
+      WebBuf.from(this.buf.buf),
+      WebBuf.from(privKey.buf.buf),
     );
-    const buf = FixedBuf.fromBuf(32, SysBuf.from(arr));
+    const buf = FixedBuf.fromBuf(32, WebBuf.from(arr));
     return PrivKey.fromBuf(buf);
   }
 }

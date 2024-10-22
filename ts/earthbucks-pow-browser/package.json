@@ -30,7 +30,7 @@
   "dependencies": {
     "@earthbucks/lib": "workspace:^",
     "@tensorflow/tfjs": "^4.21.0",
-    "buffer": "^6.0.3"
+    "webbuf": "^1.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",

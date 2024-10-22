@@ -1,4 +1,4 @@
-import { EbxBuf, SysBuf } from "./buf.js";
+import { EbxBuf, WebBuf } from "./buf.js";
 
 export abstract class BasicNumber<U extends BasicNumber<U>> {
   protected value: bigint;
@@ -21,7 +21,7 @@ export abstract class BasicNumber<U extends BasicNumber<U>> {
   abstract div(other: U): U;
   abstract get bn(): bigint;
   abstract get n(): number;
-  abstract toBEBuf(): SysBuf;
+  abstract toBEBuf(): WebBuf;
   abstract toHex(): string;
 }
 
@@ -60,8 +60,8 @@ export class U8 extends BasicNumber<U8> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
-    const buf = SysBuf.alloc(1);
+  toBEBuf(): WebBuf {
+    const buf = WebBuf.alloc(1);
     buf.writeUInt8(this.n, 0);
     return buf;
   }
@@ -70,7 +70,7 @@ export class U8 extends BasicNumber<U8> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U8 {
+  static fromBEBuf(buf: WebBuf): U8 {
     return new U8(buf.readUInt8(0));
   }
 
@@ -114,8 +114,8 @@ export class U16 extends BasicNumber<U16> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
-    const buf = SysBuf.alloc(2);
+  toBEBuf(): WebBuf {
+    const buf = WebBuf.alloc(2);
     buf.writeUInt16BE(this.n, 0);
     return buf;
   }
@@ -124,7 +124,7 @@ export class U16 extends BasicNumber<U16> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U16 {
+  static fromBEBuf(buf: WebBuf): U16 {
     return new U16(buf.readUInt16BE(0));
   }
 
@@ -168,8 +168,8 @@ export class U32 extends BasicNumber<U32> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
-    const buf = SysBuf.alloc(4);
+  toBEBuf(): WebBuf {
+    const buf = WebBuf.alloc(4);
     buf.writeUInt32BE(this.n, 0);
     return buf;
   }
@@ -178,7 +178,7 @@ export class U32 extends BasicNumber<U32> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U32 {
+  static fromBEBuf(buf: WebBuf): U32 {
     return new U32(buf.readUInt32BE(0));
   }
 
@@ -222,8 +222,8 @@ export class U64 extends BasicNumber<U64> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
-    const buf = SysBuf.alloc(8);
+  toBEBuf(): WebBuf {
+    const buf = WebBuf.alloc(8);
     buf.writeBigInt64BE(this.bn);
     return buf;
   }
@@ -232,7 +232,7 @@ export class U64 extends BasicNumber<U64> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U64 {
+  static fromBEBuf(buf: WebBuf): U64 {
     return new U64(buf.readBigUInt64BE(0));
   }
 
@@ -280,10 +280,10 @@ export class U128 extends BasicNumber<U128> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
+  toBEBuf(): WebBuf {
     const val1: bigint = this.bn >> 64n;
     const val2: bigint = this.bn & 0xffffffffffffffffn;
-    const buf = SysBuf.alloc(16);
+    const buf = WebBuf.alloc(16);
     buf.writeBigUInt64BE(val1, 0);
     buf.writeBigUInt64BE(val2, 8);
     return buf;
@@ -293,7 +293,7 @@ export class U128 extends BasicNumber<U128> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U128 {
+  static fromBEBuf(buf: WebBuf): U128 {
     const val1: bigint = buf.readBigUInt64BE(0);
     const val2: bigint = buf.readBigUInt64BE(8);
     return new U128((val1 << 64n) + val2);
@@ -344,12 +344,12 @@ export class U256 extends BasicNumber<U256> {
     return Number(this.value);
   }
 
-  toBEBuf(): SysBuf {
+  toBEBuf(): WebBuf {
     const val1: bigint = this.bn >> 192n;
     const val2: bigint = (this.bn >> 128n) & 0xffffffffffffffffn;
     const val3: bigint = (this.bn >> 64n) & 0xffffffffffffffffn;
     const val4: bigint = this.bn & 0xffffffffffffffffn;
-    const buf = SysBuf.alloc(32);
+    const buf = WebBuf.alloc(32);
     buf.writeBigUInt64BE(val1, 0);
     buf.writeBigUInt64BE(val2, 8);
     buf.writeBigUInt64BE(val3, 16);
@@ -361,7 +361,7 @@ export class U256 extends BasicNumber<U256> {
     return this.toBEBuf().toString("hex");
   }
 
-  static fromBEBuf(buf: SysBuf): U256 {
+  static fromBEBuf(buf: WebBuf): U256 {
     const val1: bigint = buf.readBigUInt64BE(0);
     const val2: bigint = buf.readBigUInt64BE(8);
     const val3: bigint = buf.readBigUInt64BE(16);

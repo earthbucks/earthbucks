@@ -1,7 +1,7 @@
 {
-  "name": "@earthbucks/aes",
+  "name": "@earthbucks/aescbc",
   "version": "0.9.0",
-  "description": "EarthBucks library for AES encryption and decryption.",
+  "description": "EarthBucks library for AES+CBC encryption and decryption.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
@@ -28,11 +28,11 @@
   "type": "module",
   "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
   "dependencies": {
-    "buffer": "^6.0.3"
+    "webbuf": "^1.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.7.7",
+    "@types/node": "^22.7.8",
     "globals": "^15.11.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3",

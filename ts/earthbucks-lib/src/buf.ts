@@ -1,47 +1,42 @@
-// Note that this "buffer" package is NOT the same thing as node's standard
-// library. It is an API-compatible tool that does in fact "polyfill" or
-// "browserify" the correct way. The reason why I'm renaming it here is
-// specifically to make sure we always use this version of "Buffer" and never
-// the standard node version so that it polyfills in the browser correctly.
-import { Buffer as SysBuf } from "buffer";
+import { WebBuf } from "webbuf";
 import bs58 from "bs58";
 
 function isValidHex(hex: string): boolean {
   return /^[0-9a-f]*$/.test(hex) && hex.length % 2 === 0;
 }
 
-function encodeHex(buffer: SysBuf): string {
+function encodeHex(buffer: WebBuf): string {
   return buffer.toString("hex");
 }
 
-function decodeHex(hex: string): SysBuf {
+function decodeHex(hex: string): WebBuf {
   if (!isValidHex(hex)) {
     throw new Error("invalid hex");
   }
-  const sysBuf = SysBuf.from(hex, "hex");
+  const sysBuf = WebBuf.from(hex, "hex");
   return sysBuf;
 }
 
 class EbxBuf {
-  public _buf: SysBuf;
+  public _buf: WebBuf;
 
-  constructor(size: number, buf: SysBuf) {
+  constructor(size: number, buf: WebBuf) {
     if (buf.length !== size) {
       throw new Error("invalid size error");
     }
     this._buf = buf;
   }
 
-  get buf(): SysBuf {
+  get buf(): WebBuf {
     return this._buf;
   }
 
-  static fromBuf<N extends number>(size: N, buf: SysBuf): EbxBuf {
+  static fromBuf<N extends number>(size: N, buf: WebBuf): EbxBuf {
     return new EbxBuf(size, buf);
   }
 
   static alloc(size: number, fill?: number): EbxBuf {
-    return EbxBuf.fromBuf(size, SysBuf.alloc(size, fill));
+    return EbxBuf.fromBuf(size, WebBuf.alloc(size, fill));
   }
 
   static fromHex(size: number, hex: string): EbxBuf {
@@ -55,7 +50,7 @@ class EbxBuf {
 
   static fromBase64(size: number, base64: string): EbxBuf {
     try {
-      const buf = SysBuf.from(base64, "base64");
+      const buf = WebBuf.from(base64, "base64");
       return EbxBuf.fromBuf(size, buf);
     } catch (err) {
       throw new Error("invalid encoding");
@@ -68,7 +63,7 @@ class EbxBuf {
 
   static fromBase58(size: number, base58: string): EbxBuf {
     try {
-      const buf = SysBuf.from(bs58.decode(base58));
+      const buf = WebBuf.from(bs58.decode(base58));
       return EbxBuf.fromBuf(size, buf);
     } catch (err) {
       throw new Error("invalid encoding");
@@ -80,7 +75,7 @@ class EbxBuf {
   }
 
   static fromRandom(size: number): EbxBuf {
-    const buf = crypto.getRandomValues(SysBuf.alloc(size));
+    const buf = crypto.getRandomValues(WebBuf.alloc(size));
     return EbxBuf.fromBuf(size, buf);
   }
 }
@@ -90,17 +85,17 @@ const sizeSymbol = Symbol("size");
 class FixedBuf<N extends number> extends EbxBuf {
   [sizeSymbol]: N;
 
-  constructor(size: N, buf: SysBuf) {
+  constructor(size: N, buf: WebBuf) {
     super(size, buf);
     this[sizeSymbol] = size;
   }
 
-  static fromBuf<N extends number>(size: N, buf: SysBuf): FixedBuf<N> {
+  static fromBuf<N extends number>(size: N, buf: WebBuf): FixedBuf<N> {
     return new FixedBuf(size, buf);
   }
 
   static alloc<N extends number>(size: N, fill?: number): FixedBuf<N> {
-    return FixedBuf.fromBuf(size, SysBuf.alloc(size, fill));
+    return FixedBuf.fromBuf(size, WebBuf.alloc(size, fill));
   }
 
   static fromHex<N extends number>(size: N, hex: string): FixedBuf<N> {
@@ -109,18 +104,18 @@ class FixedBuf<N extends number> extends EbxBuf {
   }
 
   static fromBase58<N extends number>(size: N, base58: string): FixedBuf<N> {
-    const buf = SysBuf.from(bs58.decode(base58));
+    const buf = WebBuf.from(bs58.decode(base58));
     return FixedBuf.fromBuf(size, buf);
   }
 
   static fromRandom<N extends number>(size: N): FixedBuf<N> {
-    const buf = crypto.getRandomValues(SysBuf.alloc(size));
+    const buf = crypto.getRandomValues(WebBuf.alloc(size));
     return FixedBuf.fromBuf(size, buf);
   }
 
   clone(): FixedBuf<N> {
-    return FixedBuf.fromBuf(this[sizeSymbol], SysBuf.from(this._buf));
+    return FixedBuf.fromBuf(this[sizeSymbol], WebBuf.from(this._buf));
   }
 }
 
-export { SysBuf, EbxBuf, FixedBuf };
+export { WebBuf, EbxBuf, FixedBuf };

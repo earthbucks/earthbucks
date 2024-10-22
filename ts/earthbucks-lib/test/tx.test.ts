@@ -8,7 +8,7 @@ import { BufWriter } from "../src/buf-writer.js";
 import { Hash } from "../src/hash.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { KeyPair } from "../src/key-pair.js";
-import { FixedBuf, SysBuf } from "../src/buf.js";
+import { FixedBuf, WebBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 import { ScriptChunk } from "../src/script-chunk.js";
 import { PrivKey } from "../src/priv-key.js";
@@ -119,9 +119,9 @@ describe("Tx", () => {
           FixedBuf.alloc(32),
           new U32(0xffffffff),
           new Script([
-            ScriptChunk.fromData(SysBuf.alloc(32)),
-            ScriptChunk.fromData(SysBuf.alloc(32)),
-            ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+            ScriptChunk.fromData(WebBuf.alloc(32)),
+            ScriptChunk.fromData(WebBuf.alloc(32)),
+            ScriptChunk.fromData(WebBuf.from("example.com", "utf8")),
           ]),
           new U32(0),
         ),
@@ -147,9 +147,9 @@ describe("Tx", () => {
 
     test("fromMintTx -> isMintTx", () => {
       const script = new Script([
-        ScriptChunk.fromData(SysBuf.alloc(32)),
-        ScriptChunk.fromData(SysBuf.alloc(32)),
-        ScriptChunk.fromData(SysBuf.from("example.com", "utf8")),
+        ScriptChunk.fromData(WebBuf.alloc(32)),
+        ScriptChunk.fromData(WebBuf.alloc(32)),
+        ScriptChunk.fromData(WebBuf.from("example.com", "utf8")),
       ]);
       const txInput = TxIn.fromMintTxScript(script);
       const tx = new Tx(new U8(0), [txInput], [], new U32(0));
@@ -210,7 +210,7 @@ describe("Tx", () => {
 
       const result = tx.hashPrevouts();
 
-      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
+      expect(WebBuf.from(result.buf).toString("hex")).toEqual(
         "2cb9ad7c6db72bb07dae3873c8a28903510eb87fae097338bc058612af388fba",
       );
     });
@@ -227,7 +227,7 @@ describe("Tx", () => {
 
       const result = tx.hashLockRel();
 
-      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
+      expect(WebBuf.from(result.buf).toString("hex")).toEqual(
         "406986f514581cacbf3ab0fc3863b336d137af79318ce4bae553a91435773931",
       );
     });
@@ -244,7 +244,7 @@ describe("Tx", () => {
 
       const result = tx.hashOutputs();
 
-      expect(SysBuf.from(result.buf).toString("hex")).toEqual(
+      expect(WebBuf.from(result.buf).toString("hex")).toEqual(
         "8c92e84e8b3b8b44690cbf64547018defaf43ade3b793ed8aa8ad33ae33941e5",
       );
     });
@@ -313,11 +313,11 @@ describe("Tx", () => {
       it("should generate a deterministic signature", () => {
         // Arrange
         const inputIndex = new U32(0);
-        const privateKey = SysBuf.from(
+        const privateKey = WebBuf.from(
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
           "hex",
         );
-        const script = SysBuf.from([]);
+        const script = WebBuf.from([]);
         const amount = new U64(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
@@ -343,7 +343,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "010664323b0876e7076e817efc29c3b7ffa0bab7de4fdb4a314601f9d9235a8a2202c2887491ee5a6c22a8fdbe554722794e92063cc47b5c7c711132dd357d08ad"; // your expected signature in hex
-        expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
+        expect(WebBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
       });
@@ -355,7 +355,7 @@ describe("Tx", () => {
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
-        const script = SysBuf.from([]);
+        const script = WebBuf.from([]);
         const amount = new U64(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
@@ -391,7 +391,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "010664323b0876e7076e817efc29c3b7ffa0bab7de4fdb4a314601f9d9235a8a2202c2887491ee5a6c22a8fdbe554722794e92063cc47b5c7c711132dd357d08ad"; // your expected signature in hex
-        expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
+        expect(WebBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
         const publicKey = KeyPair.fromPrivKeyEbxBuf(privateKey).pubKey.toBuf();
@@ -412,7 +412,7 @@ describe("Tx", () => {
           32,
           "7ca2df5597b60403be38cdbd4dc4cd89d7d00fce6b0773ef903bc8b87c377fad",
         );
-        const script = SysBuf.from([]);
+        const script = WebBuf.from([]);
         const amount = new U64(100);
         const hashType = TxSignature.SIGHASH_ALL;
         const inputs: TxIn[] = [
@@ -450,7 +450,7 @@ describe("Tx", () => {
         // Assert
         const expectedSignatureHex =
           "010664323b0876e7076e817efc29c3b7ffa0bab7de4fdb4a314601f9d9235a8a2202c2887491ee5a6c22a8fdbe554722794e92063cc47b5c7c711132dd357d08ad"; // your expected signature in hex
-        expect(SysBuf.from(signature.toBuf()).toString("hex")).toEqual(
+        expect(WebBuf.from(signature.toBuf()).toString("hex")).toEqual(
           expectedSignatureHex,
         );
         const publicKey = KeyPair.fromPrivKeyEbxBuf(privateKey).pubKey.toBuf();

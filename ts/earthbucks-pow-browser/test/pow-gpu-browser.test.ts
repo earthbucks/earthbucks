@@ -1,14 +1,14 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { PowGpuBrowser } from "../src/pow-gpu-browser.js";
-import { Buffer as SysBuf } from "buffer";
+import { WebBuf as WebBuf } from "webbuf";
 import { FixedBuf } from "@earthbucks/lib";
 import { Hash } from "@earthbucks/lib";
 
-function blake3Hash(seed: SysBuf): FixedBuf<32> {
+function blake3Hash(seed: WebBuf): FixedBuf<32> {
   return Hash.blake3Hash(seed);
 }
 
-function blake3HashAsync(seed: SysBuf): Promise<FixedBuf<32>> {
+function blake3HashAsync(seed: WebBuf): Promise<FixedBuf<32>> {
   return new Promise((resolve) => {
     resolve(Hash.blake3Hash(seed));
   });
@@ -17,8 +17,8 @@ function blake3HashAsync(seed: SysBuf): Promise<FixedBuf<32>> {
 describe("GpuPowBrowser", () => {
   describe("tensorFromBufferBitsAlt1", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
-      const buffer = SysBuf.from([0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt1(buffer);
@@ -31,8 +31,8 @@ describe("GpuPowBrowser", () => {
 
   describe("tensorFromBufferBitsAlt2", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
-      const buffer = SysBuf.from([0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt2(buffer);
@@ -45,8 +45,8 @@ describe("GpuPowBrowser", () => {
 
   describe("tensorFromBufferBitsAlt3", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
-      const buffer = SysBuf.from([0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
@@ -57,8 +57,8 @@ describe("GpuPowBrowser", () => {
     });
 
     it("should return a tensor with 16 values that are all int32 value 1 when passed a buffer of 0xffff", () => {
-      const buffer = SysBuf.from([0xff, 0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff, 0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
@@ -69,8 +69,8 @@ describe("GpuPowBrowser", () => {
     });
 
     it("should return a tensor with binary data", () => {
-      const buffer = SysBuf.from([0x80, 0x80]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0x80, 0x80]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
@@ -83,8 +83,8 @@ describe("GpuPowBrowser", () => {
 
   describe("tensorFromBufferBits", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
-      const buffer = SysBuf.from([0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt3(buffer);
@@ -97,8 +97,8 @@ describe("GpuPowBrowser", () => {
 
   describe("tensorFromBufferBitsAlt4", () => {
     it("should return a tensor with 8 values that are all int32 value 1 when passed a buffer of 0xff", () => {
-      const buffer = SysBuf.from([0xff, 0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff, 0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
@@ -109,8 +109,8 @@ describe("GpuPowBrowser", () => {
     });
 
     it("should return a tensor with 16 values that are all int32 value 1 when passed a buffer of 0xffff", () => {
-      const buffer = SysBuf.from([0xff, 0xff, 0xff, 0xff]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0xff, 0xff, 0xff, 0xff]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
@@ -124,8 +124,8 @@ describe("GpuPowBrowser", () => {
     });
 
     it("should return a tensor with binary data", () => {
-      const buffer = SysBuf.from([0x80, 0x80]);
-      const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+      const buffer = WebBuf.from([0x80, 0x80]);
+      const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
       const previousBlockIds: FixedBuf<32>[] = [];
       const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
       const result = gpupow.tensorFromBufferBitsAlt4(buffer);
@@ -137,7 +137,7 @@ describe("GpuPowBrowser", () => {
   });
 
   test("algo17", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
     const previousBlockIds: FixedBuf<32>[] = [];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
@@ -148,7 +148,7 @@ describe("GpuPowBrowser", () => {
   });
 
   test("algo17 async", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
     const previousBlockIds: FixedBuf<32>[] = [];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo17();
@@ -159,8 +159,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test("algo257", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -170,8 +170,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test("algo257 async", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo257();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
@@ -181,8 +181,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test.skip("algo1289", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -192,8 +192,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test.skip("algo1289 async", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1289();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);
@@ -203,8 +203,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test.skip("algo1627", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = gpupow.reducedBufsHash(result, blake3Hash);
@@ -214,8 +214,8 @@ describe("GpuPowBrowser", () => {
   });
 
   test.skip("algo1627 async", async () => {
-    const workingBlockId = blake3Hash(SysBuf.from("workingBlockId"));
-    const previousBlockIds = [blake3Hash(SysBuf.from("previousBlockId"))];
+    const workingBlockId = blake3Hash(WebBuf.from("workingBlockId"));
+    const previousBlockIds = [blake3Hash(WebBuf.from("previousBlockId"))];
     const gpupow = new PowGpuBrowser(workingBlockId, previousBlockIds);
     const result = await gpupow.algo1627();
     const res = await gpupow.reducedBufsHashAsync(result, blake3HashAsync);

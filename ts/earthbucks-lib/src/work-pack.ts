@@ -1,6 +1,6 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { EbxBuf, SysBuf } from "./buf.js";
+import { EbxBuf, WebBuf } from "./buf.js";
 import { Header } from "./header.js";
 import { Lch10Ids } from "./lch10-ids.js";
 
@@ -25,11 +25,11 @@ export class WorkPack {
     return new WorkPack(header, lch10Ids);
   }
 
-  toBuf(): SysBuf {
-    return SysBuf.concat([this.header.toBuf(), this.lch10Ids.toBuf()]);
+  toBuf(): WebBuf {
+    return WebBuf.concat([this.header.toBuf(), this.lch10Ids.toBuf()]);
   }
 
-  static fromBuf(buf: SysBuf): WorkPack {
+  static fromBuf(buf: WebBuf): WorkPack {
     const br = new BufReader(buf);
     const header = Header.fromBufReader(br);
     const lch10Ids = Lch10Ids.fromBufReader(br);

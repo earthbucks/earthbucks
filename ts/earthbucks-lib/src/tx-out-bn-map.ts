@@ -1,5 +1,5 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { SysBuf, FixedBuf } from "./buf.js";
+import { WebBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import type { Tx } from "./tx.js";
 
@@ -18,8 +18,8 @@ export class TxOutBnMap {
     return newMap;
   }
 
-  static nameFromOutput(txIdHash: SysBuf, outputIndex: U32): string {
-    const txIdStr = SysBuf.from(txIdHash).toString("hex");
+  static nameFromOutput(txIdHash: WebBuf, outputIndex: U32): string {
+    const txIdStr = WebBuf.from(txIdHash).toString("hex");
     const outputIndexStr = outputIndex.toBEBuf().toString("hex");
     return `${txIdStr}:${outputIndexStr}`;
   }
@@ -33,7 +33,7 @@ export class TxOutBnMap {
     if (!outputIndexHex) {
       throw new Error("Invalid output index");
     }
-    return U32.fromBEBuf(SysBuf.from(outputIndexHex, "hex"));
+    return U32.fromBEBuf(WebBuf.from(outputIndexHex, "hex"));
   }
 
   add(txOutBn: TxOutBn, txId: FixedBuf<32>, outputIndex: U32) {

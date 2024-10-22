@@ -2,7 +2,7 @@ import { U64 } from "./numbers.js";
 import { FixedBuf } from "./buf.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 
 export class PermissionToken {
   randValue: FixedBuf<32>;
@@ -13,14 +13,14 @@ export class PermissionToken {
     this.timestamp = timestamp; // milliseconds
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     const writer = new BufWriter();
     writer.write(this.randValue.buf);
     writer.writeU64BE(this.timestamp);
     return writer.toBuf();
   }
 
-  static fromBuf(buf: SysBuf): PermissionToken {
+  static fromBuf(buf: WebBuf): PermissionToken {
     if (buf.length !== 32 + 8) {
       throw new Error("invalid size error");
     }

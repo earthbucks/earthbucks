@@ -1,4 +1,4 @@
-import { SysBuf, WorkPack } from "@earthbucks/lib";
+import { WebBuf, WorkPack } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
 import { U256 } from "@earthbucks/lib";
 import type { Header } from "@earthbucks/lib";
@@ -11,7 +11,7 @@ function timeout(ms: number) {
   );
 }
 
-type AsyncHashFunction = (input: SysBuf) => Promise<FixedBuf<32>>;
+type AsyncHashFunction = (input: WebBuf) => Promise<FixedBuf<32>>;
 
 export async function MineWorkPack(
   workPack: WorkPack,

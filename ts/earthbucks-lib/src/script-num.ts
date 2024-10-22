@@ -1,4 +1,4 @@
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export class ScriptNum {
@@ -14,7 +14,7 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  static fromBuf(buffer: SysBuf): ScriptNum {
+  static fromBuf(buffer: WebBuf): ScriptNum {
     const scriptNum = new ScriptNum();
     if (buffer.length === 0) {
       scriptNum.num = 0n;
@@ -23,7 +23,7 @@ export class ScriptNum {
     const isNegative = (buffer[0] as number) & 0x80; // Check if the sign bit is set
     if (isNegative) {
       // If the number is negative
-      const invertedEbxBuf = SysBuf.alloc(buffer.length);
+      const invertedEbxBuf = WebBuf.alloc(buffer.length);
       for (let i = 0; i < buffer.length; i++) {
         invertedEbxBuf[i] = ~(buffer[i] as number); // Invert all bits
       }
@@ -36,10 +36,10 @@ export class ScriptNum {
     return scriptNum;
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     const num = this.num;
     if (num === 0n) {
-      return SysBuf.alloc(0);
+      return WebBuf.alloc(0);
     }
     if (num > 0n) {
       let hex = num.toString(16);
@@ -50,7 +50,7 @@ export class ScriptNum {
       if (Number.parseInt(hex[0] as string, 16) >= 8) {
         hex = `00${hex}`;
       }
-      return SysBuf.from(hex, "hex");
+      return WebBuf.from(hex, "hex");
     }
     const bitLength = num.toString(2).length; // Get bit length of number
     const byteLength = Math.ceil(bitLength / 8); // Calculate byte length, rounding up to nearest byte
@@ -59,7 +59,7 @@ export class ScriptNum {
     if (hex.length % 2 !== 0) {
       hex = `0${hex}`; // Pad with zero to make length even
     }
-    return SysBuf.from(hex, "hex");
+    return WebBuf.from(hex, "hex");
   }
 
   toString(): string {

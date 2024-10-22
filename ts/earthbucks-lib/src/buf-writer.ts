@@ -1,11 +1,11 @@
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import type { U8, U16, U32, U64, U128, U256 } from "./numbers.js";
 
 export class BufWriter {
-  bufs: SysBuf[];
+  bufs: WebBuf[];
 
-  constructor(bufs?: SysBuf[]) {
-    this.bufs = bufs ? bufs.map((arr) => SysBuf.from(arr)) : [];
+  constructor(bufs?: WebBuf[]) {
+    this.bufs = bufs ? bufs.map((arr) => WebBuf.from(arr)) : [];
   }
 
   getLength(): number {
@@ -16,11 +16,11 @@ export class BufWriter {
     return len;
   }
 
-  toBuf(): SysBuf {
-    return SysBuf.concat(this.bufs);
+  toBuf(): WebBuf {
+    return WebBuf.concat(this.bufs);
   }
 
-  write(buf: SysBuf): this {
+  write(buf: WebBuf): this {
     this.bufs.push(buf);
     return this;
   }
@@ -61,22 +61,22 @@ export class BufWriter {
     return this;
   }
 
-  static varIntBuf(bn: U64): SysBuf {
-    let buf: SysBuf;
+  static varIntBuf(bn: U64): WebBuf {
+    let buf: WebBuf;
     const n = bn.n;
     if (n < 253) {
-      buf = SysBuf.alloc(1);
+      buf = WebBuf.alloc(1);
       buf.writeUInt8(n, 0);
     } else if (n < 0x10000) {
-      buf = SysBuf.alloc(1 + 2);
+      buf = WebBuf.alloc(1 + 2);
       buf.writeUInt8(253, 0);
       buf.writeUInt16BE(n, 1);
     } else if (n < 0x100000000) {
-      buf = SysBuf.alloc(1 + 4);
+      buf = WebBuf.alloc(1 + 4);
       buf.writeUInt8(254, 0);
       buf.writeUInt32BE(n, 1);
     } else {
-      buf = SysBuf.alloc(1 + 8);
+      buf = WebBuf.alloc(1 + 8);
       buf.writeUInt8(255, 0);
       buf.writeBigInt64BE(bn.bn, 1);
     }

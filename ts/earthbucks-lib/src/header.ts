@@ -1,7 +1,7 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { Hash } from "./hash.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
 import { EbxBuf } from "./buf.js";
 import { U8, U16, U32, U64, U256 } from "./numbers.js";
@@ -82,11 +82,11 @@ export class Header implements HeaderInterface {
     this.workParHash = workParHash;
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     return this.toBufWriter(new BufWriter()).toBuf();
   }
 
-  static fromBuf(buf: SysBuf): Header {
+  static fromBuf(buf: WebBuf): Header {
     return Header.fromBufReader(new BufReader(buf));
   }
 

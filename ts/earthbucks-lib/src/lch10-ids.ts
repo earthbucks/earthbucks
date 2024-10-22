@@ -1,7 +1,7 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { FixedBuf } from "./buf.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import { VarInt } from "./var-int.js";
 import { EbxBuf } from "./buf.js";
 
@@ -37,13 +37,13 @@ export class Lch10Ids {
     return new Lch10Ids(ids);
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     const varInt = VarInt.fromNumber(this.ids.length);
-    const idsBuf = SysBuf.concat(this.ids.map((id) => id.buf));
-    return SysBuf.concat([varInt.toBuf(), idsBuf]);
+    const idsBuf = WebBuf.concat(this.ids.map((id) => id.buf));
+    return WebBuf.concat([varInt.toBuf(), idsBuf]);
   }
 
-  static fromBuf(buf: SysBuf): Lch10Ids {
+  static fromBuf(buf: WebBuf): Lch10Ids {
     const br = new BufReader(buf);
     const idsLength = VarInt.fromBufReader(br).toU64().n;
     const ids: FixedBuf<32>[] = [];

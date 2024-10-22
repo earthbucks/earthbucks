@@ -2,7 +2,7 @@ import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 import { U32 } from "./numbers.js";
 import { U64 } from "./numbers.js";
 
@@ -15,7 +15,7 @@ export class TxOut {
     this.script = script;
   }
 
-  static fromBuf(buf: SysBuf): TxOut {
+  static fromBuf(buf: WebBuf): TxOut {
     const reader = new BufReader(buf);
     return TxOut.fromBufReader(reader);
   }
@@ -28,7 +28,7 @@ export class TxOut {
     return new TxOut(value, script);
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     const writer = new BufWriter();
     writer.writeU64BE(this.value);
     const scriptBuf = this.script.toBuf();

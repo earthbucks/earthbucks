@@ -2,7 +2,7 @@ import type { Tx } from "./tx.js";
 import type { PkhKeyMap } from "./pkh-key-map.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
-import { FixedBuf, SysBuf } from "./buf.js";
+import { FixedBuf, WebBuf } from "./buf.js";
 import { PubKey } from "./pub-key.js";
 import { Script } from "./script.js";
 import type { KeyPair } from "./key-pair.js";
@@ -45,7 +45,7 @@ export class TxSigner {
     const prevBlockNum = txOutBn.blockNum;
 
     if (txOut.script.isPkhOutput()) {
-      const pkhBuf = txOut.script.chunks[2]?.buf as SysBuf;
+      const pkhBuf = txOut.script.chunks[2]?.buf as WebBuf;
       const pkh = Pkh.fromBuf(FixedBuf.fromBuf(32, pkhBuf));
       const inputScript = txInput.script;
       if (!inputScript.isPkhInput()) {
@@ -68,10 +68,10 @@ export class TxSigner {
       );
       const sigBuf = sig.toBuf();
 
-      (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
-      (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
+      (inputScript.chunks[0] as ScriptChunk).buf = WebBuf.from(sigBuf);
+      (inputScript.chunks[1] as ScriptChunk).buf = WebBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhx90dOutput()) {
-      const pkhBuf = txOut.script.chunks[3]?.buf as SysBuf;
+      const pkhBuf = txOut.script.chunks[3]?.buf as WebBuf;
       const pkh = Pkh.fromBuf(FixedBuf.fromBuf(32, pkhBuf));
       const expired = Script.isPkhx90dExpired(
         this.workingBlockNum,
@@ -105,10 +105,10 @@ export class TxSigner {
       );
       const sigBuf = sig.toBuf();
 
-      (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
-      (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
+      (inputScript.chunks[0] as ScriptChunk).buf = WebBuf.from(sigBuf);
+      (inputScript.chunks[1] as ScriptChunk).buf = WebBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhx1hOutput()) {
-      const pkhBuf = txOut.script.chunks[3]?.buf as SysBuf;
+      const pkhBuf = txOut.script.chunks[3]?.buf as WebBuf;
       const pkh = Pkh.fromBuf(FixedBuf.fromBuf(32, pkhBuf));
       const expired = Script.isPkhx1hExpired(
         this.workingBlockNum,
@@ -142,12 +142,12 @@ export class TxSigner {
       );
       const sigBuf = sig.toBuf();
 
-      (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
-      (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
+      (inputScript.chunks[0] as ScriptChunk).buf = WebBuf.from(sigBuf);
+      (inputScript.chunks[1] as ScriptChunk).buf = WebBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhxr1h40mOutput()) {
-      const pkhBuf = txOut.script.chunks[3]?.buf as SysBuf;
+      const pkhBuf = txOut.script.chunks[3]?.buf as WebBuf;
       const pkh = Pkh.fromBuf(FixedBuf.fromBuf(32, pkhBuf));
-      const rpkhBuf = txOut.script.chunks[13]?.buf as SysBuf;
+      const rpkhBuf = txOut.script.chunks[13]?.buf as WebBuf;
       const rpkh = Pkh.fromBuf(FixedBuf.fromBuf(32, rpkhBuf));
       const expired = Script.isPkhxr1h40mExpired(
         this.workingBlockNum,
@@ -200,12 +200,12 @@ export class TxSigner {
       );
       const sigBuf = sig.toBuf();
 
-      (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
-      (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
+      (inputScript.chunks[0] as ScriptChunk).buf = WebBuf.from(sigBuf);
+      (inputScript.chunks[1] as ScriptChunk).buf = WebBuf.from(pubKeyBuf.buf);
     } else if (txOut.script.isPkhxr90d60dOutput()) {
-      const pkhBuf = txOut.script.chunks[3]?.buf as SysBuf;
+      const pkhBuf = txOut.script.chunks[3]?.buf as WebBuf;
       const pkh = Pkh.fromBuf(FixedBuf.fromBuf(32, pkhBuf));
-      const rpkhBuf = txOut.script.chunks[13]?.buf as SysBuf;
+      const rpkhBuf = txOut.script.chunks[13]?.buf as WebBuf;
       const rpkh = Pkh.fromBuf(FixedBuf.fromBuf(32, rpkhBuf));
       const expired = Script.isPkhxr90d60dExpired(
         this.workingBlockNum,
@@ -258,8 +258,8 @@ export class TxSigner {
       );
       const sigBuf = sig.toBuf();
 
-      (inputScript.chunks[0] as ScriptChunk).buf = SysBuf.from(sigBuf);
-      (inputScript.chunks[1] as ScriptChunk).buf = SysBuf.from(pubKeyBuf.buf);
+      (inputScript.chunks[0] as ScriptChunk).buf = WebBuf.from(sigBuf);
+      (inputScript.chunks[1] as ScriptChunk).buf = WebBuf.from(pubKeyBuf.buf);
     } else {
       throw new Error("unsupported script type");
     }

@@ -1,12 +1,12 @@
-import { SysBuf } from "@earthbucks/lib";
+import { WebBuf } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
 import * as tf from "@tensorflow/tfjs";
 
 type TF = typeof tf;
 type TFTensor = tf.Tensor;
 
-type HashFunction = (input: SysBuf) => FixedBuf<32>;
-type AsyncHashFunction = (input: SysBuf) => Promise<FixedBuf<32>>;
+type HashFunction = (input: WebBuf) => FixedBuf<32>;
+type AsyncHashFunction = (input: WebBuf) => Promise<FixedBuf<32>>;
 
 export class PowGpu {
   workingBlockId: TFTensor;
@@ -26,11 +26,11 @@ export class PowGpu {
     const lch10IdsRev = [...lch10Ids].reverse();
     this.workingBlockId = this.tensorFromBufferBitsAlt4(workingBlockId.buf);
     this.lch10Ids = this.tensorFromBufferBitsAlt4(
-      SysBuf.concat(lch10IdsRev.map((id) => id.buf)),
+      WebBuf.concat(lch10IdsRev.map((id) => id.buf)),
     );
   }
 
-  tensorFromBufferBitsAlt1(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt1(buffer: WebBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -50,7 +50,7 @@ export class PowGpu {
     return this.tf.tensor1d(bits, "int32");
   }
 
-  tensorFromBufferBitsAlt2(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt2(buffer: WebBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -71,7 +71,7 @@ export class PowGpu {
     return this.tf.tensor1d(bits, "int32");
   }
 
-  tensorFromBufferBitsAlt3(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt3(buffer: WebBuf): TFTensor {
     // create a tensor by extracting every bit from the buffer into a new int32
     // value in a tensor. the new tensor has a bunch of int32 values that are
     // all either 0 or 1.
@@ -99,7 +99,7 @@ export class PowGpu {
     return bits.flatten();
   }
 
-  tensorFromBufferBitsAlt4(buffer: SysBuf): TFTensor {
+  tensorFromBufferBitsAlt4(buffer: WebBuf): TFTensor {
     // same as tensorFromBufferBitsAlt3, but uses a Uint16Array to reduce the
     // amount of data sent to the GPU by half compared to Uint8Array.
     if (buffer.length % 2 !== 0) {
@@ -193,25 +193,25 @@ export class PowGpu {
     return concatted;
   }
 
-  async algo(n: number): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo(n: number): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     const reduced = this.tf.tidy(() => {
       const seed = this.tensorSeedReplica(n); // expand seed to fill matrix
       const matrix = this.seedToMatrix(seed, n); // reshape seed to become matrix
       const matrix10 = this.tf.matMul(matrix, matrix);
       return this.matrixReduce(matrix10);
     });
-    const reducedBuf = SysBuf.from(await reduced.data());
-    const reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf] = [
-      SysBuf.from(reducedBuf.subarray(0, n)),
-      SysBuf.from(reducedBuf.subarray(n, n * 2)),
-      SysBuf.from(reducedBuf.subarray(n * 2, n * 3)),
-      SysBuf.from(reducedBuf.subarray(n * 3, n * 4)),
+    const reducedBuf = WebBuf.from(await reduced.data());
+    const reducedBufs: [WebBuf, WebBuf, WebBuf, WebBuf] = [
+      WebBuf.from(reducedBuf.subarray(0, n)),
+      WebBuf.from(reducedBuf.subarray(n, n * 2)),
+      WebBuf.from(reducedBuf.subarray(n * 2, n * 3)),
+      WebBuf.from(reducedBuf.subarray(n * 3, n * 4)),
     ];
     reduced.dispose();
     return reducedBufs;
   }
 
-  async algo257(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo257(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     // Using a prime number for the size of the matrix guarantees that replicated
     // data does not repeat on subsequent rows. For instance, for 256 bits of
     // pseudorandom data, a 256x256 matrix would have the same data on every row.
@@ -232,51 +232,51 @@ export class PowGpu {
     return this.algo(257);
   }
 
-  async algo17(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo17(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(17);
   }
 
-  async algo1031(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo1031(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(1031);
   }
 
-  async algo1289(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo1289(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(1289);
   }
 
-  async algo1627(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo1627(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(1627);
   }
 
-  async algo9973(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo9973(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(9973);
   }
 
-  async algo46337(): Promise<[SysBuf, SysBuf, SysBuf, SysBuf]> {
+  async algo46337(): Promise<[WebBuf, WebBuf, WebBuf, WebBuf]> {
     return this.algo(46337);
   }
 
   reducedBufsHash(
-    reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
+    reducedBufs: [WebBuf, WebBuf, WebBuf, WebBuf],
     blake3Hash: HashFunction,
   ): FixedBuf<32> {
     const hash0 = blake3Hash(reducedBufs[0]).buf;
     const hash1 = blake3Hash(reducedBufs[1]).buf;
     const hash2 = blake3Hash(reducedBufs[2]).buf;
     const hash3 = blake3Hash(reducedBufs[3]).buf;
-    const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
+    const concatted = WebBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3Hash(concatted);
   }
 
   async reducedBufsHashAsync(
-    reducedBufs: [SysBuf, SysBuf, SysBuf, SysBuf],
+    reducedBufs: [WebBuf, WebBuf, WebBuf, WebBuf],
     blake3HashAsync: AsyncHashFunction,
   ): Promise<FixedBuf<32>> {
     const hash0 = (await blake3HashAsync(reducedBufs[0])).buf;
     const hash1 = (await blake3HashAsync(reducedBufs[1])).buf;
     const hash2 = (await blake3HashAsync(reducedBufs[2])).buf;
     const hash3 = (await blake3HashAsync(reducedBufs[3])).buf;
-    const concatted = SysBuf.concat([hash0, hash1, hash2, hash3]);
+    const concatted = WebBuf.concat([hash0, hash1, hash2, hash3]);
     return blake3HashAsync(concatted);
   }
 }

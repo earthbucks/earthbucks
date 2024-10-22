@@ -1,5 +1,5 @@
 import { Hash } from "./hash.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import { FixedBuf } from "./buf.js";
 import { MerkleProof } from "./merkle-proof.js";
 
@@ -52,9 +52,9 @@ export class MerkleTree {
   }
 
   static concat(left: FixedBuf<32> | null, right: FixedBuf<32> | null) {
-    const leftBuf = left ? left.buf : SysBuf.alloc(0);
-    const rightBuf = right ? right.buf : SysBuf.alloc(0);
-    return SysBuf.concat([leftBuf, rightBuf]);
+    const leftBuf = left ? left.buf : WebBuf.alloc(0);
+    const rightBuf = right ? right.buf : WebBuf.alloc(0);
+    return WebBuf.concat([leftBuf, rightBuf]);
   }
 
   public computeHash(): FixedBuf<32> | null {
@@ -299,6 +299,6 @@ export class MerkleTree {
       }
       return Hash.doubleBlake3Hash(MerkleTree.concat(sibling, acc));
     }, hash);
-    return SysBuf.compare(hash.buf, merkleRoot.buf) === 0;
+    return WebBuf.compare(hash.buf, merkleRoot.buf) === 0;
   }
 }

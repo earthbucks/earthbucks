@@ -9,7 +9,7 @@
  *
  * http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher-block_chaining_.2829
  */
-import { Buffer as SysBuf } from "buffer";
+import { WebBuf } from "webbuf";
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "./aes.js";
 
 /**
@@ -22,14 +22,13 @@ import { encrypt as aesEncrypt, decrypt as aesDecrypt } from "./aes.js";
  * @returns The encrypted data.
  */
 export function encrypt(
-  plaintext: SysBuf,
-  aesKey: SysBuf,
-  iv?: SysBuf,
+  plaintext: WebBuf,
+  aesKey: WebBuf,
+  iv?: WebBuf,
   concatIv = true,
-): SysBuf {
-  //iv = iv || Random.getRandomBuffer(128 / 8)
+): WebBuf {
   if (!iv) {
-    iv = SysBuf.from(crypto.getRandomValues(new Uint8Array(128 / 8)));
+    iv = WebBuf.from(crypto.getRandomValues(new Uint8Array(128 / 8)));
   }
   if (iv.length !== 128 / 8) {
     throw new Error("iv must be 128 bits");
@@ -41,11 +40,11 @@ export function encrypt(
   ) {
     throw new Error("aesKey must be 128, 192, or 256 bits");
   }
-  const ctBuf = encryptRaw(plaintext, iv, aesKey);
+  const ciphertext = encryptRaw(plaintext, iv, aesKey);
   if (concatIv) {
-    return SysBuf.concat([iv, ctBuf]);
+    return WebBuf.concat([iv, ciphertext]);
   }
-  return ctBuf;
+  return ciphertext;
 }
 
 /**
@@ -56,10 +55,10 @@ export function encrypt(
  * @returns The decrypted data.
  */
 export function decrypt(
-  ciphertext: SysBuf,
-  aesKey: SysBuf,
-  iv?: SysBuf,
-): SysBuf {
+  ciphertext: WebBuf,
+  aesKey: WebBuf,
+  iv?: WebBuf,
+): WebBuf {
   if (iv && iv.length !== 128 / 8) {
     throw new Error("iv must be 128 bits");
   }
@@ -79,7 +78,7 @@ export function decrypt(
   return decryptRaw(ctBuf, iv, aesKey);
 }
 
-export function buf2BlocksBuf(buf: SysBuf, blockSize: number) {
+export function buf2BlocksBuf(buf: WebBuf, blockSize: number) {
   const bytesize = blockSize / 8;
   const blockBufs = [];
 
@@ -96,25 +95,25 @@ export function buf2BlocksBuf(buf: SysBuf, blockSize: number) {
   return blockBufs;
 }
 
-export function blockBufs2Buf(blockBufs: SysBuf[]) {
-  let last = blockBufs[blockBufs.length - 1] as SysBuf;
+export function blockBufs2Buf(blockBufs: WebBuf[]) {
+  let last = blockBufs[blockBufs.length - 1] as WebBuf;
   last = pkcs7Unpad(last);
-  blockBufs[blockBufs.length - 1] = last as SysBuf;
+  blockBufs[blockBufs.length - 1] = last as WebBuf;
 
-  const buf = SysBuf.concat(blockBufs);
+  const buf = WebBuf.concat(blockBufs);
 
   return buf;
 }
 
-export function encryptRaw(plaintext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+export function encryptRaw(plaintext: WebBuf, iv: WebBuf, aesKey: WebBuf) {
   const blockSize = iv.length * 8;
   const blockBufs = buf2BlocksBuf(plaintext, blockSize);
   const ciphertexts = encryptBlocks(blockBufs, iv, aesKey);
-  const ciphertext = SysBuf.concat(ciphertexts);
+  const ciphertext = WebBuf.concat(ciphertexts);
   return ciphertext;
 }
 
-export function decryptRaw(ciphertext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+export function decryptRaw(ciphertext: WebBuf, iv: WebBuf, aesKey: WebBuf) {
   const bytesize = iv.length;
   const ciphertexts = [];
   for (let i = 0; i < ciphertext.length / bytesize; i++) {
@@ -125,23 +124,23 @@ export function decryptRaw(ciphertext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
   return buf;
 }
 
-export function encryptBlock(blockBuf: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+export function encryptBlock(blockBuf: WebBuf, iv: WebBuf, aesKey: WebBuf) {
   const xorbuf = xorBufs(blockBuf, iv);
   const ciphertext = aesEncrypt(xorbuf, aesKey);
   return ciphertext;
 }
 
-export function decryptBlock(ciphertext: SysBuf, iv: SysBuf, aesKey: SysBuf) {
+export function decryptBlock(ciphertext: WebBuf, iv: WebBuf, aesKey: WebBuf) {
   const xorbuf = aesDecrypt(ciphertext, aesKey);
   const blockBuf = xorBufs(xorbuf, iv);
   return blockBuf;
 }
 
-export function encryptBlocks(blockBufs: SysBuf[], iv: SysBuf, aesKey: SysBuf) {
+export function encryptBlocks(blockBufs: WebBuf[], iv: WebBuf, aesKey: WebBuf) {
   const ciphertexts = [];
 
   for (let i = 0; i < blockBufs.length; i++) {
-    const blockBuf = blockBufs[i] as SysBuf;
+    const blockBuf = blockBufs[i] as WebBuf;
     const ciphertext = encryptBlock(blockBuf, iv, aesKey);
 
     ciphertexts.push(ciphertext);
@@ -153,40 +152,40 @@ export function encryptBlocks(blockBufs: SysBuf[], iv: SysBuf, aesKey: SysBuf) {
 }
 
 export function decryptBlocks(
-  ciphertexts: SysBuf[],
-  iv: SysBuf,
-  aesKey: SysBuf,
+  ciphertexts: WebBuf[],
+  iv: WebBuf,
+  aesKey: WebBuf,
 ) {
   const blockBufs = [];
 
   for (let i = 0; i < ciphertexts.length; i++) {
-    const ciphertext = ciphertexts[i] as SysBuf;
+    const ciphertext = ciphertexts[i] as WebBuf;
     const blockBuf = decryptBlock(ciphertext, iv, aesKey);
 
     blockBufs.push(blockBuf);
 
-    iv = ciphertext as SysBuf;
+    iv = ciphertext as WebBuf;
   }
 
   return blockBufs;
 }
 
-export function pkcs7Pad(buf: SysBuf, blockSize: number) {
+export function pkcs7Pad(buf: WebBuf, blockSize: number) {
   const bytesize = blockSize / 8;
   const padbytesize = bytesize - buf.length;
-  const pad = SysBuf.alloc(padbytesize);
+  const pad = WebBuf.alloc(padbytesize);
   pad.fill(padbytesize);
-  const paddedbuf = SysBuf.concat([buf, pad]);
+  const paddedbuf = WebBuf.concat([buf, pad]);
   return paddedbuf;
 }
 
-export function pkcs7Unpad(paddedbuf: SysBuf) {
+export function pkcs7Unpad(paddedbuf: WebBuf) {
   const padlength = paddedbuf[paddedbuf.length - 1] as number;
   const padbuf = paddedbuf.slice(
     (paddedbuf.length as number) - padlength,
     paddedbuf.length as number,
   );
-  const padbuf2 = SysBuf.alloc(padlength);
+  const padbuf2 = WebBuf.alloc(padlength);
   padbuf2.fill(padlength);
   if (!padbuf.equals(padbuf2)) {
     throw new Error("invalid padding");
@@ -194,12 +193,12 @@ export function pkcs7Unpad(paddedbuf: SysBuf) {
   return paddedbuf.slice(0, paddedbuf.length - padlength);
 }
 
-export function xorBufs(buf1: SysBuf, buf2: SysBuf) {
+export function xorBufs(buf1: WebBuf, buf2: WebBuf) {
   if (buf1.length !== buf2.length) {
     throw new Error("bufs must have the same length");
   }
 
-  const buf = SysBuf.alloc(buf1.length);
+  const buf = WebBuf.alloc(buf1.length);
 
   for (let i = 0; i < buf1.length; i++) {
     buf[i] = (buf1[i] as number) ^ (buf2[i] as number);

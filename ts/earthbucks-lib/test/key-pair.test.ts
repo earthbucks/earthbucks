@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { PrivKey } from "../src/priv-key.js";
 import fs from "node:fs";
 import path from "node:path";
-import { SysBuf } from "../src/buf.js";
+import { WebBuf } from "../src/buf.js";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {
@@ -26,7 +26,7 @@ describe("KeyPair", () => {
       const keyPairs: KeyPairJSON[] = JSON.parse(data).key_pair;
 
       for (const pair of keyPairs) {
-        const privKeyBuf = SysBuf.from(pair.priv_key, "hex");
+        const privKeyBuf = WebBuf.from(pair.priv_key, "hex");
         const privKey = PrivKey.fromString(pair.priv_key);
         const key = KeyPair.fromPrivKey(privKey);
         expect(key.pubKey.toString()).toBe(pair.pub_key);

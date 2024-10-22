@@ -1,4 +1,4 @@
-import { FixedBuf, SysBuf } from "./buf.js";
+import { FixedBuf, WebBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxSignature {
@@ -16,13 +16,13 @@ export class TxSignature {
     this.sigBuf = sigBuf;
   }
 
-  toBuf(): SysBuf {
-    const hashTypeBuf = SysBuf.alloc(1);
+  toBuf(): WebBuf {
+    const hashTypeBuf = WebBuf.alloc(1);
     hashTypeBuf.writeUInt8(this.hashType.n);
-    return SysBuf.concat([hashTypeBuf, this.sigBuf.buf]);
+    return WebBuf.concat([hashTypeBuf, this.sigBuf.buf]);
   }
 
-  static fromBuf(buf: SysBuf): TxSignature {
+  static fromBuf(buf: WebBuf): TxSignature {
     if (buf.length !== TxSignature.SIZE) {
       throw new Error("Invalid TxSignature length");
     }

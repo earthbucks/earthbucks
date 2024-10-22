@@ -7,32 +7,31 @@ This TypeScript library provides a simple interface for encrypting and decryptin
 ## Installation
 
 ```bash
-npm install @earthbucks/aes
+npm install @earthbucks/aescbc
 ```
 
 ## Usage
-
-Note that `SysBuf` is just another name for the npm package `Buffer`, **not** the same thing as the npm standard module by the same name.
 
 ### `encrypt` Method
 
 Encrypt data using AES with CBC mode. This method supports 128, 192, or 256-bit AES keys and a 128-bit initialization vector (IV). You can choose to prepend the IV to the encrypted data for easier storage and transmission.
 
 ```typescript
-import { encrypt } from '@earthbucks/aes';
+import { WebBuf } from "webbuf";
+import { encrypt } from '@earthbucks/aescbc';
 
 /**
  * Encrypt data with AES + CBC mode.
  *
- * @param {SysBuf} messageBuf - The data to encrypt. Can be any size.
- * @param {SysBuf} aesKeyBuf - The AES key (128, 192, or 256 bits).
- * @param {SysBuf} ivBuf - The initialization vector (IV, 128 bits).
+ * @param {WebBuf} messageBuf - The data to encrypt. Can be any size.
+ * @param {WebBuf} aesKeyBuf - The AES key (128, 192, or 256 bits).
+ * @param {WebBuf} ivBuf - The initialization vector (IV, 128 bits).
  * @param {boolean} concatIvBuf - If true, prepends the IV to the encrypted data.
- * @returns {SysBuf} - The encrypted data.
+ * @returns {WebBuf} - The encrypted data.
  */
-const aesKey = SysBuf.from('your-32-byte-key-here', 'hex');
-const iv = SysBuf.from('your-16-byte-iv-here', 'hex');
-const message = SysBuf.from('Hello, World!');
+const aesKey = WebBuf.from('your-32-byte-key-here', 'hex');
+const iv = WebBuf.from('your-16-byte-iv-here', 'hex');
+const message = WebBuf.from('Hello, World!');
 
 const encrypted = encrypt(message, aesKey, iv);
 console.log(encrypted);
@@ -45,22 +44,23 @@ console.log(encrypted);
 - `concatIvBuf`: If set to `true`, the IV will be prepended to the encrypted data (default: `true`).
 
 #### Returns
-- A `SysBuf` containing the encrypted data. If `concatIvBuf` is true, the IV will be prepended to the output.
+- A `WebBuf` containing the encrypted data. If `concatIvBuf` is true, the IV will be prepended to the output.
 
 ### `decrypt` Method
 
 Decrypt data that was encrypted with AES in CBC mode. If the IV was prepended to the encrypted data, you can omit the `ivBuf` parameter.
 
 ```typescript
-import { decrypt } from '@earthbucks/aes';
+import { WebBuf } from "webbuf";
+import { decrypt } from '@earthbucks/aescbc';
 
 /**
  * Decrypt AES-encrypted data.
  *
- * @param {SysBuf} encBuf - The encrypted data.
- * @param {SysBuf} aesKeyBuf - The AES key (128, 192, or 256 bits).
- * @param {SysBuf} ivBuf - The initialization vector (optional if IV is included in `encBuf`).
- * @returns {SysBuf} - The decrypted data.
+ * @param {WebBuf} encBuf - The encrypted data.
+ * @param {WebBuf} aesKeyBuf - The AES key (128, 192, or 256 bits).
+ * @param {WebBuf} ivBuf - The initialization vector (optional if IV is included in `encBuf`).
+ * @returns {WebBuf} - The decrypted data.
  */
 const decrypted = decrypt(encrypted, aesKey, iv);
 console.log(decrypted.toString());
@@ -72,7 +72,7 @@ console.log(decrypted.toString());
 - `ivBuf`: The initialization vector (IV). Must be 128 bits. If omitted, the IV is assumed to be prepended to the encrypted data.
 
 #### Returns
-- A `SysBuf` containing the decrypted data.
+- A `WebBuf` containing the decrypted data.
 
 ## Security Notice
 While this library implements AES encryption, it **does not** protect against data tampering. If an attacker modifies the encrypted data, it may decrypt incorrectly without raising an error. To ensure data authenticity, you should compute and verify a cryptographic hash (such as HMAC) alongside encryption to detect unauthorized modifications.
@@ -80,8 +80,8 @@ While this library implements AES encryption, it **does not** protect against da
 ## Example: Encrypting and Decrypting with a Prepend IV
 
 ```typescript
-const aesKey = SysBuf.from('your-32-byte-key-here', 'hex');
-const message = SysBuf.from('Secret message here');
+const aesKey = WebBuf.from('your-32-byte-key-here', 'hex');
+const message = WebBuf.from('Secret message here');
 const encrypted = encrypt(message, aesKey);
 console.log('Encrypted:', encrypted);
 

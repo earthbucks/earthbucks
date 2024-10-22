@@ -1,12 +1,12 @@
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class VarInt {
-  private buf: SysBuf;
+  private buf: WebBuf;
 
-  constructor(buf: SysBuf = SysBuf.alloc(0)) {
+  constructor(buf: WebBuf = WebBuf.alloc(0)) {
     this.buf = buf;
   }
 
@@ -28,7 +28,7 @@ export class VarInt {
     return VarInt.fromU64(u64);
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     return this.buf;
   }
 
@@ -50,7 +50,7 @@ export class VarInt {
     try {
       const u64 = this.toU64();
       const varint = VarInt.fromU64(u64);
-      return SysBuf.compare(this.buf, varint.toBuf()) === 0;
+      return WebBuf.compare(this.buf, varint.toBuf()) === 0;
     } catch (err) {
       return false;
     }

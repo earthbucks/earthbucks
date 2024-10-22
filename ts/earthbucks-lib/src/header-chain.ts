@@ -7,7 +7,7 @@ import { Script } from "./script.js";
 import type { FixedBuf } from "./buf.js";
 import { Tx } from "./tx.js";
 import type { TxOut } from "./tx-out.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 
 export class HeaderChain {
   static LENGTH_EXPIRY_PERIOD = Script.PKHXR_90D_60D_X_LOCK_REL;
@@ -73,7 +73,7 @@ export class HeaderChain {
     const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
       new U32(1),
     );
-    const domainBuf = SysBuf.from(domain);
+    const domainBuf = WebBuf.from(domain);
     const domainScriptChunk = ScriptChunk.fromData(domainBuf);
     const blockMessageScriptChunk = ScriptChunk.fromData(blockMessageId.buf);
     const inputScript = new Script([
@@ -100,7 +100,7 @@ export class HeaderChain {
     const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
       new U32(1),
     );
-    const domainBuf = SysBuf.from(domain);
+    const domainBuf = WebBuf.from(domain);
     const domainScriptChunk = ScriptChunk.fromData(domainBuf);
     const blockMessageScriptChunk = ScriptChunk.fromData(blockMessageId.buf);
     const inputScript = new Script([

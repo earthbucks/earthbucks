@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
-import { SysBuf, FixedBuf, EbxBuf } from "../src/buf.js";
+import { WebBuf, FixedBuf, EbxBuf } from "../src/buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
 import { BufReader } from "../src/buf-reader.js";
 import { BufWriter } from "../src/buf-writer.js";

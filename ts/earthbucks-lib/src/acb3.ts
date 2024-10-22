@@ -1,12 +1,13 @@
 import {
   encrypt as aesCbcEncrypt,
   decrypt as aesCbcDecrypt,
-} from "@earthbucks/aes";
+} from "@earthbucks/aescbc";
 import { Hash } from "./hash.js";
-import { FixedBuf, SysBuf } from "./buf.js";
+import { FixedBuf, WebBuf } from "./buf.js";
 
 /**
- * Encrypt data with AES + CBC mode and a Blake3 MAC.
+ * Encrypt data with AES + CBC mode and a Blake3 MAC. Good for small amounts of
+ * data, such as a short text message.
  *
  * ACB3 = AES + CBC + Blake3 Mac
  *
@@ -16,14 +17,14 @@ import { FixedBuf, SysBuf } from "./buf.js";
  * @returns The encrypted data.
  * @throws If the encrypted data is less than 256+128+128 bits
  */
-export function encrypt(
-  plaintext: SysBuf,
+export function acb3Encrypt(
+  plaintext: WebBuf,
   aesKey: FixedBuf<32>,
   iv?: FixedBuf<16>,
 ) {
   const ciphertext = aesCbcEncrypt(plaintext, aesKey.buf, iv?.buf);
   const hmacbuf = Hash.blake3Mac(aesKey, ciphertext);
-  return SysBuf.concat([hmacbuf.buf, ciphertext]);
+  return WebBuf.concat([hmacbuf.buf, ciphertext]);
 }
 
 /**
@@ -37,7 +38,7 @@ export function encrypt(
  * @throws If the encrypted data is less than 256+128+128 bits
  * @throws If the Hmacs are not equivalent
  */
-export function decrypt(ciphertext: SysBuf, aesKey: FixedBuf<32>) {
+export function acb3Decrypt(ciphertext: WebBuf, aesKey: FixedBuf<32>) {
   if (ciphertext.length < (256 + 128 + 128) / 8) {
     throw new Error(
       "The encrypted data must be at least 256+128+128 bits, which is the length of the Hmac plus the iv plus the smallest encrypted data size",

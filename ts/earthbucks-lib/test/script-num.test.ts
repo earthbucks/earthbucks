@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { ScriptNum } from "../src/script-num.js";
-import { SysBuf } from "../src/buf.js";
+import { WebBuf } from "../src/buf.js";
 
 describe("ScriptNum", () => {
   const testCases = [
@@ -24,7 +24,7 @@ describe("ScriptNum", () => {
 
   for (const { hex, dec } of testCases) {
     test(`fromBuf correctly converts ${hex} to ${dec}`, () => {
-      const buffer = SysBuf.from(hex, "hex");
+      const buffer = WebBuf.from(hex, "hex");
       const scriptNum = ScriptNum.fromBuf(buffer);
       expect(scriptNum.num.toString()).toBe(dec);
     });

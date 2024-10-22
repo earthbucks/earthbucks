@@ -1,5 +1,5 @@
 import { Hash } from "./hash.js";
-import { SysBuf, EbxBuf, FixedBuf } from "./buf.js";
+import { WebBuf, EbxBuf, FixedBuf } from "./buf.js";
 import type { PubKey } from "./pub-key.js";
 
 // public key hash
@@ -37,7 +37,7 @@ export class Pkh {
   }
 
   toString(): string {
-    const checkHash = SysBuf.from(Hash.blake3Hash(this.buf.buf).buf).subarray(
+    const checkHash = WebBuf.from(Hash.blake3Hash(this.buf.buf).buf).subarray(
       0,
       4,
     );

@@ -1,7 +1,7 @@
 import { FixedBuf } from "./buf.js";
 import { U8 } from "./numbers.js";
 import { Hash } from "./hash.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import { BufReader } from "./buf-reader.js";
 import { BufWriter } from "./buf-writer.js";
 import { EbxBuf } from "./buf.js";
@@ -28,13 +28,13 @@ export class BlockMessageHeader {
   }
 
   static getMessageHash(message: string): FixedBuf<32> {
-    const messageBuf = SysBuf.from(message);
+    const messageBuf = WebBuf.from(message);
     const messageHash = Hash.blake3Hash(messageBuf);
     return messageHash;
   }
 
   static getMessageId(message: string): FixedBuf<32> {
-    const messageBuf = SysBuf.from(message);
+    const messageBuf = WebBuf.from(message);
     const messageHash = Hash.blake3Hash(messageBuf);
     const messageId = Hash.blake3Hash(messageHash.buf);
     return messageId;
@@ -75,11 +75,11 @@ export class BlockMessageHeader {
     );
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     return this.toBufWriter(new BufWriter()).toBuf();
   }
 
-  static fromBuf(buf: SysBuf): BlockMessageHeader {
+  static fromBuf(buf: WebBuf): BlockMessageHeader {
     return BlockMessageHeader.fromBufReader(new BufReader(buf));
   }
 

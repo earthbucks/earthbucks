@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { BufWriter } from "../src/buf-writer.js";
-import { SysBuf } from "../src/buf.js";
+import { WebBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("BufWriter", () => {
@@ -73,7 +73,7 @@ describe("BufWriter", () => {
       const bn = new U64(0xffffffff);
       const result = BufWriter.varIntBuf(bn);
       expect(result[0]).toBe(254);
-      expect(SysBuf.from(result).toString("hex")).toBe("feffffffff");
+      expect(WebBuf.from(result).toString("hex")).toBe("feffffffff");
     });
 
     it("should write a bigint greater than or equal to 0x100000000 as a 9-byte integer", () => {

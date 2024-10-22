@@ -3,7 +3,7 @@ import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
-import { SysBuf, FixedBuf } from "./buf.js";
+import { WebBuf, FixedBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class TxBuilder {

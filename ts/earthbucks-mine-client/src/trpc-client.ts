@@ -8,7 +8,7 @@ import {
   Header,
   PubKey,
   SigninChallenge,
-  SysBuf,
+  WebBuf,
   U256,
   U64,
   Domain,
@@ -120,7 +120,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
       },
     },
     userAvatar: {
-      uploadAvatar: async (avatarBuf: SysBuf) => {
+      uploadAvatar: async (avatarBuf: WebBuf) => {
         const avatar = avatarBuf.toString("base64");
         await trpcClient.userAvatar.uploadAvatar.mutate(avatar);
       },
@@ -150,8 +150,8 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
       setNButtons: async (nButtons: 1 | 2 | 3 | 4) => {
         const res = await trpcClient.buttonConfig.setNButtons.mutate(nButtons);
         return res;
-      }
-    }
+      },
+    },
   };
 };
 

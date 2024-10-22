@@ -1,6 +1,6 @@
-import { Buffer as SysBuf } from "buffer";
+import { WebBuf } from "webbuf";
 
-export function encrypt(messageBuf: SysBuf, keyBuf: SysBuf) {
+export function encrypt(messageBuf: WebBuf, keyBuf: WebBuf) {
   const key = buf2Words(keyBuf);
   const message = buf2Words(messageBuf);
   const a = new AES(key);
@@ -9,7 +9,7 @@ export function encrypt(messageBuf: SysBuf, keyBuf: SysBuf) {
   return encBuf;
 }
 
-export function decrypt(encBuf: SysBuf, keyBuf: SysBuf) {
+export function decrypt(encBuf: WebBuf, keyBuf: WebBuf) {
   const enc = buf2Words(encBuf);
   const key = buf2Words(keyBuf);
   const a = new AES(key);
@@ -18,7 +18,7 @@ export function decrypt(encBuf: SysBuf, keyBuf: SysBuf) {
   return messageBuf;
 }
 
-const buf2Words = (buf: SysBuf) => {
+const buf2Words = (buf: WebBuf) => {
   if (buf.length % 4) {
     throw new Error("buf length must be a multiple of 4");
   }
@@ -33,7 +33,7 @@ const buf2Words = (buf: SysBuf) => {
 };
 
 const words2Buf = (words: Uint32Array) => {
-  const buf = Buffer.alloc(words.length * 4);
+  const buf = WebBuf.alloc(words.length * 4);
 
   for (let i = 0; i < words.length; i++) {
     buf.writeUInt32BE(words[i] as number, i * 4);

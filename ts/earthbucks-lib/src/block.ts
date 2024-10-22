@@ -2,7 +2,7 @@ import { Header } from "./header.js";
 import { Tx } from "./tx.js";
 import { BufWriter } from "./buf-writer.js";
 import { BufReader } from "./buf-reader.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 
 export class Block {
@@ -35,11 +35,11 @@ export class Block {
     return bw;
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     return this.toBufWriter(new BufWriter()).toBuf();
   }
 
-  static fromBuf(buf: SysBuf): Block {
+  static fromBuf(buf: WebBuf): Block {
     return Block.fromBufReader(new BufReader(buf));
   }
 

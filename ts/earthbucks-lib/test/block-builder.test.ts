@@ -6,7 +6,7 @@ import { BufWriter } from "../src/buf-writer.js";
 import { BufReader } from "../src/buf-reader.js";
 import { BlockBuilder } from "../src/block-builder.js";
 import { Script } from "../src/script.js";
-import { SysBuf, FixedBuf } from "../src/buf.js";
+import { WebBuf, FixedBuf } from "../src/buf.js";
 import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
 
 describe("BlockBuilder", () => {

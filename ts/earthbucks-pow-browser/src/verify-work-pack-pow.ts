@@ -1,4 +1,4 @@
-import type { SysBuf, WorkPack } from "@earthbucks/lib";
+import type { WebBuf, WorkPack } from "@earthbucks/lib";
 import { FixedBuf } from "@earthbucks/lib";
 import type { Header } from "@earthbucks/lib";
 import type { PowGpu } from "./pow-gpu.js";
@@ -9,7 +9,7 @@ function timeout(ms: number) {
   );
 }
 
-type AsyncHashFunction = (input: SysBuf) => Promise<FixedBuf<32>>;
+type AsyncHashFunction = (input: WebBuf) => Promise<FixedBuf<32>>;
 
 const nullHash = FixedBuf.alloc(32).buf;
 

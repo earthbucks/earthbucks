@@ -10,7 +10,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { FixedBuf, SysBuf } from "../src/buf.js";
+import { FixedBuf, WebBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("ScriptInterpreter", () => {
@@ -46,7 +46,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnSuccess).toBe(false);
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("");
     });
 
@@ -64,7 +64,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
@@ -82,7 +82,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ffff");
     });
 
@@ -100,7 +100,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(256));
     });
 
@@ -118,7 +118,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff".repeat(65536));
     });
 
@@ -136,7 +136,7 @@ describe("ScriptInterpreter", () => {
       expect(scriptInterpreter.returnValue).toBeDefined();
       expect(
         scriptInterpreter.returnValue &&
-          SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+          WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
       ).toEqual("ff");
     });
 
@@ -146,7 +146,7 @@ describe("ScriptInterpreter", () => {
       const outputPrivKeyBuf = FixedBuf.fromHex(32, outputPrivKeyHex);
       const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toBuf();
-      expect(SysBuf.from(outputPubKey.buf).toString("hex")).toEqual(
+      expect(WebBuf.from(outputPubKey.buf).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
@@ -205,7 +205,7 @@ describe("ScriptInterpreter", () => {
 
       // Convert private keys to EbxBuf format
       const privKeysU8Vec = privKeysHex.map((hex) =>
-        FixedBuf.fromBuf(32, SysBuf.from(hex, "hex")),
+        FixedBuf.fromBuf(32, WebBuf.from(hex, "hex")),
       );
 
       // Generate public keys
@@ -321,7 +321,7 @@ describe("ScriptInterpreter", () => {
           expect(scriptInterpreter.errStr).toEqual(testScript.expected_error);
           expect(
             scriptInterpreter.returnValue &&
-              SysBuf.from(scriptInterpreter.returnValue).toString("hex"),
+              WebBuf.from(scriptInterpreter.returnValue).toString("hex"),
           ).toBe(testScript.expected_return_value);
           expect(scriptInterpreter.returnSuccess).toBe(
             testScript.expected_success,

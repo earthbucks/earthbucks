@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { MerkleTree } from "../src/merkle-tree.js";
 import { Hash } from "../src/hash.js";
-import { SysBuf } from "../src/buf.js";
+import { WebBuf } from "../src/buf.js";
 import { FixedBuf } from "../src/buf.js";
 
 describe("MerkleTree", () => {
@@ -28,7 +28,7 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 1 data", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
 
       const data = [data1];
       const root = MerkleTree.fromLeafHashes(data);
@@ -43,8 +43,8 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 2 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
 
       const data = [data1, data2];
       const root = MerkleTree.fromLeafHashes(data);
@@ -59,9 +59,9 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 3 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
 
       const data = [data1, data2, data3];
       const root = MerkleTree.fromLeafHashes(data);
@@ -78,9 +78,9 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 3 datas (not null balanced)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
 
       const data = [data1, data2, data3];
       const root = MerkleTree.fromLeafHashes(data);
@@ -100,10 +100,10 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 4 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
 
       const data = [data1, data2, data3, data4];
       const root = MerkleTree.fromLeafHashes(data);
@@ -120,11 +120,11 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 5 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
 
       const data = [data1, data2, data3, data4, data5];
       const root = MerkleTree.fromLeafHashes(data);
@@ -141,12 +141,12 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 6 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data5, data6];
       const root = MerkleTree.fromLeafHashes(data);
@@ -163,13 +163,13 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 7 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7];
       const root = MerkleTree.fromLeafHashes(data);
@@ -186,14 +186,14 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 8 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data8];
       const root = MerkleTree.fromLeafHashes(data);
@@ -210,15 +210,15 @@ describe("MerkleTree", () => {
     });
 
     test("fromLeafHashes with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
 
       const data = [
         data1,
@@ -247,8 +247,8 @@ describe("MerkleTree", () => {
 
   describe("doubleWithNulls", () => {
     test("doubleWithNulls with null", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
 
       const data = [data1, data2];
       const root = MerkleTree.fromLeafHashes(data);
@@ -264,7 +264,7 @@ describe("MerkleTree", () => {
       const root = MerkleTree.fromLeafHashes(data);
       const updated = root.updateBalancedLeafHash(
         0,
-        Hash.doubleBlake3Hash(SysBuf.from("data1")),
+        Hash.doubleBlake3Hash(WebBuf.from("data1")),
       );
       expect(updated.hash?.buf.toString("hex")).toBe(
         "689ce4d2c5a083571f0a1b1d8d4bb9a5b5494aba2c98eb606c1d265681ac5244",
@@ -272,8 +272,8 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 1 data", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
 
       const data = [data1];
       const root = MerkleTree.fromLeafHashes(data);
@@ -289,9 +289,9 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 2 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
 
       const data = [data1, data2];
       const root = MerkleTree.fromLeafHashes(data);
@@ -307,9 +307,9 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 2 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
 
       const data = [data1, data3];
       const root = MerkleTree.fromLeafHashes(data);
@@ -325,10 +325,10 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 3 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
 
       const data = [data1, data2, data3];
       const root = MerkleTree.fromLeafHashes(data);
@@ -345,10 +345,10 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 3 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
 
       const data = [data1, data2, data4];
       const root = MerkleTree.fromLeafHashes(data);
@@ -365,11 +365,11 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 4 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
 
       const data = [data1, data2, data3, data4];
       const root = MerkleTree.fromLeafHashes(data);
@@ -386,11 +386,11 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 4 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
 
       const data = [data1, data2, data3, data5];
       const root = MerkleTree.fromLeafHashes(data);
@@ -407,12 +407,12 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 5 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data5];
       const root = MerkleTree.fromLeafHashes(data);
@@ -429,12 +429,12 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 5 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
 
       const data = [data1, data2, data3, data4, data6];
       const root = MerkleTree.fromLeafHashes(data);
@@ -451,13 +451,13 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 6 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data6];
       const root = MerkleTree.fromLeafHashes(data);
@@ -474,13 +474,13 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 6 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
 
       const data = [data1, data2, data3, data4, data5, data7];
       const root = MerkleTree.fromLeafHashes(data);
@@ -497,14 +497,14 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 7 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7];
       const root = MerkleTree.fromLeafHashes(data);
@@ -521,14 +521,14 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 7 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
 
       const data = [data1, data2, data3, data4, data5, data6, data8];
       const root = MerkleTree.fromLeafHashes(data);
@@ -545,15 +545,15 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 8 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data8];
       const root = MerkleTree.fromLeafHashes(data);
@@ -570,15 +570,15 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 8 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
 
       const data = [data1, data2, data3, data4, data5, data6, data7, data9];
       const root = MerkleTree.fromLeafHashes(data);
@@ -595,16 +595,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -631,16 +631,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -667,16 +667,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -703,16 +703,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -739,16 +739,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -775,16 +775,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -811,16 +811,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -847,16 +847,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -883,16 +883,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data1,
@@ -919,16 +919,16 @@ describe("MerkleTree", () => {
     });
 
     test("updateBalancedLeafHash with 9 datas", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
-      const data10 = Hash.doubleBlake3Hash(SysBuf.from("data10"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
+      const data10 = Hash.doubleBlake3Hash(WebBuf.from("data10"));
 
       const data = [
         data10,
@@ -957,7 +957,7 @@ describe("MerkleTree", () => {
 
   describe("addLeafHash", () => {
     test("addLeafHash with 1 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
       const root = MerkleTree.fromLeafHashes([]);
       const updated = root.addLeafHash(data1);
       const hex = updated.computeHash()?.buf.toString("hex");
@@ -974,8 +974,8 @@ describe("MerkleTree", () => {
     });
 
     test("addLeafHash with 2 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
       const root = MerkleTree.fromLeafHashes([data1]);
       const updated = root.addLeafHash(data2);
       const hex = updated.computeHash()?.buf.toString("hex");
@@ -992,9 +992,9 @@ describe("MerkleTree", () => {
     });
 
     test("addLeafHash with 3 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
       const root = MerkleTree.fromLeafHashes([data1, data2]);
       const updated = root.addLeafHash(data3);
       const hex = updated.computeHash()?.buf.toString("hex");
@@ -1011,9 +1011,9 @@ describe("MerkleTree", () => {
     test.skip("benchmark: addLeafHash with 1000 total", () => {
       console.time("addLeafHash with 1000 total");
       const datas = Array.from({ length: 1000 }, (_, i) =>
-        Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
+        Hash.doubleBlake3Hash(WebBuf.from(`data${i}`)),
       );
-      const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
+      const dataN = Hash.doubleBlake3Hash(WebBuf.from("dataN"));
       const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 1000 total");
       console.time("add 1");
@@ -1033,9 +1033,9 @@ describe("MerkleTree", () => {
     test.skip("benchmark: addLeafHash with 10000 total", () => {
       console.time("addLeafHash with 10000 total");
       const datas = Array.from({ length: 10000 }, (_, i) =>
-        Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
+        Hash.doubleBlake3Hash(WebBuf.from(`data${i}`)),
       );
-      const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
+      const dataN = Hash.doubleBlake3Hash(WebBuf.from("dataN"));
       const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 10000 total");
       console.time("add 1");
@@ -1055,9 +1055,9 @@ describe("MerkleTree", () => {
     test.skip("benchmark: addLeafHash with 100000 total", () => {
       console.time("addLeafHash with 100000 total");
       const datas = Array.from({ length: 100000 }, (_, i) =>
-        Hash.doubleBlake3Hash(SysBuf.from(`data${i}`)),
+        Hash.doubleBlake3Hash(WebBuf.from(`data${i}`)),
       );
-      const dataN = Hash.doubleBlake3Hash(SysBuf.from("dataN"));
+      const dataN = Hash.doubleBlake3Hash(WebBuf.from("dataN"));
       const root = MerkleTree.fromLeafHashes(datas);
       console.timeEnd("addLeafHash with 100000 total");
       console.time("add 1");
@@ -1077,15 +1077,15 @@ describe("MerkleTree", () => {
 
   describe("merkle proofs", () => {
     test("get proof with 1 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
       const root = MerkleTree.fromLeafHashes([data1]);
       const proof = root.getProof(0);
       expect(proof).toEqual([]);
     });
 
     test("get proof with 2 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
       const root = MerkleTree.fromLeafHashes([data1, data2]);
       const proof = root.getMerkleProof(0);
       expect(proof.toHex()).toEqual(
@@ -1094,7 +1094,7 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
       const root = MerkleTree.fromLeafHashes([data1]);
       const proof = root.getProof(0);
       const verified = MerkleTree.verifyProof(root.hash, proof, data1);
@@ -1102,8 +1102,8 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
       const root = MerkleTree.fromLeafHashes([data1, data2]);
       const proof = root.getProof(0);
       const verified = MerkleTree.verifyProof(root.hash, proof, data1);
@@ -1111,9 +1111,9 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (3,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
       const proof = root.getProof(0);
       const verified = MerkleTree.verifyProof(root.hash, proof, data1);
@@ -1121,9 +1121,9 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (3,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
       const proof = root.getProof(1);
       const verified = MerkleTree.verifyProof(root.hash, proof, data2);
@@ -1131,9 +1131,9 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (3,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3]);
       const proof = root.getProof(2);
       const verified = MerkleTree.verifyProof(root.hash, proof, data3);
@@ -1141,10 +1141,10 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (4,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
       const proof = root.getProof(0);
       const verified = MerkleTree.verifyProof(root.hash, proof, data1);
@@ -1152,10 +1152,10 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (4,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
       const proof = root.getProof(1);
       const verified = MerkleTree.verifyProof(root.hash, proof, data2);
@@ -1163,10 +1163,10 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (4,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
       const proof = root.getProof(2);
       const verified = MerkleTree.verifyProof(root.hash, proof, data3);
@@ -1174,10 +1174,10 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (4,4)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
       const root = MerkleTree.fromLeafHashes([data1, data2, data3, data4]);
       const proof = root.getProof(3);
       const verified = MerkleTree.verifyProof(root.hash, proof, data4);
@@ -1185,11 +1185,11 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (5,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1203,11 +1203,11 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (5,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1221,11 +1221,11 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (5,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1239,11 +1239,11 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (5,4)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1257,11 +1257,11 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (5,5)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1275,12 +1275,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1295,12 +1295,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1315,12 +1315,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1335,12 +1335,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,4)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1355,12 +1355,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,5)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1375,12 +1375,12 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (6,6)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1395,13 +1395,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1417,13 +1417,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1439,13 +1439,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1461,13 +1461,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,4)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1483,13 +1483,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,5)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1505,13 +1505,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,6)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1527,13 +1527,13 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (7,7)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1549,14 +1549,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1573,14 +1573,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1597,14 +1597,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,3)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1621,14 +1621,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,4)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1645,14 +1645,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,5)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1669,14 +1669,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,6)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1693,14 +1693,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,7)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1717,14 +1717,14 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (8,8)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1741,15 +1741,15 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (9,1)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -1767,15 +1767,15 @@ describe("MerkleTree", () => {
     });
 
     test("get proof and verify (9,2)", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
-      const data4 = Hash.doubleBlake3Hash(SysBuf.from("data4"));
-      const data5 = Hash.doubleBlake3Hash(SysBuf.from("data5"));
-      const data6 = Hash.doubleBlake3Hash(SysBuf.from("data6"));
-      const data7 = Hash.doubleBlake3Hash(SysBuf.from("data7"));
-      const data8 = Hash.doubleBlake3Hash(SysBuf.from("data8"));
-      const data9 = Hash.doubleBlake3Hash(SysBuf.from("data9"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
+      const data4 = Hash.doubleBlake3Hash(WebBuf.from("data4"));
+      const data5 = Hash.doubleBlake3Hash(WebBuf.from("data5"));
+      const data6 = Hash.doubleBlake3Hash(WebBuf.from("data6"));
+      const data7 = Hash.doubleBlake3Hash(WebBuf.from("data7"));
+      const data8 = Hash.doubleBlake3Hash(WebBuf.from("data8"));
+      const data9 = Hash.doubleBlake3Hash(WebBuf.from("data9"));
       const root = MerkleTree.fromLeafHashes([
         data1,
         data2,
@@ -2127,8 +2127,8 @@ describe("MerkleTree", () => {
     });
 
     test("addLeafHash with 3 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
       const mt1 = new MerkleTree().addLeafHash(data1).addLeafHash(data2);
       const mt2 = MerkleTree.fromLeafHashes([data1, data2]);
       expect(mt1.hash?.toHex()).toEqual(
@@ -2151,9 +2151,9 @@ describe("MerkleTree", () => {
     });
 
     test("addLeafHash with 3 total", () => {
-      const data1 = Hash.doubleBlake3Hash(SysBuf.from("data1"));
-      const data2 = Hash.doubleBlake3Hash(SysBuf.from("data2"));
-      const data3 = Hash.doubleBlake3Hash(SysBuf.from("data3"));
+      const data1 = Hash.doubleBlake3Hash(WebBuf.from("data1"));
+      const data2 = Hash.doubleBlake3Hash(WebBuf.from("data2"));
+      const data3 = Hash.doubleBlake3Hash(WebBuf.from("data3"));
       const mt1 = new MerkleTree()
         .addLeafHash(data1)
         .addLeafHash(data2)

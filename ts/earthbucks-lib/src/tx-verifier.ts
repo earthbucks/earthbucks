@@ -2,7 +2,7 @@ import { HashCache } from "./tx.js";
 import type { Tx } from "./tx.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 import { U8, U16, U32, U64 } from "./numbers.js";
 import type { TxIn } from "./tx-in.js";
 import { Err, isErr, isOk, Ok, Result } from "./result.js";
@@ -21,7 +21,7 @@ export class TxVerifier {
     this.blockNum = blockNum;
   }
 
-  evalInputScript(nIn: U32): Result<SysBuf, string> {
+  evalInputScript(nIn: U32): Result<WebBuf, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;

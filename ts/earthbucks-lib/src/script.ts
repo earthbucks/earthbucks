@@ -1,7 +1,7 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { BufReader } from "./buf-reader.js";
-import { FixedBuf, SysBuf } from "./buf.js";
+import { FixedBuf, WebBuf } from "./buf.js";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
@@ -38,7 +38,7 @@ export class Script {
     return this.chunks.map((chunk) => chunk.toString()).join(" ");
   }
 
-  static fromPushOnly(datas: SysBuf[]): Script {
+  static fromPushOnly(datas: WebBuf[]): Script {
     return new Script(datas.map(ScriptChunk.fromData));
   }
 
@@ -57,12 +57,12 @@ export class Script {
     return script;
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     const bufArray = this.chunks.map((chunk) => chunk.toBuf());
-    return SysBuf.concat(bufArray);
+    return WebBuf.concat(bufArray);
   }
 
-  static fromBuf(arr: SysBuf): Script {
+  static fromBuf(arr: WebBuf): Script {
     const reader = new BufReader(arr);
     return Script.fromBufReader(reader);
   }
@@ -76,7 +76,7 @@ export class Script {
     return script;
   }
 
-  static fromMultiSigOutput(m: number, pubKeys: SysBuf[]): Script {
+  static fromMultiSigOutput(m: number, pubKeys: WebBuf[]): Script {
     return new Script([
       ScriptChunk.fromSmallNumber(m),
       ...pubKeys.map(ScriptChunk.fromData),
@@ -85,7 +85,7 @@ export class Script {
     ]);
   }
 
-  static fromMultiSigInput(sigBufs: SysBuf[]): Script {
+  static fromMultiSigInput(sigBufs: WebBuf[]): Script {
     return new Script(sigBufs.map(ScriptChunk.fromData));
   }
 
@@ -111,7 +111,7 @@ export class Script {
     );
   }
 
-  static fromPkhInput(sigBuf: SysBuf, pubKeyBuf: SysBuf): Script {
+  static fromPkhInput(sigBuf: WebBuf, pubKeyBuf: WebBuf): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -129,8 +129,8 @@ export class Script {
   }
 
   static fromPkhInputPlaceholder(): Script {
-    const sig = SysBuf.alloc(TxSignature.SIZE);
-    const pubKey = SysBuf.alloc(PubKey.SIZE);
+    const sig = WebBuf.alloc(TxSignature.SIZE);
+    const pubKey = WebBuf.alloc(PubKey.SIZE);
     return new Script([
       ScriptChunk.fromData(sig),
       ScriptChunk.fromData(pubKey),
@@ -404,7 +404,7 @@ export class Script {
     return this.chunks.length === 1 && this.chunks[0]?.opcode === Opcode.OP_0;
   }
 
-  static fromUnexpiredPkhxInput(sigBuf: SysBuf, pubKeyBuf: SysBuf): Script {
+  static fromUnexpiredPkhxInput(sigBuf: WebBuf, pubKeyBuf: WebBuf): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -438,7 +438,7 @@ export class Script {
     );
   }
 
-  static fromRecoveryPkhxrInput(sigBuf: SysBuf, pubKeyBuf: SysBuf): Script {
+  static fromRecoveryPkhxrInput(sigBuf: WebBuf, pubKeyBuf: WebBuf): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -448,8 +448,8 @@ export class Script {
   }
 
   static fromRecoveryPkhxrInputPlaceholder(): Script {
-    const sig = SysBuf.alloc(TxSignature.SIZE);
-    const pubKey = SysBuf.alloc(PubKey.SIZE);
+    const sig = WebBuf.alloc(TxSignature.SIZE);
+    const pubKey = WebBuf.alloc(PubKey.SIZE);
     return Script.fromRecoveryPkhxrInput(sig, pubKey);
   }
 
@@ -466,12 +466,12 @@ export class Script {
   }
 
   static fromUnexpiredPkhxInputPlaceholder(): Script {
-    const sig = SysBuf.alloc(TxSignature.SIZE);
-    const pubKey = SysBuf.alloc(PubKey.SIZE);
+    const sig = WebBuf.alloc(TxSignature.SIZE);
+    const pubKey = WebBuf.alloc(PubKey.SIZE);
     return Script.fromUnexpiredPkhxInput(sig, pubKey);
   }
 
-  static fromUnexpiredPkhxrInput(sigBuf: SysBuf, pubKeyBuf: SysBuf): Script {
+  static fromUnexpiredPkhxrInput(sigBuf: WebBuf, pubKeyBuf: WebBuf): Script {
     return new Script([
       ScriptChunk.fromData(sigBuf),
       ScriptChunk.fromData(pubKeyBuf),
@@ -491,8 +491,8 @@ export class Script {
   }
 
   static fromUnexpiredPkhxrInputPlaceholder(): Script {
-    const sig = SysBuf.alloc(TxSignature.SIZE);
-    const pubKey = SysBuf.alloc(PubKey.SIZE);
+    const sig = WebBuf.alloc(TxSignature.SIZE);
+    const pubKey = WebBuf.alloc(PubKey.SIZE);
     return Script.fromUnexpiredPkhxrInput(sig, pubKey);
   }
 
@@ -515,11 +515,11 @@ export class Script {
     }
     const nonce = FixedBuf.fromBuf(
       32,
-      this.chunks[this.chunks.length - 3]?.getData() as SysBuf,
+      this.chunks[this.chunks.length - 3]?.getData() as WebBuf,
     );
     const blockMessageId = FixedBuf.fromBuf(
       32,
-      this.chunks[this.chunks.length - 2]?.getData() as SysBuf,
+      this.chunks[this.chunks.length - 2]?.getData() as WebBuf,
     );
     const domain = this.chunks[this.chunks.length - 1]
       ?.getData()
@@ -545,19 +545,19 @@ export class Script {
   getPkhs(): { pkh: Pkh; rpkh: Pkh | null } {
     if (this.isPkhxr90d60dOutput() || this.isPkhxr1h40mOutput()) {
       return {
-        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as SysBuf)),
-        rpkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[13]?.buf as SysBuf)),
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as WebBuf)),
+        rpkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[13]?.buf as WebBuf)),
       };
     }
     if (this.isPkhx90dOutput() || this.isPkhx1hOutput()) {
       return {
-        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as SysBuf)),
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as WebBuf)),
         rpkh: null,
       };
     }
     if (this.isPkhOutput()) {
       return {
-        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[2]?.buf as SysBuf)),
+        pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[2]?.buf as WebBuf)),
         rpkh: null,
       };
     }

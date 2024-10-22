@@ -1,4 +1,4 @@
-import { SysBuf, FixedBuf } from "./buf.js";
+import { WebBuf, FixedBuf } from "./buf.js";
 import type { PrivKey } from "./priv-key.js";
 import { Hash } from "./hash.js";
 import { public_key_add } from "@earthbucks/secp256k1";
@@ -36,7 +36,7 @@ export class PubKey {
 
   toString(): string {
     const checkHash = Hash.blake3Hash(this.buf.buf);
-    const checkSum = SysBuf.from(checkHash.buf).subarray(0, 4);
+    const checkSum = WebBuf.from(checkHash.buf).subarray(0, 4);
     const checkHex = checkSum.toString("hex");
     return `ebxpub${checkHex}${this.buf.toBase58()}`;
   }
@@ -67,7 +67,7 @@ export class PubKey {
 
   add(pubKey: PubKey): PubKey {
     const buf = public_key_add(this.buf.buf, pubKey.buf.buf);
-    const fixedBuf = FixedBuf.fromBuf(33, SysBuf.from(buf));
+    const fixedBuf = FixedBuf.fromBuf(33, WebBuf.from(buf));
     return PubKey.fromBuf(fixedBuf);
   }
 }

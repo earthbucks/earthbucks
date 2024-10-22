@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { VarInt } from "../src/var-int.js";
-import { SysBuf } from "../src/buf.js";
+import { WebBuf } from "../src/buf.js";
 import { U8, U16, U32, U64 } from "../src/numbers.js";
 
 describe("VarInt", () => {
@@ -67,7 +67,7 @@ describe("VarInt", () => {
 
     it("should return false if the VarInt is not minimal", () => {
       const bn: U64 = new U64(0xff);
-      varInt = new VarInt(SysBuf.from([0xfd, 0x00, 0x00]));
+      varInt = new VarInt(WebBuf.from([0xfd, 0x00, 0x00]));
       expect(varInt.isMinimal()).toBe(false);
     });
   });

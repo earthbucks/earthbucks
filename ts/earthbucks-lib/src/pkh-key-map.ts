@@ -1,5 +1,5 @@
 import type { KeyPair } from "./key-pair.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 import { Pkh } from "./pkh.js";
 
 export class PkhKeyMap {

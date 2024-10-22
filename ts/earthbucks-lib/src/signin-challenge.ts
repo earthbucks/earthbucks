@@ -2,7 +2,7 @@ import { SignedMessage } from "./signed-message.js";
 import { EbxBuf } from "./buf.js";
 import type { PrivKey } from "./priv-key.js";
 import type { PubKey } from "./pub-key.js";
-import type { SysBuf } from "./buf.js";
+import type { WebBuf } from "./buf.js";
 import { PermissionToken } from "./permission-token.js";
 
 export class SigninChallenge {
@@ -29,7 +29,7 @@ export class SigninChallenge {
     return new SigninChallenge(signedMessage);
   }
 
-  static fromBuf(buf: SysBuf, domain: string): SigninChallenge {
+  static fromBuf(buf: WebBuf, domain: string): SigninChallenge {
     const signinChallengeKeyStr =
       SigninChallenge.signinChallengeKeyString(domain);
     const signedMessage = SignedMessage.fromBuf(buf, signinChallengeKeyStr);
@@ -41,7 +41,7 @@ export class SigninChallenge {
     return SigninChallenge.fromBuf(buf.buf, domain);
   }
 
-  toBuf(): SysBuf {
+  toBuf(): WebBuf {
     return this.signedMessage.toBuf();
   }
 

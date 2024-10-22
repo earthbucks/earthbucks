@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script.js";
-import { FixedBuf, SysBuf } from "../src/buf.js";
+import { FixedBuf, WebBuf } from "../src/buf.js";
 import fs from "node:fs";
 import path from "node:path";
 import { Pkh } from "../src/pkh.js";
@@ -114,7 +114,7 @@ describe("Script", () => {
 
     test("test vectors: iso buf reader", () => {
       for (const test of testVectors.from_iso_buf.errors) {
-        const arr = SysBuf.from(test.hex, "hex");
+        const arr = WebBuf.from(test.hex, "hex");
         expect(() => Script.fromBuf(arr)).toThrow();
       }
     });

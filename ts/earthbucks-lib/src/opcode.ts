@@ -1,4 +1,4 @@
-import { SysBuf } from "./buf.js";
+import { WebBuf } from "./buf.js";
 
 export type OpcodeName =
   | "0"
