@@ -20,17 +20,14 @@ the TypeScript implementation.
 
 ### TypeScript (ts)
 
-- earthbucks-blake3 (Blake3 hash function - wasm built from rust)
-- earthbucks-secp256k1 (secp256k1 elliptic curve cryptography - wasm built from rust)
 - earthbucks-lib (transactions, blocks, data structures, algorithms, standardized tests)
 - earthbucks-mine-client (client for mines)
 - earthbucks-pow-browser (tensorflow methods for PoW in the browser)
 - earthbucks-pow-node (tensorflow methods for PoW in Node.js on CPU)
 - earthbucks-pow-node-gpu (tensorflow methods GPU PoW in Node.js on GPU)
 - earthbucks-pow-validator-client (client for the PoW Validator)
+- earthbucks-compubutton (the most advanced button in the world)
 
 ### Rust (rs)
 
-- earthbucks_blake3 (Blake3 hash function)
-- earthbucks_secp256k1 (secp256k1 elliptic curve cryptography)
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
