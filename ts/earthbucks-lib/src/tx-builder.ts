@@ -3,25 +3,24 @@ import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { TxOutBnMap } from "./tx-out-bn-map.js";
 import { Script } from "./script.js";
-import { WebBuf, FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class TxBuilder {
   public inputTxOutBnMap: TxOutBnMap;
   public tx: Tx;
   public changeScript: Script;
-  public inputAmount: U64;
-  public lockAbs: U32;
+  public inputAmount: U64BE;
+  public lockAbs: U32BE;
 
   constructor(
     inputTxOutMap: TxOutBnMap,
     changeScript: Script,
-    lockAbs: U32 = new U32(0),
+    lockAbs: U32BE = new U32BE(0),
   ) {
     this.tx = new Tx(new U8(0), [], [], lockAbs);
     this.inputTxOutBnMap = inputTxOutMap;
     this.changeScript = changeScript;
-    this.inputAmount = new U64(0);
+    this.inputAmount = new U64BE(0);
     this.lockAbs = lockAbs;
   }
 
@@ -29,7 +28,7 @@ export class TxBuilder {
     this.tx.outputs.push(txOut);
   }
 
-  addInput(txIn: TxIn, amount: U64) {
+  addInput(txIn: TxIn, amount: U64BE) {
     this.tx.inputs.push(txIn);
     this.inputAmount = this.inputAmount.add(amount);
   }
@@ -40,11 +39,11 @@ export class TxBuilder {
     // output to be valid. remainder goes to change, which is owned by the user.
     // transaction fees are paid by making a separate transaction to a mine.
     this.tx.lockAbs = this.lockAbs;
-    const totalSpendAmount: U64 = this.tx.outputs.reduce(
+    const totalSpendAmount: U64BE = this.tx.outputs.reduce(
       (acc, output) => acc.add(output.value),
-      new U64(0),
+      new U64BE(0),
     );
-    let changeAmount = new U64(0);
+    let changeAmount = new U64BE(0);
     let inputAmount = this.inputAmount;
 
     // sort by block number first, but if those are the same, sort by the id
@@ -88,7 +87,7 @@ export class TxBuilder {
         throw new Error("unsupported script type");
       }
 
-      const txInput = new TxIn(txId, txOutNum, inputScript, new U32(0));
+      const txInput = new TxIn(txId, txOutNum, inputScript, new U32BE(0));
       const outputAmount = txOutBn.txOut.value;
       inputAmount = inputAmount.add(outputAmount);
       this.tx.inputs.push(txInput);

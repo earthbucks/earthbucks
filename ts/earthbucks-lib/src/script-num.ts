@@ -1,4 +1,4 @@
-import { WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 
 // big integers, positive or negative, encoded as big endian, two's complement
 export class ScriptNum {

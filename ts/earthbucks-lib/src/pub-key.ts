@@ -1,7 +1,9 @@
-import { WebBuf, FixedBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import type { PrivKey } from "./priv-key.js";
 import { Hash } from "./hash.js";
-import { public_key_add } from "@earthbucks/secp256k1";
+import { publicKeyAdd } from "@webbuf/secp256k1";
+import bs58 from "bs58";
 
 export class PubKey {
   static readonly SIZE = 33; // y-is-odd byte plus 32-byte x
@@ -12,7 +14,7 @@ export class PubKey {
   }
 
   static fromPrivKey(privKey: PrivKey): PubKey {
-    const buf = privKey.toPubKeyEbxBuf();
+    const buf = privKey.toPubKeyBuf();
     const isoBuf33 = (FixedBuf<33>).fromBuf(33, buf.buf);
     return new PubKey(isoBuf33);
   }
@@ -38,7 +40,7 @@ export class PubKey {
     const checkHash = Hash.blake3Hash(this.buf.buf);
     const checkSum = WebBuf.from(checkHash.buf).subarray(0, 4);
     const checkHex = checkSum.toString("hex");
-    return `ebxpub${checkHex}${this.buf.toBase58()}`;
+    return `ebxpub${checkHex}${bs58.encode(this.buf.buf)}`;
   }
 
   static fromString(str: string): PubKey {
@@ -47,7 +49,10 @@ export class PubKey {
     }
     const checkHex = str.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, checkHex);
-    const decoded33 = FixedBuf.fromBase58(33, str.slice(14));
+    const decoded33 = FixedBuf.fromBuf(
+      33,
+      WebBuf.from(bs58.decode(str.slice(14))),
+    );
     const checkHash = Hash.blake3Hash(decoded33.buf);
     const checkSum = checkHash.buf.subarray(0, 4);
     if (checkBuf.buf.toString("hex") !== checkSum.toString("hex")) {
@@ -66,8 +71,7 @@ export class PubKey {
   }
 
   add(pubKey: PubKey): PubKey {
-    const buf = public_key_add(this.buf.buf, pubKey.buf.buf);
-    const fixedBuf = FixedBuf.fromBuf(33, WebBuf.from(buf));
-    return PubKey.fromBuf(fixedBuf);
+    const buf = publicKeyAdd(this.buf, pubKey.buf);
+    return PubKey.fromBuf(buf);
   }
 }

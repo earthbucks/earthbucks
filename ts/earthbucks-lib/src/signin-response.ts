@@ -1,8 +1,8 @@
-import { EbxBuf } from "./buf.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { SignedMessage } from "./signed-message.js";
 import type { PrivKey } from "./priv-key.js";
 import type { PubKey } from "./pub-key.js";
-import type { WebBuf } from "./buf.js";
+import type { WebBuf } from "@webbuf/webbuf";
 import type { SigninChallenge } from "./signin-challenge.js";
 
 export class SigninResponse {
@@ -46,7 +46,7 @@ export class SigninResponse {
   }
 
   static fromHex(hex: string, domain: string): SigninResponse {
-    const buf = EbxBuf.fromHex(hex.length / 2, hex);
+    const buf = FixedBuf.fromHex(hex.length / 2, hex);
     return SigninResponse.fromBuf(buf.buf, domain);
   }
 

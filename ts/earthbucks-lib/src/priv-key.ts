@@ -1,10 +1,12 @@
 import {
-  private_key_verify,
-  public_key_create,
-  private_key_add,
-} from "@earthbucks/secp256k1";
-import { WebBuf, FixedBuf } from "./buf.js";
+  privateKeyAdd,
+  publicKeyCreate,
+  privateKeyVerify,
+} from "@webbuf/secp256k1";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Hash } from "./hash.js";
+import bs58 from "bs58";
 
 export class PrivKey {
   buf: FixedBuf<32>;
@@ -17,7 +19,7 @@ export class PrivKey {
     let privKeyBuf: FixedBuf<32>;
     do {
       privKeyBuf = FixedBuf.fromRandom(32);
-    } while (!private_key_verify(privKeyBuf.buf));
+    } while (!privateKeyVerify(privKeyBuf));
     return new PrivKey(privKeyBuf);
   }
 
@@ -25,16 +27,16 @@ export class PrivKey {
     return this.buf;
   }
 
-  toPubKeyEbxBuf(): FixedBuf<33> {
-    return FixedBuf.fromBuf(33, WebBuf.from(public_key_create(this.buf.buf)));
+  toPubKeyBuf(): FixedBuf<33> {
+    return publicKeyCreate(this.buf);
   }
 
   toPubKeyHex(): string {
-    return this.toPubKeyEbxBuf().toHex();
+    return this.toPubKeyBuf().toHex();
   }
 
   static fromBuf(buf: FixedBuf<32>): PrivKey {
-    if (!private_key_verify(buf.buf)) {
+    if (!privateKeyVerify(buf)) {
       throw new Error("invalid encoding");
     }
     return new PrivKey(buf);
@@ -54,7 +56,7 @@ export class PrivKey {
     const hashBuf = Hash.blake3Hash(this.buf.buf);
     const checkBuf = WebBuf.from(hashBuf.buf).subarray(0, 4);
     const checkHex = checkBuf.toString("hex");
-    return `ebxprv${checkHex}${this.buf.toBase58()}`;
+    return `ebxprv${checkHex}${bs58.encode(this.buf.buf)}`;
   }
 
   static fromString(str: string): PrivKey {
@@ -63,7 +65,10 @@ export class PrivKey {
     }
     const hexStr = str.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, hexStr);
-    const decoded32 = FixedBuf.fromBase58(32, str.slice(14));
+    const decoded32 = FixedBuf.fromBuf(
+      32,
+      WebBuf.from(bs58.decode(str.slice(14))),
+    );
     const hashBuf = Hash.blake3Hash(decoded32.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
     if (checkBuf.buf.toString("hex") !== checkHash.toString("hex")) {
@@ -82,11 +87,7 @@ export class PrivKey {
   }
 
   add(privKey: PrivKey): PrivKey {
-    const arr = private_key_add(
-      WebBuf.from(this.buf.buf),
-      WebBuf.from(privKey.buf.buf),
-    );
-    const buf = FixedBuf.fromBuf(32, WebBuf.from(arr));
+    const buf = privateKeyAdd(this.buf, privKey.buf);
     return PrivKey.fromBuf(buf);
   }
 }

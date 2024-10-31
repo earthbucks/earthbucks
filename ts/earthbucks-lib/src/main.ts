@@ -1,5 +1,5 @@
-import { EbxBuf } from "./buf.js";
 import { KeyPair } from "./key-pair.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Pkh } from "./pkh.js";
 
 function main() {
@@ -36,7 +36,7 @@ function main() {
       break;
     case "entropy":
       {
-        const entropyBuf = EbxBuf.fromRandom(32);
+        const entropyBuf = FixedBuf.fromRandom(32);
         const entropyHex = entropyBuf.buf.toString("hex");
 
         console.log(`Entropy: ${entropyHex}`);

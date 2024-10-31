@@ -1,7 +1,7 @@
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
-import { WebBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class VarInt {
   private buf: WebBuf;
@@ -10,13 +10,13 @@ export class VarInt {
     this.buf = buf;
   }
 
-  static fromU64(u64: U64): VarInt {
-    const buf = new BufWriter().writeVarInt(u64).toBuf();
+  static fromU64(u64: U64BE): VarInt {
+    const buf = new BufWriter().writeVarIntU64BE(u64).toBuf();
     return new VarInt(buf);
   }
 
-  static fromU32(u32: U32): VarInt {
-    const buf = new BufWriter().writeVarInt(new U64(u32.n)).toBuf();
+  static fromU32(u32: U32BE): VarInt {
+    const buf = new BufWriter().writeVarIntU64BE(new U64BE(u32.n)).toBuf();
     return new VarInt(buf);
   }
 
@@ -24,7 +24,7 @@ export class VarInt {
     if (n < 0) {
       throw new Error("VarInt.fromNumber: n must be >= 0");
     }
-    const u64 = new U64(n);
+    const u64 = new U64BE(n);
     return VarInt.fromU64(u64);
   }
 
@@ -32,17 +32,17 @@ export class VarInt {
     return this.buf;
   }
 
-  toU64(): U64 {
-    return new BufReader(this.buf).readVarInt();
+  toU64(): U64BE {
+    return new BufReader(this.buf).readVarIntU64BE();
   }
 
-  toU32(): U32 {
-    const u64 = new BufReader(this.buf).readVarInt();
-    return new U32(u64.n);
+  toU32(): U32BE {
+    const u64 = new BufReader(this.buf).readVarIntU64BE();
+    return new U32BE(u64.n);
   }
 
   static fromBufReader(br: BufReader): VarInt {
-    const buf = br.readVarIntBuf();
+    const buf = br.readVarIntBEBuf();
     return new VarInt(buf);
   }
 

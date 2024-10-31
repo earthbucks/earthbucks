@@ -1,9 +1,8 @@
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
-import { FixedBuf } from "./buf.js";
-import { WebBuf } from "./buf.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { WebBuf } from "@webbuf/webbuf";
 import { VarInt } from "./var-int.js";
-import { EbxBuf } from "./buf.js";
 
 // LCH: Longest Chain Headers
 // LCH10Ids is a list of 10 most recent header IDs in chronological order.
@@ -60,7 +59,7 @@ export class Lch10Ids {
   }
 
   static fromHex(hex: string): Lch10Ids {
-    const buf = EbxBuf.fromHex(hex.length / 2, hex).buf;
+    const buf = FixedBuf.fromHex(hex.length / 2, hex).buf;
     return Lch10Ids.fromBuf(buf);
   }
 }

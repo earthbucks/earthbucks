@@ -26,14 +26,18 @@
   },
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559",
+  "packageManager": "pnpm@9.12.3+sha256.24235772cc4ac82a62627cd47f834c72667a2ce87799a846ec4e8e555e2d4b8b",
   "dependencies": {
-    "@earthbucks/aescbc": "workspace:^",
-    "@earthbucks/blake3": "workspace:^",
-    "@earthbucks/secp256k1": "workspace:^",
+    "@ryanxcharles/result": "^1.0.2",
+    "@webbuf/aescbc": "^3.0.26",
+    "@webbuf/blake3": "^3.0.26",
+    "@webbuf/fixedbuf": "^3.0.26",
+    "@webbuf/numbers": "^3.0.26",
+    "@webbuf/rw": "^3.0.26",
+    "@webbuf/secp256k1": "^3.0.26",
+    "@webbuf/webbuf": "^3.0.26",
     "bs58": "^6.0.0",
-    "tsx": "^4.19.1",
-    "webbuf": "^1.0.1"
+    "tsx": "^4.19.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",

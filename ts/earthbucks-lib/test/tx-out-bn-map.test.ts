@@ -2,26 +2,26 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxOutBnMap } from "../src/tx-out-bn-map.js";
 import { TxOut } from "../src/tx-out.js";
 import { Script } from "../src/script.js";
-import { WebBuf, FixedBuf } from "../src/buf.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { TxOutBn } from "../src/tx-out-bn.js";
-import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 describe("TxOutBnMap", () => {
   let txOutBnMap: TxOutBnMap;
   let txOut: TxOut;
   let txOutBn: TxOutBn;
   let txIdHash: FixedBuf<32>;
-  let outputIndex: U32;
+  let outputIndex: U32BE;
 
   beforeEach(() => {
     txOutBnMap = new TxOutBnMap();
-    txOut = new TxOut(new U64(100), Script.fromEmpty());
-    txOutBn = new TxOutBn(txOut, new U32(0n));
+    txOut = new TxOut(new U64BE(100), Script.fromEmpty());
+    txOutBn = new TxOutBn(txOut, new U32BE(0n));
     txIdHash = FixedBuf.fromHex(
       32,
       "0102030400000000000000000000000000000000000000000000000000000000",
     );
-    outputIndex = new U32(0);
+    outputIndex = new U32BE(0);
   });
 
   test("nameFromOutput", () => {
@@ -53,11 +53,11 @@ describe("TxOutBnMap", () => {
   test("values method should return all TxOutput values", () => {
     const txOutputMap = new TxOutBnMap();
     const txOut1 = txOut;
-    const txOutBn1 = new TxOutBn(txOut1, new U32(0n));
+    const txOutBn1 = new TxOutBn(txOut1, new U32BE(0n));
     const txOut2 = txOut;
-    const txOutBn2 = new TxOutBn(txOut2, new U32(1n));
-    txOutputMap.add(txOutBn1, txIdHash, new U32(0));
-    txOutputMap.add(txOutBn2, txIdHash, new U32(1));
+    const txOutBn2 = new TxOutBn(txOut2, new U32BE(1n));
+    txOutputMap.add(txOutBn1, txIdHash, new U32BE(0));
+    txOutputMap.add(txOutBn2, txIdHash, new U32BE(1));
 
     const values = Array.from(txOutputMap.values());
 

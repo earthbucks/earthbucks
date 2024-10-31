@@ -1,16 +1,16 @@
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
 import { VarInt } from "./var-int.js";
 import { Script } from "./script.js";
-import type { WebBuf } from "./buf.js";
-import { U32 } from "./numbers.js";
-import { U64 } from "./numbers.js";
+import type { WebBuf } from "@webbuf/webbuf";
+import { U32BE } from "@webbuf/numbers";
+import { U64BE } from "@webbuf/numbers";
 
 export class TxOut {
-  public value: U64; // measured in "adams".
+  public value: U64BE; // measured in "adams".
   public script: Script;
 
-  constructor(value: U64, script: Script) {
+  constructor(value: U64BE, script: Script) {
     this.value = value;
     this.script = script;
   }
@@ -22,7 +22,7 @@ export class TxOut {
 
   static fromBufReader(reader: BufReader): TxOut {
     const value = reader.readU64BE();
-    const scriptLen = reader.readVarInt().n;
+    const scriptLen = reader.readVarIntU64BE().n;
     const scriptArr = reader.read(scriptLen);
     const script = Script.fromBuf(scriptArr);
     return new TxOut(value, script);
@@ -32,7 +32,7 @@ export class TxOut {
     const writer = new BufWriter();
     writer.writeU64BE(this.value);
     const scriptBuf = this.script.toBuf();
-    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toBuf());
+    writer.write(VarInt.fromU32(new U32BE(scriptBuf.length)).toBuf());
     writer.write(scriptBuf);
     return writer.toBuf();
   }
@@ -42,6 +42,6 @@ export class TxOut {
   }
 
   clone(): TxOut {
-    return new TxOut(new U64(this.value.bn), this.script.clone());
+    return new TxOut(new U64BE(this.value.bn), this.script.clone());
   }
 }

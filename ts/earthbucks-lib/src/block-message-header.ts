@@ -1,11 +1,10 @@
-import { FixedBuf } from "./buf.js";
-import { U8 } from "./numbers.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8 } from "@webbuf/numbers";
 import { Hash } from "./hash.js";
-import { WebBuf } from "./buf.js";
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
-import { EbxBuf } from "./buf.js";
-import type { U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
+import type { U64BE } from "@webbuf/numbers";
 
 const SIZE = 1 + 32 + 32 + 8;
 
@@ -13,13 +12,13 @@ export class BlockMessageHeader {
   version: U8;
   prevBlockMessageHeaderId: FixedBuf<32>;
   messageId: FixedBuf<32>;
-  messageNum: U64;
+  messageNum: U64BE;
 
   constructor(
     version: U8,
     prevBlockMessagePowId: FixedBuf<32>,
     messageId: FixedBuf<32>,
-    messageNum: U64,
+    messageNum: U64BE,
   ) {
     this.version = version;
     this.prevBlockMessageHeaderId = prevBlockMessagePowId;
@@ -43,7 +42,7 @@ export class BlockMessageHeader {
   static fromMessage(
     prevBlockMessageHeaderId: FixedBuf<32> | null,
     message: string,
-    messageNum: U64,
+    messageNum: U64BE,
   ): BlockMessageHeader {
     const messageId = BlockMessageHeader.getMessageId(message);
     return new BlockMessageHeader(
@@ -88,7 +87,7 @@ export class BlockMessageHeader {
   }
 
   static fromHex(hex: string): BlockMessageHeader {
-    return BlockMessageHeader.fromBuf(EbxBuf.fromHex(SIZE, hex).buf);
+    return BlockMessageHeader.fromBuf(FixedBuf.fromHex(SIZE, hex).buf);
   }
 
   hash(): FixedBuf<32> {
@@ -101,7 +100,7 @@ export class BlockMessageHeader {
 
   verify(
     prevId: FixedBuf<32> | null,
-    prevNum: U64 | null,
+    prevNum: U64BE | null,
     message: string,
   ): boolean {
     const expectedVersion = new U8(0);

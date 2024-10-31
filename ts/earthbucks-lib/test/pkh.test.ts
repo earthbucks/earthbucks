@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair.js";
 import fs from "node:fs";
 import path from "node:path";
 import { Pkh } from "../src/pkh.js";
-import { WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 import { PubKey } from "../src/pub-key.js";
 
 describe("Pkh", () => {

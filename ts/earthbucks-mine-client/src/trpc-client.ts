@@ -9,8 +9,8 @@ import {
   PubKey,
   SigninChallenge,
   WebBuf,
-  U256,
-  U64,
+  U256BE,
+  U64BE,
   Domain,
   Pkh,
   WorkPack,
@@ -68,7 +68,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         }
         return {
           id: FixedBuf.fromHex(32, res.id),
-          num: new U64(res.num),
+          num: new U64BE(res.num),
         };
       },
       postNew: async (
@@ -99,8 +99,8 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         const res = await trpcClient.miningButton.getNewWorkPack.query();
         return {
           shareId: res.shareId,
-          retryTarget: U256.fromHex(res.retryTarget),
-          shareTarget: U256.fromHex(res.shareTarget),
+          retryTarget: U256BE.fromHex(res.retryTarget),
+          shareTarget: U256BE.fromHex(res.shareTarget),
           workPack: WorkPack.fromHex(res.workPack),
         };
       },

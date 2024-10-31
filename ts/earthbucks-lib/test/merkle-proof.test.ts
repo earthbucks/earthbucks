@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { MerkleProof } from "../src/merkle-proof.js";
 import { Hash } from "../src/hash.js";
-import { WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 import { MerkleTree } from "../src/merkle-tree.js";
 
 describe("MerkleProof", () => {

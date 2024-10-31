@@ -4,11 +4,11 @@ import { Tx } from "./tx.js";
 import type { Script } from "./script.js";
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
-import type { FixedBuf } from "./buf.js";
-import { U8 } from "./numbers.js";
-import type { U16, U128, U256 } from "./numbers.js";
-import { U32 } from "./numbers.js";
-import type { U64 } from "./numbers.js";
+import type { FixedBuf } from "@webbuf/fixedbuf";
+import { U8 } from "@webbuf/numbers";
+import type { U16BE, U128BE, U256BE } from "@webbuf/numbers";
+import { U32BE } from "@webbuf/numbers";
+import type { U64BE } from "@webbuf/numbers";
 import { MerkleTree } from "./merkle-tree.js";
 
 export class BlockBuilder {
@@ -30,13 +30,13 @@ export class BlockBuilder {
   }
 
   static fromGenesis(
-    initialTarget: U256,
+    initialTarget: U256BE,
     outputScript: Script,
-    outputAmount: U64,
+    outputAmount: U64BE,
   ): BlockBuilder {
     const txInput = TxIn.fromMintTxScript(outputScript);
     const txOutput = new TxOut(outputAmount, outputScript);
-    const mintTx = new Tx(new U8(0), [txInput], [txOutput], new U32(0n));
+    const mintTx = new Tx(new U8(0), [txInput], [txOutput], new U32BE(0n));
     const txs = [mintTx];
     const merkleRoot = MerkleTree.fromLeafHashes(txs.map((tx) => tx.id()));
     const merkleRootId: FixedBuf<32> = merkleRoot.hash as FixedBuf<32>;

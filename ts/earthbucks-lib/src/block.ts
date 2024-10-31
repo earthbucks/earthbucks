@@ -1,9 +1,9 @@
 import { Header } from "./header.js";
 import { Tx } from "./tx.js";
-import { BufWriter } from "./buf-writer.js";
-import { BufReader } from "./buf-reader.js";
-import type { WebBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
+import type { WebBuf } from "@webbuf/webbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class Block {
   public header: Header;

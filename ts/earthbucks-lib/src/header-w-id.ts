@@ -1,4 +1,4 @@
-import { FixedBuf } from "./buf.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Header } from "./header.js";
 
 export class HeaderWId {

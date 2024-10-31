@@ -1,18 +1,18 @@
-import { U256 } from "./numbers.js";
-import { FixedBuf } from "./buf.js";
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
+import { U256BE } from "@webbuf/numbers";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
 import { Hash } from "./hash.js";
-import type { U128 } from "./numbers.js";
+import type { U128BE } from "@webbuf/numbers";
 
 const SIZE = 32;
 type SIZE = 32;
 
 export class CompuchaChallenge {
   challengeId: FixedBuf<16>;
-  nonce: U128;
+  nonce: U128BE;
 
-  constructor(challengeId: FixedBuf<16>, nonce: U128) {
+  constructor(challengeId: FixedBuf<16>, nonce: U128BE) {
     this.challengeId = challengeId;
     this.nonce = nonce;
   }
@@ -56,9 +56,9 @@ export class CompuchaChallenge {
     return hash;
   }
 
-  isTargetValid(targetNonce: U256): boolean {
+  isTargetValid(targetNonce: U256BE): boolean {
     const hashBuf = this.id();
-    const hashNum = U256.fromBEBuf(hashBuf.buf);
+    const hashNum = U256BE.fromBEBuf(hashBuf);
     return hashNum.bn < targetNonce.bn;
   }
 }

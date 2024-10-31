@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Hash } from "../src/hash.js";
-import { FixedBuf, WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 
 describe("blake3", () => {
   test("hash", () => {

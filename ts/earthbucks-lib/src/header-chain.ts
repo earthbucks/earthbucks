@@ -1,18 +1,18 @@
 import { Header } from "./header.js";
-import { U32 } from "./numbers.js";
-import { U64 } from "./numbers.js";
+import { U32BE } from "@webbuf/numbers";
+import { U64BE } from "@webbuf/numbers";
 import type { Pkh } from "./pkh.js";
 import { ScriptChunk } from "./script-chunk.js";
 import { Script } from "./script.js";
-import type { FixedBuf } from "./buf.js";
+import type { FixedBuf } from "@webbuf/fixedbuf";
 import { Tx } from "./tx.js";
 import type { TxOut } from "./tx-out.js";
-import { WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 
 export class HeaderChain {
   static LENGTH_EXPIRY_PERIOD = Script.PKHXR_90D_60D_X_LOCK_REL;
   static LENGTH_SAFETY_PERIOD = HeaderChain.LENGTH_EXPIRY_PERIOD.mul(
-    new U32(2),
+    new U32BE(2),
   );
 
   headers: Header[];
@@ -35,8 +35,8 @@ export class HeaderChain {
 
   newHeaderIsValidAt(
     header: Header,
-    actualNTransactions: U64,
-    timestamp: U64,
+    actualNTransactions: U64BE,
+    timestamp: U64BE,
   ): boolean {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
@@ -48,10 +48,10 @@ export class HeaderChain {
       prevPrevHeader,
       actualNTransactions,
       timestamp,
-    ).result;
+    ).value;
   }
 
-  newHeaderIsValidNow(header: Header, actualNTransactions: U64): boolean {
+  newHeaderIsValidNow(header: Header, actualNTransactions: U64BE): boolean {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
       throw new Error("no previous header");
@@ -61,17 +61,17 @@ export class HeaderChain {
       prevHeader,
       prevPrevHeader,
       actualNTransactions,
-    ).result;
+    ).value;
   }
 
   getNextMintTxFromPkh(
     pkh: Pkh,
     domain: string,
     blockMessageId: FixedBuf<32>,
-    blockNum: U32,
+    blockNum: U32BE,
   ) {
-    const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
-      new U32(1),
+    const working_block_n = (this.getTip()?.blockNum || new U32BE(0)).add(
+      new U32BE(1),
     );
     const domainBuf = WebBuf.from(domain);
     const domainScriptChunk = ScriptChunk.fromData(domainBuf);
@@ -95,10 +95,10 @@ export class HeaderChain {
     txOuts: TxOut[],
     domain: string,
     blockMessageId: FixedBuf<32>,
-    blockNum: U32,
+    blockNum: U32BE,
   ) {
-    const working_block_n = (this.getTip()?.blockNum || new U32(0)).add(
-      new U32(1),
+    const working_block_n = (this.getTip()?.blockNum || new U32BE(0)).add(
+      new U32BE(1),
     );
     const domainBuf = WebBuf.from(domain);
     const domainScriptChunk = ScriptChunk.fromData(domainBuf);
@@ -109,7 +109,7 @@ export class HeaderChain {
     ]);
     const outputAmount = Header.mintTxAmount(working_block_n);
     // check that the sum of the output amounts is equal to the output amount
-    let sum = new U64(0);
+    let sum = new U64BE(0);
     for (const output of txOuts) {
       sum = sum.add(output.value);
     }
@@ -122,8 +122,8 @@ export class HeaderChain {
 
   getNextHeaderAt(
     rootMerkleTreeId: FixedBuf<32>,
-    nTransactions: U64,
-    timestamp: U64,
+    nTransactions: U64BE,
+    timestamp: U64BE,
   ) {
     const prevHeader = this.headers[this.headers.length - 1] || null;
     if (!prevHeader) {
@@ -140,7 +140,7 @@ export class HeaderChain {
     return header;
   }
 
-  getNextHeaderNow(rootMerkleTreeId: FixedBuf<32>, nTransactions: U64) {
+  getNextHeaderNow(rootMerkleTreeId: FixedBuf<32>, nTransactions: U64BE) {
     return this.getNextHeaderAt(
       rootMerkleTreeId,
       nTransactions,

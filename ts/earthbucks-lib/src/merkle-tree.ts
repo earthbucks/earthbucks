@@ -1,6 +1,6 @@
 import { Hash } from "./hash.js";
-import { WebBuf } from "./buf.js";
-import { FixedBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { MerkleProof } from "./merkle-proof.js";
 
 export class MerkleTree {

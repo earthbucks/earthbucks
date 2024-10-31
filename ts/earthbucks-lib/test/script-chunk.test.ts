@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { ScriptChunk } from "../src/script-chunk.js";
 import { OP } from "../src/opcode.js";
-import { BufWriter } from "../src/buf-writer.js";
-import { WebBuf } from "../src/buf.js";
-import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { BufWriter } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 describe("ScriptChunk", () => {
   let scriptChunk: ScriptChunk;
@@ -91,7 +91,7 @@ describe("ScriptChunk", () => {
       const scriptChunk = new ScriptChunk(OP.PUSHDATA2, buffer);
       const expected = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA2))
-        .writeU16BE(new U16(buffer.length))
+        .writeU16BE(new U16BE(buffer.length))
         .write(buffer)
         .toBuf();
       expect(scriptChunk.toBuf()).toEqual(expected);
@@ -102,7 +102,7 @@ describe("ScriptChunk", () => {
       const scriptChunk = new ScriptChunk(OP.PUSHDATA4, buffer);
       const expected = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA4))
-        .writeU32BE(new U32(buffer.length))
+        .writeU32BE(new U32BE(buffer.length))
         .write(buffer)
         .toBuf();
       expect(scriptChunk.toBuf()).toEqual(expected);
@@ -135,7 +135,7 @@ describe("ScriptChunk", () => {
       const buffer = WebBuf.alloc(256).fill(0);
       const arr = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA2))
-        .writeU16BE(new U16(buffer.length))
+        .writeU16BE(new U16BE(buffer.length))
         .write(buffer)
         .toBuf();
       const scriptChunk = ScriptChunk.fromBuf(arr);
@@ -147,7 +147,7 @@ describe("ScriptChunk", () => {
       const buffer = WebBuf.alloc(65536).fill(0);
       const arr = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA4))
-        .writeU32BE(new U32(buffer.length))
+        .writeU32BE(new U32BE(buffer.length))
         .write(buffer)
         .toBuf();
       const scriptChunk = ScriptChunk.fromBuf(arr);
@@ -165,7 +165,7 @@ describe("ScriptChunk", () => {
       const buffer = WebBuf.alloc(100).fill(0);
       const arr = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA2))
-        .writeU16BE(new U16(200))
+        .writeU16BE(new U16BE(200))
         .write(buffer)
         .toBuf();
       expect(() => ScriptChunk.fromBuf(arr)).toThrow();
@@ -175,7 +175,7 @@ describe("ScriptChunk", () => {
       const buffer = WebBuf.alloc(100).fill(0);
       const arr = new BufWriter()
         .writeU8(new U8(OP.PUSHDATA4))
-        .writeU32BE(new U32(200))
+        .writeU32BE(new U32BE(200))
         .write(buffer)
         .toBuf();
       expect(() => ScriptChunk.fromBuf(arr)).toThrow();

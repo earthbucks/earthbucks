@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { MerkleTree } from "../src/merkle-tree.js";
 import { Hash } from "../src/hash.js";
-import { WebBuf } from "../src/buf.js";
-import { FixedBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 
 describe("MerkleTree", () => {
   describe("computeAllLeaves", () => {

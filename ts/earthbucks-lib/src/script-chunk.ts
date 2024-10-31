@@ -1,9 +1,9 @@
 import { OPCODE_TO_NAME, OP, Opcode } from "./opcode.js";
 import type { OpcodeName } from "./opcode.js";
-import { BufWriter } from "./buf-writer.js";
-import { BufReader } from "./buf-reader.js";
-import { WebBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class ScriptChunk {
   opcode: number;
@@ -86,14 +86,14 @@ export class ScriptChunk {
     if (opcode === OP.PUSHDATA2 && this.buf) {
       return WebBuf.concat([
         WebBuf.from([opcode]),
-        new BufWriter().writeU16BE(new U16(this.buf.length)).toBuf(),
+        new BufWriter().writeU16BE(new U16BE(this.buf.length)).toBuf(),
         this.buf,
       ]);
     }
     if (opcode === OP.PUSHDATA4 && this.buf) {
       return WebBuf.concat([
         WebBuf.from([opcode]),
-        new BufWriter().writeU32BE(new U32(this.buf.length)).toBuf(),
+        new BufWriter().writeU32BE(new U32BE(this.buf.length)).toBuf(),
         this.buf,
       ]);
     }

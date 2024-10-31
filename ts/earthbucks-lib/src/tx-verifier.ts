@@ -2,26 +2,26 @@ import { HashCache } from "./tx.js";
 import type { Tx } from "./tx.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import { ScriptInterpreter } from "./script-interpreter.js";
-import { WebBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 import type { TxIn } from "./tx-in.js";
-import { Err, isErr, isOk, Ok, Result } from "./result.js";
+import { Err, isErr, isOk, Ok, Result } from "@ryanxcharles/result";
 import { ScriptTemplateType } from "./script.js";
 
 export class TxVerifier {
   public tx: Tx;
   public txOutBnMap: TxOutBnMap;
   public hashCache: HashCache;
-  public blockNum: U32;
+  public blockNum: U32BE;
 
-  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: U32) {
+  constructor(tx: Tx, txOutBnMap: TxOutBnMap, blockNum: U32BE) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
     this.hashCache = new HashCache();
     this.blockNum = blockNum;
   }
 
-  evalInputScript(nIn: U32): Result<WebBuf, string> {
+  evalInputScript(nIn: U32BE): Result<WebBuf, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txOutHash = txInput.inputTxId;
     const outputIndex = txInput.inputTxNOut;
@@ -52,7 +52,7 @@ export class TxVerifier {
     return result;
   }
 
-  verifyInputLockRel(nIn: U32): Result<void, string> {
+  verifyInputLockRel(nIn: U32BE): Result<void, string> {
     const txInput = this.tx.inputs[nIn.n] as TxIn;
     const txId = txInput.inputTxId;
     const txOutNum = txInput.inputTxNOut;
@@ -75,11 +75,11 @@ export class TxVerifier {
 
   verifyInputs(): Result<void, string> {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      const scriptResult = this.evalInputScript(new U32(i));
+      const scriptResult = this.evalInputScript(new U32BE(i));
       if (isErr(scriptResult)) {
         return Err(`Failed to verify input script ${i}: ${scriptResult.error}`);
       }
-      const lockRelResult = this.verifyInputLockRel(new U32(i));
+      const lockRelResult = this.verifyInputLockRel(new U32BE(i));
       if (isErr(lockRelResult)) {
         return Err(
           `Failed to verify input lockRel ${i}: ${lockRelResult.error}`,
@@ -110,8 +110,8 @@ export class TxVerifier {
   }
 
   verifyOutputValues(): Result<void, string> {
-    let totalOutputValue = new U64(0);
-    let totalInputValue = new U64(0);
+    let totalOutputValue = new U64BE(0);
+    let totalInputValue = new U64BE(0);
     for (const output of this.tx.outputs) {
       totalOutputValue = totalOutputValue.add(output.value);
     }
@@ -180,7 +180,7 @@ export class TxVerifier {
     return Ok(undefined);
   }
 
-  getInputScriptTemplateType(nIn: U32): ScriptTemplateType {
+  getInputScriptTemplateType(nIn: U32BE): ScriptTemplateType {
     if (this.tx.isMintTx() && nIn.n === 0) {
       return "mint-input";
     }

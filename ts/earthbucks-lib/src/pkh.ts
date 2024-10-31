@@ -1,6 +1,8 @@
 import { Hash } from "./hash.js";
-import { WebBuf, EbxBuf, FixedBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import type { PubKey } from "./pub-key.js";
+import bs58 from "bs58";
 
 // public key hash
 export class Pkh {
@@ -42,7 +44,7 @@ export class Pkh {
       4,
     );
     const checkHex = checkHash.toString("hex");
-    return `ebxpkh${checkHex}${this.buf.toBase58()}`;
+    return `ebxpkh${checkHex}${bs58.encode(this.buf.buf)}`;
   }
 
   static fromString(pkhStr: string): Pkh {
@@ -51,7 +53,10 @@ export class Pkh {
     }
     const checkHex = pkhStr.slice(6, 14);
     const checkBuf = FixedBuf.fromHex(4, checkHex);
-    const buf = FixedBuf.fromBase58(32, pkhStr.slice(14));
+    const buf = FixedBuf.fromBuf(
+      32,
+      WebBuf.from(bs58.decode(pkhStr.slice(14))),
+    );
     const hashBuf = Hash.blake3Hash(buf.buf);
     const checkHash = hashBuf.buf.subarray(0, 4);
     if (checkHash.toString("hex") !== checkBuf.buf.toString("hex")) {

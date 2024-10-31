@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { PowGpuNode } from "../src/pow-gpu-node.js";
-import { WebBuf } from "webbuf";
+import { WebBuf } from "@earthbucks/lib";
 import { FixedBuf } from "@earthbucks/lib";
 import { Hash } from "@earthbucks/lib";
 

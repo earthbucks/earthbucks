@@ -2,16 +2,16 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
 import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
-import { BufWriter } from "../src/buf-writer.js";
-import { BufReader } from "../src/buf-reader.js";
-import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
+import { U8, U16BE, U32BE, U64BE, U128BE, U256BE } from "@webbuf/numbers";
 import { WORK_SER_ALGO_NUM } from "../src/work-ser-algo.js";
 import { WORK_PAR_ALGO_NUM } from "../src/work-par-algo.js";
 
 describe("Block", () => {
   test("toBufWriter", () => {
     const bh = new Header();
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     const bw = block.toBufWriter(new BufWriter());
     expect(bw.toBuf().length).toBeGreaterThan(0);
@@ -19,7 +19,7 @@ describe("Block", () => {
 
   test("toBuf", () => {
     const bh = new Header();
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     const u8vec = block.toBuf();
     expect(u8vec.length).toBeGreaterThan(0);
@@ -27,7 +27,7 @@ describe("Block", () => {
 
   test("fromBufReader", () => {
     const bh = new Header();
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     const bw = block.toBufWriter(new BufWriter());
     const buf = bw.toBuf();
@@ -46,10 +46,10 @@ describe("Block", () => {
 
   test.skip("isGenesis", () => {
     const bh = new Header({
-      workSerAlgo: new U16(WORK_SER_ALGO_NUM.blake3_3),
-      workParAlgo: new U16(WORK_PAR_ALGO_NUM.algo1627),
+      workSerAlgo: new U16BE(WORK_SER_ALGO_NUM.blake3_3),
+      workParAlgo: new U16BE(WORK_PAR_ALGO_NUM.algo1627),
     });
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     expect(block.isGenesis()).toBe(true);
   });

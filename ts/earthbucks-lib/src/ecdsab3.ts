@@ -1,8 +1,8 @@
-import { sign, verify } from "@earthbucks/secp256k1";
-import { blake3_mac } from "@earthbucks/blake3";
+import { sign, verify } from "@webbuf/secp256k1";
+import { Hash } from "./hash.js";
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { FixedBuf, WebBuf } from "./buf.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 
 /**
  * Sign a message with ECDSA on the secp256k1 curve using a blake3 MAC as the
@@ -16,9 +16,9 @@ export function ecdsab3Sign(
   hashBuf: FixedBuf<32>,
   privKey: PrivKey,
 ): FixedBuf<64> {
-  const k = blake3_mac(privKey.toBuf().buf, hashBuf.buf);
-  const sig = sign(hashBuf.buf, privKey.toBuf().buf, k);
-  return FixedBuf.fromBuf(64, WebBuf.from(sig));
+  const k = Hash.blake3Mac(privKey.toBuf(), hashBuf.buf);
+  const sig = sign(hashBuf, privKey.toBuf(), k);
+  return sig;
 }
 
 /**
@@ -35,10 +35,5 @@ export function ecdsab3Verify(
   hashBuf: FixedBuf<32>,
   pubKey: PubKey,
 ): boolean {
-  try {
-    verify(sig.buf, hashBuf.buf, pubKey.toBuf().buf);
-  } catch (e) {
-    return false;
-  }
-  return true;
+  return verify(sig, hashBuf, pubKey.toBuf());
 }

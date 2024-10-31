@@ -1,6 +1,7 @@
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
-import { EbxBuf, WebBuf } from "./buf.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Header } from "./header.js";
 import { Lch10Ids } from "./lch10-ids.js";
 
@@ -41,7 +42,7 @@ export class WorkPack {
   }
 
   static fromHex(hex: string): WorkPack {
-    const buf = EbxBuf.fromHex(hex.length / 2, hex);
+    const buf = FixedBuf.fromHex(hex.length / 2, hex);
     return WorkPack.fromBuf(buf.buf);
   }
 }

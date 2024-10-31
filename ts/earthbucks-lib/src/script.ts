@@ -1,11 +1,12 @@
 import { OP, Opcode } from "./opcode.js";
 import { ScriptChunk } from "./script-chunk.js";
-import { BufReader } from "./buf-reader.js";
-import { FixedBuf, WebBuf } from "./buf.js";
+import { BufReader } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { ScriptNum } from "./script-num.js";
 import { TxSignature } from "./tx-signature.js";
 import { PubKey } from "./pub-key.js";
-import { U8, U16, U32 } from "./numbers.js";
+import { U8, U16BE, U32BE } from "@webbuf/numbers";
 import { Pkh } from "./pkh.js";
 
 export type ScriptTemplateType =
@@ -139,7 +140,7 @@ export class Script {
 
   // PKHX 90D = PubKey Hash with Expiry: 90 Days
   // 13104 blocks = 2016 blocks / 14 * 90
-  static readonly PKHX_90D_LOCK_REL: U32 = new U32(12960);
+  static readonly PKHX_90D_LOCK_REL: U32BE = new U32BE(12960);
 
   static fromPkhx90dOutput(pkh: Pkh): Script {
     return new Script([
@@ -173,7 +174,9 @@ export class Script {
       this.chunks[6]?.opcode === Opcode.OP_ELSE &&
       this.chunks[7]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[7].buf?.length === 2 &&
-      this.chunks[7].buf?.readUInt16BE(0) === Script.PKHX_90D_LOCK_REL.n &&
+      this.chunks[7].buf &&
+      new BufReader(this.chunks[7].buf).readU16BE().n ===
+        Script.PKHX_90D_LOCK_REL.n &&
       this.chunks[8]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[9]?.opcode === Opcode.OP_DROP &&
       this.chunks[10]?.opcode === Opcode.OP_1 &&
@@ -181,15 +184,15 @@ export class Script {
     );
   }
 
-  static isPkhx90dExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
+  static isPkhx90dExpired(newBlockNum: U32BE, prevBlockNum: U32BE): boolean {
     return newBlockNum.bn >= prevBlockNum.bn + Script.PKHX_90D_LOCK_REL.bn;
   }
 
   // PKHXR 90D 60D = PubKey Hash with Expiry: 90 Days
   // And recovery: 60 Days
   // 13104 blocks = 2016 blocks / 14 * 90
-  static readonly PKHXR_90D_60D_X_LOCK_REL: U32 = new U32(12960);
-  static readonly PKHXR_90D_60D_R_LOCK_REL: U32 = new U32(8640);
+  static readonly PKHXR_90D_60D_X_LOCK_REL: U32BE = new U32BE(12960);
+  static readonly PKHXR_90D_60D_R_LOCK_REL: U32BE = new U32BE(8640);
 
   static fromPkhxr90d60dOutput(pkh: Pkh, rpkh: Pkh): Script {
     return new Script([
@@ -237,7 +240,8 @@ export class Script {
       this.chunks[7]?.opcode === Opcode.OP_IF &&
       this.chunks[8]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[8].buf?.length === 2 &&
-      this.chunks[8].buf?.readUInt16BE(0) ===
+      this.chunks[8].buf &&
+      new BufReader(this.chunks[8].buf).readU16BE().n ===
         Script.PKHXR_90D_60D_R_LOCK_REL.n &&
       this.chunks[9]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[10]?.opcode === Opcode.OP_DROP &&
@@ -250,7 +254,8 @@ export class Script {
       this.chunks[16]?.opcode === Opcode.OP_ELSE &&
       this.chunks[17]?.opcode === Opcode.OP_PUSHDATA1 &&
       this.chunks[17].buf?.length === 2 &&
-      this.chunks[17].buf?.readUInt16BE(0) ===
+      this.chunks[17].buf &&
+      new BufReader(this.chunks[17].buf).readU16BE().n ===
         Script.PKHXR_90D_60D_X_LOCK_REL.n &&
       this.chunks[18]?.opcode === Opcode.OP_CHECKLOCKRELVERIFY &&
       this.chunks[19]?.opcode === Opcode.OP_DROP &&
@@ -260,15 +265,18 @@ export class Script {
     );
   }
 
-  static isPkhxr90d60dExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
+  static isPkhxr90d60dExpired(
+    newBlockNum: U32BE,
+    prevBlockNum: U32BE,
+  ): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_90D_60D_X_LOCK_REL.bn
     );
   }
 
   static isPkhxr90d60dRecoverable(
-    newBlockNum: U32,
-    prevBlockNum: U32,
+    newBlockNum: U32BE,
+    prevBlockNum: U32BE,
   ): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_90D_60D_R_LOCK_REL.bn
@@ -277,7 +285,7 @@ export class Script {
 
   // PKHX 1H = PubKey Hash Expiry: 1 Hour
   // 6 blocks = 1 hour for 10 min blocks
-  static readonly PKHX_1H_LOCK_REL: U32 = new U32(6);
+  static readonly PKHX_1H_LOCK_REL: U32BE = new U32BE(6);
 
   static fromPkhx1hOutput(pkh: Pkh): Script {
     return new Script([
@@ -315,15 +323,15 @@ export class Script {
     );
   }
 
-  static isPkhx1hExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
+  static isPkhx1hExpired(newBlockNum: U32BE, prevBlockNum: U32BE): boolean {
     return newBlockNum.bn >= prevBlockNum.bn + Script.PKHX_1H_LOCK_REL.bn;
   }
 
   // PKHXR 1h 40m = PubKey Hash with Expiry: 1 Hour
   // and Recovery: 40 Minutes
   // 6 blocks = 1 hour for 10 min blocks
-  static readonly PKHXR_1H_40M_X_LOCK_REL: U32 = new U32(6);
-  static readonly PKHXR_1H_40M_R_LOCK_REL: U32 = new U32(4);
+  static readonly PKHXR_1H_40M_X_LOCK_REL: U32BE = new U32BE(6);
+  static readonly PKHXR_1H_40M_R_LOCK_REL: U32BE = new U32BE(4);
 
   static fromPkhxr1h40mOutput(pkh: Pkh, rpkh: Pkh): Script {
     return new Script([
@@ -384,13 +392,16 @@ export class Script {
     );
   }
 
-  static isPkhxr1h40mExpired(newBlockNum: U32, prevBlockNum: U32): boolean {
+  static isPkhxr1h40mExpired(newBlockNum: U32BE, prevBlockNum: U32BE): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_1H_40M_X_LOCK_REL.bn
     );
   }
 
-  static isPkhxr1h40mRecoverable(newBlockNum: U32, prevBlockNum: U32): boolean {
+  static isPkhxr1h40mRecoverable(
+    newBlockNum: U32BE,
+    prevBlockNum: U32BE,
+  ): boolean {
     return (
       newBlockNum.bn >= prevBlockNum.bn + Script.PKHXR_1H_40M_R_LOCK_REL.bn
     );

@@ -1,14 +1,14 @@
-import { U64 } from "./numbers.js";
-import { FixedBuf } from "./buf.js";
-import { BufWriter } from "./buf-writer.js";
-import { BufReader } from "./buf-reader.js";
-import type { WebBuf } from "./buf.js";
+import { U64BE } from "@webbuf/numbers";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
+import type { WebBuf } from "@webbuf/webbuf";
 
 export class PermissionToken {
   randValue: FixedBuf<32>;
-  timestamp: U64; // milliseconds
+  timestamp: U64BE; // milliseconds
 
-  constructor(randValue: FixedBuf<32>, timestamp: U64) {
+  constructor(randValue: FixedBuf<32>, timestamp: U64BE) {
     this.randValue = randValue;
     this.timestamp = timestamp; // milliseconds
   }
@@ -32,7 +32,7 @@ export class PermissionToken {
 
   static fromRandom(): PermissionToken {
     const randValue: FixedBuf<32> = FixedBuf.fromRandom(32);
-    const timestamp = new U64(Date.now()); // milliseconds
+    const timestamp = new U64BE(Date.now()); // milliseconds
     return new PermissionToken(randValue, timestamp);
   }
 

@@ -1,6 +1,8 @@
 import { WebBuf } from "@earthbucks/lib";
-import type { FixedBuf } from "@earthbucks/lib";
+import { FixedBuf } from "@earthbucks/lib";
 import * as tf from "@tensorflow/tfjs";
+import { U16BE } from "@webbuf/numbers";
+import { BufReader } from "@webbuf/rw";
 
 type TF = typeof tf;
 type TFTensor = tf.Tensor;
@@ -106,8 +108,9 @@ export class PowGpu {
       throw new Error("buffer length must be a multiple of 2");
     }
     const u16array = new Uint16Array(buffer.length / 2);
+    const bufReader = new BufReader(buffer);
     for (let i = 0; i < buffer.length; i += 2) {
-      u16array[i / 2] = buffer.readUInt16BE(i);
+      u16array[i / 2] = bufReader.readU16BE().n;
     }
     let bitTensor = tf.tensor1d(new Int32Array(u16array), "int32");
     const powersOf2 = tf.tensor1d(

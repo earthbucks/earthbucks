@@ -3,7 +3,7 @@ import { KeyPair } from "../src/key-pair.js";
 import { PrivKey } from "../src/priv-key.js";
 import fs from "node:fs";
 import path from "node:path";
-import { WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 
 describe("KeyPair", () => {
   test("KeyPair", () => {

@@ -1,6 +1,6 @@
 import { WebBuf, WorkPack } from "@earthbucks/lib";
 import type { FixedBuf } from "@earthbucks/lib";
-import { U256 } from "@earthbucks/lib";
+import { U256BE } from "@earthbucks/lib";
 import type { Header } from "@earthbucks/lib";
 import { BufReader } from "@earthbucks/lib";
 import type { PowGpu } from "./pow-gpu.js";
@@ -15,7 +15,7 @@ type AsyncHashFunction = (input: WebBuf) => Promise<FixedBuf<32>>;
 
 export async function MineWorkPack(
   workPack: WorkPack,
-  shareTargetNum: U256,
+  shareTargetNum: U256BE,
   PowGpuClass: typeof PowGpu,
   blake3Async: AsyncHashFunction,
 ): Promise<{ workPack: WorkPack; count: number; duration: number }> {
@@ -66,7 +66,7 @@ export async function MineWorkPack(
       console.log(id.buf.toString("hex"));
       break;
     }
-    workingHeader.nonce = workingHeader.nonce.add(new U256(1));
+    workingHeader.nonce = workingHeader.nonce.add(new U256BE(1));
   }
   const end = Date.now();
   duration = end - start;

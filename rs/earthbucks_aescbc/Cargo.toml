@@ -1,0 +1,14 @@
+[package]
+name = "earthbucks_aescbc"
+description = "EarthBucks AES-CBC library"
+version = "0.8.0"
+edition = "2021"
+license = "MIT"
+authors = ["Ryan X. Charles <ryan@ryanxcharles.com> (https://ryanxcharles.com)"]
+repository = "https://github.com/earthbucks/earthbucks"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+aes = "0.8.4"

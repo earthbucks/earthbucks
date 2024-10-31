@@ -2,12 +2,13 @@ import type { Tx } from "./tx.js";
 import type { PkhKeyMap } from "./pkh-key-map.js";
 import type { TxOutBnMap } from "./tx-out-bn-map.js";
 import { TxSignature } from "./tx-signature.js";
-import { FixedBuf, WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { PubKey } from "./pub-key.js";
 import { Script } from "./script.js";
 import type { KeyPair } from "./key-pair.js";
-import type { U64 } from "./numbers.js";
-import { U32 } from "./numbers.js";
+import type { U64BE } from "@webbuf/numbers";
+import { U32BE } from "@webbuf/numbers";
 import type { TxIn } from "./tx-in.js";
 import type { ScriptChunk } from "./script-chunk.js";
 import { Pkh } from "./pkh.js";
@@ -16,13 +17,13 @@ export class TxSigner {
   public tx: Tx;
   public pkhKeyMap: PkhKeyMap;
   public txOutBnMap: TxOutBnMap;
-  public workingBlockNum: U32;
+  public workingBlockNum: U32BE;
 
   constructor(
     tx: Tx,
     txOutBnMap: TxOutBnMap,
     pkhKeyMap: PkhKeyMap,
-    workingBlockNum: U32,
+    workingBlockNum: U32BE,
   ) {
     this.tx = tx;
     this.txOutBnMap = txOutBnMap;
@@ -30,7 +31,7 @@ export class TxSigner {
     this.workingBlockNum = workingBlockNum;
   }
 
-  sign(nIn: U32): Tx {
+  sign(nIn: U32BE): Tx {
     if (nIn.n >= this.tx.inputs.length) {
       throw new Error("input index out of bounds");
     }
@@ -269,7 +270,7 @@ export class TxSigner {
 
   signAll(): Tx {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      this.sign(new U32(i));
+      this.sign(new U32BE(i));
     }
     return this.tx;
   }

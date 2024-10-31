@@ -1,9 +1,9 @@
 import { Hash } from "./hash.js";
-import { BufWriter } from "./buf-writer.js";
-import { BufReader } from "./buf-reader.js";
-import { WebBuf } from "./buf.js";
-import { FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 import { MerkleTree } from "./merkle-tree.js";
 
 export class MerkleProof {
@@ -21,7 +21,7 @@ export class MerkleProof {
   toBuf(): WebBuf {
     const bw = new BufWriter();
     bw.write(this.root?.buf ?? WebBuf.alloc(32));
-    bw.writeVarInt(new U64(this.proof.length));
+    bw.writeVarIntU64BE(new U64BE(this.proof.length));
     for (const [sibling, isLeft] of this.proof) {
       bw.write(sibling?.buf ?? WebBuf.alloc(32));
       bw.writeU8(new U8(isLeft ? 1 : 0));
@@ -37,7 +37,7 @@ export class MerkleProof {
     const br = new BufReader(buf);
     const root = br.readFixed(32);
     const proof: Array<[FixedBuf<32> | null, boolean]> = [];
-    const proofLength = br.readVarInt().n;
+    const proofLength = br.readVarIntU64BE().n;
     for (let i = 0; i < proofLength; i++) {
       let sibling: FixedBuf<32> | null = br.readFixed(32);
       if (WebBuf.compare(sibling.buf, WebBuf.alloc(32)) === 0) {

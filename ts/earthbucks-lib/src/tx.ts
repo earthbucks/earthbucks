@@ -1,14 +1,15 @@
 import { TxIn } from "./tx-in.js";
 import { TxOut } from "./tx-out.js";
 import { VarInt } from "./var-int.js";
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
 import { Hash } from "./hash.js";
 import { ecdsab3Sign, ecdsab3Verify } from "./ecdsab3.js";
 import { TxSignature } from "./tx-signature.js";
 import { Script } from "./script.js";
-import { WebBuf, FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 import { Pkh } from "./pkh.js";
 import { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
@@ -23,9 +24,9 @@ export class Tx {
   public version: U8;
   public inputs: TxIn[];
   public outputs: TxOut[];
-  public lockAbs: U32;
+  public lockAbs: U32BE;
 
-  constructor(version: U8, inputs: TxIn[], outputs: TxOut[], lockAbs: U32) {
+  constructor(version: U8, inputs: TxIn[], outputs: TxOut[], lockAbs: U32BE) {
     this.version = version;
     this.inputs = inputs;
     this.outputs = outputs;
@@ -38,13 +39,13 @@ export class Tx {
 
   static fromBufReader(reader: BufReader): Tx {
     const version = reader.readU8();
-    const numInputs = reader.readVarInt();
+    const numInputs = reader.readVarIntU64BE();
     const inputs = [];
     for (let i = 0; i < numInputs.n; i++) {
       const txIn = TxIn.fromBufReader(reader);
       inputs.push(txIn);
     }
-    const numOutputs = reader.readVarInt();
+    const numOutputs = reader.readVarIntU64BE();
     const outputs = [];
     for (let i = 0; i < numOutputs.n; i++) {
       const txOut = TxOut.fromBufReader(reader);
@@ -57,11 +58,11 @@ export class Tx {
   toBuf(): WebBuf {
     const writer = new BufWriter();
     writer.writeU8(this.version);
-    writer.write(VarInt.fromU32(new U32(this.inputs.length)).toBuf());
+    writer.write(VarInt.fromU32(new U32BE(this.inputs.length)).toBuf());
     for (const input of this.inputs) {
       writer.write(input.toBuf());
     }
-    writer.write(VarInt.fromU32(new U32(this.outputs.length)).toBuf());
+    writer.write(VarInt.fromU32(new U32BE(this.outputs.length)).toBuf());
     for (const output of this.outputs) {
       writer.write(output.toBuf());
     }
@@ -89,8 +90,8 @@ export class Tx {
     blockMessageId: FixedBuf<32>;
     domain: string;
     outputScript: Script;
-    outputAmount: U64;
-    blockNum: U32;
+    outputAmount: U64BE;
+    blockNum: U32BE;
     nonce?: FixedBuf<32>;
   }): Tx {
     // TODO: DO NOT also allow inputting expired txs: expired txs should
@@ -105,8 +106,8 @@ export class Tx {
   static fromMintTxScripts(
     inputScript: Script,
     outputScript: Script,
-    outputAmount: U64,
-    blockNum: U32,
+    outputAmount: U64BE,
+    blockNum: U32BE,
   ): Tx {
     // TODO: DO NOT also allow inputting expired txs: expired txs should
     // actually be the first tx of the new block.
@@ -120,7 +121,7 @@ export class Tx {
   static fromMintTxTxOuts(
     inputScript: Script,
     txOuts: TxOut[],
-    blockNum: U32,
+    blockNum: U32BE,
   ): Tx {
     // TODO: DO NOT also allow inputting expired txs: expired txs should
     // actually be the first tx of the new block.
@@ -207,9 +208,9 @@ export class Tx {
   }
 
   sighashPreimage(
-    inputIndex: U32,
+    inputIndex: U32BE,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashType: U8,
     hashCache: HashCache,
   ): WebBuf {
@@ -265,7 +266,7 @@ export class Tx {
     writer.write(lockRelHash.buf);
     writer.write((this.inputs[inputIndex.n] as TxIn).inputTxId.buf);
     writer.writeU32BE((this.inputs[inputIndex.n] as TxIn).inputTxNOut);
-    writer.writeVarInt(new U64(script.length));
+    writer.writeVarIntU64BE(new U64BE(script.length));
     writer.write(script);
     writer.writeU64BE(amount);
     writer.writeU32BE((this.inputs[inputIndex.n] as TxIn).lockRel);
@@ -276,9 +277,9 @@ export class Tx {
   }
 
   sighashNoCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashType: U8,
   ): FixedBuf<32> {
     const hashCache = new HashCache();
@@ -294,9 +295,9 @@ export class Tx {
   }
 
   sighashWithCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashType: U8,
     hashCache: HashCache,
   ): FixedBuf<32> {
@@ -312,10 +313,10 @@ export class Tx {
   }
 
   signNoCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     privKey: PrivKey,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashType: U8,
   ): TxSignature {
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
@@ -325,10 +326,10 @@ export class Tx {
   }
 
   signWithCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     privKey: PrivKey,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashType: U8,
     hashCache: HashCache,
   ): TxSignature {
@@ -345,11 +346,11 @@ export class Tx {
   }
 
   verifyNoCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     publicKey: WebBuf,
     sig: TxSignature,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
   ): boolean {
     const hashType = sig.hashType;
     const hash = this.sighashNoCache(inputIndex, script, amount, hashType);
@@ -361,11 +362,11 @@ export class Tx {
   }
 
   verifyWithCache(
-    inputIndex: U32,
+    inputIndex: U32BE,
     publicKey: WebBuf,
     sig: TxSignature,
     script: WebBuf,
-    amount: U64,
+    amount: U64BE,
     hashCache: HashCache,
   ): boolean {
     const hashType = sig.hashType;
@@ -410,7 +411,7 @@ export class Tx {
       new U8(this.version.n),
       inputs,
       outputs,
-      new U32(this.lockAbs.n),
+      new U32BE(this.lockAbs.n),
     );
   }
 }

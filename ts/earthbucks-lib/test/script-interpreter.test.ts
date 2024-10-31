@@ -10,8 +10,9 @@ import { KeyPair } from "../src/key-pair.js";
 import { Pkh } from "../src/pkh.js";
 import { TxSignature } from "../src/tx-signature.js";
 import { PrivKey } from "../src/priv-key.js";
-import { FixedBuf, WebBuf } from "../src/buf.js";
-import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 describe("ScriptInterpreter", () => {
   let tx: Tx;
@@ -22,13 +23,13 @@ describe("ScriptInterpreter", () => {
       [
         new TxIn(
           FixedBuf.alloc(32, 0),
-          new U32(0),
+          new U32BE(0),
           new Script(),
-          new U32(0xffffffff),
+          new U32BE(0xffffffff),
         ),
       ],
-      [new TxOut(new U64(0), new Script())],
-      new U32(0),
+      [new TxOut(new U64BE(0), new Script())],
+      new U32BE(0),
     );
   });
 
@@ -39,7 +40,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -56,7 +57,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -74,7 +75,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -92,7 +93,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -110,7 +111,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -128,7 +129,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromScriptTx(
         script,
         tx,
-        new U32(0),
+        new U32BE(0),
         hashCache,
       );
       scriptInterpreter.evalScript();
@@ -144,16 +145,16 @@ describe("ScriptInterpreter", () => {
       const outputPrivKeyHex =
         "d9486fac4a1de03ca8c562291182e58f2f3e42a82eaf3152ccf744b3a8b3b725";
       const outputPrivKeyBuf = FixedBuf.fromHex(32, outputPrivKeyHex);
-      const outputKey = KeyPair.fromPrivKeyEbxBuf(outputPrivKeyBuf);
+      const outputKey = KeyPair.fromPrivKeyBuf(outputPrivKeyBuf);
       const outputPubKey = outputKey.pubKey.toBuf();
       expect(WebBuf.from(outputPubKey.buf).toString("hex")).toEqual(
         "0377b8ba0a276329096d51275a8ab13809b4cd7af856c084d60784ed8e4133d987",
       );
       const outputAddress = Pkh.fromPubKeyBuf(outputPubKey);
       const outputScript = Script.fromPkhOutput(outputAddress);
-      const outputAmount = new U64(100);
+      const outputAmount = new U64BE(100);
       const outputTxId = FixedBuf.alloc(32, 0);
-      const outputTxIndex = new U32(0);
+      const outputTxIndex = new U32BE(0);
 
       const tx = new Tx(
         new U8(0),
@@ -162,15 +163,15 @@ describe("ScriptInterpreter", () => {
             outputTxId,
             outputTxIndex,
             new Script(),
-            new U32(0xffffffff),
+            new U32BE(0xffffffff),
           ),
         ],
         [new TxOut(outputAmount, outputScript)],
-        new U32(0),
+        new U32BE(0),
       );
 
       const sig = tx.signNoCache(
-        new U32(0),
+        new U32BE(0),
         PrivKey.fromBuf(outputPrivKeyBuf),
         outputScript.toBuf(),
         outputAmount,
@@ -183,14 +184,14 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
         outputScript,
         tx,
-        new U32(0),
+        new U32BE(0),
         stack,
         outputAmount,
         hashCache,
       );
 
       const result = scriptInterpreter.evalScript();
-      expect(!!result.result).toBe(true);
+      expect(!!result.value).toBe(true);
     });
 
     test("CHECKMULTISIG", () => {
@@ -210,16 +211,16 @@ describe("ScriptInterpreter", () => {
 
       // Generate public keys
       const pubKeys = privKeysU8Vec.map(
-        (privKey) => PrivKey.fromBuf(privKey).toPubKeyEbxBuf().buf,
+        (privKey) => PrivKey.fromBuf(privKey).toPubKeyBuf().buf,
       );
 
       // Create a multisig output script
       const outputScript = Script.fromMultiSigOutput(3, pubKeys);
 
       // Other tx parameters
-      const outputAmount = new U64(100);
+      const outputAmount = new U64BE(100);
       const outputTxId = FixedBuf.alloc(32, 0);
-      const outputTxIndex = new U32(0);
+      const outputTxIndex = new U32BE(0);
 
       // Create a tx
       const tx = new Tx(
@@ -229,11 +230,11 @@ describe("ScriptInterpreter", () => {
             outputTxId,
             outputTxIndex,
             new Script(),
-            new U32(0xffffffff),
+            new U32BE(0xffffffff),
           ),
         ],
         [new TxOut(outputAmount, outputScript)],
-        new U32(0),
+        new U32BE(0),
       );
 
       // Sign the tx with the first 3 private keys
@@ -242,7 +243,7 @@ describe("ScriptInterpreter", () => {
         .map((privKey) =>
           tx
             .signNoCache(
-              new U32(0),
+              new U32BE(0),
               PrivKey.fromBuf(privKey),
               outputScript.toBuf(),
               outputAmount,
@@ -259,7 +260,7 @@ describe("ScriptInterpreter", () => {
       const scriptInterpreter = ScriptInterpreter.fromOutputScriptTx(
         outputScript,
         tx,
-        new U32(0),
+        new U32BE(0),
         stack,
         outputAmount,
         hashCache,
@@ -268,7 +269,7 @@ describe("ScriptInterpreter", () => {
       // Evaluate the script
       const result = scriptInterpreter.evalScript();
       expect(scriptInterpreter.errStr).toBe("");
-      expect(!!result.result).toBe(true);
+      expect(!!result.value).toBe(true);
     });
   });
 
@@ -296,13 +297,13 @@ describe("ScriptInterpreter", () => {
           [
             new TxIn(
               FixedBuf.alloc(32, 0),
-              new U32(0),
+              new U32BE(0),
               new Script(),
-              new U32(0xffffffff),
+              new U32BE(0xffffffff),
             ),
           ],
-          [new TxOut(new U64(0), new Script())],
-          new U32(0),
+          [new TxOut(new U64BE(0), new Script())],
+          new U32BE(0),
         );
       });
 
@@ -313,7 +314,7 @@ describe("ScriptInterpreter", () => {
           const scriptInterpreter = ScriptInterpreter.fromScriptTx(
             script,
             tx,
-            new U32(0),
+            new U32BE(0),
             hashCache,
           );
           scriptInterpreter.evalScript();

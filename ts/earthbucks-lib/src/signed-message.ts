@@ -1,10 +1,11 @@
-import { FixedBuf, WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Hash } from "./hash.js";
 import { ecdsab3Sign, ecdsab3Verify } from "./ecdsab3.js";
 import type { PrivKey } from "./priv-key.js";
 import { PubKey } from "./pub-key.js";
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
 
 export class SignedMessage {
   sig: FixedBuf<64>;
@@ -39,7 +40,7 @@ export class SignedMessage {
   ): SignedMessage {
     const mac = SignedMessage.createMac(message, keyStr);
     const sigBuf = ecdsab3Sign(mac, privKey);
-    const pubKey = privKey.toPubKeyEbxBuf();
+    const pubKey = privKey.toPubKeyBuf();
     return new SignedMessage(sigBuf, pubKey, mac, message, keyStr);
   }
 

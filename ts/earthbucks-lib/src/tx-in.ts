@@ -1,22 +1,22 @@
-import { BufWriter } from "./buf-writer.js";
-import { BufReader } from "./buf-reader.js";
+import { BufWriter } from "@webbuf/rw";
+import { BufReader } from "@webbuf/rw";
 import { Script, ScriptTemplateType } from "./script.js";
 import { VarInt } from "./var-int.js";
-import { WebBuf } from "./buf.js";
-import { FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class TxIn {
   public inputTxId: FixedBuf<32>;
-  public inputTxNOut: U32;
+  public inputTxNOut: U32BE;
   public script: Script;
-  public lockRel: U32;
+  public lockRel: U32BE;
 
   constructor(
     inputTxId: FixedBuf<32>,
-    inputTxNOut: U32,
+    inputTxNOut: U32BE,
     script: Script,
-    lockRel: U32,
+    lockRel: U32BE,
   ) {
     this.inputTxId = inputTxId;
     this.inputTxNOut = inputTxNOut;
@@ -32,7 +32,7 @@ export class TxIn {
   static fromBufReader(reader: BufReader): TxIn {
     const inputTxHash = reader.readFixed(32);
     const inputTxIndex = reader.readU32BE();
-    const scriptLen = reader.readVarInt().n;
+    const scriptLen = reader.readVarIntU64BE().n;
     const scriptBuf = reader.read(scriptLen);
     const script = Script.fromBuf(scriptBuf);
     const lockRel = reader.readU32BE();
@@ -44,7 +44,7 @@ export class TxIn {
     writer.write(this.inputTxId.buf);
     writer.writeU32BE(this.inputTxNOut);
     const scriptBuf = this.script.toBuf();
-    writer.write(VarInt.fromU32(new U32(scriptBuf.length)).toBuf());
+    writer.write(VarInt.fromU32(new U32BE(scriptBuf.length)).toBuf());
     writer.write(scriptBuf);
     writer.writeU32BE(this.lockRel);
     return writer.toBuf();
@@ -75,7 +75,7 @@ export class TxIn {
 
   static fromMintTxScript(script: Script): TxIn {
     const emptyId = FixedBuf.alloc(32);
-    return new TxIn(emptyId, new U32(0xffffffff), script, new U32(0));
+    return new TxIn(emptyId, new U32BE(0xffffffff), script, new U32BE(0));
   }
 
   static fromMintTxData(
@@ -102,9 +102,9 @@ export class TxIn {
   clone(): TxIn {
     return new TxIn(
       this.inputTxId.clone(),
-      new U32(this.inputTxNOut.n),
+      new U32BE(this.inputTxNOut.n),
       this.script.clone(),
-      new U32(this.lockRel.n),
+      new U32BE(this.lockRel.n),
     );
   }
 }

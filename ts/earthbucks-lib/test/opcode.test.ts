@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { OP, OPCODE_TO_NAME } from "../src/opcode.js";
-import { WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 
 describe("opcode", () => {
   test("opcode maps are consistent", () => {

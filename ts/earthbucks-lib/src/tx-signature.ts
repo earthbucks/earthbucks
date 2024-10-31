@@ -1,5 +1,6 @@
-import { FixedBuf, WebBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 
 export class TxSignature {
   static readonly SIGHASH_ALL = new U8(0x00000001);
@@ -18,7 +19,7 @@ export class TxSignature {
 
   toBuf(): WebBuf {
     const hashTypeBuf = WebBuf.alloc(1);
-    hashTypeBuf.writeUInt8(this.hashType.n);
+    hashTypeBuf[0] = this.hashType.n;
     return WebBuf.concat([hashTypeBuf, this.sigBuf.buf]);
   }
 

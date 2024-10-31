@@ -4,18 +4,18 @@ import type { Tx, HashCache } from "./tx.js";
 import { ScriptNum } from "./script-num.js";
 import { Hash } from "./hash.js";
 import { TxSignature } from "./tx-signature.js";
-import { WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 import { PubKey } from "./pub-key.js";
-import { U8, U64 } from "./numbers.js";
-import type { U32 } from "./numbers.js";
+import { U8, U64BE } from "@webbuf/numbers";
+import type { U32BE } from "@webbuf/numbers";
 import type { ScriptChunk } from "./script-chunk.js";
 import type { TxIn } from "./tx-in.js";
-import { Result, Ok, Err } from "./result.js";
+import { Result, Ok, Err } from "@ryanxcharles/result";
 
 export class ScriptInterpreter {
   public script: Script;
   public tx: Tx;
-  public nIn: U32;
+  public nIn: U32BE;
   public stack: WebBuf[];
   public altStack: WebBuf[];
   public pc: number;
@@ -24,13 +24,13 @@ export class ScriptInterpreter {
   public returnValue?: WebBuf;
   public returnSuccess?: boolean;
   public errStr: string;
-  public value: U64;
+  public value: U64BE;
   public hashCache: HashCache;
 
   constructor(
     script: Script,
     tx: Tx,
-    nIn: U32,
+    nIn: U32BE,
     stack: WebBuf[],
     altStack: WebBuf[],
     pc: number,
@@ -39,7 +39,7 @@ export class ScriptInterpreter {
     returnValue: WebBuf | undefined,
     returnSuccess: boolean | undefined,
     errStr: string,
-    value: U64,
+    value: U64BE,
     hashCache: HashCache,
   ) {
     this.script = script;
@@ -60,7 +60,7 @@ export class ScriptInterpreter {
   static fromScriptTx(
     script: Script,
     tx: Tx,
-    nIn: U32,
+    nIn: U32BE,
     hashCache: HashCache,
   ): ScriptInterpreter {
     return new ScriptInterpreter(
@@ -75,7 +75,7 @@ export class ScriptInterpreter {
       undefined,
       undefined,
       "",
-      new U64(0),
+      new U64BE(0),
       hashCache,
     );
   }
@@ -83,9 +83,9 @@ export class ScriptInterpreter {
   static fromOutputScriptTx(
     script: Script,
     tx: Tx,
-    nIn: U32,
+    nIn: U32BE,
     stack: WebBuf[],
-    value: U64,
+    value: U64BE,
     hashCache: HashCache,
   ): ScriptInterpreter {
     return new ScriptInterpreter(

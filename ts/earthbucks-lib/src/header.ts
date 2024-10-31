@@ -1,29 +1,28 @@
-import { BufReader } from "./buf-reader.js";
-import { BufWriter } from "./buf-writer.js";
+import { BufReader } from "@webbuf/rw";
+import { BufWriter } from "@webbuf/rw";
 import { Hash } from "./hash.js";
-import type { WebBuf } from "./buf.js";
-import { FixedBuf } from "./buf.js";
-import { EbxBuf } from "./buf.js";
-import { U8, U16, U32, U64, U256 } from "./numbers.js";
+import type { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE, U256BE } from "@webbuf/numbers";
 import { WORK_SER_ALGO_NUM, WORK_SER_ALGO_NAME } from "./work-ser-algo.js";
 import { WORK_PAR_ALGO_NUM, WORK_PAR_ALGO_NAME } from "./work-par-algo.js";
 import { Tx } from "./tx.js";
 import { Domain } from "./domain.js";
 import { ScriptChunk } from "./script-chunk.js";
-import { Err, Ok, Result } from "./result.js";
+import { Err, Ok, Result } from "@ryanxcharles/result";
 
 interface HeaderInterface {
   version: U8;
   prevBlockId: FixedBuf<32>;
   rootMerkleTreeId: FixedBuf<32>;
-  nTransactions: U64;
-  timestamp: U64;
-  blockNum: U32;
-  target: U256;
-  nonce: U256;
-  workSerAlgo: U16;
+  nTransactions: U64BE;
+  timestamp: U64BE;
+  blockNum: U32BE;
+  target: U256BE;
+  nonce: U256BE;
+  workSerAlgo: U16BE;
   workSerHash: FixedBuf<32>;
-  workParAlgo: U16;
+  workParAlgo: U16BE;
   workParHash: FixedBuf<32>;
 }
 
@@ -31,25 +30,25 @@ export class Header implements HeaderInterface {
   version: U8;
   prevBlockId: FixedBuf<32>;
   rootMerkleTreeId: FixedBuf<32>;
-  nTransactions: U64;
-  timestamp: U64; // milliseconds
-  blockNum: U32;
-  target: U256;
-  nonce: U256;
-  workSerAlgo: U16;
+  nTransactions: U64BE;
+  timestamp: U64BE; // milliseconds
+  blockNum: U32BE;
+  target: U256BE;
+  nonce: U256BE;
+  workSerAlgo: U16BE;
   workSerHash: FixedBuf<32>;
-  workParAlgo: U16;
+  workParAlgo: U16BE;
   workParHash: FixedBuf<32>;
 
   // 600_000 milliseconds = 600 seconds = 10 minutes
-  static readonly BLOCK_INTERVAL_MS = new U64(600_000);
+  static readonly BLOCK_INTERVAL_MS = new U64BE(600_000);
   static readonly N_BLOCKS_180D = (180 * 24 * 60) / 10;
   static readonly N_BLOCKS_90D = (90 * 24 * 60) / 10;
-  static readonly MIN_DIFFICULTY = new U64(2_000);
-  static readonly GENESIS_DIFFICULTY = new U64(2_000);
+  static readonly MIN_DIFFICULTY = new U64BE(2_000);
+  static readonly GENESIS_DIFFICULTY = new U64BE(2_000);
   static readonly SIZE = 1 + 32 + 32 + 8 + 8 + 4 + 32 + 32 + 2 + 32 + 2 + 32;
   static readonly MAX_TARGET_BYTES = FixedBuf.alloc(32, 0xff);
-  static readonly MAX_TARGET_U256 = U256.fromBEBuf(Header.MAX_TARGET_BYTES.buf);
+  static readonly MAX_TARGET_U256 = U256BE.fromBEBuf(Header.MAX_TARGET_BYTES);
   static readonly GENESIS_TARGET = Header.targetFromDifficulty(
     Header.GENESIS_DIFFICULTY,
   );
@@ -58,14 +57,14 @@ export class Header implements HeaderInterface {
     version = new U8(0),
     prevBlockId = FixedBuf.alloc(32),
     rootMerkleTreeId = FixedBuf.alloc(32),
-    nTransactions = new U64(0),
-    timestamp = new U64(0),
-    blockNum = new U32(0),
-    target = new U256(0),
-    nonce = new U256(0),
-    workSerAlgo = new U16(0),
+    nTransactions = new U64BE(0),
+    timestamp = new U64BE(0),
+    blockNum = new U32BE(0),
+    target = new U256BE(0),
+    nonce = new U256BE(0),
+    workSerAlgo = new U16BE(0),
     workSerHash = FixedBuf.alloc(32),
-    workParAlgo = new U16(0),
+    workParAlgo = new U16BE(0),
     workParHash = FixedBuf.alloc(32),
   }: Partial<HeaderInterface> = {}) {
     this.version = version;
@@ -140,7 +139,7 @@ export class Header implements HeaderInterface {
   }
 
   static fromHex(str: string): Header {
-    return Header.fromBuf(EbxBuf.fromHex(Header.SIZE, str).buf);
+    return Header.fromBuf(FixedBuf.fromHex(Header.SIZE, str).buf);
   }
 
   toString(): string {
@@ -152,7 +151,7 @@ export class Header implements HeaderInterface {
   }
 
   isTargetValid(prevHeader: Header, prevPrevHeader: Header | null): boolean {
-    let newTarget: U256;
+    let newTarget: U256BE;
     try {
       const timestamp = this.timestamp;
       newTarget = Header.newTargetFromPrevHeaders(
@@ -168,7 +167,7 @@ export class Header implements HeaderInterface {
 
   isIdValid(): boolean {
     const id = this.id();
-    const idNum = U256.fromBEBuf(id.buf);
+    const idNum = U256BE.fromBEBuf(id);
     return idNum.bn < this.target.bn;
   }
 
@@ -176,7 +175,7 @@ export class Header implements HeaderInterface {
     return this.version.n === 0;
   }
 
-  isTimestampValidAt(timestamp: U64): boolean {
+  isTimestampValidAt(timestamp: U64BE): boolean {
     return this.timestamp.n <= timestamp.n;
   }
 
@@ -193,7 +192,7 @@ export class Header implements HeaderInterface {
   resIsValidInChain(
     prevHeader: Header | null,
     prevPrevHeader: Header | null,
-    actualNTransactions: U64,
+    actualNTransactions: U64BE,
   ): Result<true> {
     if (this.nTransactions.n === 0) {
       return Err("nTransactions is 0");
@@ -240,8 +239,8 @@ export class Header implements HeaderInterface {
   resIsValidAt(
     prevHeader: Header | null,
     prevPrevHeader: Header | null,
-    actualNTransactions: U64,
-    timestamp: U64,
+    actualNTransactions: U64BE,
+    timestamp: U64BE,
   ): Result<true> {
     // this validates everything about the header except PoW
     // PoW must be validated using a separate library
@@ -258,7 +257,7 @@ export class Header implements HeaderInterface {
   resIsValidNow(
     prevHeader: Header | null,
     prevPrevHeader: Header | null,
-    actualNTransactions: U64,
+    actualNTransactions: U64BE,
   ): Result<true> {
     return this.resIsValidAt(
       prevHeader,
@@ -281,22 +280,22 @@ export class Header implements HeaderInterface {
 
   static fromGenesis(
     merkleRoot: FixedBuf<32>,
-    initialTarget: U256 = Header.GENESIS_TARGET,
+    initialTarget: U256BE = Header.GENESIS_TARGET,
   ): Header {
-    const timestamp = new U64(Math.floor(Date.now())); // milliseconds
-    const nonce = U256.fromBEBuf(FixedBuf.fromRandom(32).buf);
+    const timestamp = new U64BE(Math.floor(Date.now())); // milliseconds
+    const nonce = U256BE.fromBEBuf(FixedBuf.fromRandom(32));
     return new Header({
       version: new U8(0),
       prevBlockId: FixedBuf.alloc(32),
       rootMerkleTreeId: merkleRoot,
-      nTransactions: new U64(1), // genesis block has 1 transaction
+      nTransactions: new U64BE(1), // genesis block has 1 transaction
       timestamp,
-      blockNum: new U32(0n),
+      blockNum: new U32BE(0n),
       target: initialTarget,
       nonce,
-      workSerAlgo: new U16(WORK_SER_ALGO_NUM.blake3_3),
+      workSerAlgo: new U16BE(WORK_SER_ALGO_NUM.blake3_3),
       workSerHash: FixedBuf.alloc(32),
-      workParAlgo: new U16(WORK_PAR_ALGO_NUM.algo1627),
+      workParAlgo: new U16BE(WORK_PAR_ALGO_NUM.algo1627),
       workParHash: FixedBuf.alloc(32),
     });
   }
@@ -313,20 +312,20 @@ export class Header implements HeaderInterface {
     return Hash.doubleBlake3Hash(this.toBuf());
   }
 
-  idNum(): U256 {
-    return U256.fromBEBuf(this.id().buf);
+  idNum(): U256BE {
+    return U256BE.fromBEBuf(this.id());
   }
 
-  static getNewTimestamp(): U64 {
-    return new U64(Math.floor(Date.now()));
+  static getNewTimestamp(): U64BE {
+    return new U64BE(Math.floor(Date.now()));
   }
 
   static fromChain(
     prevHeader: Header,
     prevPrevHeader: Header | null,
     merkleRoot: FixedBuf<32>,
-    nTransactions: U64,
-    newTimestamp: U64,
+    nTransactions: U64BE,
+    newTimestamp: U64BE,
   ): Header {
     const target = Header.newTargetFromPrevHeaders(
       prevHeader,
@@ -334,12 +333,12 @@ export class Header implements HeaderInterface {
       newTimestamp,
     );
     const prevBlockId = prevHeader.id();
-    const blockNum = prevHeader.blockNum.add(new U32(1));
+    const blockNum = prevHeader.blockNum.add(new U32BE(1));
     const timestamp = newTimestamp;
-    const nonce = new U256(0);
-    const workSerAlgo = new U16(WORK_SER_ALGO_NUM.blake3_3);
+    const nonce = new U256BE(0);
+    const workSerAlgo = new U16BE(WORK_SER_ALGO_NUM.blake3_3);
     const workSerHash = FixedBuf.alloc(32);
-    const workParAlgo = new U16(WORK_PAR_ALGO_NUM.algo1627);
+    const workParAlgo = new U16BE(WORK_PAR_ALGO_NUM.algo1627);
     const workParHash = FixedBuf.alloc(32);
     return new Header({
       version: new U8(0),
@@ -360,8 +359,8 @@ export class Header implements HeaderInterface {
   static newTargetFromPrevHeaders(
     prevHeader: Header,
     prevPrevHeader: Header | null,
-    newTimestamp: U64 = Header.getNewTimestamp(),
-  ): U256 {
+    newTimestamp: U64BE = Header.getNewTimestamp(),
+  ): U256BE {
     const newDifficulty = Header.newDifficultyFromPrevHeaders(
       prevHeader,
       prevPrevHeader,
@@ -373,8 +372,8 @@ export class Header implements HeaderInterface {
   static newDifficultyFromPrevHeaders(
     prevHeader: Header,
     prevPrevHeader: Header | null,
-    newTimestamp: U64 = Header.getNewTimestamp(),
-  ): U64 {
+    newTimestamp: U64BE = Header.getNewTimestamp(),
+  ): U64BE {
     if (!prevPrevHeader) {
       return prevHeader.difficulty();
     }
@@ -411,10 +410,10 @@ export class Header implements HeaderInterface {
     newDifficulty = newDifficulty * adjustmentFactor;
     newDifficulty = Math.max(newDifficulty, Header.MIN_DIFFICULTY.n);
 
-    return new U64(Math.floor(newDifficulty));
+    return new U64BE(Math.floor(newDifficulty));
   }
 
-  static mintTxAmount(blockNum: U32): U64 {
+  static mintTxAmount(blockNum: U32BE): U64BE {
     // shift every 210,000 blocks ("halving")
     const shiftBy = blockNum.bn / 210_000n;
     // BTC: 100_000_000 satoshis = 1 bitcoin
@@ -423,22 +422,22 @@ export class Header implements HeaderInterface {
     // EBX: 100_000_000_000 adams = 1 earthbuck
     // 100 earthbucks per block for the first 210,000 blocks
     // 100 billion adams per block for the first 210,000 blocks
-    return new U64((100n * 100_000_000_000n) >> shiftBy);
+    return new U64BE((100n * 100_000_000_000n) >> shiftBy);
   }
 
-  static difficultyFromTarget(target: U256): U64 {
+  static difficultyFromTarget(target: U256BE): U64BE {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
     const maxTarget = Header.MAX_TARGET_U256;
-    return new U64(maxTarget.div(target).bn);
+    return new U64BE(maxTarget.div(target).bn);
   }
 
-  static targetFromDifficulty(difficulty: U64): U256 {
+  static targetFromDifficulty(difficulty: U64BE): U256BE {
     const maxTargetBuf = Header.MAX_TARGET_BYTES;
     const maxTarget = Header.MAX_TARGET_U256;
-    return maxTarget.div(new U256(difficulty.bn));
+    return maxTarget.div(new U256BE(difficulty.bn));
   }
 
-  difficulty(): U64 {
+  difficulty(): U64BE {
     return Header.difficultyFromTarget(this.target);
   }
 
@@ -458,8 +457,8 @@ export class Header implements HeaderInterface {
     return str;
   }
 
-  addTx(merkleRoot: FixedBuf<32>, timestamp: U64 | null = null): Header {
-    const nTransactions = new U64(this.nTransactions.bn + 1n);
+  addTx(merkleRoot: FixedBuf<32>, timestamp: U64BE | null = null): Header {
+    const nTransactions = new U64BE(this.nTransactions.bn + 1n);
     return new Header({
       ...this,
       nTransactions,
@@ -497,7 +496,7 @@ export class Header implements HeaderInterface {
       }
     }
     // 5. output amount is correct
-    let totalOutputValue = new U64(0);
+    let totalOutputValue = new U64BE(0);
     for (const output of mintTx.outputs) {
       totalOutputValue = totalOutputValue.add(output.value);
     }
@@ -525,7 +524,7 @@ export class Header implements HeaderInterface {
     if (!domainBuf) {
       return Err("no domain buf");
     }
-    const domainStr = domainBuf.toString();
+    const domainStr = domainBuf.toUtf8();
     if (!Domain.isValidDomain(domainStr)) {
       return Err("domain is not valid");
     }
@@ -552,14 +551,14 @@ export class Header implements HeaderInterface {
       version: new U8(this.version.n),
       prevBlockId: this.prevBlockId.clone(),
       rootMerkleTreeId: this.rootMerkleTreeId.clone(),
-      nTransactions: new U64(this.nTransactions.bn),
-      timestamp: new U64(this.timestamp.bn),
-      blockNum: new U32(this.blockNum.bn),
-      target: new U256(this.target.bn),
-      nonce: new U256(this.nonce.bn),
-      workSerAlgo: new U16(this.workSerAlgo.n),
+      nTransactions: new U64BE(this.nTransactions.bn),
+      timestamp: new U64BE(this.timestamp.bn),
+      blockNum: new U32BE(this.blockNum.bn),
+      target: new U256BE(this.target.bn),
+      nonce: new U256BE(this.nonce.bn),
+      workSerAlgo: new U16BE(this.workSerAlgo.n),
       workSerHash: this.workSerHash.clone(),
-      workParAlgo: new U16(this.workParAlgo.n),
+      workParAlgo: new U16BE(this.workParAlgo.n),
       workParHash: this.workParHash.clone(),
     });
   }

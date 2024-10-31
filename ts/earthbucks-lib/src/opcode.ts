@@ -1,4 +1,4 @@
-import { WebBuf } from "./buf.js";
+import { WebBuf } from "@webbuf/webbuf";
 
 export type OpcodeName =
   | "0"

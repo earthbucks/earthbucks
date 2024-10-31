@@ -1,17 +1,18 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { TxIn } from "../src/tx-in.js";
 import { Script } from "../src/script.js";
-import { BufReader } from "../src/buf-reader.js";
-import { WebBuf, FixedBuf } from "../src/buf.js";
-import { U8, U16, U32, U64 } from "../src/numbers.js";
+import { BufReader } from "@webbuf/rw";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 import { ScriptChunk } from "../src/script-chunk.js";
 
 describe("TxInput", () => {
   test("should create a TxInput", () => {
     const inputTxHash = FixedBuf.alloc(32);
-    const inputTxIndex = new U32(0);
+    const inputTxIndex = new U32BE(0);
     const script = new Script();
-    const lockRel = new U32(0);
+    const lockRel = new U32BE(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput).toBeInstanceOf(TxIn);
@@ -24,9 +25,9 @@ describe("TxInput", () => {
   describe("fromBufReader", () => {
     test("fromBufReader", () => {
       const inputTxHash = FixedBuf.alloc(32);
-      const inputTxIndex = new U32(0);
+      const inputTxIndex = new U32BE(0);
       const script = new Script();
-      const lockRel = new U32(0);
+      const lockRel = new U32BE(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
 
@@ -45,9 +46,9 @@ describe("TxInput", () => {
   describe("toBuf", () => {
     test("toBuf", () => {
       const inputTxHash = FixedBuf.alloc(32);
-      const inputTxIndex = new U32(0);
+      const inputTxIndex = new U32BE(0);
       const script = new Script();
-      const lockRel = new U32(0);
+      const lockRel = new U32BE(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
       const result = txInput.toBuf();
@@ -58,9 +59,9 @@ describe("TxInput", () => {
 
     test("toBuf with script", () => {
       const inputTxHash = FixedBuf.alloc(32);
-      const inputTxIndex = new U32(0);
+      const inputTxIndex = new U32BE(0);
       const script = Script.fromString("DOUBLEBLAKE3");
-      const lockRel = new U32(0);
+      const lockRel = new U32BE(0);
 
       const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
       const result = txInput.toBuf();
@@ -72,9 +73,9 @@ describe("TxInput", () => {
 
   test("toBuf with pushdata", () => {
     const inputTxHash = FixedBuf.alloc(32);
-    const inputTxIndex = new U32(0);
+    const inputTxIndex = new U32BE(0);
     const script = Script.fromString("0x121212");
-    const lockRel = new U32(0xffffffff);
+    const lockRel = new U32BE(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     const result = txInput.toBuf();
@@ -85,62 +86,62 @@ describe("TxInput", () => {
 
   test("isNull", () => {
     const inputTxHash = FixedBuf.alloc(32);
-    const inputTxIndex = new U32(0);
+    const inputTxIndex = new U32BE(0);
     const script = Script.fromString("0x121212");
-    const lockRel = new U32(0);
+    const lockRel = new U32BE(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput.isNull()).toBe(false);
 
     const nullTxInput = new TxIn(
       FixedBuf.alloc(32),
-      new U32(0xffffffff),
+      new U32BE(0xffffffff),
       new Script(),
-      new U32(0),
+      new U32BE(0),
     );
     expect(nullTxInput.isNull()).toBe(true);
   });
 
   test("isMinimalLock", () => {
     const inputTxHash = FixedBuf.alloc(32);
-    const inputTxIndex = new U32(0);
+    const inputTxIndex = new U32BE(0);
     const script = Script.fromString("0x121212");
-    const lockRel = new U32(0xffffffff);
+    const lockRel = new U32BE(0xffffffff);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput.isMinimalLock()).toBe(false);
 
     const finalTxInput = new TxIn(
       FixedBuf.alloc(32),
-      new U32(0xffffffff),
+      new U32BE(0xffffffff),
       new Script(),
-      new U32(0),
+      new U32BE(0),
     );
     expect(finalTxInput.isMinimalLock()).toBe(true);
   });
 
   test("isMintTx", () => {
     const inputTxHash = FixedBuf.alloc(32);
-    const inputTxIndex = new U32(0);
+    const inputTxIndex = new U32BE(0);
     const script = new Script([
       ScriptChunk.fromData(WebBuf.alloc(32)),
       ScriptChunk.fromData(WebBuf.alloc(32)),
       ScriptChunk.fromData(WebBuf.from("example.com", "utf8")),
     ]);
-    const lockRel = new U32(0);
+    const lockRel = new U32BE(0);
 
     const txInput = new TxIn(inputTxHash, inputTxIndex, script, lockRel);
     expect(txInput.isMintTx()).toBe(false);
 
     const mintTxInput = new TxIn(
       FixedBuf.alloc(32),
-      new U32(0xffffffff),
+      new U32BE(0xffffffff),
       new Script([
         ScriptChunk.fromData(WebBuf.alloc(32)),
         ScriptChunk.fromData(WebBuf.alloc(32)),
         ScriptChunk.fromData(WebBuf.from("example.com", "utf8")),
       ]),
-      new U32(0),
+      new U32BE(0),
     );
     expect(mintTxInput.isMintTx()).toBe(true);
   });

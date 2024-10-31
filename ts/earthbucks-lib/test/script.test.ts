@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, it } from "vitest";
 import { Script } from "../src/script.js";
-import { FixedBuf, WebBuf } from "../src/buf.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import fs from "node:fs";
 import path from "node:path";
 import { Pkh } from "../src/pkh.js";

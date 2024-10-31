@@ -1,6 +1,7 @@
 import { TxOutBn } from "./tx-out-bn.js";
-import { WebBuf, FixedBuf } from "./buf.js";
-import { U8, U16, U32, U64 } from "./numbers.js";
+import { WebBuf } from "@webbuf/webbuf";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE } from "@webbuf/numbers";
 import type { Tx } from "./tx.js";
 
 export class TxOutBnMap {
@@ -18,9 +19,9 @@ export class TxOutBnMap {
     return newMap;
   }
 
-  static nameFromOutput(txIdHash: WebBuf, outputIndex: U32): string {
+  static nameFromOutput(txIdHash: WebBuf, outputIndex: U32BE): string {
     const txIdStr = WebBuf.from(txIdHash).toString("hex");
-    const outputIndexStr = outputIndex.toBEBuf().toString("hex");
+    const outputIndexStr = outputIndex.toBEBuf().toHex();
     return `${txIdStr}:${outputIndexStr}`;
   }
 
@@ -28,25 +29,25 @@ export class TxOutBnMap {
     return FixedBuf.fromHex(32, name.split(":")[0] as string);
   }
 
-  static nameToOutputIndex(name: string): U32 {
+  static nameToOutputIndex(name: string): U32BE {
     const outputIndexHex = name.split(":")[1];
     if (!outputIndexHex) {
       throw new Error("Invalid output index");
     }
-    return U32.fromBEBuf(WebBuf.from(outputIndexHex, "hex"));
+    return U32BE.fromBEBuf(FixedBuf.fromHex(4, outputIndexHex));
   }
 
-  add(txOutBn: TxOutBn, txId: FixedBuf<32>, outputIndex: U32) {
+  add(txOutBn: TxOutBn, txId: FixedBuf<32>, outputIndex: U32BE) {
     const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     this.map.set(name, txOutBn);
   }
 
-  remove(txId: FixedBuf<32>, outputIndex: U32) {
+  remove(txId: FixedBuf<32>, outputIndex: U32BE) {
     const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     this.map.delete(name);
   }
 
-  get(txId: FixedBuf<32>, outputIndex: U32): TxOutBn | undefined {
+  get(txId: FixedBuf<32>, outputIndex: U32BE): TxOutBn | undefined {
     const name = TxOutBnMap.nameFromOutput(txId.buf, outputIndex);
     return this.map.get(name);
   }
@@ -55,10 +56,10 @@ export class TxOutBnMap {
     return this.map.values();
   }
 
-  addTxOutputs(tx: Tx, blockNum: U32) {
+  addTxOutputs(tx: Tx, blockNum: U32BE) {
     tx.outputs.forEach((txOut, i) => {
       const txOutBn = new TxOutBn(txOut, blockNum);
-      this.add(txOutBn, tx.id(), new U32(i));
+      this.add(txOutBn, tx.id(), new U32BE(i));
     });
   }
 }

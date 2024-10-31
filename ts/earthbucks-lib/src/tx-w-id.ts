@@ -1,4 +1,4 @@
-import { FixedBuf } from "./buf.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
 import { Tx } from "./tx.js";
 
 export class TxWId {

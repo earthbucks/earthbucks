@@ -10,7 +10,7 @@ use crate::tx_in::TxIn;
 use crate::tx_out::TxOut;
 use crate::tx_signature::TxSignature;
 use crate::var_int::VarInt;
-use earthbucks_secp256k1::secp256k1;
+use secp256k1;
 
 #[derive(Debug, Default)]
 pub struct HashCache {
@@ -271,8 +271,11 @@ impl Tx {
             hash_type,
         );
         let key = private_key;
-        let sig = secp256k1::ecdsa_sign(&digest, &key).unwrap();
-        let sig: [u8; 64] = sig.try_into().unwrap();
+        let secp = secp256k1::Secp256k1::new();
+        let message = secp256k1::Message::from_digest(digest);
+        let privkey = secp256k1::SecretKey::from_slice(&key).unwrap();
+        let sig = secp.sign_ecdsa(&message, &privkey);
+        let sig: [u8; 64] = sig.serialize_compact();
         TxSignature::new(hash_type, sig)
     }
 
@@ -292,8 +295,12 @@ impl Tx {
             hash_type,
             hash_cache,
         );
-        let sig = secp256k1::ecdsa_sign(&digest, &private_key).unwrap();
-        let sig: [u8; 64] = sig.try_into().unwrap();
+        let key = private_key;
+        let secp = secp256k1::Secp256k1::new();
+        let message = secp256k1::Message::from_digest(digest);
+        let privkey = secp256k1::SecretKey::from_slice(&key).unwrap();
+        let sig = secp.sign_ecdsa(&message, &privkey);
+        let sig: [u8; 64] = sig.serialize_compact();
         TxSignature::new(hash_type, sig)
     }
 
@@ -312,7 +319,11 @@ impl Tx {
             amount,
             hash_type,
         );
-        secp256k1::ecdsa_verify(&signature.sig_buf, &digest, &public_key).unwrap()
+        let secp = secp256k1::Secp256k1::new();
+        let message = secp256k1::Message::from_digest(digest);
+        let public_key = secp256k1::PublicKey::from_slice(&public_key).unwrap();
+        let signature = secp256k1::ecdsa::Signature::from_compact(&signature.sig_buf).unwrap();
+        secp.verify_ecdsa(&message, &signature, &public_key).is_ok()
     }
 
     pub fn verify_with_cache(
@@ -332,7 +343,11 @@ impl Tx {
             hash_type,
             hash_cache,
         );
-        secp256k1::ecdsa_verify(&signature.sig_buf, &digest, &public_key).unwrap()
+        let secp = secp256k1::Secp256k1::new();
+        let message = secp256k1::Message::from_digest(digest);
+        let public_key = secp256k1::PublicKey::from_slice(&public_key).unwrap();
+        let signature = secp256k1::ecdsa::Signature::from_compact(&signature.sig_buf).unwrap();
+        secp.verify_ecdsa(&message, &signature, &public_key).is_ok()
     }
 }
 
@@ -633,7 +648,7 @@ mod tests {
             hash_type,
         );
 
-        let expected_signature_hex = "010567ff74a146fbef1dea911c46789f7d31b87f6dd9a81db9ea77c6d895c95e800a9794bbd5a1cdfa4acfd05f5d4ad07b079e3f391404a692ccbe1e17f3e16549";
+        let expected_signature_hex = "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         let priv_key = PrivKey::from_buf(private_key).unwrap();
@@ -675,7 +690,7 @@ mod tests {
             hash_cache_1,
         );
 
-        let expected_signature_hex = "010567ff74a146fbef1dea911c46789f7d31b87f6dd9a81db9ea77c6d895c95e800a9794bbd5a1cdfa4acfd05f5d4ad07b079e3f391404a692ccbe1e17f3e16549";
+        let expected_signature_hex = "0158aa9faf524e08988f2fc4a5fb1a4d3ddda8a8ec58d6c06bbbd0b26bda5bbba8001d0057bb20352ece3248d697fe832555f762c533b76fc5a382e04d95774a5e";
         assert_eq!(hex::encode(signature.to_buf()), expected_signature_hex);
 
         let hash_cache_2 = &mut HashCache::new();

@@ -2,17 +2,15 @@ import { describe, expect, test, beforeEach, it } from "vitest";
 import { Header } from "../src/header.js";
 import { Block } from "../src/block.js";
 import { Tx } from "../src/tx.js";
-import { BufWriter } from "../src/buf-writer.js";
-import { BufReader } from "../src/buf-reader.js";
 import { BlockBuilder } from "../src/block-builder.js";
 import { Script } from "../src/script.js";
-import { WebBuf, FixedBuf } from "../src/buf.js";
-import { U8, U16, U32, U64, U128, U256 } from "../src/numbers.js";
+import { FixedBuf } from "@webbuf/fixedbuf";
+import { U8, U16BE, U32BE, U64BE, U128BE, U256BE } from "@webbuf/numbers";
 
 describe("BlockBuilder", () => {
   test("fromBlock", () => {
     const bh = new Header();
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     expect(bb.header.version).toBe(bh.version);
@@ -23,9 +21,9 @@ describe("BlockBuilder", () => {
   });
 
   test("fromGenesis", () => {
-    const target = new U256(0);
+    const target = new U256BE(0);
     const outputScript = new Script();
-    const outputAmount = new U64(0n);
+    const outputAmount = new U64BE(0n);
     const bb = BlockBuilder.fromGenesis(target, outputScript, outputAmount);
     expect(bb.header.version.n).toEqual(0);
     expect(bb.header.prevBlockId).toEqual(FixedBuf.alloc(32));
@@ -38,7 +36,7 @@ describe("BlockBuilder", () => {
 
   test("toBlock", () => {
     const bh = new Header();
-    const tx = new Tx(new U8(0), [], [], new U32(0n));
+    const tx = new Tx(new U8(0), [], [], new U32BE(0n));
     const block = new Block(bh, [tx]);
     const bb = BlockBuilder.fromBlock(block);
     const block2 = bb.toBlock();
