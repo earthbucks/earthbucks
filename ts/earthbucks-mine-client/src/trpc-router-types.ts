@@ -1,7 +1,7 @@
 export declare const appRouter: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
     ctx: {
-        req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-        res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+        cookie: string | undefined;
+        setHeader: (key: string, value: string) => void;
         pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
         user: {
             id: number;
@@ -29,8 +29,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
 }>, {
     auth: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -59,8 +59,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         getSigninChallenge: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -88,8 +88,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             }>;
             _meta: object;
             _ctx_out: {
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                 user: {
                     id: number;
@@ -119,8 +119,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         postSigninResponse: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -148,8 +148,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             }>;
             _meta: object;
             _ctx_out: {
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                 user: {
                     id: number;
@@ -179,8 +179,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         signout: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -207,8 +207,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 transformer: import("@trpc/server").DefaultDataTransformer;
             }>;
             _ctx_out: {
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                 user: {
                     id: number;
@@ -239,8 +239,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     blockMessage: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -269,8 +269,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         getLatest: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -311,8 +311,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -335,8 +335,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         postNew: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -377,8 +377,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -401,8 +401,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     keys: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -431,8 +431,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         createNewDerivedKey: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -473,8 +473,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -498,8 +498,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     miningButton: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -528,8 +528,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         getNewWorkPack: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -570,8 +570,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -593,8 +593,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         postWorkPack: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -635,8 +635,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -673,8 +673,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     userAvatar: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -703,8 +703,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         uploadAvatar: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -745,8 +745,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -763,8 +763,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     userChallenge: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -793,8 +793,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         getCompuchaChallenge: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -835,8 +835,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -853,8 +853,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         postCompuchaResponse: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -895,8 +895,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -913,8 +913,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     userName: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -943,8 +943,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         isUserNameAvailable: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -985,8 +985,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -1003,8 +1003,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         setUserName: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -1045,8 +1045,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;
@@ -1063,8 +1063,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
     }>;
     buttonConfig: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
-            req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-            res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
             pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
             user: {
                 id: number;
@@ -1093,8 +1093,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         setNButtons: import("@trpc/server").BuildProcedure<"mutation", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
-                    req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
-                    res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
                     pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
                     user: {
                         id: number;
@@ -1135,8 +1135,8 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     isBanned: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
-                res: import("fastify").FastifyReply<import("fastify").RawServerDefault, import("http").IncomingMessage, import("http").ServerResponse<import("http").IncomingMessage>, import("fastify").RouteGenericInterface, unknown, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown>;
-                req: import("fastify").FastifyRequest<import("fastify").RouteGenericInterface, import("fastify").RawServerDefault, import("http").IncomingMessage, import("fastify").FastifySchema, import("fastify").FastifyTypeProviderDefault, unknown, import("fastify").FastifyBaseLogger, import("fastify/types/type-provider.js").ResolveFastifyRequestType<import("fastify").FastifyTypeProviderDefault, import("fastify").FastifySchema, import("fastify").RouteGenericInterface>>;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
                 completeUserProfile: {
                     id: number;
                     name: string;

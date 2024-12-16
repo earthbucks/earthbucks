@@ -203,6 +203,11 @@ export class PowGpu {
       const matrix10 = this.tf.matMul(matrix, matrix);
       return this.matrixReduce(matrix10);
     });
+    // TODO: Note that this conversion gets only the last byte of each int32
+    // value. This is essentially an extra reduction step. It would be better
+    // to convert each int32 value to 4 bytes, then concatenate them all
+    // together. That will require a new "named" algorithm as it would be a
+    // breaking change. Thank you @benny for the analysis.
     const reducedBuf = WebBuf.from(await reduced.data());
     const reducedBufs: [WebBuf, WebBuf, WebBuf, WebBuf] = [
       WebBuf.from(reducedBuf.subarray(0, n)),

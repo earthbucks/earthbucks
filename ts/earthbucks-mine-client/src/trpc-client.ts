@@ -63,7 +63,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
     blockMessage: {
       getLatest: async () => {
         const res = await trpcClient.blockMessage.getLatest.query();
-        if (!res.id || !res.num) {
+        if (res.id === null || res.num === null) {
           return null;
         }
         return {
