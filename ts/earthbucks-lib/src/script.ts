@@ -553,7 +553,7 @@ export class Script {
     return this.isPkhxr1h40mOutput() || this.isPkhxr90d60dOutput();
   }
 
-  getPkhs(): { pkh: Pkh; rpkh: Pkh | null } {
+  getOutputPkhs(): { pkh: Pkh; rpkh: Pkh | null } {
     if (this.isPkhxr90d60dOutput() || this.isPkhxr1h40mOutput()) {
       return {
         pkh: Pkh.fromBuf(FixedBuf.fromBuf(32, this.chunks[3]?.buf as WebBuf)),
@@ -573,6 +573,24 @@ export class Script {
       };
     }
     throw new Error("Invalid Script");
+  }
+
+  getInputPubKey(): PubKey {
+    if (this.isUnexpiredPkhxrInput() || this.isRecoveryPkhxrInput()) {
+      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+    }
+    if (this.isUnexpiredPkhxInput()) {
+      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+    }
+    if (this.isPkhInput()) {
+      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+    }
+    throw new Error("Invalid Script");
+  }
+
+  getInputPkh(): Pkh {
+    const pubKey = this.getInputPubKey();
+    return Pkh.fromPubKey(pubKey);
   }
 
   getOutputTemplateType(): ScriptTemplateType {

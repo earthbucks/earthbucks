@@ -14,6 +14,14 @@ import {
   Domain,
   Pkh,
   WorkPack,
+  Tx,
+  TxOutBnMap,
+  U32BE,
+  Ok,
+  isOk,
+  Err,
+  isErr,
+  Result,
 } from "@earthbucks/lib";
 import { FixedBuf, PrivKey, SigninResponse } from "@earthbucks/lib";
 
@@ -150,6 +158,127 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
       setNButtons: async (nButtons: 1 | 2 | 3 | 4) => {
         const res = await trpcClient.buttonConfig.setNButtons.mutate(nButtons);
         return res;
+      },
+    },
+    identellica: {
+      createVerificationRequest: async () => {
+        const res =
+          await trpcClient.identellica.createVerificationRequest.mutate();
+        return res;
+      },
+    },
+    pay: {
+      getEbxAddressUserId: async (
+        ebxAddress: string,
+      ): Promise<number | null> => {
+        const res = await trpcClient.pay.getEbxAddressUserId.query({
+          ebxAddress,
+        });
+        return res?.userId ?? null;
+      },
+      getNewUnsignedTransaction: async (
+        toEbxAddress: string,
+        amountInAdams: bigint,
+      ): Promise<
+        Result<
+          {
+            unsignedTx: Tx;
+            toUserDerivedPubKey: PubKey;
+            txOutBnMap: TxOutBnMap;
+            workingBlockNum: U32BE;
+            derivedKeys: {
+              id: number;
+              clientPubKey: PubKey;
+              clientDerivationPrivKey: PrivKey;
+              derivedPubKey: PubKey;
+              derivedPkh: Pkh;
+              isUsed: boolean;
+            }[];
+          },
+          "Too many inputs" | "Not enough funds" | "Amount must be positive"
+        >
+      > => {
+        const jsonRes = await trpcClient.pay.getNewUnsignedTransaction.query({
+          toEbxAddress,
+          amountInAdams: amountInAdams.toString(),
+        });
+        if (jsonRes.error !== null) {
+          return Err(jsonRes.error);
+        }
+        const json = jsonRes.value;
+
+        type DerivedKeyJson = {
+          id: number;
+          clientPubKey: string;
+          clientDerivationPrivKey: string;
+          derivedPubKey: string;
+          derivedPkh: string;
+          isUsed: boolean;
+        };
+        const derivedKeys = json.derivedKeys.map(
+          (derivedKey: DerivedKeyJson) => {
+            return {
+              id: derivedKey.id,
+              clientPubKey: PubKey.fromHex(derivedKey.clientPubKey),
+              clientDerivationPrivKey: PrivKey.fromHex(
+                derivedKey.clientDerivationPrivKey,
+              ),
+              derivedPubKey: PubKey.fromHex(derivedKey.derivedPubKey),
+              derivedPkh: Pkh.fromHex(derivedKey.derivedPkh),
+              isUsed: derivedKey.isUsed,
+            };
+          },
+        );
+        return Ok({
+          unsignedTx: Tx.fromHex(json.unsignedTx),
+          toUserDerivedPubKey: PubKey.fromHex(json.toUserDerivedPubKey),
+          txOutBnMap: TxOutBnMap.fromHex(json.txOutBnMap),
+          workingBlockNum: new U32BE(json.workingBlockNum),
+          derivedKeys,
+        });
+      },
+      sendTransaction: async ({
+        signedTx,
+        encryptedMessage,
+        toEbxAddress,
+        fromUserDerivedPubKey,
+        toUserDerivedPubKey,
+      }: {
+        signedTx: Tx;
+        encryptedMessage: WebBuf;
+        toEbxAddress: string;
+        fromUserDerivedPubKey: PubKey;
+        toUserDerivedPubKey: PubKey;
+      }) => {
+        await trpcClient.pay.sendTransaction.mutate({
+          signedTx: signedTx.toHex(),
+          encryptedMessage: encryptedMessage.toBase64(),
+          toEbxAddress,
+          fromUserDerivedPubKey: fromUserDerivedPubKey.toHex(),
+          toUserDerivedPubKey: toUserDerivedPubKey.toHex(),
+        });
+      },
+      getClientDerivationPrivKeyForPayment: async ({
+        paymentId,
+      }: {
+        paymentId: number;
+      }) => {
+        const {
+          clientPubKey,
+          clientDerivationPrivKey,
+          derivedPubKey,
+          derivedPkh,
+          dhPubKey,
+        } = await trpcClient.pay.getClientDerivationPrivKeyForPayment.query({
+          paymentId,
+        });
+        return {
+          clientPubKey: PubKey.fromHex(clientPubKey),
+          clientDerivationPrivKey: PrivKey.fromHex(clientDerivationPrivKey),
+          derivedPubKey: PubKey.fromHex(derivedPubKey),
+          derivedPkh: Pkh.fromHex(derivedPkh),
+          dhPubKey: PubKey.fromHex(dhPubKey),
+        };
       },
     },
   };

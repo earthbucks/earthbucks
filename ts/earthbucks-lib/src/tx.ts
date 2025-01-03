@@ -395,14 +395,47 @@ export class Tx {
     const txOuts = this.outputs;
     const pkhs: Pkh[] = [];
     for (const txOut of txOuts) {
-      const pkhObj = txOut.script.getPkhs();
-      pkhs.push(pkhObj.pkh);
-      if (pkhObj.rpkh) {
-        pkhs.push(pkhObj.rpkh);
+      try {
+        const pkhObj = txOut.script.getOutputPkhs();
+        pkhs.push(pkhObj.pkh);
+        if (pkhObj.rpkh) {
+          pkhs.push(pkhObj.rpkh);
+        }
+      } catch (e) {
+        // Do nothing.
       }
     }
     return pkhs;
   }
+
+  // /**
+  //  * This gets all input pkhs in the transaction, whether they are normal or
+  //  * recovery. If the input script is not a pkh, it is ignored.
+  //  * @returns The public key hashes of all the keys in all the inputs in this
+  //  * transaction.
+  //  */
+  // getAllInputPkhs(): Pkh[] {
+  //   const txIns = this.inputs;
+  //   const pkhs: Pkh[] = [];
+  //   for (const txIn of txIns) {
+  //     try {
+  //       const pkh = txIn.script.getInputPkh();
+  //       pkhs.push(pkh);
+  //     } catch (e) {
+  //       // Do nothing.
+  //     }
+  //   }
+  //   return pkhs;
+  // }
+
+  // /**
+  //  * This gets all pkhs in the transaction, whether they are normal or recovery.
+  //  * @returns The public key hashes of all the keys in all the inputs and
+  //  * outputs in this transaction.
+  //  */
+  // getAllPkhs(): Pkh[] {
+  //   return [...this.getAllInputPkhs(), ...this.getAllOutputPkhs()];
+  // }
 
   clone(): Tx {
     const inputs = this.inputs.map((input) => input.clone());

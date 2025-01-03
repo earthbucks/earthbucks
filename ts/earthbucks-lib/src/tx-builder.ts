@@ -13,12 +13,12 @@ export class TxBuilder {
   public lockAbs: U32BE;
 
   constructor(
-    inputTxOutMap: TxOutBnMap,
+    inputTxOutBnMap: TxOutBnMap,
     changeScript: Script,
     lockAbs: U32BE = new U32BE(0),
   ) {
     this.tx = new Tx(new U8(0), [], [], lockAbs);
-    this.inputTxOutBnMap = inputTxOutMap;
+    this.inputTxOutBnMap = inputTxOutBnMap;
     this.changeScript = changeScript;
     this.inputAmount = new U64BE(0);
     this.lockAbs = lockAbs;
@@ -46,11 +46,11 @@ export class TxBuilder {
     let changeAmount = new U64BE(0);
     let inputAmount = this.inputAmount;
 
-    // sort by block number first, but if those are the same, sort by the id
-    // of the tx_out, which is tx_id plus tx_out_num together in a string.
-    // this logic means we use the "most confirmed" outputs first, which is
-    // what we want, and then we have a deterministic way to sort the UTXOs
-    // in the same block.
+    // sort inputs by block number first, but if those are the same, sort by
+    // the id of the tx_out, which is tx_id plus tx_out_num together in a
+    // string. this logic means we use the "most confirmed" outputs first,
+    // which is what we want, and then we have a deterministic way to sort the
+    // UTXOs in the same block.
     const sortedInputTxOutBns = Array.from(
       this.inputTxOutBnMap.map.entries(),
     ).sort(([aId, aBn], [bId, bBn]) => {

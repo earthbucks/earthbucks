@@ -12,7 +12,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             minPayment: number;
             nSwipes: number;
             nBlocks: number;
+            nRewinds: number;
+            nImpCoinBadges: number;
+            nFruitcakeBadges: number;
             isBanned: boolean;
+            isMembershipVerified: boolean;
         } | null;
         completeUserProfile: {
             id: number;
@@ -20,6 +24,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             avatarId: string;
             nSwipes: number;
             pubKeyStr: string;
+            isMembershipVerified: boolean;
         } | null;
         sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
     };
@@ -41,7 +46,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -49,6 +58,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -71,7 +81,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -79,6 +93,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -100,7 +115,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 completeUserProfile: {
                     id: number;
@@ -108,6 +127,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
             };
@@ -131,7 +151,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -139,6 +163,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -160,7 +185,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 completeUserProfile: {
                     id: number;
@@ -168,6 +197,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
             };
@@ -191,7 +221,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -199,6 +233,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -219,7 +254,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 completeUserProfile: {
                     id: number;
@@ -227,6 +266,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
             };
@@ -251,7 +291,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -259,6 +303,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -281,7 +326,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -289,6 +338,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -308,7 +358,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -319,6 +373,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: typeof import("@trpc/server").unsetMarker;
@@ -347,7 +402,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -355,6 +414,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -374,7 +434,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -385,6 +449,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: {
@@ -398,6 +463,218 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             _output_in: typeof import("@trpc/server").unsetMarker;
             _output_out: typeof import("@trpc/server").unsetMarker;
         }, void>;
+    }>;
+    buttonConfig: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
+        ctx: {
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
+            pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+            user: {
+                id: number;
+                pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                createdAt: Date;
+                name: string | null;
+                avatarId: string | null;
+                minPayment: number;
+                nSwipes: number;
+                nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
+                isBanned: boolean;
+                isMembershipVerified: boolean;
+            } | null;
+            completeUserProfile: {
+                id: number;
+                name: string;
+                avatarId: string;
+                nSwipes: number;
+                pubKeyStr: string;
+                isMembershipVerified: boolean;
+            } | null;
+            sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+        };
+        meta: object;
+        errorShape: import("@trpc/server").DefaultErrorShape;
+        transformer: import("@trpc/server").DefaultDataTransformer;
+    }>, {
+        setNButtons: import("@trpc/server").BuildProcedure<"mutation", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: 1 | 2 | 3 | 4;
+            _input_out: 1 | 2 | 3 | 4;
+            _output_in: number;
+            _output_out: number;
+        }, unknown>;
+    }>;
+    identellica: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
+        ctx: {
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
+            pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+            user: {
+                id: number;
+                pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                createdAt: Date;
+                name: string | null;
+                avatarId: string | null;
+                minPayment: number;
+                nSwipes: number;
+                nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
+                isBanned: boolean;
+                isMembershipVerified: boolean;
+            } | null;
+            completeUserProfile: {
+                id: number;
+                name: string;
+                avatarId: string;
+                nSwipes: number;
+                pubKeyStr: string;
+                isMembershipVerified: boolean;
+            } | null;
+            sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+        };
+        meta: object;
+        errorShape: import("@trpc/server").DefaultErrorShape;
+        transformer: import("@trpc/server").DefaultDataTransformer;
+    }>, {
+        createVerificationRequest: import("@trpc/server").BuildProcedure<"mutation", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: typeof import("@trpc/server").unsetMarker;
+            _input_out: typeof import("@trpc/server").unsetMarker;
+            _output_in: typeof import("@trpc/server").unsetMarker;
+            _output_out: typeof import("@trpc/server").unsetMarker;
+        }, {
+            url: string;
+        }>;
     }>;
     keys: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
@@ -413,7 +690,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -421,6 +702,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -443,7 +725,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -451,6 +737,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -470,7 +757,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -481,6 +772,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: typeof import("@trpc/server").unsetMarker;
@@ -510,7 +802,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -518,6 +814,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -540,7 +837,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -548,6 +849,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -567,7 +869,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -578,6 +884,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: typeof import("@trpc/server").unsetMarker;
@@ -605,7 +912,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -613,6 +924,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -632,7 +944,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -643,6 +959,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: {
@@ -685,7 +1002,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -693,6 +1014,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -715,7 +1037,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -723,6 +1049,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -742,7 +1069,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -753,6 +1084,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: string;
@@ -775,7 +1107,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -783,6 +1119,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -805,7 +1142,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -813,6 +1154,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -832,7 +1174,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -843,6 +1189,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: typeof import("@trpc/server").unsetMarker;
@@ -865,7 +1212,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -873,6 +1224,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -892,7 +1244,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -903,6 +1259,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: string;
@@ -925,7 +1282,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -933,6 +1294,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -955,7 +1317,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -963,6 +1329,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -982,7 +1349,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -993,6 +1364,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: string;
@@ -1015,7 +1387,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -1023,6 +1399,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -1042,7 +1419,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -1053,6 +1434,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
             _input_in: string;
@@ -1061,7 +1443,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             _output_out: typeof import("@trpc/server").unsetMarker;
         }, Response | undefined>;
     }>;
-    buttonConfig: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
+    pay: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
             cookie: string | undefined;
             setHeader: (key: string, value: string) => void;
@@ -1075,7 +1457,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 minPayment: number;
                 nSwipes: number;
                 nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
                 isBanned: boolean;
+                isMembershipVerified: boolean;
             } | null;
             completeUserProfile: {
                 id: number;
@@ -1083,6 +1469,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 avatarId: string;
                 nSwipes: number;
                 pubKeyStr: string;
+                isMembershipVerified: boolean;
             } | null;
             sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
         };
@@ -1090,7 +1477,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
         errorShape: import("@trpc/server").DefaultErrorShape;
         transformer: import("@trpc/server").DefaultDataTransformer;
     }>, {
-        setNButtons: import("@trpc/server").BuildProcedure<"mutation", {
+        getEbxAddressUserId: import("@trpc/server").BuildProcedure<"query", {
             _config: import("@trpc/server").RootConfig<{
                 ctx: {
                     cookie: string | undefined;
@@ -1105,7 +1492,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         minPayment: number;
                         nSwipes: number;
                         nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
                         isBanned: boolean;
+                        isMembershipVerified: boolean;
                     } | null;
                     completeUserProfile: {
                         id: number;
@@ -1113,6 +1504,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                         avatarId: string;
                         nSwipes: number;
                         pubKeyStr: string;
+                        isMembershipVerified: boolean;
                     } | null;
                     sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 };
@@ -1132,7 +1524,11 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     minPayment: number;
                     nSwipes: number;
                     nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
                     isBanned: boolean;
+                    isMembershipVerified: boolean;
                 } | null;
                 sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
                 cookie: string | undefined;
@@ -1143,12 +1539,303 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                     avatarId: string;
                     nSwipes: number;
                     pubKeyStr: string;
+                    isMembershipVerified: boolean;
                 } | null;
             };
-            _input_in: 1 | 2 | 3 | 4;
-            _input_out: 1 | 2 | 3 | 4;
-            _output_in: number;
-            _output_out: number;
+            _input_in: {
+                ebxAddress: string;
+            };
+            _input_out: {
+                ebxAddress: string;
+            };
+            _output_in: {
+                userId: number;
+            } | null;
+            _output_out: {
+                userId: number;
+            } | null;
+        }, unknown>;
+        getNewUnsignedTransaction: import("@trpc/server").BuildProcedure<"query", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: {
+                toEbxAddress: string;
+                amountInAdams: string;
+            };
+            _input_out: {
+                toEbxAddress: string;
+                amountInAdams: string;
+            };
+            _output_in: {
+                error: null;
+                value: {
+                    toUserDerivedPubKey: string;
+                    workingBlockNum: number;
+                    unsignedTx: string;
+                    txOutBnMap: string;
+                    derivedKeys: {
+                        id: number;
+                        clientPubKey: string;
+                        derivedPubKey: string;
+                        derivedPkh: string;
+                        isUsed: boolean;
+                        clientDerivationPrivKey: string;
+                    }[];
+                };
+            } | {
+                error: "Too many inputs" | "Not enough funds" | "Amount must be positive";
+                value: null;
+            };
+            _output_out: {
+                error: null;
+                value: {
+                    toUserDerivedPubKey: string;
+                    workingBlockNum: number;
+                    unsignedTx: string;
+                    txOutBnMap: string;
+                    derivedKeys: {
+                        id: number;
+                        clientPubKey: string;
+                        derivedPubKey: string;
+                        derivedPkh: string;
+                        isUsed: boolean;
+                        clientDerivationPrivKey: string;
+                    }[];
+                };
+            } | {
+                error: "Too many inputs" | "Not enough funds" | "Amount must be positive";
+                value: null;
+            };
+        }, unknown>;
+        sendTransaction: import("@trpc/server").BuildProcedure<"mutation", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: {
+                encryptedMessage: string;
+                fromUserDerivedPubKey: string;
+                toUserDerivedPubKey: string;
+                toEbxAddress: string;
+                signedTx: string;
+            };
+            _input_out: {
+                encryptedMessage: string;
+                fromUserDerivedPubKey: string;
+                toUserDerivedPubKey: string;
+                toEbxAddress: string;
+                signedTx: string;
+            };
+            _output_in: undefined;
+            _output_out: undefined;
+        }, unknown>;
+        getClientDerivationPrivKeyForPayment: import("@trpc/server").BuildProcedure<"query", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: {
+                paymentId: number;
+            };
+            _input_out: {
+                paymentId: number;
+            };
+            _output_in: {
+                clientPubKey: string;
+                derivedPubKey: string;
+                derivedPkh: string;
+                clientDerivationPrivKey: string;
+                dhPubKey: string;
+            };
+            _output_out: {
+                clientPubKey: string;
+                derivedPubKey: string;
+                derivedPkh: string;
+                clientDerivationPrivKey: string;
+                dhPubKey: string;
+            };
         }, unknown>;
     }>;
 }>;
