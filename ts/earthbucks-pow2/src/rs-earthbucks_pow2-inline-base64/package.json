@@ -1,0 +1,26 @@
+{
+  "name": "earthbucks_pow2",
+  "type": "module",
+  "collaborators": [
+    "Ryan X. Charles <ryan@ryanxcharles.com>"
+  ],
+  "description": "EarthBucks Proof-of-Work (PoW) Algorithm (2)",
+  "version": "0.12.94",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
+  "files": [
+    "earthbucks_pow2_bg.wasm",
+    "earthbucks_pow2.js",
+    "earthbucks_pow2_bg.js",
+    "earthbucks_pow2.d.ts"
+  ],
+  "main": "earthbucks_pow2.js",
+  "types": "earthbucks_pow2.d.ts",
+  "sideEffects": [
+    "./earthbucks_pow2.js",
+    "./snippets/*"
+  ]
+}

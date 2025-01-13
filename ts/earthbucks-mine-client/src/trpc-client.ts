@@ -178,7 +178,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
       },
       getNewUnsignedTransaction: async (
         toEbxAddress: string,
-        amountInAdams: bigint,
+        amountInAdams: bigint | "maximum",
       ): Promise<
         Result<
           {
@@ -198,10 +198,17 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
           "Too many inputs" | "Not enough funds" | "Amount must be positive"
         >
       > => {
-        const jsonRes = await trpcClient.pay.getNewUnsignedTransaction.query({
-          toEbxAddress,
-          amountInAdams: amountInAdams.toString(),
-        });
+        const jsonRes = await trpcClient.pay.getNewUnsignedTransaction.query(
+          amountInAdams === "maximum"
+            ? {
+                toEbxAddress: toEbxAddress,
+                sendMaxAmount: true,
+              }
+            : {
+                toEbxAddress,
+                amountInAdams: amountInAdams.toString(),
+              },
+        );
         if (jsonRes.error !== null) {
           return Err(jsonRes.error);
         }

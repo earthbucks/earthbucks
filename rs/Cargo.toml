@@ -3,12 +3,25 @@ members = [
     "earthbucks_lib",
     "earthbucks_blake3",
     "earthbucks_secp256k1",
-    "earthbucks_aescbc"
+    "earthbucks_aescbc",
+    "earthbucks_pow2",
+    "webbuf",
+    "webbuf_aescbc",
+    "webbuf_blake3",
+    "webbuf_secp256k1",
 ]
 resolver = "2"
+
+[workspace.package]
+version = "0.12.94"
 
 [patch.crates-io]
 earthbucks_lib = { path = "./earthbucks_lib" }
 earthbucks_blake3 = { path = "./earthbucks_blake3" }
 earthbucks_secp256k1 = { path = "./earthbucks_secp256k1" }
 earthbucks_aescbc = { path = "./earthbucks_aescbc" }
+earthbucks_pow2 = { path = "./earthbucks_pow2" }
+webbuf = { path = "./webbuf" }
+webbuf_aescbc = { path = "./webbuf_aescbc" }
+webbuf_blake3 = { path = "./webbuf_blake3" }
+webbuf_secp256k1 = { path = "./webbuf_secp256k1" }

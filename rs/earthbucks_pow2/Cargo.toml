@@ -1,6 +1,6 @@
 [package]
-name = "earthbucks_blake3"
-description = "Blake3 hash function for EarthBucks with optional support for WASM."
+name = "earthbucks_pow2"
+description = "EarthBucks Proof-of-Work (PoW) Algorithm (2)"
 version.workspace = true
 edition = "2021"
 license = "MIT"
@@ -10,13 +10,9 @@ repository = "https://github.com/earthbucks/earthbucks"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-wasm = ["wasm-bindgen"]
-
 [dependencies]
-blake3 = "1.5.1"
+sha2 = "0.10.8"
+wasm-bindgen = { version = "0.2" }
 hex = "0.4.3"
 
-[dependencies.wasm-bindgen]
-version = "0.2"
-optional = true
+[dev-dependencies]

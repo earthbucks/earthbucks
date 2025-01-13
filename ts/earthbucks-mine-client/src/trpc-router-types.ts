@@ -1623,10 +1623,16 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             _input_in: {
                 toEbxAddress: string;
                 amountInAdams: string;
+            } | {
+                toEbxAddress: string;
+                sendMaxAmount: true;
             };
             _input_out: {
                 toEbxAddress: string;
                 amountInAdams: string;
+            } | {
+                toEbxAddress: string;
+                sendMaxAmount: true;
             };
             _output_in: {
                 error: null;

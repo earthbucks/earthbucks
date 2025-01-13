@@ -1,7 +1,7 @@
 [package]
 name = "earthbucks_lib"
 description = "EarthBucks library for data structures and algorithms"
-version = "0.8.5"
+version.workspace = true
 edition = "2021"
 license = "MIT"
 authors = ["Ryan X. Charles <ryan@ryanxcharles.com>"]
@@ -10,8 +10,8 @@ repository = "https://github.com/earthbucks/earthbucks"
 [dependencies]
 rand = "0.8.4"
 hex = "0.4.3"
-earthbucks_blake3 = "0.8.5"
-earthbucks_secp256k1 = "0.8.5"
+earthbucks_blake3 = "0.12.94"
+earthbucks_secp256k1 = "0.12.94"
 secp256k1 = "0.30.0"
 byteorder = "1.4.3"
 lazy_static = "1.4.0"
