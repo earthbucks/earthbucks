@@ -1,2 +1,3 @@
-import { create_pow2, Pow2, sha256 } from "./rs-earthbucks_pow2-inline-base64/earthbucks_pow2.js";
-export { create_pow2, Pow2, sha256 };
+import { Pow2 as Pow2Wasm } from "./pow2-wasm.js";
+import { Pow2 as Pow2Wgsl } from "./pow2-wgsl.js";
+export { Pow2Wasm, Pow2Wgsl };

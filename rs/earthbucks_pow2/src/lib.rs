@@ -43,18 +43,15 @@ impl Pow2 {
      * - Be able to verify PoW solutions quickly on a CPU.
      */
     #[wasm_bindgen(constructor)]
-    pub fn new(header: Vec<u8>, reset_nonce: bool) -> Result<Pow2, String> {
+    pub fn new(header: Vec<u8>) -> Result<Pow2, String> {
         // Validate header size
         if header.len() != HEADER_SIZE {
             return Err("Invalid header size".to_string());
         }
 
         // load current nonce from header using start and end
-        let current_nonce: u32 = if reset_nonce {
-            0
-        } else {
-            u32::from_be_bytes(header[NONCE_START..NONCE_END].try_into().unwrap())
-        };
+        let current_nonce: u32 =
+            u32::from_be_bytes(header[NONCE_START..NONCE_END].try_into().unwrap());
 
         Ok(Pow2 {
             header,
@@ -68,6 +65,17 @@ impl Pow2 {
             m4_hash: vec![0; 32],
             final_nonce: 0,
         })
+    }
+
+    /**
+     * This is a simple method that hashes the header and returns the hash. This is useful for
+     * debugging purposes.
+     */
+    #[wasm_bindgen]
+    pub fn debug_get_header_hash(&self) -> Vec<u8> {
+        let mut hasher = Sha256::new();
+        hasher.update(&self.header);
+        hasher.finalize().to_vec()
     }
 
     /**
@@ -101,6 +109,18 @@ impl Pow2 {
             let end = start + 32;
             self.matrix_data[start..end].copy_from_slice(&current_hash);
         }
+    }
+
+    /**
+     * The next method is for debugging. We want to return the final hash of the previous hashing
+     * to compare to alternate implementations (i.e., wgsl).
+     */
+    #[wasm_bindgen]
+    pub fn debug_get_final_matrix_data_hash(&self) -> Vec<u8> {
+        if self.matrix_data.len() != 32 * 32 * 2 {
+            panic!("Matrix data is the wrong length");
+        }
+        self.matrix_data[(2048 - 32)..].to_vec()
     }
 
     /**
@@ -165,6 +185,16 @@ impl Pow2 {
         }
     }
 
+    #[wasm_bindgen]
+    pub fn debug_get_m1_first_32(&self) -> Vec<u32> {
+        self.m1[0..32].to_vec()
+    }
+
+    #[wasm_bindgen]
+    pub fn debug_get_m2_first_32(&self) -> Vec<u32> {
+        self.m2[0..32].to_vec()
+    }
+
     /**
      * Now that we have the two matrices, we can multiply them together to get a third matrix.
      */
@@ -180,6 +210,11 @@ impl Pow2 {
                 self.m3[i * M_SIZE + j] = sum;
             }
         }
+    }
+
+    #[wasm_bindgen]
+    pub fn debug_get_m3_first_32(&self) -> Vec<u32> {
+        self.m3[0..32].to_vec()
     }
 
     /**
@@ -219,6 +254,11 @@ impl Pow2 {
         let mut hasher = Sha256::new();
         hasher.update(&self.m4_bytes);
         self.m4_hash = hasher.finalize().to_vec();
+    }
+
+    #[wasm_bindgen]
+    pub fn debug_get_m4_hash(&self) -> Vec<u8> {
+        self.m4_hash.clone()
     }
 
     /**
@@ -297,7 +337,7 @@ impl Pow2 {
      */
     #[wasm_bindgen]
     pub fn verify_pow(header: Vec<u8>) -> Result<bool, String> {
-        let mut pow = Pow2::new(header, false)?;
+        let mut pow = Pow2::new(header)?;
 
         pow.run_single_iteration();
 
@@ -306,8 +346,8 @@ impl Pow2 {
 }
 
 #[wasm_bindgen]
-pub fn create_pow2(header: Vec<u8>, reset_nonce: bool) -> Result<Pow2, String> {
-    Pow2::new(header, reset_nonce)
+pub fn create_pow2(header: Vec<u8>) -> Result<Pow2, String> {
+    Pow2::new(header)
 }
 
 // first, expose sha256
@@ -326,9 +366,12 @@ mod tests {
     fn test_create_matrix_data() {
         // Create a sample header of the correct size
         let header = vec![0; HEADER_SIZE];
-        let mut pow = Pow2::new(header, true).unwrap();
+        let mut pow = Pow2::new(header).unwrap();
 
         pow.create_matrix_data_from_hashes();
+
+        // println!("Matrix Data: {:?}", pow.matrix_data);
+        // println!("Matrix Data Length: {}", pow.matrix_data.len());
 
         // Add assertions here
         assert_eq!(pow.matrix_data.len(), INPUT_MATRIX_DATA_SIZE_BYTES);
@@ -338,12 +381,12 @@ mod tests {
     fn test_create_matrix_data_changes() {
         // Create a sample header of the correct size
         let header = vec![0; HEADER_SIZE];
-        let mut pow = Pow2::new(header.clone(), true).unwrap();
+        let mut pow = Pow2::new(header.clone()).unwrap();
 
         pow.create_matrix_data_from_hashes();
 
         // test that iterating the nonce actually changes the matrix data
-        let mut pow2 = Pow2::new(header, true).unwrap();
+        let mut pow2 = Pow2::new(header).unwrap();
         pow2.create_matrix_data_from_hashes();
         let matrix_data = pow2.matrix_data.clone();
         pow2.current_nonce = 1;
@@ -362,7 +405,7 @@ mod tests {
     #[test]
     fn test_fill_in_matrices() {
         let header = vec![0; HEADER_SIZE];
-        let mut pow = Pow2::new(header, true).unwrap();
+        let mut pow = Pow2::new(header).unwrap();
 
         pow.create_matrix_data_from_hashes();
         pow.fill_in_matrices_from_data();
@@ -388,7 +431,7 @@ mod tests {
             *byte = (i % 256) as u8;
         }
 
-        let mut pow = Pow2::new(header, true).unwrap();
+        let mut pow = Pow2::new(header).unwrap();
         pow.create_matrix_data_from_hashes();
         pow.fill_in_matrices_from_data();
 
@@ -438,7 +481,7 @@ mod tests {
     fn test_multiply_m1_times_m2_equals_m3_sanity() {
         // Setup Pow2
         let header = vec![0; HEADER_SIZE];
-        let mut pow = Pow2::new(header.clone(), true).unwrap();
+        let mut pow = Pow2::new(header.clone()).unwrap();
         pow.create_matrix_data_from_hashes();
         pow.fill_in_matrices_from_data();
 
@@ -449,7 +492,7 @@ mod tests {
         assert_eq!(pow.m3.len(), MATRIX_SIZE_NUMBERS);
 
         // Simple multiplication test case: set all m1 and m2 to 1
-        let mut pow_simple = Pow2::new(header, true).unwrap();
+        let mut pow_simple = Pow2::new(header).unwrap();
 
         pow_simple.m1 = vec![1; MATRIX_SIZE_NUMBERS];
         pow_simple.m2 = vec![1; MATRIX_SIZE_NUMBERS];
@@ -466,7 +509,7 @@ mod tests {
     fn test_convert_m4_to_bytes_sanity() {
         // 1. Set up Pow2 and perform pre-requisite steps
         let header = vec![0; HEADER_SIZE];
-        let mut pow = Pow2::new(header, true).unwrap();
+        let mut pow = Pow2::new(header).unwrap();
         pow.create_matrix_data_from_hashes();
         pow.fill_in_matrices_from_data();
         pow.multiply_m1_times_m2_equals_m3();
@@ -501,7 +544,7 @@ mod tests {
         }
 
         // Initialize the Pow2 struct
-        let mut pow = Pow2::new(header.clone(), true).unwrap();
+        let mut pow = Pow2::new(header.clone()).unwrap();
 
         // Run the full PoW algorithm
         pow.run_single_iteration();
@@ -522,7 +565,7 @@ mod tests {
         }
 
         // Initialize the Pow2 struct
-        let mut pow = Pow2::new(header.clone(), true).unwrap();
+        let mut pow = Pow2::new(header.clone()).unwrap();
 
         // Run the full PoW algorithm
         pow.run_full_pow();
@@ -541,7 +584,7 @@ mod tests {
         println!("Final Hash: {:?}", hex::encode(&pow.m4_hash));
 
         // Verify the first 11 bits of the m4 hash are zero for the final nonce
-        let mut pow2 = Pow2::new(header.clone(), true).unwrap();
+        let mut pow2 = Pow2::new(header.clone()).unwrap();
         pow2.current_nonce = pow.final_nonce;
         pow2.run_single_iteration();
 
@@ -561,7 +604,7 @@ mod tests {
         }
 
         // Initialize the Pow2 struct
-        let mut pow = Pow2::new(header.clone(), true).unwrap();
+        let mut pow = Pow2::new(header.clone()).unwrap();
 
         // Time the full PoW algorithm
         let start = Instant::now();
@@ -585,7 +628,7 @@ mod tests {
         println!("Final Hash: {:?}", hex::encode(&pow.m4_hash));
 
         // Verify the first 11 bits of the m4 hash are zero for the final nonce
-        let mut pow2 = Pow2::new(header, true).unwrap();
+        let mut pow2 = Pow2::new(header).unwrap();
         pow2.current_nonce = pow.final_nonce;
         pow2.run_single_iteration();
 

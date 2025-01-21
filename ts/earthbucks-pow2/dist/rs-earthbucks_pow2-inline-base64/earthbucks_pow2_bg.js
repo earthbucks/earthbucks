@@ -32,15 +32,25 @@ function getArrayU8FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
 }
+let cachedUint32ArrayMemory0 = null;
+function getUint32ArrayMemory0() {
+    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachedUint32ArrayMemory0;
+}
+function getArrayU32FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
+}
 /**
  * @param {Uint8Array} header
- * @param {boolean} reset_nonce
  * @returns {Pow2}
  */
-export function create_pow2(header, reset_nonce) {
+export function create_pow2(header) {
     const ptr0 = passArray8ToWasm0(header, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.create_pow2(ptr0, len0, reset_nonce);
+    const ret = wasm.create_pow2(ptr0, len0);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -88,18 +98,30 @@ export class Pow2 {
      *     * - Be able to verify PoW solutions quickly on a CPU.
      *
      * @param {Uint8Array} header
-     * @param {boolean} reset_nonce
      */
-    constructor(header, reset_nonce) {
+    constructor(header) {
         const ptr0 = passArray8ToWasm0(header, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.pow2_new(ptr0, len0, reset_nonce);
+        const ret = wasm.pow2_new(ptr0, len0);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
         this.__wbg_ptr = ret[0] >>> 0;
         Pow2Finalization.register(this, this.__wbg_ptr, this);
         return this;
+    }
+    /**
+     *
+     *     * This is a simple method that hashes the header and returns the hash. This is useful for
+     *     * debugging purposes.
+     *
+     * @returns {Uint8Array}
+     */
+    debug_get_header_hash() {
+        const ret = wasm.pow2_debug_get_header_hash(this.__wbg_ptr);
+        var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
+        return v1;
     }
     /**
      *
@@ -113,6 +135,19 @@ export class Pow2 {
     }
     /**
      *
+     *     * The next method is for debugging. We want to return the final hash of the previous hashing
+     *     * to compare to alternate implementations (i.e., wgsl).
+     *
+     * @returns {Uint8Array}
+     */
+    debug_get_final_matrix_data_hash() {
+        const ret = wasm.pow2_debug_get_final_matrix_data_hash(this.__wbg_ptr);
+        var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
+        return v1;
+    }
+    /**
+     *
      *     * The next thing we want to do is as follows. We have generated two bits of data per element
      *     * in each matrix. What we want to do is to take each two bits, in big endian order, and
      *     * convert them into a u32. We then store these u32 values into each matrix, m1, and m2. We
@@ -123,12 +158,39 @@ export class Pow2 {
         wasm.pow2_fill_in_matrices_from_data(this.__wbg_ptr);
     }
     /**
+     * @returns {Uint32Array}
+     */
+    debug_get_m1_first_32() {
+        const ret = wasm.pow2_debug_get_m1_first_32(this.__wbg_ptr);
+        var v1 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
+     * @returns {Uint32Array}
+     */
+    debug_get_m2_first_32() {
+        const ret = wasm.pow2_debug_get_m2_first_32(this.__wbg_ptr);
+        var v1 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
      *
      *     * Now that we have the two matrices, we can multiply them together to get a third matrix.
      *
      */
     multiply_m1_times_m2_equals_m3() {
         wasm.pow2_multiply_m1_times_m2_equals_m3(this.__wbg_ptr);
+    }
+    /**
+     * @returns {Uint32Array}
+     */
+    debug_get_m3_first_32() {
+        const ret = wasm.pow2_debug_get_m3_first_32(this.__wbg_ptr);
+        var v1 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
     }
     /**
      *
@@ -157,6 +219,15 @@ export class Pow2 {
      */
     hash_m4() {
         wasm.pow2_hash_m4(this.__wbg_ptr);
+    }
+    /**
+     * @returns {Uint8Array}
+     */
+    debug_get_m4_hash() {
+        const ret = wasm.pow2_debug_get_m4_hash(this.__wbg_ptr);
+        var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
+        return v1;
     }
     /**
      *

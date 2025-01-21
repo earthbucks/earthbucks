@@ -180,13 +180,74 @@ export class Header implements HeaderInterface {
   }
 
   isWorkSerAlgoValid(): boolean {
-    // can change with blockNum
-    return this.workSerAlgo.n === WORK_SER_ALGO_NUM.blake3_3;
+    return (
+      this.workSerAlgo.n === WORK_SER_ALGO_NUM.null ||
+      this.workSerAlgo.n === WORK_SER_ALGO_NUM.blake3_3
+    );
   }
 
   isWorkParAlgoValid(): boolean {
-    // can change with blockNum
-    return this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627;
+    return (
+      this.workParAlgo.n === WORK_PAR_ALGO_NUM.algo1627 ||
+      this.workParAlgo.n === WORK_PAR_ALGO_NUM.pow5
+    );
+  }
+
+  setWorkSer(
+    workSerAlgoStr: "blake3_3" | "null",
+    workSerHash: FixedBuf<32>,
+  ): Header {
+    const workSerAlgo = new U16BE(WORK_SER_ALGO_NUM[workSerAlgoStr]);
+    return new Header({
+      ...this,
+      workSerAlgo,
+      workSerHash,
+    });
+  }
+
+  setWorkPar(
+    workParAlgoStr: "algo1627" | "pow5",
+    workParHash: FixedBuf<32>,
+  ): Header {
+    const workParAlgo = new U16BE(WORK_PAR_ALGO_NUM[workParAlgoStr]);
+    return new Header({
+      ...this,
+      workParAlgo,
+      workParHash,
+    });
+  }
+
+  /** set both work par and work ser to null byte arrays */
+  setBlankWorkSerAndWorkPar(): Header {
+    return new Header({
+      ...this,
+      workSerHash: FixedBuf.alloc(32),
+      workParHash: FixedBuf.alloc(32),
+    });
+  }
+
+  setNonce(nonce: U256BE): Header {
+    return new Header({
+      ...this,
+      nonce,
+    });
+  }
+
+  setRandomNonce(): Header {
+    return new Header({
+      ...this,
+      nonce: U256BE.fromBEBuf(FixedBuf.fromRandom(32)),
+    });
+  }
+
+  setFirst4BytesofNonce(smallNonce: U32BE): Header {
+    const nonce = this.nonce.toBEBuf().clone();
+    const bytes = smallNonce.toBEBuf().buf;
+    nonce.buf.set(bytes, 0);
+    return new Header({
+      ...this,
+      nonce: U256BE.fromBEBuf(nonce),
+    });
   }
 
   resIsValidInChain(

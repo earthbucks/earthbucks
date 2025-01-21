@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow2",
-  "version": "0.12.96",
+  "version": "0.12.106",
   "description": "EarthBucks Proof-of-Work (PoW) Algorithm (2)",
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
     "format": "biome format --write",
     "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
     "sync:from-rust": "cp -r ../../rs/earthbucks_pow2/build/bundler/* src/rs-earthbucks_pow2-bundler/",
-    "build": "pnpm run build:wasm && pnpm run build:typescript",
+    "build": "pnpm run build:wasm && pnpm run build:cp-wgsl && pnpm run build:typescript",
+    "build:cp-wgsl": "cp src/*.wgsl dist/",
     "build:bundler-to-inline-base64": "cp -r src/rs-earthbucks_pow2-bundler/* src/rs-earthbucks_pow2-inline-base64/",
     "build:inline-wasm": "tsx build-inline-wasm.ts",
     "build:wasm": "pnpm run build:bundler-to-inline-base64 && pnpm run build:inline-wasm",

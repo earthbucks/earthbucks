@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export function create_pow2(header: Uint8Array, reset_nonce: boolean): Pow2;
+export function create_pow2(header: Uint8Array): Pow2;
 export function sha256(input: Uint8Array): Uint8Array;
 export class Pow2 {
   free(): void;
@@ -13,7 +13,14 @@ export class Pow2 {
    *     * - Be able to verify PoW solutions quickly on a CPU.
    *     
    */
-  constructor(header: Uint8Array, reset_nonce: boolean);
+  constructor(header: Uint8Array);
+  /**
+   *
+   *     * This is a simple method that hashes the header and returns the hash. This is useful for
+   *     * debugging purposes.
+   *     
+   */
+  debug_get_header_hash(): Uint8Array;
   /**
    *
    *     * This uses the nonce to hash the header over and over, 64 times, and produce a very long
@@ -24,6 +31,13 @@ export class Pow2 {
   create_matrix_data_from_hashes(): void;
   /**
    *
+   *     * The next method is for debugging. We want to return the final hash of the previous hashing
+   *     * to compare to alternate implementations (i.e., wgsl).
+   *     
+   */
+  debug_get_final_matrix_data_hash(): Uint8Array;
+  /**
+   *
    *     * The next thing we want to do is as follows. We have generated two bits of data per element
    *     * in each matrix. What we want to do is to take each two bits, in big endian order, and
    *     * convert them into a u32. We then store these u32 values into each matrix, m1, and m2. We
@@ -31,12 +45,15 @@ export class Pow2 {
    *     
    */
   fill_in_matrices_from_data(): void;
+  debug_get_m1_first_32(): Uint32Array;
+  debug_get_m2_first_32(): Uint32Array;
   /**
    *
    *     * Now that we have the two matrices, we can multiply them together to get a third matrix.
    *     
    */
   multiply_m1_times_m2_equals_m3(): void;
+  debug_get_m3_first_32(): Uint32Array;
   /**
    *
    *     * now we want to include a simple floating point operation. so we multiply each u32 value in
@@ -59,6 +76,7 @@ export class Pow2 {
    *     
    */
   hash_m4(): void;
+  debug_get_m4_hash(): Uint8Array;
   /**
    *
    *     * now we're getting ready to run the full algorithm. but first, we're going to to need a

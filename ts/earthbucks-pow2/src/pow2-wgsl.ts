@@ -1,144 +1,699 @@
 import wgslCode from "./pow2.wgsl?raw";
 import { WebBuf, Hash, FixedBuf } from "@earthbucks/lib";
 
-async function webGpuSha256(input: Uint8Array): Promise<Uint8Array> {
-  // Request the GPU adapter and device
-  const adapter = await navigator.gpu.requestAdapter();
-  if (!adapter) {
-    throw new Error("Failed to get GPU adapter. Ensure WebGPU is supported.");
-  }
-  const device = await adapter.requestDevice();
+const HEADER_SIZE = 217;
+const HEADER_BUFFER_SIZE = 217 * 4;
+// const NONCE_START = 117;
+// const NONCE_END = 121;
+const MATRIX_INPUT_DATA_SIZE = 2048;
+const MATRIX_DATA_BUFFER_SIZE = 2048 * 4;
+const MATRIX_1D_SIZE = 128;
+const MATRIX_2D_SIZE = 16384; // 128 * 128
+const MATRIX_2D_BUFFER_SIZE = 16384 * 4;
+const MATRIX_2D_SIZE_BYTES = 65536; // 128 * 128 * 4
+const MATRIX_2D_SIZE_BYTES_BUFFER_SIZE = 65536 * 4;
+const HASH_SIZE = 32;
+const HASH_BUFFER_SIZE = 32 * 4;
 
-  // Create a shader module from the imported WGSL
-  const module = device.createShaderModule({ code: wgslCode });
+export class Pow2 {
+  private header: FixedBuf<217>;
 
-  // const inputByteLength = input.byteLength;
-  const outputByteLength = 32 * 4; // SHA-256 produces 32 bytes, but the output is uint32 values
-
-  // // Ensure input length is multiple of 4
-  // if (input.length % 4 !== 0) {
-  //   throw new Error("Input length must be a multiple of 4");
-  // }
-
-  const inputUint32 = new Uint32Array(input.length); // Note: length is same as input
-  for (let i = 0; i < input.length; i++) {
-    inputUint32[i] = input[i] as number; // Each byte becomes its own uint32
+  constructor(header: FixedBuf<217>) {
+    this.header = header;
   }
 
-  // Create GPU buffer with the correct size for Uint32Array
-  const inputBuffer = device.createBuffer({
-    size: inputUint32.byteLength,
-    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-  });
+  async debugGetFinalMatrixDataHash(): Promise<FixedBuf<32>> {
+    const headerUint8Array = this.header.buf;
+    const headerUint32Array = new Uint32Array(headerUint8Array);
 
-  // Write the Uint32Array to the buffer
-  device.queue.writeBuffer(inputBuffer, 0, inputUint32);
-  const inputSizeBuffer = device.createBuffer({
-    size: 4,
-    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-  });
-  const outputBuffer = device.createBuffer({
-    size: outputByteLength,
-    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-  });
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      throw new Error("No adapter found");
+    }
+    const device = await adapter.requestDevice();
 
-  const dataSizeUint32 = new Uint32Array([input.length]); // Use original length
-  device.queue.writeBuffer(inputSizeBuffer, 0, dataSizeUint32);
+    const module = device.createShaderModule({ code: wgslCode });
 
-  // Create bind group layout and pipeline
-  const bindGroupLayout = device.createBindGroupLayout({
-    entries: [
-      {
-        binding: 0,
-        visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "read-only-storage", // Change from default "uniform"
+    const bindGroupLayout = device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "read-only-storage",
+          },
         },
-      },
-      {
-        binding: 1,
-        visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "read-only-storage", // Change from default "uniform"
+        {
+          binding: 1,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "storage",
+          },
         },
+      ],
+    });
+
+    const pipelineLayout = device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    });
+
+    const computePipeline1 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_working_header",
       },
-      {
-        binding: 2,
-        visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "storage", // Change from default "uniform"
+    });
+    const computePipeline2 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_matrix_data_from_hashes",
+      },
+    });
+
+    const headerBuffer = device.createBuffer({
+      size: HEADER_BUFFER_SIZE,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
+    });
+    const pow2Buffer = device.createBuffer({
+      size:
+        4 +
+        HEADER_BUFFER_SIZE +
+        MATRIX_DATA_BUFFER_SIZE +
+        MATRIX_2D_BUFFER_SIZE * 4 +
+        MATRIX_2D_SIZE_BYTES_BUFFER_SIZE +
+        HASH_BUFFER_SIZE +
+        4 +
+        4,
+      usage:
+        GPUBufferUsage.COPY_DST |
+        GPUBufferUsage.COPY_SRC |
+        GPUBufferUsage.STORAGE,
+    });
+
+    device.queue.writeBuffer(headerBuffer, 0, headerUint32Array.buffer);
+
+    const bindGroup = device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: {
+            buffer: headerBuffer,
+          },
         },
-      },
-    ],
-  });
+        {
+          binding: 1,
+          resource: {
+            buffer: pow2Buffer,
+          },
+        },
+      ],
+    });
 
-  const pipelineLayout = device.createPipelineLayout({
-    bindGroupLayouts: [bindGroupLayout],
-  });
+    // now run both compute pipelines
 
-  const computePipeline = device.createComputePipeline({
-    layout: pipelineLayout,
-    compute: {
-      module,
-      entryPoint: "main_sha256",
-    },
-  });
+    const commandEncoder1 = device.createCommandEncoder();
+    const passEncoder1 = commandEncoder1.beginComputePass();
+    passEncoder1.setPipeline(computePipeline1);
+    passEncoder1.setBindGroup(0, bindGroup);
+    passEncoder1.dispatchWorkgroups(1, 1, 1);
+    passEncoder1.end();
+    device.queue.submit([commandEncoder1.finish()]);
 
-  // Create a bind group to connect buffers to the shader
-  const bindGroup = device.createBindGroup({
-    layout: bindGroupLayout,
-    entries: [
-      { binding: 0, resource: { buffer: inputBuffer } },
-      { binding: 1, resource: { buffer: inputSizeBuffer } },
-      { binding: 2, resource: { buffer: outputBuffer } },
-    ],
-  });
+    const commandEncoder2 = device.createCommandEncoder();
+    const passEncoder2 = commandEncoder2.beginComputePass();
+    passEncoder2.setPipeline(computePipeline2);
+    passEncoder2.setBindGroup(0, bindGroup);
+    passEncoder2.dispatchWorkgroups(1, 1, 1);
+    passEncoder2.end();
+    device.queue.submit([commandEncoder2.finish()]);
 
-  // Encode commands for computing SHA-256
-  const commandEncoder = device.createCommandEncoder();
-  const passEncoder = commandEncoder.beginComputePass();
-  passEncoder.setPipeline(computePipeline);
-  passEncoder.setBindGroup(0, bindGroup);
-  // We only need 1 workgroup since the shader's @workgroup_size is (1,1)
-  passEncoder.dispatchWorkgroups(1, 1, 1);
-  passEncoder.end();
-  device.queue.submit([commandEncoder.finish()]);
+    // read the output data
+    const READ_START =
+      4 + HEADER_BUFFER_SIZE + MATRIX_DATA_BUFFER_SIZE - HASH_SIZE * 4;
+    const READ_LENGTH = HASH_SIZE * 4;
+    const readBuffer = device.createBuffer({
+      size: 32 * 4,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+    });
+    const copyEncoder = device.createCommandEncoder();
+    copyEncoder.copyBufferToBuffer(
+      pow2Buffer,
+      READ_START,
+      readBuffer,
+      0,
+      READ_LENGTH,
+    );
+    device.queue.submit([copyEncoder.finish()]);
 
-  // Read the output data
-  const gpuReadBuffer = device.createBuffer({
-    size: outputByteLength,
-    usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
-  });
+    // wait for the GPU to finish, then read the data
+    await readBuffer.mapAsync(GPUMapMode.READ);
+    const readData = new Uint32Array(readBuffer.getMappedRange().slice());
+    readBuffer.unmap();
 
-  // Copy from outputBuffer to a CPU-visible gpuReadBuffer
-  const copyEncoder = device.createCommandEncoder();
-  copyEncoder.copyBufferToBuffer(
-    outputBuffer,
-    0,
-    gpuReadBuffer,
-    0,
-    outputByteLength,
-  );
-  device.queue.submit([copyEncoder.finish()]);
-
-  // Wait for the GPU to finish the copy, then map and read result
-  await gpuReadBuffer.mapAsync(GPUMapMode.READ);
-  const arrayBuffer = gpuReadBuffer.getMappedRange();
-  const uint32Array = new Uint32Array(arrayBuffer.slice());
-  gpuReadBuffer.unmap();
-
-  // Create the final byte array with correct ordering
-  const result = new Uint8Array(32);
-  for (let i = 0; i < 32; i++) {
-    // Each uint32 in the shader output contains one byte of the hash
-    result[i] = (uint32Array[i] as number) & 0xff;
+    // matrix data is all bytes, so we can copy directly into a uint8array
+    const matrixDataBytes = new Uint8Array(readData);
+    const final32bytes = matrixDataBytes.slice(matrixDataBytes.length - 32);
+    const matrixDataFixedBuf = FixedBuf.fromBuf(
+      32,
+      WebBuf.fromUint8Array(final32bytes),
+    );
+    return matrixDataFixedBuf;
   }
 
-  return result;
+  async debugGetM4Hash(): Promise<FixedBuf<32>> {
+    const headerUint8Array = this.header.buf;
+    const headerUint32Array = new Uint32Array(headerUint8Array);
+
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      throw new Error("No adapter found");
+    }
+    const device = await adapter.requestDevice();
+
+    const module = device.createShaderModule({ code: wgslCode });
+
+    const bindGroupLayout = device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "read-only-storage",
+          },
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "storage",
+          },
+        },
+      ],
+    });
+
+    const pipelineLayout = device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    });
+
+    const computePipeline0 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "set_nonce_from_header",
+      },
+    });
+    const computePipeline1 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_working_header",
+      },
+    });
+    const computePipeline2 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_matrix_data_from_hashes",
+      },
+    });
+    const computePipeline3 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_m1_from_matrix_data",
+      },
+    });
+    const computePipeline4 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_m2_from_matrix_data",
+      },
+    });
+    const computePipeline5 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "multiply_m1_times_m2_equals_m3",
+      },
+    });
+    const computePipeline6 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "multiply_m3_by_pi_to_get_m4",
+      },
+    });
+    const computePipeline7 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "convert_m4_to_bytes",
+      },
+    });
+    const computePipeline8 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "hash_m4",
+      },
+    });
+
+    const headerBuffer = device.createBuffer({
+      size: HEADER_BUFFER_SIZE,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
+    });
+    const pow2Buffer = device.createBuffer({
+      size:
+        4 +
+        HEADER_BUFFER_SIZE +
+        MATRIX_DATA_BUFFER_SIZE +
+        MATRIX_2D_BUFFER_SIZE * 4 +
+        MATRIX_2D_SIZE_BYTES_BUFFER_SIZE +
+        HASH_BUFFER_SIZE +
+        4 +
+        4,
+      usage:
+        GPUBufferUsage.COPY_DST |
+        GPUBufferUsage.COPY_SRC |
+        GPUBufferUsage.STORAGE,
+    });
+
+    device.queue.writeBuffer(headerBuffer, 0, headerUint32Array.buffer);
+
+    const bindGroup = device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: {
+            buffer: headerBuffer,
+          },
+        },
+        {
+          binding: 1,
+          resource: {
+            buffer: pow2Buffer,
+          },
+        },
+      ],
+    });
+
+    // now run all compute pipelines
+    const commandEncoder0 = device.createCommandEncoder();
+    const passEncoder0 = commandEncoder0.beginComputePass();
+    passEncoder0.setPipeline(computePipeline0);
+    passEncoder0.setBindGroup(0, bindGroup);
+    passEncoder0.dispatchWorkgroups(1, 1, 1);
+    passEncoder0.end();
+    device.queue.submit([commandEncoder0.finish()]);
+
+    const commandEncoder1 = device.createCommandEncoder();
+    const passEncoder1 = commandEncoder1.beginComputePass();
+    passEncoder1.setPipeline(computePipeline1);
+    passEncoder1.setBindGroup(0, bindGroup);
+    passEncoder1.dispatchWorkgroups(1, 1, 1);
+    passEncoder1.end();
+    device.queue.submit([commandEncoder1.finish()]);
+
+    const commandEncoder2 = device.createCommandEncoder();
+    const passEncoder2 = commandEncoder2.beginComputePass();
+    passEncoder2.setPipeline(computePipeline2);
+    passEncoder2.setBindGroup(0, bindGroup);
+    passEncoder2.dispatchWorkgroups(1, 1, 1);
+    passEncoder2.end();
+    device.queue.submit([commandEncoder2.finish()]);
+
+    const commandEncoder3 = device.createCommandEncoder();
+    const passEncoder3 = commandEncoder3.beginComputePass();
+    passEncoder3.setPipeline(computePipeline3);
+    passEncoder3.setBindGroup(0, bindGroup);
+    passEncoder3.dispatchWorkgroups(1, 1, 1);
+    passEncoder3.end();
+    device.queue.submit([commandEncoder3.finish()]);
+
+    const commandEncoder4 = device.createCommandEncoder();
+    const passEncoder4 = commandEncoder4.beginComputePass();
+    passEncoder4.setPipeline(computePipeline4);
+    passEncoder4.setBindGroup(0, bindGroup);
+    passEncoder4.dispatchWorkgroups(1, 1, 1);
+    passEncoder4.end();
+    device.queue.submit([commandEncoder4.finish()]);
+
+    const commandEncoder5 = device.createCommandEncoder();
+    const passEncoder5 = commandEncoder5.beginComputePass();
+    passEncoder5.setPipeline(computePipeline5);
+    passEncoder5.setBindGroup(0, bindGroup);
+    // matrix multiply is workgroup size 8x8 with 16x16 workgroups
+    passEncoder5.dispatchWorkgroups(16, 16, 1);
+    passEncoder5.end();
+    device.queue.submit([commandEncoder5.finish()]);
+
+    const commandEncoder6 = device.createCommandEncoder();
+    const passEncoder6 = commandEncoder6.beginComputePass();
+    passEncoder6.setPipeline(computePipeline6);
+    passEncoder6.setBindGroup(0, bindGroup);
+    passEncoder6.dispatchWorkgroups(1, 1, 1);
+    passEncoder6.end();
+    device.queue.submit([commandEncoder6.finish()]);
+
+    const commandEncoder7 = device.createCommandEncoder();
+    const passEncoder7 = commandEncoder7.beginComputePass();
+    passEncoder7.setPipeline(computePipeline7);
+    passEncoder7.setBindGroup(0, bindGroup);
+    passEncoder7.dispatchWorkgroups(1, 1, 1);
+    passEncoder7.end();
+    device.queue.submit([commandEncoder7.finish()]);
+
+    const commandEncoder8 = device.createCommandEncoder();
+    const passEncoder8 = commandEncoder8.beginComputePass();
+    passEncoder8.setPipeline(computePipeline8);
+    passEncoder8.setBindGroup(0, bindGroup);
+    passEncoder8.dispatchWorkgroups(1, 1, 1);
+    passEncoder8.end();
+    device.queue.submit([commandEncoder8.finish()]);
+
+    // read the output data
+    const READ_START =
+      4 +
+      HEADER_BUFFER_SIZE +
+      MATRIX_DATA_BUFFER_SIZE +
+      MATRIX_2D_BUFFER_SIZE * 4 +
+      MATRIX_2D_SIZE_BYTES_BUFFER_SIZE;
+    const READ_LENGTH = HASH_SIZE * 4;
+    const readBuffer = device.createBuffer({
+      size: 32 * 4,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+    });
+    const copyEncoder = device.createCommandEncoder();
+    copyEncoder.copyBufferToBuffer(
+      pow2Buffer,
+      READ_START,
+      readBuffer,
+      0,
+      READ_LENGTH,
+    );
+    device.queue.submit([copyEncoder.finish()]);
+
+    // wait for the GPU to finish, then read the data
+    await readBuffer.mapAsync(GPUMapMode.READ);
+    const readData = new Uint32Array(readBuffer.getMappedRange().slice());
+    readBuffer.unmap();
+
+    // matrix data is all bytes, so we can copy directly into a uint8array
+    const matrixDataBytes = new Uint8Array(readData);
+    const final32bytes = matrixDataBytes.slice(matrixDataBytes.length - 32);
+    const matrixDataFixedBuf = FixedBuf.fromBuf(
+      32,
+      WebBuf.fromUint8Array(final32bytes),
+    );
+    return matrixDataFixedBuf;
+  }
+
+  async debugIterateOnceWithCheck(): Promise<{
+    hash: FixedBuf<32>;
+    check: boolean;
+    nonce: number;
+  }> {
+    const headerUint8Array = this.header.buf;
+    const headerUint32Array = new Uint32Array(headerUint8Array);
+
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      throw new Error("No adapter found");
+    }
+    const device = await adapter.requestDevice();
+
+    const module = device.createShaderModule({ code: wgslCode });
+
+    const bindGroupLayout = device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "read-only-storage",
+          },
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: {
+            type: "storage",
+          },
+        },
+      ],
+    });
+
+    const pipelineLayout = device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    });
+
+    const computePipeline0 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "set_nonce_from_header",
+      },
+    });
+    const computePipeline1 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_working_header",
+      },
+    });
+    const computePipeline2 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_matrix_data_from_hashes",
+      },
+    });
+    const computePipeline3 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_m1_from_matrix_data",
+      },
+    });
+    const computePipeline4 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "create_m2_from_matrix_data",
+      },
+    });
+    const computePipeline5 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "multiply_m1_times_m2_equals_m3",
+      },
+    });
+    const computePipeline6 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "multiply_m3_by_pi_to_get_m4",
+      },
+    });
+    const computePipeline7 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "convert_m4_to_bytes",
+      },
+    });
+    const computePipeline8 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "hash_m4",
+      },
+    });
+    const computePipeline9 = device.createComputePipeline({
+      layout: pipelineLayout,
+      compute: {
+        module,
+        entryPoint: "check_m4_hash_11_bits",
+      },
+    });
+
+    const headerBuffer = device.createBuffer({
+      size: HEADER_BUFFER_SIZE,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
+    });
+    const pow2Buffer = device.createBuffer({
+      size:
+        4 +
+        HEADER_BUFFER_SIZE +
+        MATRIX_DATA_BUFFER_SIZE +
+        MATRIX_2D_BUFFER_SIZE * 4 +
+        MATRIX_2D_SIZE_BYTES_BUFFER_SIZE +
+        HASH_BUFFER_SIZE +
+        4 +
+        4,
+      usage:
+        GPUBufferUsage.COPY_DST |
+        GPUBufferUsage.COPY_SRC |
+        GPUBufferUsage.STORAGE,
+    });
+
+    device.queue.writeBuffer(headerBuffer, 0, headerUint32Array.buffer);
+
+    const bindGroup = device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: {
+            buffer: headerBuffer,
+          },
+        },
+        {
+          binding: 1,
+          resource: {
+            buffer: pow2Buffer,
+          },
+        },
+      ],
+    });
+
+    // now run all compute pipelines
+    const commandEncoder0 = device.createCommandEncoder();
+    const passEncoder0 = commandEncoder0.beginComputePass();
+    passEncoder0.setPipeline(computePipeline0);
+    passEncoder0.setBindGroup(0, bindGroup);
+    passEncoder0.dispatchWorkgroups(1, 1, 1);
+    passEncoder0.end();
+    device.queue.submit([commandEncoder0.finish()]);
+
+    const commandEncoder1 = device.createCommandEncoder();
+    const passEncoder1 = commandEncoder1.beginComputePass();
+    passEncoder1.setPipeline(computePipeline1);
+    passEncoder1.setBindGroup(0, bindGroup);
+    passEncoder1.dispatchWorkgroups(1, 1, 1);
+    passEncoder1.end();
+    device.queue.submit([commandEncoder1.finish()]);
+
+    const commandEncoder2 = device.createCommandEncoder();
+    const passEncoder2 = commandEncoder2.beginComputePass();
+    passEncoder2.setPipeline(computePipeline2);
+    passEncoder2.setBindGroup(0, bindGroup);
+    passEncoder2.dispatchWorkgroups(1, 1, 1);
+    passEncoder2.end();
+    device.queue.submit([commandEncoder2.finish()]);
+
+    const commandEncoder3 = device.createCommandEncoder();
+    const passEncoder3 = commandEncoder3.beginComputePass();
+    passEncoder3.setPipeline(computePipeline3);
+    passEncoder3.setBindGroup(0, bindGroup);
+    passEncoder3.dispatchWorkgroups(1, 1, 1);
+    passEncoder3.end();
+    device.queue.submit([commandEncoder3.finish()]);
+
+    const commandEncoder4 = device.createCommandEncoder();
+    const passEncoder4 = commandEncoder4.beginComputePass();
+    passEncoder4.setPipeline(computePipeline4);
+    passEncoder4.setBindGroup(0, bindGroup);
+    passEncoder4.dispatchWorkgroups(1, 1, 1);
+    passEncoder4.end();
+    device.queue.submit([commandEncoder4.finish()]);
+
+    const commandEncoder5 = device.createCommandEncoder();
+    const passEncoder5 = commandEncoder5.beginComputePass();
+    passEncoder5.setPipeline(computePipeline5);
+    passEncoder5.setBindGroup(0, bindGroup);
+    // matrix multiply is workgroup size 8x8 with 16x16 workgroups
+    passEncoder5.dispatchWorkgroups(16, 16, 1);
+    passEncoder5.end();
+    device.queue.submit([commandEncoder5.finish()]);
+
+    const commandEncoder6 = device.createCommandEncoder();
+    const passEncoder6 = commandEncoder6.beginComputePass();
+    passEncoder6.setPipeline(computePipeline6);
+    passEncoder6.setBindGroup(0, bindGroup);
+    passEncoder6.dispatchWorkgroups(1, 1, 1);
+    passEncoder6.end();
+    device.queue.submit([commandEncoder6.finish()]);
+
+    const commandEncoder7 = device.createCommandEncoder();
+    const passEncoder7 = commandEncoder7.beginComputePass();
+    passEncoder7.setPipeline(computePipeline7);
+    passEncoder7.setBindGroup(0, bindGroup);
+    passEncoder7.dispatchWorkgroups(1, 1, 1);
+    passEncoder7.end();
+    device.queue.submit([commandEncoder7.finish()]);
+
+    const commandEncoder8 = device.createCommandEncoder();
+    const passEncoder8 = commandEncoder8.beginComputePass();
+    passEncoder8.setPipeline(computePipeline8);
+    passEncoder8.setBindGroup(0, bindGroup);
+    passEncoder8.dispatchWorkgroups(1, 1, 1);
+    passEncoder8.end();
+    device.queue.submit([commandEncoder8.finish()]);
+
+    const commandEncoder9 = device.createCommandEncoder();
+    const passEncoder9 = commandEncoder9.beginComputePass();
+    passEncoder9.setPipeline(computePipeline9);
+    passEncoder9.setBindGroup(0, bindGroup);
+    passEncoder9.dispatchWorkgroups(1, 1, 1);
+    passEncoder9.end();
+    device.queue.submit([commandEncoder9.finish()]);
+
+    // read the output data
+    const READ_START =
+      4 +
+      HEADER_BUFFER_SIZE +
+      MATRIX_DATA_BUFFER_SIZE +
+      MATRIX_2D_BUFFER_SIZE * 4 +
+      MATRIX_2D_SIZE_BYTES_BUFFER_SIZE;
+    // read the final hash and the "check" and nonce, both 4 bytes each
+    const READ_LENGTH = HASH_SIZE * 4 + 4 + 4;
+    const readBuffer = device.createBuffer({
+      size: 32 * 4 + 4 + 4,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+    });
+    const copyEncoder = device.createCommandEncoder();
+    copyEncoder.copyBufferToBuffer(
+      pow2Buffer,
+      READ_START,
+      readBuffer,
+      0,
+      READ_LENGTH,
+    );
+    device.queue.submit([copyEncoder.finish()]);
+
+    // wait for the GPU to finish, then read the data
+    await readBuffer.mapAsync(GPUMapMode.READ);
+    const readData = new Uint32Array(readBuffer.getMappedRange().slice());
+    readBuffer.unmap();
+
+    const check = readData[HASH_SIZE];
+    const nonce = readData[HASH_SIZE + 1];
+    if (check === undefined) {
+      throw new Error("check is undefined");
+    }
+    if (nonce === undefined) {
+      throw new Error("nonce is undefined");
+    }
+
+    // hash is all bytes, so we can copy directly into a uint8array
+    const hashDataBytes = new Uint8Array(readData.slice(0, HASH_SIZE * 4));
+    const hashBytesSlice = hashDataBytes.slice(0, 32);
+    const hashDataBuf = FixedBuf.fromBuf(
+      32,
+      WebBuf.fromUint8Array(hashBytesSlice),
+    );
+
+    return {
+      hash: hashDataBuf,
+      check: !!check,
+      nonce,
+    };
+  }
 }
-
-export async function sha256(data: WebBuf): Promise<FixedBuf<32>> {
-  const arr = await webGpuSha256(data);
-  return FixedBuf.fromBuf(32, WebBuf.fromUint8Array(arr));
-}
-
