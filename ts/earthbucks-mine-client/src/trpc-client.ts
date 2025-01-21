@@ -102,9 +102,9 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         };
       },
     },
-    miningButton: {
+    miningButton2: {
       getNewWorkPack: async () => {
-        const res = await trpcClient.miningButton.getNewWorkPack.query();
+        const res = await trpcClient.miningButton2.getNewWorkPack.query();
         return {
           shareId: res.shareId,
           retryTarget: U256BE.fromHex(res.retryTarget),
@@ -118,7 +118,7 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         count: number,
         duration: number,
       ) => {
-        const res = await trpcClient.miningButton.postWorkPack.mutate({
+        const res = await trpcClient.miningButton2.postWorkPack.mutate({
           shareId,
           workPack: workPack.toHex(),
           count,

@@ -788,7 +788,7 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             createdAt: Date;
         }>;
     }>;
-    miningButton: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
+    miningButton2: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
         ctx: {
             cookie: string | undefined;
             setHeader: (key: string, value: string) => void;

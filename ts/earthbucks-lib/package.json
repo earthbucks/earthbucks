@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/lib",
-  "version": "0.12.106",
+  "version": "0.12.108",
   "description": "EarthBucks library for data structures and algorithms.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
