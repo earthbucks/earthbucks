@@ -103,31 +103,6 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         };
       },
     },
-    miningButton2: {
-      getNewWorkPack: async () => {
-        const res = await trpcClient.miningButton2.getNewWorkPack.query();
-        return {
-          shareId: res.shareId,
-          retryTarget: U256BE.fromHex(res.retryTarget),
-          shareTarget: U256BE.fromHex(res.shareTarget),
-          workPack: WorkPack.fromHex(res.workPack),
-        };
-      },
-      postWorkPack: async (
-        shareId: number,
-        workPack: WorkPack,
-        count: number,
-        duration: number,
-      ) => {
-        const res = await trpcClient.miningButton2.postWorkPack.mutate({
-          shareId,
-          workPack: workPack.toHex(),
-          count,
-          duration,
-        });
-        return res;
-      },
-    },
     mine: {
       getSignedWorkData: async () => {
         const res = await trpcClient.mine.getSignedWorkData.query();
