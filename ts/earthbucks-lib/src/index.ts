@@ -24,6 +24,7 @@ export * from "./script-interpreter.js";
 export * from "./script-num.js";
 export * from "./script.js";
 export * from "./signed-message.js";
+export * from "./signed-work-data.js";
 export * from "./signin-challenge.js";
 export * from "./signin-response.js";
 export * from "./tx-builder.js";
@@ -37,6 +38,7 @@ export * from "./tx-verifier.js";
 export * from "./tx-w-id.js";
 export * from "./tx.js";
 export * from "./var-int.js";
+export * from "./work-data.js";
 export * from "./work-pack.js";
 
 // Re-export from webbuf

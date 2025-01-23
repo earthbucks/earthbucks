@@ -354,9 +354,13 @@ export class Header implements HeaderInterface {
       blockNum: new U32BE(0n),
       target: initialTarget,
       nonce,
-      workSerAlgo: new U16BE(WORK_SER_ALGO_NUM.blake3_3),
+
+      // this is for testing. the actual genesis was blake3_3 work ser
+      workSerAlgo: new U16BE(WORK_SER_ALGO_NUM.null),
       workSerHash: FixedBuf.alloc(32),
-      workParAlgo: new U16BE(WORK_PAR_ALGO_NUM.algo1627),
+
+      // this is for testing. the actual genesis was algo1627 work par
+      workParAlgo: new U16BE(WORK_PAR_ALGO_NUM.pow5),
       workParHash: FixedBuf.alloc(32),
     });
   }
@@ -397,9 +401,9 @@ export class Header implements HeaderInterface {
     const blockNum = prevHeader.blockNum.add(new U32BE(1));
     const timestamp = newTimestamp;
     const nonce = new U256BE(0);
-    const workSerAlgo = new U16BE(WORK_SER_ALGO_NUM.blake3_3);
+    const workSerAlgo = new U16BE(WORK_SER_ALGO_NUM.null);
     const workSerHash = FixedBuf.alloc(32);
-    const workParAlgo = new U16BE(WORK_PAR_ALGO_NUM.algo1627);
+    const workParAlgo = new U16BE(WORK_PAR_ALGO_NUM.pow5);
     const workParHash = FixedBuf.alloc(32);
     return new Header({
       version: new U8(0),

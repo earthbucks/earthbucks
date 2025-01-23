@@ -965,14 +965,14 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
             _input_in: {
                 count: number;
                 duration: number;
-                workPack: string;
                 shareId: number;
+                workPack: string;
             };
             _input_out: {
                 count: number;
                 duration: number;
-                workPack: import("@earthbucks/lib/dist/work-pack.js").WorkPack;
                 shareId: number;
+                workPack: import("@earthbucks/lib/dist/work-pack.js").WorkPack;
             };
             _output_in: {
                 isValidShare: boolean;
@@ -985,6 +985,199 @@ export declare const appRouter: import("@trpc/server").CreateRouterInner<import(
                 isValidBlock: boolean;
                 shareId: number;
                 error?: string | undefined;
+            };
+        }, unknown>;
+    }>;
+    mine: import("@trpc/server").CreateRouterInner<import("@trpc/server").RootConfig<{
+        ctx: {
+            cookie: string | undefined;
+            setHeader: (key: string, value: string) => void;
+            pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+            user: {
+                id: number;
+                pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                createdAt: Date;
+                name: string | null;
+                avatarId: string | null;
+                minPayment: number;
+                nSwipes: number;
+                nBlocks: number;
+                nRewinds: number;
+                nImpCoinBadges: number;
+                nFruitcakeBadges: number;
+                isBanned: boolean;
+                isMembershipVerified: boolean;
+            } | null;
+            completeUserProfile: {
+                id: number;
+                name: string;
+                avatarId: string;
+                nSwipes: number;
+                pubKeyStr: string;
+                isMembershipVerified: boolean;
+            } | null;
+            sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+        };
+        meta: object;
+        errorShape: import("@trpc/server").DefaultErrorShape;
+        transformer: import("@trpc/server").DefaultDataTransformer;
+    }>, {
+        getSignedWorkData: import("@trpc/server").BuildProcedure<"query", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: typeof import("@trpc/server").unsetMarker;
+            _input_out: typeof import("@trpc/server").unsetMarker;
+            _output_in: typeof import("@trpc/server").unsetMarker;
+            _output_out: typeof import("@trpc/server").unsetMarker;
+        }, {
+            signedWorkData: string;
+        }>;
+        submitSignedWorkData: import("@trpc/server").BuildProcedure<"mutation", {
+            _config: import("@trpc/server").RootConfig<{
+                ctx: {
+                    cookie: string | undefined;
+                    setHeader: (key: string, value: string) => void;
+                    pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                    user: {
+                        id: number;
+                        pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                        createdAt: Date;
+                        name: string | null;
+                        avatarId: string | null;
+                        minPayment: number;
+                        nSwipes: number;
+                        nBlocks: number;
+                        nRewinds: number;
+                        nImpCoinBadges: number;
+                        nFruitcakeBadges: number;
+                        isBanned: boolean;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    completeUserProfile: {
+                        id: number;
+                        name: string;
+                        avatarId: string;
+                        nSwipes: number;
+                        pubKeyStr: string;
+                        isMembershipVerified: boolean;
+                    } | null;
+                    sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                };
+                meta: object;
+                errorShape: import("@trpc/server").DefaultErrorShape;
+                transformer: import("@trpc/server").DefaultDataTransformer;
+            }>;
+            _meta: object;
+            _ctx_out: {
+                pubKey: import("@earthbucks/lib/dist/pub-key.js").PubKey | null;
+                user: {
+                    id: number;
+                    pubKey: import("@webbuf/fixedbuf").FixedBuf<33>;
+                    createdAt: Date;
+                    name: string | null;
+                    avatarId: string | null;
+                    minPayment: number;
+                    nSwipes: number;
+                    nBlocks: number;
+                    nRewinds: number;
+                    nImpCoinBadges: number;
+                    nFruitcakeBadges: number;
+                    isBanned: boolean;
+                    isMembershipVerified: boolean;
+                } | null;
+                sessionTokenId: import("@webbuf/fixedbuf").FixedBuf<16> | null;
+                cookie: string | undefined;
+                setHeader: (key: string, value: string) => void;
+                completeUserProfile: {
+                    id: number;
+                    name: string;
+                    avatarId: string;
+                    nSwipes: number;
+                    pubKeyStr: string;
+                    isMembershipVerified: boolean;
+                } | null;
+            };
+            _input_in: {
+                header: string;
+                signedWorkData: string;
+            };
+            _input_out: {
+                header: string;
+                signedWorkData: string;
+            };
+            _output_in: {
+                isValidShare: boolean;
+                isValidBlock: boolean;
+                error?: string | undefined;
+                shareId?: number | undefined;
+            };
+            _output_out: {
+                isValidShare: boolean;
+                isValidBlock: boolean;
+                error?: string | undefined;
+                shareId?: number | undefined;
             };
         }, unknown>;
     }>;

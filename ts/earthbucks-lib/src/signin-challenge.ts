@@ -46,7 +46,7 @@ export class SigninChallenge {
   }
 
   toHex(): string {
-    return this.toBuf().toString("hex");
+    return this.toBuf().toHex();
   }
 
   isValid(domainPubKey: PubKey, domain: string): boolean {

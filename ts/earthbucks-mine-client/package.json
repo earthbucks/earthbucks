@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/mine-client",
-  "version": "0.12.108",
+  "version": "0.12.112",
   "description": "EarthBucks mine client.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",

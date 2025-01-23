@@ -597,7 +597,7 @@ export class Pow5 {
                 passEncoder.dispatchWorkgroups(1, 1, 1);
             }
             else {
-                passEncoder.dispatchWorkgroups(this.gridSize, 1, 1);
+                passEncoder.dispatchWorkgroups(1, this.gridSize);
             }
             passEncoder.end();
             device.queue.submit([commandEncoder.finish()]);

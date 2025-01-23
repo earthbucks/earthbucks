@@ -22,6 +22,7 @@ import {
   Err,
   isErr,
   Result,
+  SignedWorkData,
 } from "@earthbucks/lib";
 import { FixedBuf, PrivKey, SigninResponse } from "@earthbucks/lib";
 
@@ -126,6 +127,35 @@ export const createMineClient = (domain: string, sessionToken?: string) => {
         });
         return res;
       },
+    },
+    mine: {
+      getSignedWorkData: async () => {
+        const res = await trpcClient.mine.getSignedWorkData.query();
+        const { signedWorkData: signedWorkDataHex } = res;
+        const signedWorkData = SignedWorkData.fromHex(
+          signedWorkDataHex,
+          domain,
+        );
+        return signedWorkData;
+      },
+      submitSignedWorkData: async ({
+        signedWorkData,
+        header
+      }: {
+        signedWorkData: SignedWorkData;
+        header: Header;
+      }) => {
+        const res = await trpcClient.mine.submitSignedWorkData.mutate({
+          signedWorkData: signedWorkData.toHex(),
+          header: header.toHex(),
+        });
+        return {
+          isValidShare: res.isValidShare,
+          isValidBlock: res.isValidBlock,
+          shareId: res.shareId,
+          error: res.error,
+        }
+      }
     },
     userAvatar: {
       uploadAvatar: async (avatarBuf: WebBuf) => {

@@ -4,9 +4,6 @@ members = [
     "earthbucks_blake3",
     "earthbucks_secp256k1",
     "earthbucks_aescbc",
-    "earthbucks_pow2",
-    "earthbucks_pow3",
-    "earthbucks_pow4",
     "earthbucks_pow5",
     "webbuf",
     "webbuf_aescbc",
@@ -23,9 +20,6 @@ earthbucks_lib = { path = "./earthbucks_lib" }
 earthbucks_blake3 = { path = "./earthbucks_blake3" }
 earthbucks_secp256k1 = { path = "./earthbucks_secp256k1" }
 earthbucks_aescbc = { path = "./earthbucks_aescbc" }
-earthbucks_pow2 = { path = "./earthbucks_pow2" }
-earthbucks_pow3 = { path = "./earthbucks_pow3" }
-earthbucks_pow4 = { path = "./earthbucks_pow4" }
 earthbucks_pow5 = { path = "./earthbucks_pow5" }
 webbuf = { path = "./webbuf" }
 webbuf_aescbc = { path = "./webbuf_aescbc" }

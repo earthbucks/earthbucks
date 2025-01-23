@@ -642,7 +642,7 @@ fn debug_elementary_iteration(@builtin(global_invocation_id) global_id: vec3<u32
 
 @compute @workgroup_size(WORKGROUP_SIZE, 1, 1)
 fn workgroup_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
-    let global_thread_id: u32 = global_id.x;
+    let global_thread_id: u32 = global_id.x + global_id.y * WORKGROUP_SIZE + global_id.z * WORKGROUP_SIZE * WORKGROUP_SIZE;
     let workgroup_id: u32 = global_thread_id / WORKGROUP_SIZE; // each workgroup has a unique id
     let local_thread_id: u32 = global_thread_id % WORKGROUP_SIZE; // each thread has an id unique to the workgroup
 
@@ -732,7 +732,7 @@ fn workgroup_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
 @compute @workgroup_size(1, 1, 1)
 fn grid_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
-    let global_thread_id: u32 = global_id.x;
+    let global_thread_id: u32 = global_id.x + global_id.y * 1 + global_id.z * 1 * 1;
 
     // we need to find the lowest hash in the grid_results array. we will store
     // this in the final_result array. we only do this once for the entire
