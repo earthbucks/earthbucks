@@ -1,6 +1,6 @@
 {
   "name": "@webbuf/secp256k1",
-  "version": "1.0.125",
+  "version": "1.0.127",
   "description": "Rust/wasm optimized secp256k1 ecdsa and Diffie-Hellman for the web, node.js, deno, and bun.",
   "repository": {
     "type": "git",
