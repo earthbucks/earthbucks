@@ -4,6 +4,11 @@ export declare class WebBuf extends Uint8Array {
     fill(value: number, start?: number, end?: number): this;
     slice(start?: number, end?: number): WebBuf;
     subarray(start?: number, end?: number): WebBuf;
+    /**
+     * Reverse the buffer in place
+     * @returns webbuf
+     */
+    reverse(): this;
     clone(): WebBuf;
     toReverse(): WebBuf;
     copy(target: WebBuf, targetStart?: number, sourceStart?: number, sourceEnd?: number): number;

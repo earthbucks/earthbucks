@@ -40,14 +40,14 @@ export class WebBuf extends Uint8Array {
         const subArray = super.subarray(start, end);
         return new WebBuf(subArray.buffer, subArray.byteOffset, subArray.byteLength);
     }
-    // /**
-    //  * Reverse the buffer in place
-    //  * @returns webbuf
-    //  */
-    // reverseInPlace(): WebBuf {
-    //   super.reverse();
-    //   return this;
-    // }
+    /**
+     * Reverse the buffer in place
+     * @returns webbuf
+     */
+    reverse() {
+        super.reverse();
+        return this;
+    }
     clone() {
         return new WebBuf(this);
     }
