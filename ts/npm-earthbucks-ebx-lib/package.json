@@ -1,0 +1,50 @@
+{
+  "name": "@earthbucks/ebx-lib",
+  "version": "1.0.125",
+  "description": "EarthBucks library for data structures and algorithms.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "main": "tsx src/main.ts",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --write --unsafe",
+    "format": "biome format --write",
+    "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=20.8.0"
+  },
+  "keywords": [],
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (http://ryanxcharles.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/earthbucks/earthbucks"
+  },
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.12.3+sha256.24235772cc4ac82a62627cd47f834c72667a2ce87799a846ec4e8e555e2d4b8b",
+  "dependencies": {
+    "@ryanxcharles/result": "^1.0.3",
+    "@webbuf/aescbc": "workspace:^",
+    "@webbuf/blake3": "workspace:^",
+    "@webbuf/fixedbuf": "workspace:^",
+    "@webbuf/numbers": "workspace:^",
+    "@webbuf/rw": "workspace:^",
+    "@webbuf/secp256k1": "workspace:^",
+    "@webbuf/webbuf": "workspace:^",
+    "bs58": "^6.0.0",
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.8.7",
+    "globals": "^15.12.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

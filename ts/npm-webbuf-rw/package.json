@@ -1,0 +1,55 @@
+{
+  "name": "@webbuf/rw",
+  "version": "1.0.125",
+  "description": "Read and write buffers, optimized with Rust/WASM for the web, node.js, deno, and bun.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryanxcharles/webbuf"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "benchmark": "vitest --config vitest.benchmark.config.ts run",
+    "test": "vitest --run",
+    "test:browser": "vitest --run --browser",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --write --unsafe",
+    "format": "biome format --write",
+    "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=20.8.0"
+  },
+  "packageManager": "pnpm@9.12.3+sha256.24235772cc4ac82a62627cd47f834c72667a2ce87799a846ec4e8e555e2d4b8b",
+  "keywords": [
+    "buffer",
+    "base64",
+    "hex",
+    "uint256",
+    "int256",
+    "uint128",
+    "int128",
+    "rust",
+    "wasm"
+  ],
+  "author": "Ryan X. Charles <ryan@ryanxcharles.com> (https://ryanxcharles.com)",
+  "license": "MIT",
+  "peerDependencies": {
+    "@webbuf/fixedbuf": "workspace:^",
+    "@webbuf/numbers": "workspace:^",
+    "@webbuf/webbuf": "workspace:^"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.13.2",
+    "buffer": "^6.0.3",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
+  }
+}
