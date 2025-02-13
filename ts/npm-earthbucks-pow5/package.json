@@ -19,7 +19,7 @@
     "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
     "sync:from-rust": "cp -r ../../rs/earthbucks_pow5/build/bundler/* src/rs-earthbucks_pow5-bundler/",
     "build": "pnpm run build:wasm && pnpm run build:cp-wgsl && pnpm run build:typescript",
-    "build:cp-wgsl": "cp src/*.wgsl dist/",
+    "build:cp-wgsl": "mkdir -p dist && cp src/*.wgsl dist/",
     "build:bundler-to-inline-base64": "cp -r src/rs-earthbucks_pow5-bundler/* src/rs-earthbucks_pow5-inline-base64/",
     "build:inline-wasm": "tsx build-inline-wasm.ts",
     "build:wasm": "pnpm run build:bundler-to-inline-base64 && pnpm run build:inline-wasm",
