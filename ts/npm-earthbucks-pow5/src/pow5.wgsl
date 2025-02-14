@@ -17,12 +17,10 @@ struct Pow5Result {
 
 // input
 @group(0) @binding(0) var<storage, read> header: array<u32, HEADER_SIZE>;
-@group(0) @binding(1) var<storage, read> grid_size: u32;
+@group(0) @binding(1) var<storage, read> hash_target: array<u32, COMPRESSED_HASH_SIZE>;
 
 // output
-var<workgroup> workgroup_results: array<Pow5Result, WORKGROUP_SIZE>;
-@group(0) @binding(2) var<storage, read_write> grid_results: array<Pow5Result, MAX_GRID_SIZE>;
-@group(0) @binding(3) var<storage, read_write> final_result: Pow5Result;
+@group(0) @binding(2) var<storage, read_write> final_result: Pow5Result;
 
 // blake3 constants
 const OUT_LEN: u32 = 32;
@@ -415,7 +413,7 @@ fn debug_hash_header(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
     // now we need to store the hash result in the final_result array
     if global_id.x == 0 {
-        for (var i: u32 = 0; i < 32; i++) {
+        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
             final_result.hash[i] = compressed_result[i];
         }
     }
@@ -445,7 +443,7 @@ fn debug_double_hash_header(@builtin(global_invocation_id) global_id: vec3<u32>)
 
     // now we need to store the hash result in the final_result array
     if global_id.x == 0 {
-        for (var i: u32 = 0; i < 32; i++) {
+        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
             final_result.hash[i] = compressed_result[i];
         }
     }
@@ -474,7 +472,7 @@ fn debug_hash_header_128(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
     // now we need to store the hash result in the final_result array
     if global_id.x == 0 {
-        for (var i: u32 = 0; i < 32; i++) {
+        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
             final_result.hash[i] = compressed_result[i];
         }
     }
@@ -503,7 +501,7 @@ fn debug_hash_header_32(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
     // now we need to store the hash result in the final_result array
     if global_id.x == 0 {
-        for (var i: u32 = 0; i < 32; i++) {
+        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
             final_result.hash[i] = compressed_result[i];
         }
     }
@@ -665,8 +663,7 @@ fn workgroup_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
     local_header[NONCE_START + 2] = (nonce >> 8) & 0xff; // Second least significant byte
     local_header[NONCE_START + 3] = nonce & 0xff; // Least significant byte last
 
-    // now each workgroup will need to run the elementary iteration. then we store the result
-    // in the shared memory workgroup_results array.
+    // now each workgroup will need to run the elementary iteration.
     var result: Pow5Result;
     result.nonce = nonce;
     var result_hash: array<u32, COMPRESSED_HASH_SIZE> = elementary_iteration(local_header);
@@ -674,104 +671,43 @@ fn workgroup_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
         result.hash[i] = result_hash[i];
     }
 
-    // now we need to store the result in the workgroup_results array
-    workgroup_results[local_thread_id].nonce = result.nonce;
+    // now that we have run the elementary iteration, we need to check if the
+    // result_hash is less than the target
+    var is_result_lower: bool = false;
     for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-        workgroup_results[local_thread_id].hash[i] = result.hash[i];
+        if result_hash[i] < hash_target[i] {
+            is_result_lower = true;
+            break;
+        } else if result_hash[i] > hash_target[i] {
+            break;
+        }
     }
 
-    // now we must wait for all results to finish before proceeding.
-    workgroupBarrier();
-
-    // now we need to "reduce" the results by finding the *lowest* hash in the
-    // workgroup (for each workgroup). note that the hashes are *big endian*.
-    // looking at the first byte only would be adequate most of the time, but
-    // we want to handle all cases, so we look at all bytes if necessary. which
-    // ever is the lowest hash for this workgroup gets stored in the
-    // grid_results array, at the position of this workgroup. only the first
-    // thread in the workgroup will do this.
-    if local_thread_id == 0 {
-        var lowest_hash: array<u32, COMPRESSED_HASH_SIZE>;
-        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-            lowest_hash[i] = 0xffffffff;
-        }
-        for (var i: u32 = 0; i < WORKGROUP_SIZE; i++) {
-            var current_hash: array<u32, COMPRESSED_HASH_SIZE>;
-            for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                current_hash[j] = workgroup_results[i].hash[j];
-            }
-            var is_current_hash_lower: bool = false;
-            for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                if current_hash[j] < lowest_hash[j] {
-                    is_current_hash_lower = true;
-                    break;
-                } else if current_hash[j] > lowest_hash[j] {
-                    break;
-                }
-            }
-            if is_current_hash_lower {
-                for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                    lowest_hash[j] = current_hash[j];
-                }
-                grid_results[workgroup_id].nonce = workgroup_results[i].nonce;
-                for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                    grid_results[workgroup_id].hash[j] = lowest_hash[j];
-                }
-            }
-        }
-        //// debug: set grid hash to all 1s
-        //for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-        //    grid_results[workgroup_id].hash[i] = 0xffffffff;
-        //}
+    // finally, if the result is lower, we need to store the nonce in the
+    // final_result. note that there may be race conditions here, but we
+    // don't care about that, because the only thing we really care about is
+    // the lowest nonce, and that is an atomic operation which is not affected
+    // by race conditions. race conditions only affect the hash. so the final
+    // hash is not guaranteed to be correct.
+    if is_result_lower {
+      final_result.nonce = result.nonce;
+      for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
+          final_result.hash[i] = result.hash[i];
+      }
     }
 
-    // we can't use workgroupBarrier() here because we used a conditional on
-    // the thread id so we need to wait for all threads to finish before we can
-    // continue. a separate method is used to determine "global" results.
-}
+    //// debug
+    //final_result.nonce = 0xffffffff;
+    //for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
+    //    //final_result.hash[i] = result_hash[i];
+    //    //final_result.hash[i] = hash_target[i];
+    //    final_result.hash[i] = local_target[i];
+    //}
 
-@compute @workgroup_size(1, 1, 1)
-fn grid_reduce(@builtin(global_invocation_id) global_id: vec3<u32>) {
-    let global_thread_id: u32 = global_id.x + global_id.y * 1 + global_id.z * 1 * 1;
-
-    // we need to find the lowest hash in the grid_results array. we will store
-    // this in the final_result array. we only do this once for the entire
-    // grid. this is the final reduction.
-    if global_thread_id == 0 {
-        var lowest_hash: array<u32, COMPRESSED_HASH_SIZE>;
-        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-            lowest_hash[i] = 0xffffffff;
-        }
-        for (var i: u32 = 0; i < grid_size; i++) {
-            var current_hash: array<u32, COMPRESSED_HASH_SIZE>;
-            for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                current_hash[j] = grid_results[i].hash[j];
-            }
-            var is_current_hash_lower: bool = false;
-            for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                if current_hash[j] < lowest_hash[j] {
-                    is_current_hash_lower = true;
-                    break;
-                } else if current_hash[j] > lowest_hash[j] {
-                    break;
-                }
-            }
-            if is_current_hash_lower {
-                for (var j: u32 = 0; j < COMPRESSED_HASH_SIZE; j++) {
-                    lowest_hash[j] = current_hash[j];
-                }
-                final_result.nonce = grid_results[i].nonce;
-            }
-        }
-        for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-            final_result.hash[i] = lowest_hash[i];
-        }
-//    // debug: set final hash to all 1s
-//    if global_thread_id == 0{
-//      for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
-//        final_result.hash[i] = 0xffffffff;
-//      }
-//    }
-    }
+    //// debug: set results to all 1s
+    //final_result.nonce = 0xffffffff;
+    //for (var i: u32 = 0; i < COMPRESSED_HASH_SIZE; i++) {
+    //    final_result.hash[i] = hash_target[i];
+    //}
 }
 

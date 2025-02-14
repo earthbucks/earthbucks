@@ -1,6 +1,6 @@
 {
   "name": "@webbuf/acb3dh",
-  "version": "1.0.127",
+  "version": "1.0.128",
   "description": "AES+CBC encryption/decryption with blake3 mac and secp256k1 Diffie-Hellman shared secret for web, node.js, deno and bun.",
   "repository": {
     "type": "git",

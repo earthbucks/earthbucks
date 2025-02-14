@@ -1,6 +1,6 @@
 {
   "name": "@webbuf/rw",
-  "version": "1.0.127",
+  "version": "1.0.128",
   "description": "Read and write buffers, optimized with Rust/WASM for the web, node.js, deno, and bun.",
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/ebx-lib",
-  "version": "1.0.127",
+  "version": "1.0.128",
   "description": "EarthBucks library for data structures and algorithms.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",

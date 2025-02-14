@@ -13,7 +13,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader();
       expect(result.hash.toHex()).toBe(
@@ -31,11 +35,15 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader();
       expect(result.hash.toHex()).toBe(
-        "eb5f30bf6c299ef06fdfacc33391bc98c02cfae075590661d765c0d661f32a7b"
+        "eb5f30bf6c299ef06fdfacc33391bc98c02cfae075590661d765c0d661f32a7b",
       );
       expect(result.nonce).toBe(0);
 
@@ -51,7 +59,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugDoubleHashHeader();
       expect(result.hash.toHex()).toBe(
@@ -60,7 +72,9 @@ describe("Pow5 tests", async () => {
       expect(result.nonce).toBe(0);
 
       // now, generate the same hash with Hash
-      const hashHex = Hash.blake3Hash(Hash.blake3Hash(headerAllZeroes.buf).buf).toHex();
+      const hashHex = Hash.blake3Hash(
+        Hash.blake3Hash(headerAllZeroes.buf).buf,
+      ).toHex();
       expect(result.hash.toHex()).toBe(hashHex);
     }
 
@@ -69,16 +83,22 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugDoubleHashHeader();
       expect(result.hash.toHex()).toBe(
-        "3d6545532ad22b8cafc7573464be25054391b6e2e6ded794e66e820cc4feb05f"
+        "3d6545532ad22b8cafc7573464be25054391b6e2e6ded794e66e820cc4feb05f",
       );
       expect(result.nonce).toBe(0);
 
       // now, generate the same hash with Hash
-      const hashHex = Hash.blake3Hash(Hash.blake3Hash(headerAllOnes.buf).buf).toHex();
+      const hashHex = Hash.blake3Hash(
+        Hash.blake3Hash(headerAllOnes.buf).buf,
+      ).toHex();
       expect(result.hash.toHex()).toBe(hashHex);
     }
   });
@@ -89,7 +109,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader128();
       expect(result.hash.toHex()).toBe(
@@ -98,7 +122,9 @@ describe("Pow5 tests", async () => {
       expect(result.nonce).toBe(0);
 
       // now, generate the same hash with Hash
-      const hashHex = Hash.blake3Hash(headerAllZeroes.buf.slice(0, 128)).toHex();
+      const hashHex = Hash.blake3Hash(
+        headerAllZeroes.buf.slice(0, 128),
+      ).toHex();
       expect(result.hash.toHex()).toBe(hashHex);
     }
 
@@ -107,11 +133,15 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader128();
       expect(result.hash.toHex()).toBe(
-        "14f3387c61e89f7a1bce077da2d41df2da920f35f376769ee70aa4ca9620d1b7"
+        "14f3387c61e89f7a1bce077da2d41df2da920f35f376769ee70aa4ca9620d1b7",
       );
       expect(result.nonce).toBe(0);
 
@@ -127,7 +157,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader32();
       expect(result.hash.toHex()).toBe(
@@ -145,11 +179,15 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugHashHeader32();
       expect(result.hash.toHex()).toBe(
-        "91f47563f3da92036f6fb227245b2833d0b42d76b1cc04afe198e92cf3749f61"
+        "91f47563f3da92036f6fb227245b2833d0b42d76b1cc04afe198e92cf3749f61",
       );
       expect(result.nonce).toBe(0);
 
@@ -165,7 +203,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugGetWorkPar();
       expect(result.hash.toHex()).toBe(
@@ -179,11 +221,15 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugGetWorkPar();
       expect(result.hash.toHex()).toBe(
-        "09d125453a1a5e9f75c770e3580e8b8035069b39816036b38207e8e152fa6871"
+        "09d125453a1a5e9f75c770e3580e8b8035069b39816036b38207e8e152fa6871",
       );
       expect(result.nonce).toBe(0);
     }
@@ -195,7 +241,11 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllZeroes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugElementaryIteration();
       expect(result.hash.toHex()).toBe(
@@ -209,11 +259,15 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const targetAllZeroes = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex("00".repeat(32)),
+      );
+      const pow5 = new Pow5(headerAllOnes, targetAllZeroes, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.debugElementaryIteration();
       expect(result.hash.toHex()).toBe(
-        "a0c84664c6489150ffdd9755c5fad8fe08339d923ad2a3fda6369e1e74be9184"
+        "a0c84664c6489150ffdd9755c5fad8fe08339d923ad2a3fda6369e1e74be9184",
       );
       expect(result.nonce).toBe(0);
     }
@@ -225,9 +279,17 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("00".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllZeroes, MAX_GRID_SIZE);
+      const target = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex(
+          "00000004f0ac89d75f135f184abbf0a82fad1e07fb4a29adb159648d70adf4ff",
+          //"ff".repeat(32),
+        ),
+      );
+      const pow5 = new Pow5(headerAllZeroes, target, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.work();
+      console.log("nonce", result.nonce);
       expect(result.hash.toHex()).toBe(
         "00000004f0ac89d75f135f184abbf0a82fad1e07fb4a29adb159648d70adf474",
       );
@@ -239,11 +301,17 @@ describe("Pow5 tests", async () => {
         217,
         WebBuf.fromHex("11".repeat(217)),
       );
-      const pow5 = new Pow5(headerAllOnes, MAX_GRID_SIZE);
+      const target = FixedBuf.fromBuf(
+        32,
+        WebBuf.fromHex(
+          "0000004bd2d60b7b67702281a87b14e45c65d40465dc41fa2639ef84f05016ff",
+        ),
+      );
+      const pow5 = new Pow5(headerAllOnes, target, MAX_GRID_SIZE);
       await pow5.init(true);
       const result = await pow5.work();
       expect(result.hash.toHex()).toBe(
-        "0000004bd2d60b7b67702281a87b14e45c65d40465dc41fa2639ef84f050164a"
+        "0000004bd2d60b7b67702281a87b14e45c65d40465dc41fa2639ef84f050164a",
       );
       expect(result.nonce).toBe(424378);
     }

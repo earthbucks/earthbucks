@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow5",
-  "version": "1.0.127",
+  "version": "1.0.128",
   "description": "EarthBucks Proof-of-Work (PoW) Algorithm (5)",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "fix": "pnpm run typecheck && pnpm run lint && pnpm run format",
     "sync:from-rust": "cp -r ../../rs/earthbucks_pow5/build/bundler/* src/rs-earthbucks_pow5-bundler/",
     "build": "pnpm run build:wasm && pnpm run build:cp-wgsl && pnpm run build:typescript",
-    "build:cp-wgsl": "mkdir -p dist && cp src/*.wgsl dist/",
+    "build:cp-wgsl": "cp src/*.wgsl dist/",
     "build:bundler-to-inline-base64": "cp -r src/rs-earthbucks_pow5-bundler/* src/rs-earthbucks_pow5-inline-base64/",
     "build:inline-wasm": "tsx build-inline-wasm.ts",
     "build:wasm": "pnpm run build:bundler-to-inline-base64 && pnpm run build:inline-wasm",
@@ -37,18 +37,18 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@playwright/browser-chromium": "^1.50.0",
-    "@playwright/test": "^1.50.0",
-    "@types/node": "^22.12.0",
-    "@vitest/browser": "^2.1.8",
-    "@webgpu/types": "^0.1.53",
+    "@playwright/browser-chromium": "^1.50.1",
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.13.4",
+    "@vitest/browser": "^3.0.5",
+    "@webgpu/types": "^0.1.54",
     "buffer": "^6.0.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vite": "^5.4.14",
+    "vite": "^6.1.0",
     "vite-string-plugin": "^1.4.3",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.5"
   },
   "dependencies": {
     "@earthbucks/ebx-lib": "workspace:^"

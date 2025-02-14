@@ -16,8 +16,7 @@ interface Pow5State {
   pipelineLayout: GPUPipelineLayout | null;
   computePipelines: Record<string, GPUComputePipeline | null>;
   headerBuffer: GPUBuffer | null;
-  gridSizeBuffer: GPUBuffer | null;
-  gridResultsBuffer: GPUBuffer | null;
+  targetBuffer: GPUBuffer | null;
   finalResultBuffer: GPUBuffer | null;
   bindGroup: GPUBindGroup | null;
 }
@@ -26,11 +25,17 @@ type GridSize = 32768 | 2048 | 128;
 
 export class Pow5 {
   private header: FixedBuf<217>;
+  private target: FixedBuf<32>;
   private gridSize: GridSize;
   private state: Pow5State;
 
-  constructor(header: FixedBuf<217>, gridSize: GridSize = 128) {
+  constructor(
+    header: FixedBuf<217>,
+    target: FixedBuf<32>,
+    gridSize: GridSize = 128,
+  ) {
     this.header = header;
+    this.target = target;
     this.gridSize = gridSize;
     this.state = {
       device: null,
@@ -39,8 +44,7 @@ export class Pow5 {
       pipelineLayout: null,
       computePipelines: {},
       headerBuffer: null,
-      gridSizeBuffer: null,
-      gridResultsBuffer: null,
+      targetBuffer: null,
       finalResultBuffer: null,
       bindGroup: null,
     };
@@ -88,13 +92,6 @@ export class Pow5 {
             type: "storage",
           },
         },
-        {
-          binding: 3,
-          visibility: GPUShaderStage.COMPUTE,
-          buffer: {
-            type: "storage",
-          },
-        },
       ],
     });
     this.state.bindGroupLayout = bindGroupLayout;
@@ -112,10 +109,9 @@ export class Pow5 {
       "debug_get_work_par",
       "debug_elementary_iteration",
       "workgroup_reduce",
-      "grid_reduce",
     ];
 
-    const computePipelineNamesProd = ["workgroup_reduce", "grid_reduce"];
+    const computePipelineNamesProd = ["workgroup_reduce"];
 
     const computePipelineNames = debug
       ? computePipelineNamesDebug
@@ -138,17 +134,11 @@ export class Pow5 {
     });
     this.state.headerBuffer = headerBuffer;
 
-    const gridSizeBuffer = device.createBuffer({
-      size: 4,
+    const targetBuffer = device.createBuffer({
+      size: HASH_SIZE,
       usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.STORAGE,
     });
-    this.state.gridSizeBuffer = gridSizeBuffer;
-
-    const gridResultsBuffer = device.createBuffer({
-      size: (4 + 32) * MAX_GRID_SIZE,
-      usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.STORAGE,
-    });
-    this.state.gridResultsBuffer = gridResultsBuffer;
+    this.state.targetBuffer = targetBuffer;
 
     const finalResultBuffer = device.createBuffer({
       size: 4 + 32,
@@ -157,10 +147,23 @@ export class Pow5 {
     this.state.finalResultBuffer = finalResultBuffer;
 
     device.queue.writeBuffer(headerBuffer, 0, headerUint32Array.buffer);
+    // now for the target buffer, we need to take the hash 4 bytes at a time,
+    // and in *big-endian* order convert them into a Uint32Array and write that
+    // to the buffer
+    const targetUint8Array = this.target.buf;
+    const targetUint32Array = new Uint32Array(8);
+    let byteIndex = 0;
+    for (let i = 0; i < 8; i++) {
+      targetUint32Array[i] =
+        ((targetUint8Array[byteIndex++] as number) << 24) |
+        ((targetUint8Array[byteIndex++] as number) << 16) |
+        ((targetUint8Array[byteIndex++] as number) << 8) |
+        (targetUint8Array[byteIndex++] as number);
+    }
     device.queue.writeBuffer(
-      gridSizeBuffer,
+      this.state.targetBuffer,
       0,
-      new Uint32Array([this.gridSize]).buffer,
+      targetUint32Array.buffer,
     );
 
     const bindGroup = device.createBindGroup({
@@ -175,17 +178,11 @@ export class Pow5 {
         {
           binding: 1,
           resource: {
-            buffer: gridSizeBuffer,
+            buffer: targetBuffer,
           },
         },
         {
           binding: 2,
-          resource: {
-            buffer: gridResultsBuffer,
-          },
-        },
-        {
-          binding: 3,
           resource: {
             buffer: finalResultBuffer,
           },
@@ -196,15 +193,18 @@ export class Pow5 {
     this.state.bindGroup = bindGroup;
   }
 
-  async setInput(header: FixedBuf<217>, gridSize: GridSize): Promise<void> {
+  async setInput(
+    header: FixedBuf<217>,
+    target: FixedBuf<32>,
+    gridSize: GridSize,
+  ): Promise<void> {
     if (
       !this.state.device ||
       !this.state.module ||
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridSizeBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -225,10 +225,23 @@ export class Pow5 {
       headerUint32Array.buffer,
     );
 
+    // now for the target buffer, we need to take the hash 4 bytes at a time,
+    // and in *big-endian* order convert them into a Uint32Array and write that
+    // to the buffer
+    const targetUint8Array = target.buf;
+    const targetUint32Array = new Uint32Array(8);
+    let byteIndex = 0;
+    for (let i = 0; i < 8; i++) {
+      targetUint32Array[i] =
+        ((targetUint8Array[byteIndex++] as number) << 24) |
+        ((targetUint8Array[byteIndex++] as number) << 16) |
+        ((targetUint8Array[byteIndex++] as number) << 8) |
+        (targetUint8Array[byteIndex++] as number);
+    }
     device.queue.writeBuffer(
-      this.state.gridSizeBuffer,
+      this.state.targetBuffer,
       0,
-      new Uint32Array([this.gridSize]).buffer,
+      targetUint32Array.buffer,
     );
   }
 
@@ -242,7 +255,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -256,7 +269,6 @@ export class Pow5 {
       "debug_hash_header",
       // "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -326,7 +338,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -341,7 +353,6 @@ export class Pow5 {
       "debug_double_hash_header",
       // "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -411,7 +422,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -426,7 +437,6 @@ export class Pow5 {
       "debug_hash_header_128",
       // "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -496,7 +506,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -512,7 +522,6 @@ export class Pow5 {
       "debug_hash_header_32",
       // "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -582,7 +591,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -597,7 +606,6 @@ export class Pow5 {
       "debug_get_work_par",
       // "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -667,7 +675,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -681,7 +689,6 @@ export class Pow5 {
       // "debug_hash_header",
       "debug_elementary_iteration",
       // "workgroup_reduce",
-      // "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -751,7 +758,7 @@ export class Pow5 {
       !this.state.bindGroupLayout ||
       !this.state.pipelineLayout ||
       !this.state.headerBuffer ||
-      !this.state.gridResultsBuffer ||
+      !this.state.targetBuffer ||
       !this.state.finalResultBuffer ||
       !this.state.bindGroup
     ) {
@@ -765,7 +772,6 @@ export class Pow5 {
       // "debug_hash_header",
       // "debug_elementary_iteration",
       "workgroup_reduce",
-      "grid_reduce",
     ];
 
     // now run all compute pipelines except set_nonce_from_header
@@ -777,11 +783,7 @@ export class Pow5 {
       }
       passEncoder.setPipeline(this.state.computePipelines[name]);
       passEncoder.setBindGroup(0, bindGroup);
-      if (name === "grid_reduce") {
-        passEncoder.dispatchWorkgroups(1, 1, 1);
-      } else {
-        passEncoder.dispatchWorkgroups(1, this.gridSize);
-      }
+      passEncoder.dispatchWorkgroups(1, this.gridSize);
       passEncoder.end();
       device.queue.submit([commandEncoder.finish()]);
     }
