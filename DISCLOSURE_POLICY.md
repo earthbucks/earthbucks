@@ -8,7 +8,7 @@ Refrain from disclosing any security vulnerabilities or issues on public forums,
 
 ## Reporting a Bug or Vulnerability
 
-When reporting a bug or vulnerability, please provide the following to ryan@earthbucks.com :
+When reporting a bug or vulnerability, please provide the following to support@ryanxcharles.com :
 
 * A concise summary of the potential consequences of the issue, if any are known.
 * Detailed documentation outlining the steps necessary to reproduce the issue or the process of exploiting it.
