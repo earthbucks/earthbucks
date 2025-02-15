@@ -31,3 +31,5 @@ the TypeScript implementation.
 ### Rust (rs)
 
 - earthbucks_lib (transactions, blocks, data structures, algorithms, standardized tests)
+
+Copyright © 2025 EarthBucks Inc.
