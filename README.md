@@ -11,7 +11,7 @@ Website: [earthbucks.com](https://earthbucks.com)
 This repository hosts open-source software for EarthBucks. See the LICENSE file
 in each project folder for details. The primary software is the library, which
 provides all fundamental data structures and algorithms. Other software is
-provided to run run mines, walles, and apps.
+provided to run mines, wallets, and apps.
 
 The reference implementation is TypeScript. If two implementations differ, trust
 the TypeScript implementation.
