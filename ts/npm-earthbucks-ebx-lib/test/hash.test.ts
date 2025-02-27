@@ -73,4 +73,16 @@ describe("blake3", () => {
       );
     });
   });
+
+  describe("blake3Kdf", () => {
+    test("should return a known value", () => {
+      const key = FixedBuf.fromHex(32, "0f".repeat(32));
+      const context = FixedBuf.fromHex(32, "f0".repeat(32));
+      const nIter = 1e6;
+      const result = Hash.blake3Kdf(key, context, nIter);
+      expect(result.toHex()).toEqual(
+        "42973e3d1d3682b93c0169380ffff8e65c00d5e2779e37ffe49b46bd3d0aafc4"
+      );
+    });
+  });
 });

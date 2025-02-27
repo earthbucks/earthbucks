@@ -1,0 +1,27 @@
+{
+  "identifier": "com.earthbucks.app",
+  "productName": "EarthBucks",
+  "version": "0.1.0",
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "",
+    "devUrl": "http://localhost:4661",
+    "frontendDist": "../../ts/tauri-earthbucks-ui/dist"
+  },
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "EarthBucks",
+        "width": 800
+      }
+    ]
+  },
+  "bundle": {},
+  "plugins": {}
+}

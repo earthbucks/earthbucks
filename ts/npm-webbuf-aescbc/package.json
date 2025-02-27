@@ -1,6 +1,6 @@
 {
   "name": "@webbuf/aescbc",
-  "version": "1.0.128",
+  "version": "1.0.132",
   "description": "Rust/wasm optimized AES+CBC encryption/decryption for web, node.js, deno and bun.",
   "repository": {
     "type": "git",

@@ -577,13 +577,19 @@ export class Script {
 
   getInputPubKey(): PubKey {
     if (this.isUnexpiredPkhxrInput() || this.isRecoveryPkhxrInput()) {
-      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+      return PubKey.fromBuf(
+        FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf),
+      );
     }
     if (this.isUnexpiredPkhxInput()) {
-      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+      return PubKey.fromBuf(
+        FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf),
+      );
     }
     if (this.isPkhInput()) {
-      return PubKey.fromBuf(FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf));
+      return PubKey.fromBuf(
+        FixedBuf.fromBuf(33, this.chunks[1]?.buf as WebBuf),
+      );
     }
     throw new Error("Invalid Script");
   }

@@ -4,6 +4,8 @@ export * from "./block-builder.js";
 export * from "./block-message-header.js";
 export * from "./block.js";
 export * from "./compucha-challenge.js";
+export * from "./domain-priv-key.js";
+export * from "./domain-pub-key.js";
 export * from "./domain.js";
 export * from "./ebx-value.js";
 export * from "./hash.js";

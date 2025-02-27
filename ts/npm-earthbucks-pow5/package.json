@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow5",
-  "version": "1.0.128",
+  "version": "1.0.132",
   "description": "EarthBucks Proof-of-Work (PoW) Algorithm (5)",
   "repository": {
     "type": "git",
@@ -39,16 +39,16 @@
     "@biomejs/biome": "^1.9.4",
     "@playwright/browser-chromium": "^1.50.1",
     "@playwright/test": "^1.50.1",
-    "@types/node": "^22.13.4",
-    "@vitest/browser": "^3.0.5",
+    "@types/node": "^22.13.5",
+    "@vitest/browser": "^3.0.6",
     "@webgpu/types": "^0.1.54",
     "buffer": "^6.0.3",
     "rimraf": "^6.0.1",
-    "tsx": "^4.19.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
-    "vite": "^6.1.0",
-    "vite-string-plugin": "^1.4.3",
-    "vitest": "^3.0.5"
+    "vite": "^6.1.1",
+    "vite-string-plugin": "^1.4.4",
+    "vitest": "^3.0.6"
   },
   "dependencies": {
     "@earthbucks/ebx-lib": "workspace:^"

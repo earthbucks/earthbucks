@@ -1,6 +1,6 @@
 {
   "name": "@webbuf/numbers",
-  "version": "1.0.128",
+  "version": "1.0.132",
   "description": "Fixed-sized numbers (unsigned, signed, float) optimized with Rust/WASM for the web, node.js, deno, and bun.",
   "repository": {
     "type": "git",

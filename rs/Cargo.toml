@@ -5,6 +5,7 @@ members = [
     "earthbucks_secp256k1",
     "earthbucks_aescbc",
     "earthbucks_pow5",
+    "earthbucks_tauri",
     "webbuf",
     "webbuf_aescbc",
     "webbuf_blake3",
