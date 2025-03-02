@@ -81,7 +81,7 @@ describe("blake3", () => {
       const nIter = 1e6;
       const result = Hash.blake3Kdf(key, context, nIter);
       expect(result.toHex()).toEqual(
-        "42973e3d1d3682b93c0169380ffff8e65c00d5e2779e37ffe49b46bd3d0aafc4"
+        "42973e3d1d3682b93c0169380ffff8e65c00d5e2779e37ffe49b46bd3d0aafc4",
       );
     });
   });

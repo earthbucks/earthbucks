@@ -31,7 +31,12 @@ export class TxSigner {
     this.workingBlockNum = workingBlockNum;
   }
 
-  sign(nIn: U32BE): Tx {
+  sign(
+    nIn: U32BE,
+    { prohibitSigningExpired }: { prohibitSigningExpired: boolean } = {
+      prohibitSigningExpired: false,
+    },
+  ): Tx {
     if (nIn.n >= this.tx.inputs.length) {
       throw new Error("input index out of bounds");
     }
@@ -79,7 +84,7 @@ export class TxSigner {
         prevBlockNum,
       );
       const inputScript = txInput.script;
-      if (expired) {
+      if (prohibitSigningExpired && expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
           return this.tx;
@@ -116,7 +121,7 @@ export class TxSigner {
         prevBlockNum,
       );
       const inputScript = txInput.script;
-      if (expired) {
+      if (prohibitSigningExpired && expired) {
         if (inputScript.isExpiredPkhxInput()) {
           // no need to sign expired pkhx
           return this.tx;
@@ -155,7 +160,7 @@ export class TxSigner {
         prevBlockNum,
       );
       const inputScript = txInput.script;
-      if (expired) {
+      if (prohibitSigningExpired && expired) {
         if (inputScript.isExpiredPkhxrInput()) {
           // no need to sign expired pkhx
           return this.tx;
@@ -213,7 +218,7 @@ export class TxSigner {
         prevBlockNum,
       );
       const inputScript = txInput.script;
-      if (expired) {
+      if (prohibitSigningExpired && expired) {
         if (inputScript.isExpiredPkhxrInput()) {
           // no need to sign expired pkhx
           return this.tx;
@@ -268,9 +273,13 @@ export class TxSigner {
     return this.tx;
   }
 
-  signAll(): Tx {
+  signAll(
+    { prohibitSigningExpired }: { prohibitSigningExpired: boolean } = {
+      prohibitSigningExpired: false,
+    },
+  ): Tx {
     for (let i = 0; i < this.tx.inputs.length; i++) {
-      this.sign(new U32BE(i));
+      this.sign(new U32BE(i), { prohibitSigningExpired });
     }
     return this.tx;
   }

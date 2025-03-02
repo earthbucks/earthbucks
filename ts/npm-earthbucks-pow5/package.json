@@ -1,6 +1,6 @@
 {
   "name": "@earthbucks/pow5",
-  "version": "1.0.132",
+  "version": "1.0.135",
   "description": "EarthBucks Proof-of-Work (PoW) Algorithm (5)",
   "repository": {
     "type": "git",
