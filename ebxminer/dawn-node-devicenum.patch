@@ -1,0 +1,45 @@
+diff --git a/src/dawn/node/binding/GPU.cpp b/src/dawn/node/binding/GPU.cpp
+index 31c8e8d1e9..e8d11eb019 100644
+--- a/src/dawn/node/binding/GPU.cpp
++++ b/src/dawn/node/binding/GPU.cpp
+@@ -216,17 +216,32 @@ interop::Promise<std::optional<interop::Interface<interop::GPUAdapter>>> GPU::re
+     }
+ 
+     dawn::native::Adapter* adapter = nullptr;
+-    for (auto& a : adapters) {
+-        wgpu::AdapterInfo info;
+-        a.GetInfo(&info);
+ 
+-        if (!deviceName.empty() &&
+-            std::string_view(info.device).find(deviceName) == std::string::npos) {
+-            continue;
++    if (auto f = flags_.Get("devicenum")) {
++        uint32_t deviceNum = static_cast<uint32_t>(std::stoul(*f));
++        if (deviceNum < adapters.size()) {
++            if (flags_.Get("verbose")) {
++                std::cout << "using device num: " << deviceNum << "\n";
++            }
++            adapter = &adapters[deviceNum];
++        } else if (flags_.Get("verbose")) {
++            std::cout << "device num out of range, total devices is " << adapters.size() << "\n";
+         }
++    }
+ 
+-        adapter = &a;
+-        break;
++    if (!adapter) {
++        for (auto& a : adapters) {
++            wgpu::AdapterInfo info;
++            a.GetInfo(&info);
++
++            if (!deviceName.empty() &&
++                std::string_view(info.device).find(deviceName) == std::string::npos) {
++                continue;
++            }
++
++            adapter = &a;
++            break;
++        }
+     }
+ 
+     if (!adapter) {

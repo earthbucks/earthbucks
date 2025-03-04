@@ -1,0 +1,10 @@
+{
+  "extends": "@sindresorhus/tsconfig",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "dist",
+    "types": ["@webgpu/types"]
+  },
+  "include": ["src"]
+}

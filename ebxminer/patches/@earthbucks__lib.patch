@@ -1,0 +1,33 @@
+diff --git a/dist/signed-message.js b/dist/signed-message.js
+index 31cef4cdaf6e0ccd9b40eacc40f1970507542bbb..0ac2fbc7cb71a651a3a4c45fb080d7b886ed659e 100644
+--- a/dist/signed-message.js
++++ b/dist/signed-message.js
+@@ -1,6 +1,10 @@
+ import { FixedBuf, SysBuf } from "./buf.js";
+ import { Hash } from "./hash.js";
+-import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
++//import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
++// @ts-ignore
++const ecdsa_sign = (a, b) => []
++// @ts-ignore
++const ecdsa_verify = (a, b, c) => true
+ import { PubKey } from "./pub-key.js";
+ import { BufReader } from "./buf-reader.js";
+ import { BufWriter } from "./buf-writer.js";
+diff --git a/dist/tx.js b/dist/tx.js
+index 059c4a37b90e4112bb4eac84286b99d236c96ccd..42fcd48b20be560b782f37c239c9fda4d086d5d0 100644
+--- a/dist/tx.js
++++ b/dist/tx.js
+@@ -4,7 +4,11 @@ import { VarInt } from "./var-int.js";
+ import { BufReader } from "./buf-reader.js";
+ import { BufWriter } from "./buf-writer.js";
+ import { Hash } from "./hash.js";
+-import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
++//import { ecdsa_sign, ecdsa_verify } from "@earthbucks/secp256k1";
++// @ts-ignore
++const ecdsa_sign = (a, b) => []
++// @ts-ignore
++const ecdsa_verify = (a, b, c) => true
+ import { TxSignature } from "./tx-signature.js";
+ import { SysBuf, FixedBuf } from "./buf.js";
+ import { U8, U32, U64 } from "./numbers.js";
