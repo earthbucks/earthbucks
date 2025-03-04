@@ -1,8 +1,20 @@
 # ebxminer
 
-Ebxminer can be run from the command line or in browsers using a Tampermonkey script.
+**Ebxminer is not supported and does not work**. It used to work with the old
+POW algorithm, but no longer. The purpose of open-sourcing Ebxminer is to
+provide an example of using the API with multiple GPUs to mine EarthBucks.
+Anyone who wants to use it should only use it to get an idea of what to do, but
+it will need to be significantly modified to work with the current POW
+algorithm.
 
-To run the CLI, [dawn node](https://dawn.googlesource.com/dawn/+/refs/heads/chromium/4959/src/dawn/node/) must be compiled and `dawn.node` copied to the miner directory.
+---
+
+Ebxminer can be run from the command line or in browsers using a Tampermonkey
+script.
+
+To run the CLI,
+[dawn node](https://dawn.googlesource.com/dawn/+/refs/heads/chromium/4959/src/dawn/node/)
+must be compiled and `dawn.node` copied to the miner directory.
 
 ## Build
 
@@ -15,7 +27,8 @@ CLI will be built to `dist/cli.js`.
 
 ## CLI
 
-Log into earthbucks.com and copy your `__session` cookie. Provide to the miner using the `--session` parameter.
+Log into earthbucks.com and copy your `__session` cookie. Provide to the miner
+using the `--session` parameter.
 
 Device selection requires `dawn-node-devicenum.patch` to be applied.
 
@@ -53,4 +66,3 @@ pnpm build:web
 Open Tampermonkey and install `dist-web/ebxminer.user.js`.
 
 Go to earthbucks.com. Open console and run `startMining();`
-
