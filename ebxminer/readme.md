@@ -7,6 +7,9 @@ Anyone who wants to use it should only use it to get an idea of what to do, but
 it will need to be significantly modified to work with the current POW
 algorithm.
 
+Ebxminer was created by benny@earthbucks.com, NOT Ryan X. Charles. It was
+purchased by Ryan X. Charles and open-sourced by him.
+
 ---
 
 Ebxminer can be run from the command line or in browsers using a Tampermonkey
